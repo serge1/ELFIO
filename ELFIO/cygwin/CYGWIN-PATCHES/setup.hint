@@ -1,9 +1,0 @@
-# ELFIO library
-category: Devel Libs
-requires: cygwin
-sdesc: "ELF file reader and producer implemented as a C++ library"
-ldesc: "ELFIO is a C++ library for reading and generating files in the
-ELF (Executable and Linkable Format) binary format. This library is
-unique and not based on any other product. It is also platform
-independent. The library uses standard ANSI C++ constructions and runs
-on a wide variety of architectures."
