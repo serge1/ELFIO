@@ -1,0 +1,22 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(ELFIO, 2.0.0)
+
+AM_INIT_AUTOMAKE(ELFIO, 2.0.0)
+
+dnl Checks for programs.
+AC_PROG_CXX
+AC_PROG_INSTALL
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+dnl Checks for library functions.
+
+AC_OUTPUT([Makefile
+           examples/Makefile
+           examples/ELFDump/Makefile
+           examples/tutorial/Makefile
+           doc/Makefile])
