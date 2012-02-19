@@ -23,13 +23,13 @@
   <preface id="introduction">
     <title>Introduction</title>
     <para>
-      ELFIO is a C++ library for reading and generating files in the ELF binary
-      format. This library is not based on any other product. It is also
-      platform independent. The library uses standard ANSI C++ constructions
-      and runs on a wide variety of architectures.
+      ELFIO is a C++ library for reading and generating files in ELF binary
+      format. This library is independent and does not require any other product.
+      It is also cross-platform - the library uses standard ANSI C++ constructions
+      and runs on wide variety of architectures.
     </para>
     <para>
-      While the library's implementation does make your work easier: a basic
+      While the library's implementation does make your work much easier: basic
       knowledge of the ELF binary format is required. Information about ELF
       format can be found widely on the web.
     </para>
@@ -45,7 +45,7 @@
         steps are required. To make your application be aware about the
         ELFIO classes and types declarations, just include <filename>elfio.hpp</filename> header file.
         All ELFIO library declarations reside in ELFIO namespace.
-        So, our tutorial code starts from this:
+        So, this tutorial code starts from the following code:
       </para>
       <programlistingco>
         <areaspec>
@@ -82,7 +82,7 @@ int main( int argc, char** argv )
         This chapter will explain how to work with the reader portion
         of the ELFIO library. The first step would be creation of the <classname>elfio</classname>
         class instance. The <classname>elfio</classname> constructor does not
-        recieve any parameters. After that, we initialize the instance by
+        receive any parameters. After that, we initialize the instance by
         loading an ELF file with name passed as a parameter.
         <programlistingco>
           <areaspec>
@@ -256,7 +256,7 @@ int main( int argc, char** argv )
               <classname>note_section_accessor</classname>
             </para></listitem>
         </itemizedlist>
-        Defenetly, it is possible to extend the library by implementing additional
+        Definitely, it is possible to extend the library by implementing additional
         accessors serving particular purposes.
       </para>
       <para>
