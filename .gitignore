@@ -1,2 +1,9 @@
 autom4te.cache
 build
+Debug
+ELFIO.sdf
+ELFIO.v11.suo
+
+ELFIOTest/Debug
+
+examples/ELFDump/Debug
