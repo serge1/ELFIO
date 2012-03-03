@@ -26,6 +26,8 @@ THE SOFTWARE.
   #define _SCL_SECURE_NO_WARNINGS
   #define ELFIO_NO_INTTYPES
   #define PRIx64 "llx"
+#else
+  #define PRIx64 "X"
 #endif
 
 #define __STDC_FORMAT_MACROS

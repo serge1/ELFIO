@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 #ifndef ELFIO_NO_OWN_TYPES
     #if !defined(ELFIO_NO_CSTDINT) && !defined(ELFIO_NO_INTTYPES)
-        #include <inttypes.h>
+        #include <cstdint>
     #else
         typedef unsigned char  uint8_t;
         typedef signed char    int8_t;
