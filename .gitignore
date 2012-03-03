@@ -3,6 +3,7 @@ build
 Debug
 ELFIO.sdf
 ELFIO.v11.suo
+ELFIO.opensdf
 
 ELFIOTest/Debug
 
