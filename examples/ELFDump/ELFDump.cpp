@@ -25,10 +25,9 @@ THE SOFTWARE.
 #ifdef _MSC_VER
   #define _SCL_SECURE_NO_WARNINGS
   #define ELFIO_NO_INTTYPES
-  #define PRIx64 "llx"
-#else
-  #define PRIx64 "X"
 #endif
+
+#define PRIx64 "llx"
 
 #define __STDC_FORMAT_MACROS
 
@@ -60,7 +59,7 @@ PrintHeader( const elfio& reader )
     printf( "  Type:       0x%04X\n",   reader.get_type() );
     printf( "  Machine:    0x%04X\n",   reader.get_machine() );
     printf( "  Version:    0x%08X\n",   reader.get_version() );
-    printf( "  Entry:      0x%08"PRIx64"\n",   reader.get_entry() );
+    printf( "  Entry:      0x%08" PRIx64 "\n",   reader.get_entry() );
     printf( "  Flags:      0x%08X\n\n", reader.get_flags() );
 }
 
