@@ -1,2 +1,1 @@
-EXTRA_DIST = tutorial.docbook tutorial.pdf
-
+EXTRA_DIST = elfio.docbook elfio.pdf
