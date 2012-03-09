@@ -1,0 +1,264 @@
+<HTML
+><HEAD
+><TITLE
+>      IELFO - ELF File Producer Interface
+    </TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.74b"><LINK
+REL="HOME"
+TITLE="ELFIO"
+HREF="index.php"><LINK
+REL="PREVIOUS"
+TITLE="ELFDump Utility"
+HREF="c63.htm"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>ELFIO: Tutorial</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="c63.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+>&nbsp;</TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="ielfo"
+>Chapter 3.       <FONT
+COLOR="RED"
+>IELFO</FONT
+> - ELF File Producer Interface
+    </A
+></H1
+>
+    <P
+>      The ELFIO library can help you build a very short ELF executable file.
+      This chapter shows how to build an executable file that will run on
+      x86 Linux machines and print "Hello World!" on your console.
+    </P
+>
+    <P
+>      Just as with the reader, the first step is to get
+      a pointer onto the ELF File Writer (Producer):
+<PRE
+CLASS="PROGRAMLISTING"
+>    IELFO* pELFO;
+    ELFIO::GetInstance()-&#62;CreateELFO( &#38;pELFO );</PRE
+>
+    </P
+>
+    <P
+>      Before continuing, the library must be informed about the main
+      attributes of the executable file to be built. To do this, declare
+      that the executable ELF file will run on a 32 bit x86 machine; has little
+      endian encoding and uses the current version of the ELF file format:
+<PRE
+CLASS="PROGRAMLISTING"
+>    // You can't proceed without this function call!
+    pELFO-&#62;SetAttr( ELFCLASS32, ELFDATA2LSB, EV_CURRENT,
+                    ET_EXEC, EM_386, EV_CURRENT, 0 );</PRE
+>
+    </P
+>
+    <P
+>      Some sections of an ELF executable file should reside in the program
+      segments. To create this loadable segment call the
+      <TT
+CLASS="METHODNAME"
+>AddSegment()</TT
+> function.
+<PRE
+CLASS="PROGRAMLISTING"
+>    // Create a loadable segment
+    IELFOSegment* pSegment = pELFO-&#62;AddSegment( PT_LOAD,
+                                                0x08040000,
+                                                0x08040000,
+                                                PF_X | PF_R,
+                                                0x1000 );</PRE
+>
+    </P
+>
+    <P
+>      The following segment serves as a placeholder for our code section. To create
+      this code section call the AddSection() function:
+<PRE
+CLASS="PROGRAMLISTING"
+>    // Create code section
+    IELFOSection* pTextSec = pELFO-&#62;AddSection( ".text",
+                                   SHT_PROGBITS,
+                                   SHF_ALLOC | SHF_EXECINSTR,
+                                   0,
+                                   0x10,
+                                   0 );</PRE
+>
+    </P
+>
+    <P
+>      Then, add the executable code for the section:
+<PRE
+CLASS="PROGRAMLISTING"
+>    char text[] =
+    { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4
+      '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1
+      '\xB9', '\xFD', '\x00', '\x04', '\x08',   // mov ecx, msg
+      '\xBA', '\x0E', '\x00', '\x00', '\x00',   // mov edx, 14
+      '\xCD', '\x80',                           // int 0x80
+      '\xB8', '\x01', '\x00', '\x00', '\x00',   // mov eax, 1
+      '\xCD', '\x80',                           // int 0x80
+      '\x48', '\x65', '\x6C', '\x6C', '\x6F',   // db 'Hello'
+      '\x2C', '\x20', '\x57', '\x6F', '\x72',   // db ', Wor'
+      '\x6C', '\x64', '\x21', '\x0A'            // db 'ld!', 10
+    };
+    pTextSec-&#62;SetData( text, sizeof( text ) );</PRE
+>
+    </P
+>
+    <P
+>      Next, this code section is put into the loadable segment:
+<PRE
+CLASS="PROGRAMLISTING"
+>    // Add code section into program segment
+    pSegment-&#62;AddSection( pTextSec );
+    pTextSec-&#62;Release();
+    pSegment-&#62;Release();</PRE
+>
+    </P
+>
+    <P
+>      Finally, define the start address of the program
+      and create the result file:
+<PRE
+CLASS="PROGRAMLISTING"
+>    // Set program entry point
+    pELFO-&#62;SetEntry( 0x08040000 );
+    // Create ELF file
+    pELFO-&#62;Save( "test.elf" );
+    pELFO-&#62;Release();</PRE
+>
+    </P
+>
+    <P
+>      Please note: Call the <TT
+CLASS="METHODNAME"
+>Release()</TT
+> functions
+      for each interface you have used.
+      This will free all resources the ELFIO library has created.
+    </P
+>
+    <P
+>      Now compile the program and run it. The result is a new ELF file
+      called "test.elf". The size of this working executable file is only
+      267 bytes! Run it on your Linux machine with the following commands:
+<PRE
+CLASS="PROGRAMLISTING"
+>    [Writer]$ ./Writer
+    [Writer]$ chmod +x test.elf
+    [Writer]$ ./test.elf
+    Hello, World!</PRE
+>
+    </P
+>
+    <P
+>      The full text for this program can be found in the "Writer" directory.
+      Also, in the "Examples" directory, two other programs "WriteObj"
+      and "WriteObj2" demonstrate the creation of ELF object files.
+    </P
+>
+  </DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="c63.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.php"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>&nbsp;</TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ELFDump Utility</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>&nbsp;</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
