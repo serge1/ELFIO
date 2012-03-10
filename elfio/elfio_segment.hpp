@@ -32,6 +32,7 @@ namespace ELFIO {
 
 class segment
 {
+    friend class elfio;
   public:
     virtual ~segment() {};
 
@@ -59,6 +60,7 @@ class segment
     virtual Elf_Half get_sections_num()                                  const = 0;
     virtual Elf_Half get_section_index_at( Elf_Half num )                const = 0;
 
+  protected:
     virtual void load( std::ifstream& stream, std::streampos header_offset ) const = 0;
     virtual void save( std::ofstream& f, std::streampos header_offset,
                        std::streampos data_offset )                                = 0;
@@ -145,6 +147,8 @@ class segment_impl : public segment
         return -1;
     }
     
+//------------------------------------------------------------------------------
+  protected:
 //------------------------------------------------------------------------------
     void
     load( std::ifstream& stream,

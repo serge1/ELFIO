@@ -32,6 +32,7 @@ namespace ELFIO {
 
 class section
 {
+    friend class elfio;
   public:
     virtual ~section() {};
 
@@ -65,6 +66,7 @@ class section
     virtual void        append_data( const char* pData, Elf_Word size ) = 0;
     virtual void        append_data( const std::string& data )          = 0;
 
+  protected:
     virtual void load( std::ifstream& f,
                        std::streampos header_offset ) const = 0;
     virtual void save( std::ofstream& f,
@@ -190,6 +192,8 @@ class section_impl : public section
         return append_data( str_data.c_str(), str_data.size() );
     }
     
+//------------------------------------------------------------------------------
+  protected:
 //------------------------------------------------------------------------------
     void
     load( std::ifstream& stream,
