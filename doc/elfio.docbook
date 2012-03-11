@@ -2,8 +2,9 @@
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
-<!ENTITY elfio_class_data_members_table SYSTEM "elfio_class_data_members_table.docbook">
-<!ENTITY elfio_class_members_table SYSTEM "elfio_class_members_table.docbook">
+<!ENTITY elfio_data_members_table SYSTEM "elfio_data_members_table.docbook">
+<!ENTITY elfio_members_table SYSTEM "elfio_members_table.docbook">
+<!ENTITY section_members_table SYSTEM "section_members_table.docbook">
 ]>
 
 <book>
@@ -293,7 +294,7 @@ int main( int argc, char** argv )
       <title>ELFDump Utility</title>
       <para>
         The source code for the ELF Dumping Utility can be found in
-        the "Examples" directory; included there are more examples on how
+        the "examples" directory; there also located more examples on how
         to use different ELFIO reader interfaces.
       </para>
     </sect1>
@@ -301,17 +302,13 @@ int main( int argc, char** argv )
     <sect1>
       <title>ELF File Writer</title>
       <para>
-        The ELFIO library is a header only library. No preparatory compilation
-        steps are required. To make your application be aware about the
-        ELFIO classes and types declarations, just include <filename>elfio.hpp</filename> header file.
-        All ELFIO library declarations reside in ELFIO namespace.
-        So, our tutorial code starts from this:
+        TODO
       </para>
     </sect1>
   </chapter>
 
 
-  <chapter id="section-interface">
+  <chapter id="library-classes">
     <title>ELFIO Library Classes</title>
 
     <sect1>
@@ -319,32 +316,46 @@ int main( int argc, char** argv )
       <sect2>
         <title>Data members</title>
         <para>
-          The ELFIO library consists of two independent parts: ELF File Reader
+          The ELFIO library's main class is <classname>elfio</classname>. The class
+          contains the following two public data members: sections and segments:
         </para>
         <para>
-          &elfio_class_data_members_table;
+          &elfio_data_members_table;
         </para>
       </sect2>
 
       <sect2>
         <title>Member functions</title>
         <para>
-          The ELFIO library consists of two independent parts: ELF File Reader
-          (<classname>IELFI</classname>)
-          and ELF Producer (<classname>IELFO</classname>).
-          Each is represented by its own set of interfaces.
-          The library does not contain any classes that need to be explicitly
-          instantiated. ELFIO itself provides the interfaces that
-          are used to access the library's functionality.
+          Here is the list of <classname>elfio</classname> public member functions.
+          Most of the functions permit to retrieve or set ELF file properties.
         </para>
         <para>
-          &elfio_class_members_table;
+          &elfio_members_table;
         </para>
       </sect2>
     </sect1>
-  </chapter>
 
-  <chapter id="ielfo">
+    <sect1>
+      <title>Class <classname>section</classname></title>
+      <para>
+        Class <classname>section</classname> has no public data members.
+      </para>
+      <sect2>
+        <title>Member functions</title>
+        <para>
+          Here is the list of <classname>section</classname> public member functions.
+          These functions permit to retrieve or set ELF file section properties.
+        </para>
+        <para>
+          &section_members_table;
+        </para>
+      </sect2>
+    </sect1>
+    
+   </chapter>
+
+  <!--chapter id="ielfo">
     <title>
       <classname>IELFO</classname> - ELF File Producer Interface
     </title>
@@ -466,6 +477,6 @@ int main( int argc, char** argv )
       Also, in the "Examples" directory, two other programs "WriteObj"
       and "WriteObj2" demonstrate the creation of ELF object files.
     </para>
-  </chapter>
+  </chapter-->
 
 </book>

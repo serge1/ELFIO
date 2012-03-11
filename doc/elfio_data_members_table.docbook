@@ -5,7 +5,7 @@
     <colspec colname='c2'/>
     <thead>
       <row>
-        <entry align="center">Function</entry>
+        <entry align="center">Data member</entry>
         <entry align="center">Description</entry>
       </row>
     </thead>
@@ -15,25 +15,19 @@
           sections
         </entry>
         <entry>
-          A container that stores pointers to ELF file section instances.
-          implementing operator[] and size() f
+          The container stores ELFIO library section instances.
+          Implements operator[] and size(). operator[] permits access to
+          individual ELF file section according to its index.
         </entry>
       </row>
       <row>
         <entry>
-          <funcsynopsis>
-            <funcprototype>
-              <funcdef>bool <function>load</function>
-              </funcdef>
-              <paramdef>const std::string&amp; <parameter>file_name</parameter>
-              </paramdef>
-            </funcprototype>
-          </funcsynopsis>
+          segments
         </entry>
         <entry>
-          Initializes <classname>elfio</classname> object by loading data
-          from ELF binary file. File name provided in <parameter>file_name</parameter>.
-          Returns <returnvalue>true</returnvalue> if the file was processed successfully.
+          The container stores ELFIO library segment instances.
+          Implements operator[] and size(). operator[] permits access to
+          individual ELF file segment according to its index.
         </entry>
       </row>
     </tbody>

@@ -48,7 +48,6 @@ class section
     virtual Elf_Xword   get_size()               const = 0;
     virtual Elf_Word    get_name_string_offset() const = 0;
 
-    virtual void set_index( Elf_Half )              = 0;
     virtual void set_name( std::string )            = 0;
     virtual void set_type( Elf_Word value )         = 0;
     virtual void set_flags( Elf_Xword )             = 0;
@@ -67,6 +66,7 @@ class section
     virtual void        append_data( const std::string& data )          = 0;
 
   protected:
+    virtual void set_index( Elf_Half )                      = 0;
     virtual void load( std::ifstream& f,
                        std::streampos header_offset ) const = 0;
     virtual void save( std::ofstream& f,
@@ -112,12 +112,6 @@ class section_impl : public section
         return index;
     }
 
-//------------------------------------------------------------------------------
-    void
-    set_index( Elf_Half value )
-    {
-        index = value;
-    }
 
 //------------------------------------------------------------------------------
     std::string
@@ -194,6 +188,13 @@ class section_impl : public section
     
 //------------------------------------------------------------------------------
   protected:
+//------------------------------------------------------------------------------
+    void
+    set_index( Elf_Half value )
+    {
+        index = value;
+    }
+
 //------------------------------------------------------------------------------
     void
     load( std::ifstream& stream,

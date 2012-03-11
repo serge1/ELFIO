@@ -45,7 +45,6 @@ class segment
     virtual Elf_Xword   get_file_size()        const = 0;
     virtual Elf_Xword   get_memory_size()      const = 0;
 
-    virtual void set_index( Elf_Half )              = 0;
     virtual void set_type( Elf_Word )               = 0;
     virtual void set_flags( Elf_Word )              = 0;
     virtual void set_align( Elf_Xword )             = 0;
@@ -61,6 +60,7 @@ class segment
     virtual Elf_Half get_section_index_at( Elf_Half num )                const = 0;
 
   protected:
+    virtual void set_index( Elf_Half )                                             = 0;
     virtual void load( std::ifstream& stream, std::streampos header_offset ) const = 0;
     virtual void save( std::ofstream& f, std::streampos header_offset,
                        std::streampos data_offset )                                = 0;
@@ -104,13 +104,6 @@ class segment_impl : public segment
     }
 
 //------------------------------------------------------------------------------
-    void
-    set_index( Elf_Half value )
-    {
-        index = value;
-    }
-    
-//------------------------------------------------------------------------------
     const char*
     get_data() const
     {
@@ -149,6 +142,13 @@ class segment_impl : public segment
     
 //------------------------------------------------------------------------------
   protected:
+//------------------------------------------------------------------------------
+    void
+    set_index( Elf_Half value )
+    {
+        index = value;
+    }
+    
 //------------------------------------------------------------------------------
     void
     load( std::ifstream& stream,
