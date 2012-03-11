@@ -36,14 +36,14 @@ class segment
   public:
     virtual ~segment() {};
 
-    virtual Elf_Half    get_index()            const = 0;
-    virtual Elf_Word    get_type()             const = 0;
-    virtual Elf_Word    get_flags()            const = 0;
-    virtual Elf_Xword   get_align()            const = 0;
-    virtual Elf64_Addr  get_virtual_address()  const = 0;
-    virtual Elf64_Addr  get_physical_address() const = 0;
-    virtual Elf_Xword   get_file_size()        const = 0;
-    virtual Elf_Xword   get_memory_size()      const = 0;
+    virtual Elf_Half   get_index()            const = 0;
+    virtual Elf_Word   get_type()             const = 0;
+    virtual Elf_Word   get_flags()            const = 0;
+    virtual Elf_Xword  get_align()            const = 0;
+    virtual Elf64_Addr get_virtual_address()  const = 0;
+    virtual Elf64_Addr get_physical_address() const = 0;
+    virtual Elf_Xword  get_file_size()        const = 0;
+    virtual Elf_Xword  get_memory_size()      const = 0;
 
     virtual void set_type( Elf_Word )               = 0;
     virtual void set_flags( Elf_Word )              = 0;
