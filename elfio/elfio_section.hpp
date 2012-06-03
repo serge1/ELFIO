@@ -72,6 +72,7 @@ class section
     virtual void save( std::ofstream& f,
                        std::streampos header_offset,
                        std::streampos data_offset )         = 0;
+    virtual bool is_address_initialized()                   = 0;
 };
 
 
@@ -83,8 +84,9 @@ class section_impl : public section
     section_impl( const endianess_convertor* convertor_ ) : convertor( convertor_ )
     {
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ), '\0' );
-        data      = 0;
-        data_size = 0;
+        is_address_set = false;
+        data           = 0;
+        data_size      = 0;
     }
 
 //------------------------------------------------------------------------------
@@ -95,15 +97,15 @@ class section_impl : public section
     
 //------------------------------------------------------------------------------
     // Section info functions
-    ELFIO_GET_SET_ACCESS( Elf_Word,   type,               header.sh_type      )
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  flags,              header.sh_flags     )
-    ELFIO_GET_SET_ACCESS( Elf64_Addr, address,            header.sh_addr      )
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  size,               header.sh_size      )
-    ELFIO_GET_SET_ACCESS( Elf_Word,   link,               header.sh_link      )
-    ELFIO_GET_SET_ACCESS( Elf_Word,   info,               header.sh_info      )
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  addr_align,         header.sh_addralign )
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  entry_size,         header.sh_entsize   )
-    ELFIO_GET_SET_ACCESS( Elf_Word,   name_string_offset, header.sh_name      )
+    ELFIO_GET_SET_ACCESS( Elf_Word,   type,               header.sh_type      );
+    ELFIO_GET_SET_ACCESS( Elf_Xword,  flags,              header.sh_flags     );
+    ELFIO_GET_SET_ACCESS( Elf_Xword,  size,               header.sh_size      );
+    ELFIO_GET_SET_ACCESS( Elf_Word,   link,               header.sh_link      );
+    ELFIO_GET_SET_ACCESS( Elf_Word,   info,               header.sh_info      );
+    ELFIO_GET_SET_ACCESS( Elf_Xword,  addr_align,         header.sh_addralign );
+    ELFIO_GET_SET_ACCESS( Elf_Xword,  entry_size,         header.sh_entsize   );
+    ELFIO_GET_SET_ACCESS( Elf_Word,   name_string_offset, header.sh_name      );
+    ELFIO_GET_ACCESS    ( Elf64_Addr, address,            header.sh_addr      );
 
 //------------------------------------------------------------------------------
     Elf_Half
@@ -125,6 +127,22 @@ class section_impl : public section
     set_name( std::string name_ )
     {
         name = name_;
+    }
+
+//------------------------------------------------------------------------------
+    void
+    set_address( Elf64_Addr value )
+    {
+        header.sh_addr = value;
+        header.sh_addr = (*convertor)( header.sh_addr );
+        is_address_set = true;
+    }
+    
+//------------------------------------------------------------------------------
+    bool
+    is_address_initialized()
+    {
+        return is_address_set;
     }
 
 //------------------------------------------------------------------------------
@@ -225,7 +243,8 @@ class section_impl : public section
         }
         
         save_header( f, header_offset );
-        if ( get_type() != SHT_NOBITS && get_type() != SHT_NULL && get_size() != 0 && data != 0 ) {
+        if ( get_type() != SHT_NOBITS && get_type() != SHT_NULL &&
+             get_size() != 0 && data != 0 ) {
             save_data( f, data_offset );
         }
     }
@@ -258,6 +277,7 @@ class section_impl : public section
     mutable char*               data;
     Elf_Word                    data_size;
     const endianess_convertor*  convertor;
+    bool                        is_address_set;
 };
 
 } // namespace ELFIO

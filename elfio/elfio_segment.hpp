@@ -88,13 +88,13 @@ class segment_impl : public segment
 
 //------------------------------------------------------------------------------
     // Section info functions
-    ELFIO_GET_SET_ACCESS( Elf_Word,   type,             ph.p_type )
-    ELFIO_GET_SET_ACCESS( Elf_Word,   flags,            ph.p_flags )
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  align,            ph.p_align )
-    ELFIO_GET_SET_ACCESS( Elf64_Addr, virtual_address,  ph.p_vaddr )
-    ELFIO_GET_SET_ACCESS( Elf64_Addr, physical_address, ph.p_paddr )
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  file_size,        ph.p_filesz )
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  memory_size,      ph.p_memsz )
+    ELFIO_GET_SET_ACCESS( Elf_Word,   type,             ph.p_type   );
+    ELFIO_GET_SET_ACCESS( Elf_Word,   flags,            ph.p_flags  );
+    ELFIO_GET_SET_ACCESS( Elf_Xword,  align,            ph.p_align  );
+    ELFIO_GET_SET_ACCESS( Elf64_Addr, virtual_address,  ph.p_vaddr  );
+    ELFIO_GET_SET_ACCESS( Elf64_Addr, physical_address, ph.p_paddr  );
+    ELFIO_GET_SET_ACCESS( Elf_Xword,  file_size,        ph.p_filesz );
+    ELFIO_GET_SET_ACCESS( Elf_Xword,  memory_size,      ph.p_memsz  );
 
 //------------------------------------------------------------------------------
     Elf_Half

@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE( write_obj_i386_64 )
     BOOST_CHECK( output.match_pattern() );
 }
 
-bool write_exe_i386( bool is64bit )
+bool write_exe_i386( bool is64bit, bool set_addr = false, Elf64_Addr addr = 0 )
 {
     elfio writer;
 
@@ -147,6 +147,9 @@ bool write_exe_i386( bool is64bit )
     text_sec->set_type( SHT_PROGBITS );
     text_sec->set_flags( SHF_ALLOC | SHF_EXECINSTR );
     text_sec->set_addr_align( 0x10 );
+    if ( set_addr ) {
+        text_sec->set_address( addr );
+    }
     
     // Add data into it
     char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4		      
@@ -315,4 +318,25 @@ BOOST_AUTO_TEST_CASE( elf_exe_copy_32 )
                       "../elf_examples/hello_64_copy" );
     checkExeAreEqual( "../elf_examples/test_ppc",
                       "../elf_examples/test_ppc_copy" );
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( section_header_address_update )
+{
+    elfio reader;
+
+    write_exe_i386( false, true, 0x0100 );
+
+    reader.load( "../elf_examples/write_exe_i386_32" );
+    section* sec = reader.sections[".text"];
+    BOOST_REQUIRE_NE( sec, (section*)0 );
+    BOOST_CHECK_EQUAL( sec->get_address(), 0x00000100 );
+    
+    write_exe_i386( false, false, 0 );
+    
+    reader.load( "../elf_examples/write_exe_i386_32" );
+    sec = reader.sections[".text"];
+    BOOST_REQUIRE_NE( sec, (section*)0 );
+    BOOST_CHECK_EQUAL( sec->get_address(), 0x08048000 );
 }

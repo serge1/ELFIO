@@ -471,8 +471,9 @@ class elfio
                 
                 std::streampos headerPosition = (std::streamoff)header->get_sections_offset() +
                     header->get_section_entry_size()*sec->get_index();
-                // TODO: Fix this
-                sec->set_address( segments[i]->get_virtual_address() );
+                if ( !sec->is_address_initialized() ) {
+                    sec->set_address( segments[i]->get_virtual_address() );
+                }
                 sec->save( f, headerPosition, (std::streamoff)current_data_pos );
                 current_data_pos += sec->get_size();
             }
