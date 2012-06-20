@@ -66,13 +66,13 @@ class section
     virtual void        append_data( const std::string& data )          = 0;
 
   protected:
-    virtual void set_index( Elf_Half )                      = 0;
+    virtual void set_index( Elf_Half )                = 0;
     virtual void load( std::ifstream& f,
-                       std::streampos header_offset ) const = 0;
+                       std::streampos header_offset ) = 0;
     virtual void save( std::ofstream& f,
                        std::streampos header_offset,
-                       std::streampos data_offset )         = 0;
-    virtual bool is_address_initialized()                   = 0;
+                       std::streampos data_offset )   = 0;
+    virtual bool is_address_initialized()             = 0;
 };
 
 
@@ -216,7 +216,7 @@ class section_impl : public section
 //------------------------------------------------------------------------------
     void
     load( std::ifstream& stream,
-          std::streampos header_offset ) const
+          std::streampos header_offset )
     {
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ), '\0' );
         stream.seekg( header_offset );
@@ -228,6 +228,7 @@ class section_impl : public section
             data = new char[size];
             stream.seekg( (*convertor)( header.sh_offset ) );
             stream.read( data, size );
+            data_size = size;
         }
     }
     
@@ -271,13 +272,13 @@ class section_impl : public section
 
 //------------------------------------------------------------------------------
   private:
-    mutable T                   header;
-    Elf_Half                    index;
-    std::string                 name;
-    mutable char*               data;
-    Elf_Word                    data_size;
-    const endianess_convertor*  convertor;
-    bool                        is_address_set;
+    mutable T                  header;
+    Elf_Half                   index;
+    std::string                name;
+    char*                      data;
+    Elf_Word                   data_size;
+    const endianess_convertor* convertor;
+    bool                       is_address_set;
 };
 
 } // namespace ELFIO

@@ -340,3 +340,18 @@ BOOST_AUTO_TEST_CASE( section_header_address_update )
     BOOST_REQUIRE_NE( sec, (section*)0 );
     BOOST_CHECK_EQUAL( sec->get_address(), 0x08048000 );
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( elfio_copy )
+{
+    elfio e;
+
+    write_exe_i386( false, true, 0x0100 );
+
+    e.load( "../elf_examples/write_exe_i386_32" );
+    Elf_Half num = e.sections.size();
+    section* new_sec = e.sections.add( "new" );
+    e.save( "../elf_examples/write_exe_i386_32" );
+    BOOST_CHECK_EQUAL( num + 1, e.sections.size() );
+}
