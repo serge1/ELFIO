@@ -350,8 +350,11 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
     write_exe_i386( false, true, 0x0100 );
 
     e.load( "../elf_examples/write_exe_i386_32" );
-    Elf_Half num = e.sections.size();
+    Elf_Half num     = e.sections.size();
     section* new_sec = e.sections.add( "new" );
     e.save( "../elf_examples/write_exe_i386_32" );
     BOOST_CHECK_EQUAL( num + 1, e.sections.size() );
+
+    // Just return back the overwritten file
+    write_exe_i386( false, false, 0 );
 }
