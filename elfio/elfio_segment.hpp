@@ -36,22 +36,15 @@ class segment
   public:
     virtual ~segment() {};
 
-    virtual Elf_Half   get_index()            const = 0;
-    virtual Elf_Word   get_type()             const = 0;
-    virtual Elf_Word   get_flags()            const = 0;
-    virtual Elf_Xword  get_align()            const = 0;
-    virtual Elf64_Addr get_virtual_address()  const = 0;
-    virtual Elf64_Addr get_physical_address() const = 0;
-    virtual Elf_Xword  get_file_size()        const = 0;
-    virtual Elf_Xword  get_memory_size()      const = 0;
+    virtual Elf_Half get_index() const = 0;
 
-    virtual void set_type( Elf_Word )               = 0;
-    virtual void set_flags( Elf_Word )              = 0;
-    virtual void set_align( Elf_Xword )             = 0;
-    virtual void set_virtual_address( Elf64_Addr )  = 0;
-    virtual void set_physical_address( Elf64_Addr ) = 0;
-    virtual void set_file_size(  Elf_Xword  )       = 0;
-    virtual void set_memory_size( Elf_Xword )       = 0;
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,   type             );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,   flags            );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,  align            );
+    ELFIO_GET_SET_ACCESS_DECL( Elf64_Addr, virtual_address  );
+    ELFIO_GET_SET_ACCESS_DECL( Elf64_Addr, physical_address );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,  file_size        );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,  memory_size      );
 
     virtual const char* get_data() const = 0;
 

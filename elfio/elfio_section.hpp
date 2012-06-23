@@ -37,27 +37,17 @@ class section
     virtual ~section() {};
 
     virtual Elf_Half    get_index()              const = 0;
-    virtual std::string get_name()               const = 0;
-    virtual Elf_Word    get_type()               const = 0;
-    virtual Elf_Xword   get_flags()              const = 0;
-    virtual Elf_Word    get_info()               const = 0;
-    virtual Elf_Word    get_link()               const = 0;
-    virtual Elf_Xword   get_addr_align()         const = 0;
-    virtual Elf_Xword   get_entry_size()         const = 0;
-    virtual Elf64_Addr  get_address()            const = 0;
-    virtual Elf_Xword   get_size()               const = 0;
-    virtual Elf_Word    get_name_string_offset() const = 0;
 
-    virtual void set_name( std::string )            = 0;
-    virtual void set_type( Elf_Word value )         = 0;
-    virtual void set_flags( Elf_Xword )             = 0;
-    virtual void set_info( Elf_Word )               = 0;
-    virtual void set_link( Elf_Word )               = 0;
-    virtual void set_addr_align( Elf_Xword )        = 0;
-    virtual void set_entry_size( Elf_Xword )        = 0;
-    virtual void set_address( Elf64_Addr )          = 0;
-    virtual void set_size( Elf_Xword )              = 0;
-    virtual void set_name_string_offset( Elf_Word ) = 0;
+    ELFIO_GET_SET_ACCESS_DECL( std::string, name               );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    type               );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   flags              );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    info               );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    link               );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   addr_align         );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   entry_size         );
+    ELFIO_GET_SET_ACCESS_DECL( Elf64_Addr,  address            );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   size               );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    name_string_offset );
 
     virtual const char* get_data() const                                = 0;
     virtual void        set_data( const char* pData, Elf_Word size )    = 0;
