@@ -36,7 +36,7 @@ class section
   public:
     virtual ~section() {};
 
-    virtual Elf_Half    get_index()              const = 0;
+    virtual Elf_Half get_index() const = 0;
 
     ELFIO_GET_SET_ACCESS_DECL( std::string, name               );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    type               );

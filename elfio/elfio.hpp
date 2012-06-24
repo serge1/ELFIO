@@ -479,7 +479,8 @@ class elfio
             }
 
             segments[i]->set_file_size( current_data_pos - current_file_pos );
-            segments[i]->set_memory_size( current_data_pos - current_file_pos );
+            segments[i]->set_memory_size( current_data_pos - current_file_pos +
+                                          segments[i]->get_memory_size() );
             segments[i]->save( f, (std::streamoff)segment_header_position, (std::streamoff)current_file_pos );
             current_file_pos = current_data_pos;
             segment_header_position += header->get_segment_entry_size();
