@@ -27,13 +27,13 @@ int main( void )
                                                 0x10,
                                                 0 );
     // Add data into it
-    char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4		      
-                    '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1		      
-                    '\xB9', '\x00', '\x00', '\x00', '\x00',   // mov ecx, msg		      
-                    '\xBA', '\x0E', '\x00', '\x00', '\x00',   // mov edx, 14		      
-                    '\xCD', '\x80',                           // int 0x80		      
-                    '\xB8', '\x01', '\x00', '\x00', '\x00',   // mov eax, 1		      
-                    '\xCD', '\x80',                           // int 0x80		      
+    char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4
+                    '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1
+                    '\xB9', '\x00', '\x00', '\x00', '\x00',   // mov ecx, msg
+                    '\xBA', '\x0E', '\x00', '\x00', '\x00',   // mov edx, 14
+                    '\xCD', '\x80',                           // int 0x80
+                    '\xB8', '\x01', '\x00', '\x00', '\x00',   // mov eax, 1
+                    '\xCD', '\x80',                           // int 0x80
                     '\x48', '\x65', '\x6C', '\x6C', '\x6F',   // msg: db   'Hello, World!', 10
                     '\x2C', '\x20', '\x57', '\x6F', '\x72',
                     '\x6C', '\x64', '\x21', '\x0A'

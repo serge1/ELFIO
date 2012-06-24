@@ -313,8 +313,8 @@ int main( int argc, char** argv )
                 printf( "   No     Type    Name\n" );
                 for ( int i = 0; i < nNotesNo; ++i ) {    // For all notes
                     Elf_Word  type;
-                	std::string name;
-                	void* desc;
+                    std::string name;
+                    void* desc;
                     Elf_Word descsz;
                 
                     notes.get_note( i, type, name, desc, descsz );

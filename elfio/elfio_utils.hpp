@@ -59,7 +59,7 @@ THE SOFTWARE.
     virtual void set_##NAME( TYPE value ) = 0;
 
 namespace ELFIO {
-    
+
 //------------------------------------------------------------------------------
 class endianess_convertor {
   public:
@@ -68,7 +68,7 @@ class endianess_convertor {
     {
         need_conversion = false;
     }
-  
+
 //------------------------------------------------------------------------------
     void
     setup( unsigned char elf_file_encoding )

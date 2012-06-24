@@ -44,7 +44,7 @@ class symbol_section_accessor
         if ( 0 != symbols_section->get_entry_size() ) {
             nRet = symbols_section->get_size() / symbols_section->get_entry_size();
         }
-    
+
         return nRet;
     }
 
@@ -69,7 +69,7 @@ class symbol_section_accessor
             ret = generic_get_symbol<Elf64_Sym>( index, name, value, size, bind, type,
                                                 section_index, other );
         }
-    
+
         return ret;
     }
 
@@ -84,7 +84,7 @@ class symbol_section_accessor
                 unsigned char&     other ) const
     {
         bool ret = false;
-    
+
         if ( 0 != get_hash_table_index() ) {
             Elf_Word nbucket = *(Elf_Word*)hash_section->get_data();
             Elf_Word val     = elf_hash( (const unsigned char*)name.c_str() );
@@ -102,7 +102,7 @@ class symbol_section_accessor
                 ret = true;
             }
         }
-    
+
         return ret;
     }
 
@@ -113,7 +113,7 @@ class symbol_section_accessor
                Elf_Half shndx )
     {
         Elf_Word nRet;
-        
+
         if ( symbols_section->get_size() == 0 ) {
             if ( elf_file.get_class() == ELFCLASS32 ) {
                 nRet = generic_add_symbol<Elf32_Sym>( 0, 0, 0, 0, 0, 0 );
@@ -122,7 +122,7 @@ class symbol_section_accessor
                 nRet = generic_add_symbol<Elf64_Sym>( 0, 0, 0, 0, 0, 0 );
             }
         }
-        
+
         if ( elf_file.get_class() == ELFCLASS32 ) {
             nRet = generic_add_symbol<Elf32_Sym>( name, value, size, info, other,
                                                   shndx );
@@ -131,10 +131,10 @@ class symbol_section_accessor
             nRet = generic_add_symbol<Elf64_Sym>( name, value, size, info, other,
                                                   shndx );
         }
-        
+
         return nRet;
     }
-    
+
 //------------------------------------------------------------------------------
     Elf_Word
     add_entry( Elf_Word name, Elf64_Addr value, Elf_Xword size,
@@ -143,7 +143,7 @@ class symbol_section_accessor
     {
         return add_entry( name, value, size, ELF_ST_INFO( bind, type ), other, shndx );
     }
-    
+
 //------------------------------------------------------------------------------
     Elf_Word
     add_entry( string_section_accessor& pStrWriter, const char* str,
@@ -154,7 +154,7 @@ class symbol_section_accessor
         Elf_Word index = pStrWriter.add_string( str );
         return add_entry( index, value, size, info, other, shndx );
     }
-    
+
 //------------------------------------------------------------------------------
     Elf_Word
     add_entry( string_section_accessor& pStrWriter, const char* str,
@@ -164,7 +164,7 @@ class symbol_section_accessor
     {
         return add_entry( pStrWriter, str, value, size, ELF_ST_INFO( bind, type ), other, shndx );
     }
-    
+
 //------------------------------------------------------------------------------
   private:
 //------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ class symbol_section_accessor
     bool
     generic_get_symbol( Elf_Xword index,
                         std::string& name, Elf64_Addr& value,
-                        Elf_Xword& size, 
+                        Elf_Xword& size,
                         unsigned char& bind, unsigned char& type,
                         Elf_Half& section_index,
                         unsigned char& other ) const
@@ -214,7 +214,7 @@ class symbol_section_accessor
                 symbols_section->get_data() + index * symbols_section->get_entry_size() );
 
             const endianess_convertor& convertor = elf_file.get_convertor();
-        
+
             section* string_section = elf_file.sections[get_string_table_index()];
             string_section_accessor str_reader( string_section );
             const char* pStr = str_reader.get_string( convertor( pSym->st_name ) );
@@ -229,8 +229,8 @@ class symbol_section_accessor
             other   = pSym->st_other;
 
             ret = true;
-        }    
-    
+        }
+
         return ret;
     }
 
@@ -242,25 +242,25 @@ class symbol_section_accessor
                         Elf_Half shndx )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
-        
+
         T entry;
         entry.st_name  = convertor( name );
         entry.st_value = value;
         entry.st_value = convertor( entry.st_value );
-		entry.st_size  = size;
+        entry.st_size  = size;
         entry.st_size  = convertor( entry.st_size );
         entry.st_info  = convertor( info );
         entry.st_other = convertor( other );
         entry.st_shndx = convertor( shndx );
-        
+
         symbols_section->append_data( reinterpret_cast<char*>( &entry ),
                                           sizeof( entry ) );
 
         Elf_Word nRet = symbols_section->get_size() / sizeof( entry ) - 1;
-        
+
         return nRet;
     }
-    
+
 //------------------------------------------------------------------------------
   private:
     const elfio&   elf_file;

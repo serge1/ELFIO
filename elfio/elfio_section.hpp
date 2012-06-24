@@ -84,7 +84,7 @@ class section_impl : public section
     {
         delete [] data;
     }
-    
+
 //------------------------------------------------------------------------------
     // Section info functions
     ELFIO_GET_SET_ACCESS( Elf_Word,   type,               header.sh_type      );
@@ -127,7 +127,7 @@ class section_impl : public section
         header.sh_addr = (*convertor)( header.sh_addr );
         is_address_set = true;
     }
-    
+
 //------------------------------------------------------------------------------
     bool
     is_address_initialized()
@@ -157,14 +157,14 @@ class section_impl : public section
 
         set_size( size );
     }
-    
+
 //------------------------------------------------------------------------------
     void
     set_data( const std::string& str_data )
     {
         return set_data( str_data.c_str(), str_data.size() );
     }
-    
+
 //------------------------------------------------------------------------------
     void
     append_data( const char* raw_data, Elf_Word size )
@@ -186,14 +186,14 @@ class section_impl : public section
             set_size( get_size() + size );
         }
     }
-    
+
 //------------------------------------------------------------------------------
     void
     append_data( const std::string& str_data )
     {
         return append_data( str_data.c_str(), str_data.size() );
     }
-    
+
 //------------------------------------------------------------------------------
   protected:
 //------------------------------------------------------------------------------
@@ -221,7 +221,7 @@ class section_impl : public section
             data_size = size;
         }
     }
-    
+
 //------------------------------------------------------------------------------
     void
     save( std::ofstream& f,
@@ -232,7 +232,7 @@ class section_impl : public section
             header.sh_offset = data_offset;
             header.sh_offset = (*convertor)( header.sh_offset );
         }
-        
+
         save_header( f, header_offset );
         if ( get_type() != SHT_NOBITS && get_type() != SHT_NULL &&
              get_size() != 0 && data != 0 ) {
@@ -250,7 +250,7 @@ class section_impl : public section
         f.seekp( header_offset );
         f.write( reinterpret_cast<const char*>( &header ), sizeof( header ) );
     }
-  
+
 //------------------------------------------------------------------------------
     void
     save_data( std::ofstream& f,

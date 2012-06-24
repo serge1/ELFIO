@@ -206,11 +206,11 @@ typedef uint64_t Elf64_Off;
 #define ELFOSABI_TRU64   10 // Compaq TRU64 UNIX
 #define ELFOSABI_MODESTO 11 // Novell Modesto
 #define ELFOSABI_OPENBSD 12 // Open BSD
-#define ELFOSABI_OPENVMS 13 // Open VMS 
-#define ELFOSABI_NSK     14 // Hewlett-Packard Non-Stop Kernel 
-#define ELFOSABI_AROS    15 // Amiga Research OS 
-#define ELFOSABI_FENIXOS 16 // The FenixOS highly scalable multi-core OS 
-//                       64-255 Architecture-specific value range 
+#define ELFOSABI_OPENVMS 13 // Open VMS
+#define ELFOSABI_NSK     14 // Hewlett-Packard Non-Stop Kernel
+#define ELFOSABI_AROS    15 // Amiga Research OS
+#define ELFOSABI_FENIXOS 16 // The FenixOS highly scalable multi-core OS
+//                       64-255 Architecture-specific value range
 
 
 

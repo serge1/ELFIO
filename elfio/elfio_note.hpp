@@ -42,7 +42,7 @@ class note_section_accessor
     {
         return note_start_positions.size();
     }
-    
+
 //------------------------------------------------------------------------------
     bool
     get_note( Elf_Word     index,
@@ -84,7 +84,7 @@ class note_section_accessor
                    Elf_Word descSize )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
-        
+
         Elf_Word nameLen     = name.size() + 1;
         Elf_Word nameLenConv = convertor( nameLen );
         std::string buffer( reinterpret_cast<char*>( &nameLenConv ), sizeof( nameLenConv ) );
@@ -110,7 +110,7 @@ class note_section_accessor
         note_start_positions.push_back( note_section->get_size() );
         note_section->append_data( buffer );
     }
-    
+
   private:
 //------------------------------------------------------------------------------
     void process_section()
@@ -131,7 +131,7 @@ class note_section_accessor
             note_start_positions.push_back( current );
             Elf_Word namesz = convertor(
                             *(Elf_Word*)( data + current ) );
-            Elf_Word descsz = convertor( 
+            Elf_Word descsz = convertor(
                             *(Elf_Word*)( data + current + sizeof( namesz ) ) );
 
             int align = sizeof( Elf_Xword );

@@ -114,14 +114,14 @@ class segment_impl : public segment
 
         return sections.size();
     }
-    
+
 //------------------------------------------------------------------------------
     Elf_Half
     get_sections_num() const
     {
         return sections.size();
     }
-    
+
 //------------------------------------------------------------------------------
     Elf_Half
     get_section_index_at( Elf_Half num ) const
@@ -129,10 +129,10 @@ class segment_impl : public segment
         if ( num < sections.size() ) {
             return sections[num];
         }
-        
+
         return -1;
     }
-    
+
 //------------------------------------------------------------------------------
   protected:
 //------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ class segment_impl : public segment
     {
         index = value;
     }
-    
+
 //------------------------------------------------------------------------------
     void
     load( std::ifstream& stream,
@@ -149,7 +149,7 @@ class segment_impl : public segment
     {
         stream.seekg( header_offset );
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
-        
+
         if ( PT_NULL != get_type() && 0 != get_file_size() ) {
             stream.seekg( (*convertor)( ph.p_offset ) );
             Elf_Xword size = get_file_size();

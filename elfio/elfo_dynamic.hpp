@@ -7,7 +7,7 @@ class ELFODynamicWriter : public IELFODynamicWriter
   public:
     ELFODynamicWriter( IELFO* pIELFO, IELFOSection* pSection );
     ~ELFODynamicWriter();
-  
+
     virtual int addRef();
     virtual int release();
 
