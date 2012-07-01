@@ -190,29 +190,14 @@ bool write_exe_i386( bool is64bit, bool set_addr = false, Elf64_Addr addr = 0 )
     data_seg->set_align( 0x10 );
     data_seg->add_section_index( data_sec->get_index(), data_sec->get_addr_align() );
 
-/*
-    section** note_sec = writer.add_section( ".note" );
+    section* note_sec = writer.sections.add( ".note" );
     note_sec->set_type( SHT_NOTE );
     note_sec->set_addr_align( 1 );
     note_section_accessor note_writer( writer, note_sec );
-    char descr[6] = {0x11, 0x12, 0x13, 0x14, 0x15, 0x16};
-    note_writer.add_note( 0x77, "Created by ELFIO", 0, 0 );
+    note_writer.add_note( 0x01, "Created by ELFIO", 0, 0 );
+    char descr[6] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36};
+    note_writer.add_note( 0x01, "Never easier!", descr, sizeof( descr ) );
 
-    // Create note section*
-    IELFOSection* note_sec = pELFO->AddSection( ".note",
-                                                SHT_NOTE,
-                                                0,
-                                                0,
-                                                1,
-                                                0 );
-    // Create notes writer
-    IELFONotesWriter* pNoteWriter = 0;
-    pELFO->CreateSectionWriter( IELFO::ELFO_NOTE, note_sec, (void**)&pNoteWriter );
-    // Add new entry
-    pNoteWriter->AddNote( 0x77, "Created by ELFIO", 0, 0 );
-    pNoteWriter->release();
-    note_sec->release();
-*/
     // Create ELF file
     writer.set_entry( 0x08048000 );
 

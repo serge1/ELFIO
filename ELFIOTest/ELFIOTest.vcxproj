@@ -96,6 +96,20 @@
     </ClCompile>
     <ClCompile Include="ELFIOTest1.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\elfio\elfio.hpp" />
+    <ClInclude Include="..\elfio\elfio_header.hpp" />
+    <ClInclude Include="..\elfio\elfio_note.hpp" />
+    <ClInclude Include="..\elfio\elfio_relocation.hpp" />
+    <ClInclude Include="..\elfio\elfio_section.hpp" />
+    <ClInclude Include="..\elfio\elfio_segment.hpp" />
+    <ClInclude Include="..\elfio\elfio_strings.hpp" />
+    <ClInclude Include="..\elfio\elfio_symbols.hpp" />
+    <ClInclude Include="..\elfio\elfio_utils.hpp" />
+    <ClInclude Include="..\elfio\elfi_dynamic.hpp" />
+    <ClInclude Include="..\elfio\elfo_dynamic.hpp" />
+    <ClInclude Include="..\elfio\elf_types.hpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
