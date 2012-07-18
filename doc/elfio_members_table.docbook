@@ -408,7 +408,9 @@
           </funcsynopsis>
         </entry>
         <entry>
-          Returns default entry size for .
+          Sets the section header table's file offset. Attention!
+          The value can be overridden by the library, when it creates new ELF
+          file layout.
         </entry>
       </row>
       <row>
@@ -422,7 +424,7 @@
           </funcsynopsis>
         </entry>
         <entry>
-          Returns the program header table's file offset in bytes.
+          Returns the program header table's file offset.
         </entry>
       </row>
       <row>
@@ -437,7 +439,9 @@
           </funcsynopsis>
         </entry>
         <entry>
-          Sets the program header table's file offset in bytes.
+          Sets the program header table's file offset. Attention!
+          The value can be overridden by the library, when it creates new ELF
+          file layout.
         </entry>
       </row>
       <row>
@@ -484,6 +488,24 @@
         <entry>
           Returns endianess convertor reference for the specific
           <classname>elfio</classname> object instance.
+        </entry>
+      </row>
+      <row>
+        <entry>
+          <funcsynopsis>
+            <funcprototype>
+              <funcdef>Elf_Xword <function>get_default_entry_size</function>
+              </funcdef>
+              <paramdef>Elf_Word <parameter>section_type</parameter>
+              </paramdef>
+            </funcprototype>
+          </funcsynopsis>
+        </entry>
+        <entry>
+          Returns default entry size for known section types having different values
+          on 32 and 64 bit architectures. At the moment, only SHT_RELA, SHT_REL,
+          SHT_SYMTAB and SHT_DYNAMIC are 'known' section types. The function
+          returns 0 for other section types.
         </entry>
       </row>
     </tbody>

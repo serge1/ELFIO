@@ -83,8 +83,9 @@ int main( int argc, char** argv )
         This chapter will explain how to work with the reader portion
         of the ELFIO library. The first step would be creation of the <classname>elfio</classname>
         class instance. The <classname>elfio</classname> constructor does not
-        receive any parameters. After that, we initialize the instance by
-        loading an ELF file with name passed as a parameter.
+        receive any parameters. After creation of a class object, we initialize
+        the instance by invoking <function>load</function> function
+        passing ELF file name as a parameter.
         <programlistingco>
           <areaspec>
             <area id="plco.constructor" coords='3 60'/>
