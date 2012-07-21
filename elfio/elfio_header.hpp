@@ -33,7 +33,7 @@ class elf_header
 {
   public:
     virtual ~elf_header() {};
-    virtual bool load( std::ifstream& stream )  = 0;
+    virtual bool load( std::ifstream& stream )       = 0;
     virtual bool save( std::ofstream& stream ) const = 0;
 
     // ELF header functions
@@ -87,8 +87,6 @@ template< class T > class elf_header_impl : public elf_header
         header.e_ident[EI_MAG3]    = ELFMAG3;
         header.e_ident[EI_CLASS]   = elf_header_impl_types<T>::file_class;
         header.e_ident[EI_DATA]    = encoding;
-        header.e_ident[EI_PAD]     = 0;
-        header.e_ident[EI_NIDENT]  = EI_NIDENT;
         header.e_ident[EI_VERSION] = EV_CURRENT;
         header.e_version           = EV_CURRENT;
         header.e_version           = (*convertor)( header.e_version );

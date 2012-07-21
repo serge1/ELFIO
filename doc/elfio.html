@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>ELFIO</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" title="ELFIO"><div class="titlepage"><div><div><h1 class="title"><a name="id9258111"></a>ELFIO</h1></div><div><h2 class="subtitle">User's Guide</h2></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span class="firstname">Serge</span> <span class="surname">Lamikhov-Center</span></h3></div></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="preface"><a href="#introduction">Introduction</a></span></dt><dt><span class="chapter"><a href="#get-started">1. Getting Started With ELFIO</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id9251769">ELF File Reader</a></span></dt><dt><span class="sect1"><a href="#id9263921">ELF Section Data Accessors</a></span></dt><dt><span class="sect1"><a href="#id9262695">ELFDump Utility</a></span></dt><dt><span class="sect1"><a href="#id9242659">ELF File Writer</a></span></dt></dl></dd><dt><span class="chapter"><a href="#section-interface">2. ELFIO Library Classes</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id9264504">Class <code class="classname">elfio</code></a></span></dt><dd><dl><dt><span class="sect2"><a href="#id9241422">Data members</a></span></dt><dt><span class="sect2"><a href="#id9234801">Member functions</a></span></dt></dl></dd></dl></dd></dl></div><div class="list-of-tables"><p><b>List of Tables</b></p><dl><dt>2.1. <a href="#id9244982">Class <code class="classname">elfio</code> member functions</a></dt><dt>2.2. <a href="#id9250449">Class <code class="classname">elfio</code> member functions</a></dt><dt>2.3. <a href="#id9260383">Class <code class="classname">elfio</code> member functions (continue)</a></dt></dl></div><div class="preface" title="Introduction"><div class="titlepage"><div><div><h2 class="title"><a name="introduction"></a>Introduction</h2></div></div></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>ELFIO</title><meta name="generator" content="DocBook XSL Stylesheets V1.77.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="id36112626"></a>ELFIO</h1></div><div><h2 class="subtitle">User's Guide</h2></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span class="firstname">Serge</span> <span class="surname">Lamikhov-Center</span></h3></div></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="preface"><a href="#introduction">Introduction</a></span></dt><dt><span class="chapter"><a href="#get-started">1. Getting Started With ELFIO</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id36100317">ELF File Reader</a></span></dt><dt><span class="sect1"><a href="#id36103638">ELF Section Data Accessors</a></span></dt><dt><span class="sect1"><a href="#id36094302">ELFDump Utility</a></span></dt><dt><span class="sect1"><a href="#id36085990">ELF File Writer</a></span></dt></dl></dd><dt><span class="chapter"><a href="#library-classes">2. ELFIO Library Classes</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id36110529">Class <code class="classname">elfio</code></a></span></dt><dd><dl><dt><span class="sect2"><a href="#id36098224">Data members</a></span></dt><dt><span class="sect2"><a href="#id36121095">Member functions</a></span></dt></dl></dd><dt><span class="sect1"><a href="#id36062867">Class <code class="classname">section</code></a></span></dt><dd><dl><dt><span class="sect2"><a href="#id36062881">Member functions</a></span></dt></dl></dd></dl></dd></dl></div><div class="list-of-tables"><p><b>List of Tables</b></p><dl><dt>2.1. <a href="#id36120114">Class <code class="classname">elfio</code> member functions</a></dt><dt>2.2. <a href="#id36109698">Class <code class="classname">elfio</code> member functions</a></dt><dt>2.3. <a href="#id36116252">Class <code class="classname">elfio</code> member functions (continue)</a></dt><dt>2.4. <a href="#id36062910">Class <code class="classname">section</code> member functions</a></dt></dl></div><div class="preface"><div class="titlepage"><div><div><h1 class="title"><a name="introduction"></a>Introduction</h1></div></div></div><p>
       ELFIO is a C++ library for reading and generating files in ELF binary
       format. This library is independent and does not require any other product.
       It is also cross-platform - the library uses standard ANSI C++ constructions
@@ -7,7 +7,7 @@
       While the library's implementation does make your work much easier: basic
       knowledge of the ELF binary format is required. Information about ELF
       format can be found widely on the web.
-    </p></div><div class="chapter" title="Chapter 1. Getting Started With ELFIO"><div class="titlepage"><div><div><h2 class="title"><a name="get-started"></a>Chapter 1. Getting Started With ELFIO</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#id9251769">ELF File Reader</a></span></dt><dt><span class="sect1"><a href="#id9263921">ELF Section Data Accessors</a></span></dt><dt><span class="sect1"><a href="#id9262695">ELFDump Utility</a></span></dt><dt><span class="sect1"><a href="#id9242659">ELF File Writer</a></span></dt></dl></div><div class="sect1" title="ELF File Reader"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id9251769"></a>ELF File Reader</h2></div></div></div><p>
+    </p></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="get-started"></a>Chapter 1. Getting Started With ELFIO</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#id36100317">ELF File Reader</a></span></dt><dt><span class="sect1"><a href="#id36103638">ELF Section Data Accessors</a></span></dt><dt><span class="sect1"><a href="#id36094302">ELFDump Utility</a></span></dt><dt><span class="sect1"><a href="#id36085990">ELF File Writer</a></span></dt></dl></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id36100317"></a>ELF File Reader</h2></div></div></div><p>
         The ELFIO library is a header only library. No preparatory compilation
         steps are required. To make your application be aware about the
         ELFIO classes and types declarations, just include <code class="filename">elfio.hpp</code> header file.
@@ -25,16 +25,17 @@ int main( int argc, char** argv )
         std::cout &lt;&lt; "Usage: tutorial &lt;elf_file&gt;" &lt;&lt; std::endl;
         return 1;
     }
-</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img src="images/callouts/1.png" alt="1" border="0"></p></td><td valign="top" align="left"><p>
+</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><span><img src="images/callouts/1.png" alt="1" border="0"></span></p></td><td valign="top" align="left"><p>
               Include <code class="filename">elfio.hpp</code> header file
-            </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img src="images/callouts/2.png" alt="2" border="0"></p></td><td valign="top" align="left"><p>
+            </p></td></tr><tr><td width="5%" valign="top" align="left"><p><span><img src="images/callouts/2.png" alt="2" border="0"></span></p></td><td valign="top" align="left"><p>
               The ELFIO namespace usage
             </p></td></tr></table></div></div><p>
         This chapter will explain how to work with the reader portion
         of the ELFIO library. The first step would be creation of the <code class="classname">elfio</code>
         class instance. The <code class="classname">elfio</code> constructor does not
-        receive any parameters. After that, we initialize the instance by
-        loading an ELF file with name passed as a parameter.
+        receive any parameters. After creation of a class object, we initialize
+        the instance by invoking <code class="function">load</code> function
+        passing ELF file name as a parameter.
         </p><div class="programlistingco"><pre class="programlisting">
     // Create an elfio reader
     elfio reader;
@@ -44,9 +45,9 @@ int main( int argc, char** argv )
         std::cout &lt;&lt; "Can't find or process ELF file " &lt;&lt; argv[1] &lt;&lt; std::endl;
         return 2;
     }
-</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img src="images/callouts/1.png" alt="1" border="0"></p></td><td valign="top" align="left"><p>
+</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><span><img src="images/callouts/1.png" alt="1" border="0"></span></p></td><td valign="top" align="left"><p>
                 Create <code class="classname">elfio</code> class instance
-              </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img src="images/callouts/2.png" alt="2" border="0"></p></td><td valign="top" align="left"><p>
+              </p></td></tr><tr><td width="5%" valign="top" align="left"><p><span><img src="images/callouts/2.png" alt="2" border="0"></span></p></td><td valign="top" align="left"><p>
                 Initialize the instance by loading ELF file. The function
                 <code class="function">load</code> returns
                 <span class="returnvalue">true</span>
@@ -70,16 +71,16 @@ int main( int argc, char** argv )
         std::cout &lt;&lt; "Little endian" &lt;&lt; std::endl;
     else
         std::cout &lt;&lt; "Big endian" &lt;&lt; std::endl;
-</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img src="images/callouts/1.png" alt="1" border="0"></p></td><td valign="top" align="left"><p>
+</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><span><img src="images/callouts/1.png" alt="1" border="0"></span></p></td><td valign="top" align="left"><p>
                 Member function <code class="function">get_class()</code> returns ELF file
                 class. Possible values are <code class="constant">ELFCLASS32</code> or
                 <code class="constant">ELFCLASS64</code>.
-              </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img src="images/callouts/2.png" alt="2" border="0"></p></td><td valign="top" align="left"><p>
+              </p></td></tr><tr><td width="5%" valign="top" align="left"><p><span><img src="images/callouts/2.png" alt="2" border="0"></span></p></td><td valign="top" align="left"><p>
                 Member function <code class="function">get_encoding()</code> returns ELF file
                 format encoding. Possible values are <code class="constant">ELFDATA2LSB</code>
                 and <code class="constant">ELFDATA2MSB</code>.
               </p></td></tr></table></div></div><p>
-      </p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>
+      </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>
           Standard ELF types, flags and constants
           are defined in the <code class="filename">elf_types.hpp</code> header file.
           This file is included automatically into the project.
@@ -144,11 +145,11 @@ int main( int argc, char** argv )
       </p><p>
         The full text of this example comes together with ELFIO library
         distribution.
-      </p></div><div class="sect1" title="ELF Section Data Accessors"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id9263921"></a>ELF Section Data Accessors</h2></div></div></div><p>
+      </p></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id36103638"></a>ELF Section Data Accessors</h2></div></div></div><p>
         To simplify creation and interpretation of the ELF sections' data,
         the ELFIO library comes with auxiliary classes - accessors. To the moment
         of this document writing, the following accessors are available:
-        </p><div class="itemizedlist"><ul class="itemizedlist" type="opencircle"><li class="listitem" style="list-style-type: circle"><p>
+        </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: opencircle; "><li class="listitem" style="list-style-type: circle"><p>
               <code class="classname">string_section_accessor</code>
             </p></li><li class="listitem" style="list-style-type: circle"><p>
               <code class="classname">symbol_section_accessor</code>
@@ -186,17 +187,17 @@ int main( int argc, char** argv )
         <code class="classname">section*</code> parameters for their constructors.
         <code class="methodname">get_symbol</code> is used to retrieve a particular entry
         in the symbol table.        
-      </p></div><div class="sect1" title="ELFDump Utility"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id9262695"></a>ELFDump Utility</h2></div></div></div><p>
+      </p></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id36094302"></a>ELFDump Utility</h2></div></div></div><p>
         The source code for the ELF Dumping Utility can be found in
         the "examples" directory; there also located more examples on how
         to use different ELFIO reader interfaces.
-      </p></div><div class="sect1" title="ELF File Writer"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id9242659"></a>ELF File Writer</h2></div></div></div><p>
+      </p></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id36085990"></a>ELF File Writer</h2></div></div></div><p>
         TODO
-      </p></div></div><div class="chapter" title="Chapter 2. ELFIO Library Classes"><div class="titlepage"><div><div><h2 class="title"><a name="section-interface"></a>Chapter 2. ELFIO Library Classes</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#id9264504">Class <code class="classname">elfio</code></a></span></dt><dd><dl><dt><span class="sect2"><a href="#id9241422">Data members</a></span></dt><dt><span class="sect2"><a href="#id9234801">Member functions</a></span></dt></dl></dd></dl></div><div class="sect1" title="Class elfio"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id9264504"></a>Class <code class="classname">elfio</code></h2></div></div></div><div class="sect2" title="Data members"><div class="titlepage"><div><div><h3 class="title"><a name="id9241422"></a>Data members</h3></div></div></div><p>
+      </p></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="library-classes"></a>Chapter 2. ELFIO Library Classes</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#id36110529">Class <code class="classname">elfio</code></a></span></dt><dd><dl><dt><span class="sect2"><a href="#id36098224">Data members</a></span></dt><dt><span class="sect2"><a href="#id36121095">Member functions</a></span></dt></dl></dd><dt><span class="sect1"><a href="#id36062867">Class <code class="classname">section</code></a></span></dt><dd><dl><dt><span class="sect2"><a href="#id36062881">Member functions</a></span></dt></dl></dd></dl></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id36110529"></a>Class <code class="classname">elfio</code></h2></div></div></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id36098224"></a>Data members</h3></div></div></div><p>
           The ELFIO library's main class is <code class="classname">elfio</code>. The class
           contains the following two public data members: sections and segments:
         </p><p>
-          </p><div class="table"><a name="id9244982"></a><p class="title"><b>Table 2.1. Class <code class="classname">elfio</code> member functions</b></p><div class="table-contents"><table summary="Class elfio member functions" border="1"><colgroup><col align="left" class="c1"><col align="left" class="c2"></colgroup><thead><tr><th align="center">Data member</th><th align="center">Description</th></tr></thead><tbody><tr><td align="left">
+          </p><div class="table"><a name="id36120114"></a><p class="title"><b>Table 2.1. Class <code class="classname">elfio</code> member functions</b></p><div class="table-contents"><table summary="Class elfio member functions" border="1"><colgroup><col align="left" class="c1"><col align="left" class="c2"></colgroup><thead><tr><th align="center">Data member</th><th align="center">Description</th></tr></thead><tbody><tr><td align="left">
           sections
         </td><td align="left">
           The container stores ELFIO library section instances.
@@ -210,24 +211,24 @@ int main( int argc, char** argv )
           individual ELF file segment according to its index.
         </td></tr></tbody></table></div></div><p><br class="table-break">
 
-        </p></div><div class="sect2" title="Member functions"><div class="titlepage"><div><div><h3 class="title"><a name="id9234801"></a>Member functions</h3></div></div></div><p>
+        </p></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id36121095"></a>Member functions</h3></div></div></div><p>
           Here is the list of <code class="classname">elfio</code> public member functions.
           Most of the functions permit to retrieve or set ELF file properties.
         </p><p>
-          </p><div class="table"><a name="id9250449"></a><p class="title"><b>Table 2.2. Class <code class="classname">elfio</code> member functions</b></p><div class="table-contents"><table summary="Class elfio member functions" border="1"><colgroup><col align="left" class="c1"><col align="left" class="c2"></colgroup><thead><tr><th align="center">Function</th><th align="center">Description</th></tr></thead><tbody><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">
+          </p><div class="table"><a name="id36109698"></a><p class="title"><b>Table 2.2. Class <code class="classname">elfio</code> member functions</b></p><div class="table-contents"><table summary="Class elfio member functions" border="1"><colgroup><col align="left" class="c1"><col align="left" class="c2"></colgroup><thead><tr><th align="center">Function</th><th align="center">Description</th></tr></thead><tbody><tr><td align="left">
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">
                 <b class="fsfunc">elfio</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           The constructor.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">
                 <b class="fsfunc">~elfio</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           The destructor.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">create</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">create</b>
               (</code></td><td><var class="pdparam">file_class</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">encoding</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>unsigned char <var class="pdparam">file_class</var>
               </code>;<br><code>unsigned char <var class="pdparam">encoding</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
@@ -236,7 +237,7 @@ int main( int argc, char** argv )
           <em class="parameter"><code>file_class</code></em> is either ELFCLASS32 or ELFCLASS64.
           <em class="parameter"><code>file_class</code></em> is either  ELFDATA2LSB or  ELFDATA2MSB.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">bool <b class="fsfunc">load</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">bool <b class="fsfunc">load</b>
               (</code></td><td><var class="pdparam">file_name</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>const std::string&amp; <var class="pdparam">file_name</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
@@ -244,99 +245,99 @@ int main( int argc, char** argv )
           from ELF binary file. File name provided in <em class="parameter"><code>file_name</code></em>.
           Returns <span class="returnvalue">true</span> if the file was processed successfully.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">bool <b class="fsfunc">save</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">bool <b class="fsfunc">save</b>
               (</code></td><td><var class="pdparam">file_name</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>const std::string&amp; <var class="pdparam">file_name</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Creates a file in ELF binary format. File name provided in <em class="parameter"><code>file_name</code></em>.
           Returns <span class="returnvalue">true</span> if the file was created successfully.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_class</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_class</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns ELF file class. Possible values are ELFCLASS32 or ELFCLASS64.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_elf_version</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_elf_version</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns ELF file format version.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_encoding</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_encoding</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns ELF file format encoding. Possible values are ELFDATA2LSB and
           ELFDATA2MSB.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Word <b class="fsfunc">get_version</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Word <b class="fsfunc">get_version</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Identifies the object file version.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_header_size</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_header_size</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns the ELF header's size in bytes.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_section_entry_size</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_section_entry_size</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns a section's entry size in ELF file header section table.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_segment_entry_size</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_segment_entry_size</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns a segment's entry size in ELF file header program table.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_os_abi</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_os_abi</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns operating system ABI identification.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_os_abi</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_os_abi</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>unsigned char <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Sets operating system ABI identification.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_abi_version</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">unsigned char <b class="fsfunc">get_abi_version</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns ABI version.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_abi_version</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_abi_version</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>unsigned char <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Sets ABI version.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_type</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_type</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns the object file type.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_type</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_type</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf_Half <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Sets the object file type.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_machine</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_machine</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns the object file's architecture.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_machine</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_machine</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf_Half <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Sets the object file's architecture.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Word <b class="fsfunc">get_flags</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Word <b class="fsfunc">get_flags</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns processor-specific flags associated with the file.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_flags</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_flags</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf_Word <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
@@ -344,58 +345,84 @@ int main( int argc, char** argv )
         </td></tr></tbody></table></div></div><p><br class="table-break">
 
 
-</p><div class="table"><a name="id9260383"></a><p class="title"><b>Table 2.3. Class <code class="classname">elfio</code> member functions (continue)</b></p><div class="table-contents"><table summary="Class elfio member functions (continue)" border="1"><colgroup><col align="left" class="c1"><col align="left" class="c2"></colgroup><thead><tr><th align="center">Function</th><th align="center">Description</th></tr></thead><tbody><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf64_Addr <b class="fsfunc">get_entry</b>
+</p><div class="table"><a name="id36116252"></a><p class="title"><b>Table 2.3. Class <code class="classname">elfio</code> member functions (continue)</b></p><div class="table-contents"><table summary="Class elfio member functions (continue)" border="1"><colgroup><col align="left" class="c1"><col align="left" class="c2"></colgroup><thead><tr><th align="center">Function</th><th align="center">Description</th></tr></thead><tbody><tr><td align="left">
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf64_Addr <b class="fsfunc">get_entry</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns the virtual address to which the system first transfers control.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_entry</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_entry</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf64_Addr <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Sets the virtual address to which the system first transfers control.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf64_Off <b class="fsfunc">get_sections_offset</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf64_Off <b class="fsfunc">get_sections_offset</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns the section header table's file offset in bytes.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_sections_offset</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_sections_offset</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf64_Off <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
-          Returns default entry size for .
+          Sets the section header table's file offset. Attention!
+          The value can be overridden by the library, when it creates new ELF
+          file layout.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf64_Off <b class="fsfunc">get_segments_offset</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf64_Off <b class="fsfunc">get_segments_offset</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
-          Returns the program header table's file offset in bytes.
+          Returns the program header table's file offset.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_segments_offset</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_segments_offset</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf64_Off <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
-          Sets the program header table's file offset in bytes.
+          Sets the program header table's file offset. Attention!
+          The value can be overridden by the library, when it creates new ELF
+          file layout.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_section_name_str_index</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_section_name_str_index</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns the section header table index of the entry associated with
           the section name string table.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">void <b class="fsfunc">set_section_name_str_index</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">void <b class="fsfunc">set_section_name_str_index</b>
               (</code></td><td><var class="pdparam">value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf_Half <var class="pdparam">value</var>
               </code>;</div><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Sets the section header table index of the entry associated with
           the section name string table.
         </td></tr><tr><td align="left">
-          <div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table"><tr><td><code class="funcdef">endianess_convertor&amp; <b class="fsfunc">get_convertor</b>
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">endianess_convertor&amp; <b class="fsfunc">get_convertor</b>
               (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
         </td><td align="left">
           Returns endianess convertor reference for the specific
           <code class="classname">elfio</code> object instance.
+        </td></tr><tr><td align="left">
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Xword <b class="fsfunc">get_default_entry_size</b>
+              (</code></td><td><var class="pdparam">section_type</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>Elf_Word <var class="pdparam">section_type</var>
+              </code>;</div><div class="funcprototype-spacer"> </div></div>
+        </td><td align="left">
+          Returns default entry size for known section types having different values
+          on 32 and 64 bit architectures. At the moment, only SHT_RELA, SHT_REL,
+          SHT_SYMTAB and SHT_DYNAMIC are 'known' section types. The function
+          returns 0 for other section types.
+        </td></tr></tbody></table></div></div><p><br class="table-break">
+
+        </p></div></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id36062867"></a>Class <code class="classname">section</code></h2></div></div></div><p>
+        Class <code class="classname">section</code> has no public data members.
+      </p><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id36062881"></a>Member functions</h3></div></div></div><p>
+          Here is the list of <code class="classname">section</code> public member functions.
+          These functions permit to retrieve or set ELF file section properties.
+        </p><p>
+          </p><div class="table"><a name="id36062910"></a><p class="title"><b>Table 2.4. Class <code class="classname">section</code> member functions</b></p><div class="table-contents"><table summary="Class section member functions" border="1"><colgroup><col align="left" class="c1"><col align="left" class="c2"></colgroup><thead><tr><th align="center">Function</th><th align="center">Description</th></tr></thead><tbody><tr><td align="left">
+          <div class="funcsynopsis"><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">Elf_Half <b class="fsfunc">get_index</b>
+              (</code></td><td><code>)</code>;</td><td> </td></tr></table><div class="funcprototype-spacer"> </div></div>
+        </td><td align="left">
+          Returns section index within ELF file.
         </td></tr></tbody></table></div></div><p><br class="table-break">
 
         </p></div></div></div></div></body></html>
