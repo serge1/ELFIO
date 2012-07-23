@@ -343,7 +343,10 @@ class elfio
             string_section_accessor str_reader( sections[shstrndx] );
             for ( Elf_Half i = 0; i < num; ++i ) {
                 Elf_Word offset = sections[i]->get_name_string_offset();
-                sections[i]->set_name( str_reader.get_string( offset ) );
+                const char* p = str_reader.get_string( offset );
+                if ( p != 0 ) {
+                    sections[i]->set_name( p );
+                }
             }
         }
 
