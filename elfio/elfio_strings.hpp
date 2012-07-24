@@ -67,7 +67,7 @@ class string_section_accessor
             string_section->append_data( empty_string, 1 );
             current_position++;
         }
-        string_section->append_data( str, std::strlen( str ) + 1 );
+        string_section->append_data( str, (Elf_Word)std::strlen( str ) + 1 );
 
         return current_position;
     }

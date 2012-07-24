@@ -162,7 +162,7 @@ class section_impl : public section
     void
     set_data( const std::string& str_data )
     {
-        return set_data( str_data.c_str(), str_data.size() );
+        return set_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
 //------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ class section_impl : public section
     void
     append_data( const std::string& str_data )
     {
-        return append_data( str_data.c_str(), str_data.size() );
+        return append_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
 //------------------------------------------------------------------------------

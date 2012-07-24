@@ -281,7 +281,7 @@ class elfio
             return 0;
         }
 
-        new_section->set_index( sections_.size() );
+        new_section->set_index( (Elf_Half)sections_.size() );
         sections_.push_back( new_section );
 
         return new_section;

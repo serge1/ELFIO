@@ -40,7 +40,7 @@ class note_section_accessor
     Elf_Word
     get_notes_num() const
     {
-        return note_start_positions.size();
+        return (Elf_Word)note_start_positions.size();
     }
 
 //------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ class note_section_accessor
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
-        Elf_Word nameLen     = name.size() + 1;
+        Elf_Word nameLen     = (Elf_Word)name.size() + 1;
         Elf_Word nameLenConv = convertor( nameLen );
         std::string buffer( reinterpret_cast<char*>( &nameLenConv ), sizeof( nameLenConv ) );
         Elf_Word descSizeConv = convertor( descSize );

@@ -112,14 +112,14 @@ class segment_impl : public segment
             set_align( addr_align );
         }
 
-        return sections.size();
+        return (Elf_Half)sections.size();
     }
 
 //------------------------------------------------------------------------------
     Elf_Half
     get_sections_num() const
     {
-        return sections.size();
+        return (Elf_Half)sections.size();
     }
 
 //------------------------------------------------------------------------------
