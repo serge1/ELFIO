@@ -39,7 +39,7 @@ class dump
         out << "ELF Header\n" << std::endl;
         out << "  Class:      "
             << str_elf_class( reader.get_class() )
-            << "(" << (int)reader.get_class() << ")"
+            << " (" << (int)reader.get_class() << ")"
             << std::endl;
         out << "  Encoding:   "
             << ( ( ELFDATA2LSB == reader.get_encoding() ) ? "Little endian" : "" )
@@ -59,8 +59,21 @@ class dump
     }
 
 
+struct convert
+{
+    Elf_Word    type;
+    const char* str;
+};
+
+convert converts[] =
+{
+    { ELFCLASS32, "ELF32" },
+    { ELFCLASS64, "ELF64" },
+};
+    
+    
 //------------------------------------------------------------------------------
-    static std::string
+    template<class T>  static std::string
     str_section_type( Elf_Word type )
     {
     }
@@ -68,17 +81,6 @@ class dump
     static std::string
     str_elf_class( Elf_Word type )
     {
-        struct convert
-        {
-            Elf_Word    type;
-            const char* str;
-        };
-        convert converts[] =
-        {
-            { ELFCLASS32, "ELF32" },
-            { ELFCLASS64, "ELF64" },
-        };
-        
         std::string res = "UNKNOWN";
         for ( unsigned int i = 0; i < sizeof( converts )/sizeof( convert ); ++i ) {
             if ( converts[i].type == type ) {
