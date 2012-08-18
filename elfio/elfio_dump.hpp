@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <string>
 #include <ostream>
 #include <sstream>
+#include <iomanip>
 #include <elfio.hpp>
 
 namespace ELFIO {
@@ -276,10 +277,41 @@ static struct machine_table_t {
     { EM_CUDA         , "NVIDIA CUDA architecture "                                               },
 };
 
+static struct section_type_table_t {
+    const Elf64_Half key;
+    const char*      str;
+} section_type_table [] = 
+{
+    { SHT_NULL         , "NULL"          },
+    { SHT_PROGBITS     , "PROGBITS"      },
+    { SHT_SYMTAB       , "SYMTAB"        },
+    { SHT_STRTAB       , "STRTAB"        },
+    { SHT_RELA         , "RELA"          },
+    { SHT_HASH         , "HASH"          },
+    { SHT_DYNAMIC      , "DYNAMIC"       },
+    { SHT_NOTE         , "NOTE"          },
+    { SHT_NOBITS       , "NOBITS"        },
+    { SHT_REL          , "REL"           },
+    { SHT_SHLIB        , "SHLIB"         },
+    { SHT_DYNSYM       , "DYNSYM"        },
+    { SHT_INIT_ARRAY   , "INIT_ARRAY"    },
+    { SHT_FINI_ARRAY   , "FINI_ARRAY"    },
+    { SHT_PREINIT_ARRAY, "PREINIT_ARRAY" },
+    { SHT_GROUP        , "GROUP"         },
+    { SHT_SYMTAB_SHNDX , "SYMTAB_SHNDX " },
+};
+
 
 //------------------------------------------------------------------------------
 class dump
 {
+#define DUMP_DEC_FORMAT( width ) std::setw(width) << std::setfill( ' ' ) << \
+                                 std::dec << std::right
+#define DUMP_HEX_FORMAT( width ) std::setw(width) << std::setfill( '0' ) << \
+                                 std::hex << std::right
+#define DUMP_STR_FORMAT( width ) std::setw(width) << std::setfill( ' ' ) << \
+                                 std::hex << std::left
+
   public:
 //------------------------------------------------------------------------------
     static void
@@ -293,10 +325,53 @@ class dump
             << "  Machine:    " << str_machine( reader.get_machine() )     << std::endl
             << "  Version:    " << str_version( reader.get_version() )     << std::endl
             << "  Entry:      " << "0x" << std::hex << reader.get_entry()  << std::endl
-            << "  Flags:      " << "0x" << std::hex << reader.get_flags()  << std::endl;
+            << "  Flags:      " << "0x" << std::hex << reader.get_flags()  << std::endl
+            << std::endl;
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    section_headers( std::ostream& out, elfio& reader )
+    {
+        // Print ELF file sections
+        out << "Section Headers:"                                                          << std::endl
+            << "  [Nr] Name              Type              Addr     Size     ES Flg Lk Inf Al" << std::endl;
+            
+        Elf_Half n = reader.sections.size();
+        for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
+            section* sec = reader.sections[i];
+            section_header( out, i, sec );
+        }
+        printf( "Key to Flags: W (write), A (alloc), X (execute)\n\n" ); 
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    section_header( std::ostream& out, Elf_Half no, section* sec )
+    {
+        std::ios_base::fmtflags original_flags = out.flags();
+        out << "  [" 
+            << DUMP_DEC_FORMAT(  2 ) << no
+            << "] "
+            << DUMP_STR_FORMAT( 17 ) << sec->get_name()       << " "
+            << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() ) << " "
+            << DUMP_HEX_FORMAT(  8 ) << sec->get_address()    << " "
+            << DUMP_HEX_FORMAT(  8 ) << sec->get_size()       << " "
+            << DUMP_HEX_FORMAT(  2 ) << sec->get_entry_size() << " "
+            << DUMP_STR_FORMAT(  3 ) << " " << " "
+            << DUMP_DEC_FORMAT(  2 ) << sec->get_link()       << " "
+            << DUMP_DEC_FORMAT(  3 ) << sec->get_info()       << " "
+            << DUMP_DEC_FORMAT(  2 ) << sec->get_addr_align() << " "
+            << std::endl;
+        out.flags(original_flags);
+/*
+             SectionFlags( sec->get_flags() ).c_str(),
+*/
+        return; 
     }
 
   private:
+//------------------------------------------------------------------------------
     template< typename T, typename K >
     std::string
     static
@@ -314,6 +389,7 @@ class dump
     }
 
 
+//------------------------------------------------------------------------------
     template< typename T, typename K >
     static
     std::string
@@ -327,6 +403,7 @@ class dump
     }
 
 
+//------------------------------------------------------------------------------
 #define STR_FUNC_TABLE( name )                              \
     static                                                  \
     std::string                                             \
@@ -340,8 +417,12 @@ class dump
     STR_FUNC_TABLE( version );
     STR_FUNC_TABLE( type );
     STR_FUNC_TABLE( machine );
+    STR_FUNC_TABLE( section_type );
 
 #undef STR_FUNC_TABLE
+#undef DUMP_DEC_FORMAT
+#undef DUMP_HEX_FORMAT
+#undef DUMP_STR_FORMAT
 };
     
 
