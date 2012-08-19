@@ -10,8 +10,6 @@ int main( int argc, char** argv )
         return 1;
     }
 
-
-    // Open ELF reader
     elfio reader;
     
     if ( !reader.load( argv[1] ) ) {
@@ -19,10 +17,11 @@ int main( int argc, char** argv )
         return 1;
     }
 
-    // Print ELF file header
     dump::header         ( std::cout, reader );
     dump::section_headers( std::cout, reader );
     dump::segment_headers( std::cout, reader );
+    dump::symbol_tables  ( std::cout, reader );
+    dump::notes          ( std::cout, reader );
 
     return 0;
 }

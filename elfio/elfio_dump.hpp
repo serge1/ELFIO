@@ -319,6 +319,57 @@ static struct segment_type_table_t {
 };
 
 
+static struct segment_flag_table_t {
+    const Elf_Word key;
+    const char*    str;
+} segment_flag_table [] = 
+{
+    { 0, ""    },
+    { 1, "X"   },
+    { 2, "W"   },
+    { 3, "WX"  },
+    { 4, "R"   },
+    { 5, "RX"  },
+    { 6, "RW"  },
+    { 7, "RWX" },
+};
+
+
+static struct symbol_bind_t {
+    const Elf_Word key;
+    const char*    str;
+} symbol_bind_table [] = 
+{
+    { STB_LOCAL   , "LOCAL"    },
+    { STB_GLOBAL  , "GLOBAL"   },
+    { STB_WEAK    , "WEAK"     },
+    { STB_LOOS    , "LOOS"     },
+    { STB_HIOS    , "HIOS"     },
+    { STB_MULTIDEF, "MULTIDEF" },
+    { STB_LOPROC  , "LOPROC"   },
+    { STB_HIPROC  , "HIPROC"   },
+};
+
+
+static struct symbol_type_t {
+    const Elf_Word key;
+    const char*    str;
+} symbol_type_table [] = 
+{
+    { STT_NOTYPE ,"NOTYPE" },
+    { STT_OBJECT ,"OBJECT" },
+    { STT_FUNC   ,"FUNC"   },
+    { STT_SECTION,"SECTION"},
+    { STT_FILE   ,"FILE"   },
+    { STT_COMMON ,"COMMON" },
+    { STT_TLS    ,"TLS"    },
+    { STT_LOOS   ,"LOOS"   },
+    { STT_HIOS   ,"HIOS"   },
+    { STT_LOPROC ,"LOPROC" },
+    { STT_HIPROC ,"HIPROC" },
+};
+
+
 //------------------------------------------------------------------------------
 class dump
 {
@@ -356,14 +407,12 @@ class dump
             out 
             << "Section Headers:"                                                              << std::endl
             << "  [Nr] Name              Type              Addr     Size     ES Flg Lk Inf Al" << std::endl;
-        }
             
-        for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
-            section* sec = reader.sections[i];
-            section_header( out, i, sec );
-        }
+            for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
+                section* sec = reader.sections[i];
+                section_header( out, i, sec );
+            }
         
-        if ( n > 0 ) {
             out << "Key to Flags: W (write), A (a lloc), X (execute)\n\n"
                 << std::endl;
         }
@@ -396,18 +445,19 @@ class dump
     static void
     segment_headers( std::ostream& out, elfio& reader )
     {
-        // Print ELF file segments
         Elf_Half n = reader.segments.size();
         if ( n > 0 ) {
-            printf( "Segment headers:\n" );
-            printf( "  [Nr] Type           VirtAddr PhysAddr FileSize Mem.Size Flags    Align\n" );
+            out << "Segment headers:" << std::endl
+                << "  [Nr] Type           VirtAddr PhysAddr FileSize Mem.Size Flags    Align"
+                << std::endl;
+            
+            for ( Elf_Half i = 0; i < n; ++i ) {
+                segment* seg = reader.segments[i];
+                segment_header( out, i, seg );
+            }
+            
+            out << std::endl;
         }
-        for ( Elf_Half i = 0; i < n; ++i ) {
-            segment* seg = reader.segments[i];
-            segment_header( out, i, seg );
-        }
-
-        return; 
     }
 
 //------------------------------------------------------------------------------
@@ -418,27 +468,119 @@ class dump
         out << "  [" 
             << DUMP_DEC_FORMAT(  2 ) << no
             << "] "
-            << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() ) << " "
+            << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() )  << " "
             << DUMP_HEX_FORMAT(  8 ) << seg->get_virtual_address()  << " "
             << DUMP_HEX_FORMAT(  8 ) << seg->get_physical_address() << " "
             << DUMP_HEX_FORMAT(  8 ) << seg->get_file_size()        << " "
             << DUMP_HEX_FORMAT(  8 ) << seg->get_memory_size()      << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_flags()            << " "
+            << DUMP_STR_FORMAT(  8 ) << str_segment_flag( seg->get_flags() ) << " "
             << DUMP_HEX_FORMAT(  8 ) << seg->get_align()            << " "
             << std::endl;
         out.flags(original_flags);
-        
-/*
-    printf( "  [%2x] %-10.10s %08"PRIx64" %08"PRIx64" %08"PRIx64" %08"PRIx64" %08x %08"PRIx64"\n",
-            i,
-            SegmentTypes( seg->get_type() ).c_str(),
-            seg->get_virtual_address(),
-            seg->get_physical_address(),
-            seg->get_file_size(),
-            seg->get_memory_size(),
-            seg->get_flags(),
-            seg->get_align() );
-*/
+    }
+    
+//------------------------------------------------------------------------------
+    static void
+    symbol_tables( std::ostream& out, elfio& reader )
+    {
+        Elf_Half n = reader.sections.size();
+        for ( Elf_Half i = 0; i < n; ++i ) {    // For all sections
+            section* sec = reader.sections[i];
+            if ( SHT_SYMTAB == sec->get_type() || SHT_DYNSYM == sec->get_type() ) {
+                symbol_section_accessor symbols( reader, sec );
+
+                Elf_Xword     sym_no = symbols.get_symbols_num();
+                if ( sym_no > 0 ) {
+                    out << "Symbol table (" << sec->get_name() << ")" << std::endl
+                        << "  [Nr] Value    Size     Type    Bind      Sect Name"
+                        << std::endl;
+
+                    for ( int i = 0; i < sym_no; ++i ) {
+                        std::string   name;
+                        Elf64_Addr    value;
+                        Elf_Xword     size;
+                        unsigned char bind;
+                        unsigned char type;
+                        Elf_Half      section;
+                        unsigned char other;
+                        symbols.get_symbol( i, name, value, size, bind, type, section, other );
+                        symbol_table( out, i, name, value, size, bind, type, section );
+                    }
+
+                    out << std::endl;
+                }
+            }
+        }
+    }
+    
+//------------------------------------------------------------------------------
+    static void
+    symbol_table( std::ostream& out,
+                  Elf_Half      no,
+                  std::string&  name,
+                  Elf64_Addr    value,
+                  Elf_Xword     size,
+                  unsigned char bind,
+                  unsigned char type,
+                  Elf_Half      section )
+    {
+        std::ios_base::fmtflags original_flags = out.flags();
+        out << "  [" 
+            << DUMP_DEC_FORMAT(  2 ) << no
+            << "] "
+            << DUMP_HEX_FORMAT(  8 ) << value   << " "
+            << DUMP_HEX_FORMAT(  8 ) << size    << " "
+            << DUMP_STR_FORMAT(  7 ) << str_symbol_type( type ) << " "
+            << DUMP_STR_FORMAT(  8 ) << str_symbol_bind( bind ) << " "
+            << DUMP_DEC_FORMAT(  5 ) << section << " "
+            << DUMP_STR_FORMAT(  1 ) << name    << " "
+            << std::endl;
+        out.flags(original_flags);
+    }
+    
+//------------------------------------------------------------------------------
+    static void
+    notes( std::ostream& out, elfio& reader )
+    {
+        Elf_Half no = reader.sections.size();
+        for ( Elf_Half i = 0; i < no; ++i ) {    // For all sections
+            section* sec = reader.sections[i];
+            if ( SHT_NOTE == sec->get_type() ) {
+                note_section_accessor notes( reader, sec );
+                int no_notes = notes.get_notes_num();
+                if ( no > 0 ) {
+                    out << "Note section (" << sec->get_name() << ")" << std::endl
+                        << "    No Type     Name"
+                        << std::endl;
+                    for ( int j = 0; j < no_notes; ++j ) {    // For all notes
+                        Elf_Word    type;
+                        std::string name;
+                        void*       desc;
+                        Elf_Word    descsz;
+                    
+                        notes.get_note( j, type, name, desc, descsz );
+                        note( out, j, type, name );
+                    }
+                    
+                    out << std::endl;
+                }
+            }
+        }
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    note( std::ostream&      out,
+          int                no,
+          Elf_Word           type,
+          const std::string& name )
+    {
+        out << "  [" 
+            << DUMP_DEC_FORMAT( 2 ) << no
+            << "] "
+            << DUMP_HEX_FORMAT( 8 ) << type << " "
+            << DUMP_STR_FORMAT( 1 ) << name
+            << std::endl;
     }
     
     
@@ -528,6 +670,9 @@ class dump
     STR_FUNC_TABLE( machine );
     STR_FUNC_TABLE( section_type );
     STR_FUNC_TABLE( segment_type );
+    STR_FUNC_TABLE( segment_flag );
+    STR_FUNC_TABLE( symbol_bind );
+    STR_FUNC_TABLE( symbol_type );
 
 #undef STR_FUNC_TABLE
 #undef DUMP_DEC_FORMAT
