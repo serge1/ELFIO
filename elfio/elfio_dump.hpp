@@ -58,7 +58,7 @@ static struct version_table_t {
     const char*      str;
 } version_table [] = 
 {
-    { EV_NONE,    "None"    },
+    { EV_NONE   , "None"    },
     { EV_CURRENT, "Current" },
 };
 
@@ -69,9 +69,9 @@ static struct type_table_t {
 } type_table [] = 
 {
     { ET_NONE, "No file type"       },
-    { ET_REL,  "Relocatable file"   },
+    { ET_REL , "Relocatable file"   },
     { ET_EXEC, "Executable file"    },
-    { ET_DYN,  "Shared object file" },
+    { ET_DYN , "Shared object file" },
     { ET_CORE, "Core file"          },
 };
 
@@ -308,14 +308,14 @@ static struct segment_type_table_t {
     const char*    str;
 } segment_type_table [] = 
 {
-    { PT_NULL       , "NULL"    },
-    { PT_LOAD       , "LOAD"    },
-    { PT_DYNAMIC    , "DYNAMIC" },
-    { PT_INTERP     , "INTERP"  },
-    { PT_NOTE       , "NOTE"    },
-    { PT_SHLIB      , "SHLIB"   },
-    { PT_PHDR       , "PHDR"    },
-    { PT_TLS        , "TLS"     },
+    { PT_NULL   , "NULL"    },
+    { PT_LOAD   , "LOAD"    },
+    { PT_DYNAMIC, "DYNAMIC" },
+    { PT_INTERP , "INTERP"  },
+    { PT_NOTE   , "NOTE"    },
+    { PT_SHLIB  , "SHLIB"   },
+    { PT_PHDR   , "PHDR"    },
+    { PT_TLS    , "TLS"     },
 };
 
 
@@ -356,17 +356,17 @@ static struct symbol_type_t {
     const char*    str;
 } symbol_type_table [] = 
 {
-    { STT_NOTYPE ,"NOTYPE" },
-    { STT_OBJECT ,"OBJECT" },
-    { STT_FUNC   ,"FUNC"   },
-    { STT_SECTION,"SECTION"},
-    { STT_FILE   ,"FILE"   },
-    { STT_COMMON ,"COMMON" },
-    { STT_TLS    ,"TLS"    },
-    { STT_LOOS   ,"LOOS"   },
-    { STT_HIOS   ,"HIOS"   },
-    { STT_LOPROC ,"LOPROC" },
-    { STT_HIPROC ,"HIPROC" },
+    { STT_NOTYPE , "NOTYPE"  },
+    { STT_OBJECT , "OBJECT"  },
+    { STT_FUNC   , "FUNC"    },
+    { STT_SECTION, "SECTION" },
+    { STT_FILE   , "FILE"    },
+    { STT_COMMON , "COMMON"  },
+    { STT_TLS    , "TLS"     },
+    { STT_LOOS   , "LOOS"    },
+    { STT_HIOS   , "HIOS"    },
+    { STT_LOPROC , "LOPROC"  },
+    { STT_HIPROC , "HIPROC"  },
 };
 
 
@@ -385,7 +385,7 @@ class dump
     static void
     header( std::ostream& out, elfio& reader )
     {
-        out << "ELF Header"     << std::endl << std::endl
+        out << "ELF Header"     << std::endl                               << std::endl
             << "  Class:      " << str_class( reader.get_class() )         << std::endl
             << "  Encoding:   " << str_endian( reader.get_encoding() )     << std::endl
             << "  ELFVersion: " << str_version( reader.get_elf_version() ) << std::endl
@@ -426,15 +426,15 @@ class dump
         out << "  [" 
             << DUMP_DEC_FORMAT(  2 ) << no
             << "] "
-            << DUMP_STR_FORMAT( 17 ) << sec->get_name()       << " "
+            << DUMP_STR_FORMAT( 17 ) << sec->get_name()                     << " "
             << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() ) << " "
-            << DUMP_HEX_FORMAT(  8 ) << sec->get_address()    << " "
-            << DUMP_HEX_FORMAT(  8 ) << sec->get_size()       << " "
-            << DUMP_HEX_FORMAT(  2 ) << sec->get_entry_size() << " "
+            << DUMP_HEX_FORMAT(  8 ) << sec->get_address()                  << " "
+            << DUMP_HEX_FORMAT(  8 ) << sec->get_size()                     << " "
+            << DUMP_HEX_FORMAT(  2 ) << sec->get_entry_size()               << " "
             << DUMP_STR_FORMAT(  3 ) << section_flags( sec->get_flags() )   << " "
-            << DUMP_DEC_FORMAT(  2 ) << sec->get_link()       << " "
-            << DUMP_DEC_FORMAT(  3 ) << sec->get_info()       << " "
-            << DUMP_DEC_FORMAT(  2 ) << sec->get_addr_align() << " "
+            << DUMP_DEC_FORMAT(  2 ) << sec->get_link()                     << " "
+            << DUMP_DEC_FORMAT(  3 ) << sec->get_info()                     << " "
+            << DUMP_DEC_FORMAT(  2 ) << sec->get_addr_align()               << " "
             << std::endl;
         out.flags(original_flags);
 
@@ -469,12 +469,12 @@ class dump
             << DUMP_DEC_FORMAT(  2 ) << no
             << "] "
             << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() )  << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_virtual_address()  << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_physical_address() << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_file_size()        << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_memory_size()      << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_virtual_address()           << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_physical_address()          << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_file_size()                 << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_memory_size()               << " "
             << DUMP_STR_FORMAT(  8 ) << str_segment_flag( seg->get_flags() ) << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_align()            << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_align()                     << " "
             << std::endl;
         out.flags(original_flags);
     }
@@ -528,12 +528,12 @@ class dump
         out << "  [" 
             << DUMP_DEC_FORMAT(  2 ) << no
             << "] "
-            << DUMP_HEX_FORMAT(  8 ) << value   << " "
-            << DUMP_HEX_FORMAT(  8 ) << size    << " "
+            << DUMP_HEX_FORMAT(  8 ) << value                   << " "
+            << DUMP_HEX_FORMAT(  8 ) << size                    << " "
             << DUMP_STR_FORMAT(  7 ) << str_symbol_type( type ) << " "
             << DUMP_STR_FORMAT(  8 ) << str_symbol_bind( bind ) << " "
-            << DUMP_DEC_FORMAT(  5 ) << section << " "
-            << DUMP_STR_FORMAT(  1 ) << name    << " "
+            << DUMP_DEC_FORMAT(  5 ) << section                 << " "
+            << DUMP_STR_FORMAT(  1 ) << name                    << " "
             << std::endl;
         out.flags(original_flags);
     }
