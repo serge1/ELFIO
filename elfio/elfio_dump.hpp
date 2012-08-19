@@ -277,6 +277,7 @@ static struct machine_table_t {
     { EM_CUDA         , "NVIDIA CUDA architecture "                                               },
 };
 
+
 static struct section_type_table_t {
     const Elf64_Half key;
     const char*      str;
@@ -299,6 +300,22 @@ static struct section_type_table_t {
     { SHT_PREINIT_ARRAY, "PREINIT_ARRAY" },
     { SHT_GROUP        , "GROUP"         },
     { SHT_SYMTAB_SHNDX , "SYMTAB_SHNDX " },
+};
+
+
+static struct segment_type_table_t {
+    const Elf_Word key;
+    const char*    str;
+} segment_type_table [] = 
+{
+    { PT_NULL       , "NULL"    },
+    { PT_LOAD       , "LOAD"    },
+    { PT_DYNAMIC    , "DYNAMIC" },
+    { PT_INTERP     , "INTERP"  },
+    { PT_NOTE       , "NOTE"    },
+    { PT_SHLIB      , "SHLIB"   },
+    { PT_PHDR       , "PHDR"    },
+    { PT_TLS        , "TLS"     },
 };
 
 
@@ -375,6 +392,56 @@ class dump
         return; 
     }
 
+//------------------------------------------------------------------------------
+    static void
+    segment_headers( std::ostream& out, elfio& reader )
+    {
+        // Print ELF file segments
+        Elf_Half n = reader.segments.size();
+        if ( n > 0 ) {
+            printf( "Segment headers:\n" );
+            printf( "  [Nr] Type           VirtAddr PhysAddr FileSize Mem.Size Flags    Align\n" );
+        }
+        for ( Elf_Half i = 0; i < n; ++i ) {
+            segment* seg = reader.segments[i];
+            segment_header( out, i, seg );
+        }
+
+        return; 
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    segment_header( std::ostream& out, Elf_Half no, segment* seg )
+    {
+        std::ios_base::fmtflags original_flags = out.flags();
+        out << "  [" 
+            << DUMP_DEC_FORMAT(  2 ) << no
+            << "] "
+            << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() ) << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_virtual_address()  << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_physical_address() << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_file_size()        << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_memory_size()      << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_flags()            << " "
+            << DUMP_HEX_FORMAT(  8 ) << seg->get_align()            << " "
+            << std::endl;
+        out.flags(original_flags);
+        
+/*
+    printf( "  [%2x] %-10.10s %08"PRIx64" %08"PRIx64" %08"PRIx64" %08"PRIx64" %08x %08"PRIx64"\n",
+            i,
+            SegmentTypes( seg->get_type() ).c_str(),
+            seg->get_virtual_address(),
+            seg->get_physical_address(),
+            seg->get_file_size(),
+            seg->get_memory_size(),
+            seg->get_flags(),
+            seg->get_align() );
+*/
+    }
+    
+    
   private:
 //------------------------------------------------------------------------------
     template< typename T, typename K >
@@ -408,6 +475,24 @@ class dump
     }
 
 
+//------------------------------------------------------------------------------
+    template< typename T >
+    static
+    std::string
+    format_assoc( const T& table, const char key )
+    {
+        std::string str = find_value_in_table( table, key );
+        if ( str == "UNKNOWN" ) {
+            std::ostringstream oss;
+            oss << str << " (0x" << std::hex << (int)key << ")";
+            str = oss.str();
+        }
+
+        return str;
+    }
+
+    
+//------------------------------------------------------------------------------
     static
     std::string
     section_flags( Elf_Xword flags )
@@ -428,12 +513,12 @@ class dump
 
 
 //------------------------------------------------------------------------------
-#define STR_FUNC_TABLE( name )                              \
-    static                                                  \
-    std::string                                             \
-    str_##name( const char key )                         \
-    {                                                       \
-        return format_assoc( name##_table, (int)key );   \
+#define STR_FUNC_TABLE( name )                    \
+    static                                        \
+    std::string                                   \
+    str_##name( const char key )                  \
+    {                                             \
+        return format_assoc( name##_table, key ); \
     }
 
     STR_FUNC_TABLE( class );
@@ -442,6 +527,7 @@ class dump
     STR_FUNC_TABLE( type );
     STR_FUNC_TABLE( machine );
     STR_FUNC_TABLE( section_type );
+    STR_FUNC_TABLE( segment_type );
 
 #undef STR_FUNC_TABLE
 #undef DUMP_DEC_FORMAT

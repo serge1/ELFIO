@@ -22,6 +22,7 @@ int main( int argc, char** argv )
     // Print ELF file header
     dump::header         ( std::cout, reader );
     dump::section_headers( std::cout, reader );
+    dump::segment_headers( std::cout, reader );
 
     return 0;
 }

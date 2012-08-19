@@ -269,7 +269,7 @@ int main( int argc, char** argv )
         printf( "Segment headers:\n" );
         printf( "  [Nr] Type       VirtAddr PhysAddr FileSize Mem.Size Flags    Align\n" );
     }
-    for ( i = 0; i < nSegNo; ++i ) {    // For all sections
+    for ( i = 0; i < nSegNo; ++i ) {    // For all segments
         segment* seg = reader.segments[i];
         PrintSegment( i, seg );
     }
