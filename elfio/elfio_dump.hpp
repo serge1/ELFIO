@@ -333,16 +333,23 @@ class dump
     static void
     section_headers( std::ostream& out, elfio& reader )
     {
-        // Print ELF file sections
-        out << "Section Headers:"                                                          << std::endl
-            << "  [Nr] Name              Type              Addr     Size     ES Flg Lk Inf Al" << std::endl;
-            
         Elf_Half n = reader.sections.size();
+        
+        if ( n > 0 ) {
+            out 
+            << "Section Headers:"                                                              << std::endl
+            << "  [Nr] Name              Type              Addr     Size     ES Flg Lk Inf Al" << std::endl;
+        }
+            
         for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
             section* sec = reader.sections[i];
             section_header( out, i, sec );
         }
-        printf( "Key to Flags: W (write), A (alloc), X (execute)\n\n" ); 
+        
+        if ( n > 0 ) {
+            out << "Key to Flags: W (write), A (a lloc), X (execute)\n\n"
+                << std::endl;
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -358,15 +365,13 @@ class dump
             << DUMP_HEX_FORMAT(  8 ) << sec->get_address()    << " "
             << DUMP_HEX_FORMAT(  8 ) << sec->get_size()       << " "
             << DUMP_HEX_FORMAT(  2 ) << sec->get_entry_size() << " "
-            << DUMP_STR_FORMAT(  3 ) << " " << " "
+            << DUMP_STR_FORMAT(  3 ) << section_flags( sec->get_flags() )   << " "
             << DUMP_DEC_FORMAT(  2 ) << sec->get_link()       << " "
             << DUMP_DEC_FORMAT(  3 ) << sec->get_info()       << " "
             << DUMP_DEC_FORMAT(  2 ) << sec->get_addr_align() << " "
             << std::endl;
         out.flags(original_flags);
-/*
-             SectionFlags( sec->get_flags() ).c_str(),
-*/
+
         return; 
     }
 
@@ -400,6 +405,25 @@ class dump
         oss << str << " (0x" << std::hex << key << ")";
 
         return oss.str();
+    }
+
+
+    static
+    std::string
+    section_flags( Elf_Xword flags )
+    {
+        std::string ret = "";
+        if ( flags & SHF_WRITE ) {
+            ret += "W";
+        }
+        if ( flags & SHF_ALLOC ) {
+            ret += "A";
+        }
+        if ( flags & SHF_EXECINSTR ) {
+            ret += "X";
+        }
+
+        return ret;
     }
 
 
