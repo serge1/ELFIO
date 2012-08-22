@@ -610,10 +610,13 @@ class dump
     format_assoc( const T& table, const K& key )
     {
         std::string str = find_value_in_table( table, key );
-        std::ostringstream oss;
-        oss << str << " (0x" << std::hex << key << ")";
+        if ( str == "UNKNOWN" ) {
+            std::ostringstream oss;
+            oss << str << " (0x" << std::hex << key << ")";
+            str = oss.str();
+        }
 
-        return oss.str();
+        return str;
     }
 
 
@@ -659,7 +662,7 @@ class dump
     template< typename T >                        \
     static                                        \
     std::string                                   \
-    str_##name( T key )                           \
+    str_##name( const T key )                           \
     {                                             \
         return format_assoc( name##_table, key ); \
     }
