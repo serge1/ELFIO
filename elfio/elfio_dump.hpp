@@ -383,7 +383,7 @@ class dump
   public:
 //------------------------------------------------------------------------------
     static void
-    header( std::ostream& out, elfio& reader )
+    header( std::ostream& out, const elfio& reader )
     {
         out << "ELF Header"     << std::endl                               << std::endl
             << "  Class:      " << str_class( reader.get_class() )         << std::endl
@@ -399,7 +399,7 @@ class dump
 
 //------------------------------------------------------------------------------
     static void
-    section_headers( std::ostream& out, elfio& reader )
+    section_headers( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.sections.size();
         
@@ -420,7 +420,7 @@ class dump
 
 //------------------------------------------------------------------------------
     static void
-    section_header( std::ostream& out, Elf_Half no, section* sec )
+    section_header( std::ostream& out, Elf_Half no, const section* sec )
     {
         std::ios_base::fmtflags original_flags = out.flags();
         out << "  [" 
@@ -443,7 +443,7 @@ class dump
 
 //------------------------------------------------------------------------------
     static void
-    segment_headers( std::ostream& out, elfio& reader )
+    segment_headers( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.segments.size();
         if ( n > 0 ) {
@@ -462,7 +462,7 @@ class dump
 
 //------------------------------------------------------------------------------
     static void
-    segment_header( std::ostream& out, Elf_Half no, segment* seg )
+    segment_header( std::ostream& out, Elf_Half no, const segment* seg )
     {
         std::ios_base::fmtflags original_flags = out.flags();
         out << "  [" 
@@ -481,7 +481,7 @@ class dump
     
 //------------------------------------------------------------------------------
     static void
-    symbol_tables( std::ostream& out, elfio& reader )
+    symbol_tables( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.sections.size();
         for ( Elf_Half i = 0; i < n; ++i ) {    // For all sections
@@ -540,7 +540,7 @@ class dump
     
 //------------------------------------------------------------------------------
     static void
-    notes( std::ostream& out, elfio& reader )
+    notes( std::ostream& out, const elfio& reader )
     {
         Elf_Half no = reader.sections.size();
         for ( Elf_Half i = 0; i < no; ++i ) {    // For all sections
@@ -656,9 +656,10 @@ class dump
 
 //------------------------------------------------------------------------------
 #define STR_FUNC_TABLE( name )                    \
+    template< typename T >                        \
     static                                        \
     std::string                                   \
-    str_##name( const char key )                  \
+    str_##name( T key )                           \
     {                                             \
         return format_assoc( name##_table, key ); \
     }
