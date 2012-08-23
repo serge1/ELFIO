@@ -405,8 +405,8 @@ class dump
         
         if ( n > 0 ) {
             out 
-            << "Section Headers:"                                                              << std::endl
-            << "  [Nr] Name              Type              Addr     Size     ES Flg Lk Inf Al" << std::endl;
+            << "Section Headers:"                                                  << std::endl
+            << "[  Nr ] Type              Addr     Size     ES Flg Lk Inf Al Name" << std::endl;
             
             for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
                 section* sec = reader.sections[i];
@@ -423,10 +423,9 @@ class dump
     section_header( std::ostream& out, Elf_Half no, const section* sec )
     {
         std::ios_base::fmtflags original_flags = out.flags();
-        out << "  [" 
-            << DUMP_DEC_FORMAT(  2 ) << no
+        out << "[" 
+            << DUMP_DEC_FORMAT(  5 ) << no
             << "] "
-            << DUMP_STR_FORMAT( 17 ) << sec->get_name()                     << " "
             << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() ) << " "
             << DUMP_HEX_FORMAT(  8 ) << sec->get_address()                  << " "
             << DUMP_HEX_FORMAT(  8 ) << sec->get_size()                     << " "
@@ -435,6 +434,7 @@ class dump
             << DUMP_DEC_FORMAT(  2 ) << sec->get_link()                     << " "
             << DUMP_DEC_FORMAT(  3 ) << sec->get_info()                     << " "
             << DUMP_DEC_FORMAT(  2 ) << sec->get_addr_align()               << " "
+            << DUMP_STR_FORMAT( 17 ) << sec->get_name()                     << " "
             << std::endl;
         out.flags(original_flags);
 
@@ -448,7 +448,7 @@ class dump
         Elf_Half n = reader.segments.size();
         if ( n > 0 ) {
             out << "Segment headers:" << std::endl
-                << "  [Nr] Type           VirtAddr PhysAddr FileSize Mem.Size Flags    Align"
+                << "[  Nr ] Type           VirtAddr PhysAddr FileSize Mem.Size Flags    Align"
                 << std::endl;
             
             for ( Elf_Half i = 0; i < n; ++i ) {
@@ -465,8 +465,8 @@ class dump
     segment_header( std::ostream& out, Elf_Half no, const segment* seg )
     {
         std::ios_base::fmtflags original_flags = out.flags();
-        out << "  [" 
-            << DUMP_DEC_FORMAT(  2 ) << no
+        out << "[" 
+            << DUMP_DEC_FORMAT(  5 ) << no
             << "] "
             << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() )  << " "
             << DUMP_HEX_FORMAT(  8 ) << seg->get_virtual_address()           << " "
@@ -492,7 +492,7 @@ class dump
                 Elf_Xword     sym_no = symbols.get_symbols_num();
                 if ( sym_no > 0 ) {
                     out << "Symbol table (" << sec->get_name() << ")" << std::endl
-                        << "  [Nr] Value    Size     Type    Bind      Sect Name"
+                        << "[  Nr ] Value    Size     Type    Bind      Sect Name"
                         << std::endl;
 
                     for ( int i = 0; i < sym_no; ++i ) {
@@ -525,8 +525,8 @@ class dump
                   Elf_Half      section )
     {
         std::ios_base::fmtflags original_flags = out.flags();
-        out << "  [" 
-            << DUMP_DEC_FORMAT(  2 ) << no
+        out << "[" 
+            << DUMP_DEC_FORMAT(  5 ) << no
             << "] "
             << DUMP_HEX_FORMAT(  8 ) << value                   << " "
             << DUMP_HEX_FORMAT(  8 ) << size                    << " "
@@ -626,14 +626,7 @@ class dump
     std::string
     format_assoc( const T& table, const char key )
     {
-        std::string str = find_value_in_table( table, key );
-        if ( str == "UNKNOWN" ) {
-            std::ostringstream oss;
-            oss << str << " (0x" << std::hex << (int)key << ")";
-            str = oss.str();
-        }
-
-        return str;
+        return format_assoc( table, (const int)key );
     }
 
     
@@ -662,7 +655,7 @@ class dump
     template< typename T >                        \
     static                                        \
     std::string                                   \
-    str_##name( const T key )                           \
+    str_##name( const T key )                     \
     {                                             \
         return format_assoc( name##_table, key ); \
     }
