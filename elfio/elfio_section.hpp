@@ -62,7 +62,7 @@ class section
     virtual void save( std::ofstream& f,
                        std::streampos header_offset,
                        std::streampos data_offset )   = 0;
-    virtual bool is_address_initialized()             = 0;
+    virtual bool is_address_initialized() const       = 0;
 };
 
 
@@ -130,7 +130,7 @@ class section_impl : public section
 
 //------------------------------------------------------------------------------
     bool
-    is_address_initialized()
+    is_address_initialized() const
     {
         return is_address_set;
     }
@@ -245,7 +245,7 @@ class section_impl : public section
 //------------------------------------------------------------------------------
     void
     save_header( std::ofstream& f,
-                 std::streampos header_offset )
+                 std::streampos header_offset ) const
     {
         f.seekp( header_offset );
         f.write( reinterpret_cast<const char*>( &header ), sizeof( header ) );
@@ -254,7 +254,7 @@ class section_impl : public section
 //------------------------------------------------------------------------------
     void
     save_data( std::ofstream& f,
-               std::streampos data_offset )
+               std::streampos data_offset ) const
     {
         f.seekp( data_offset );
         f.write( get_data(), get_size() );

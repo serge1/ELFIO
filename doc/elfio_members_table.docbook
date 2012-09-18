@@ -336,23 +336,6 @@
           Sets processor-specific flags associated with the file.
         </entry>
       </row>
-    </tbody>
-  </tgroup>
-</table>
-
-
-<table frame='all'>
-  <title>Class <classname>elfio</classname> member functions (continue)</title>
-  <tgroup cols='2' align='left' colsep='1' rowsep='1'>
-    <colspec colname='c1'/>
-    <colspec colname='c2'/>
-    <thead>
-      <row>
-        <entry align="center">Function</entry>
-        <entry align="center">Description</entry>
-      </row>
-    </thead>
-    <tbody>
       <row>
         <entry>
           <funcsynopsis>

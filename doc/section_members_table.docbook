@@ -10,6 +10,7 @@
       </row>
     </thead>
     <tbody>
+      
       <row>
         <entry>
           <funcsynopsis>
@@ -24,6 +25,36 @@
           Returns section index within ELF file.
         </entry>
       </row>
+      
+      <row>
+        <entry>
+            <funcsynopsis>
+            <funcprototype>
+              <funcdef>Elf_Half <function>get_index</function>
+              </funcdef>
+              <void/>
+            </funcprototype>
+          </funcsynopsis>
+        </entry>
+        <entry>
+          Returns section index within ELF file.
+        </entry>
+      </row>
+      <row>
+        <entry>
+          <funcsynopsis>
+            <funcprototype>
+              <funcdef>Elf_Half <function>get_index</function>
+              </funcdef>
+              <void/>
+            </funcprototype>
+          </funcsynopsis>
+        </entry>
+        <entry>
+          Returns section index within ELF file.
+        </entry>
+      </row>
+      
     </tbody>
   </tgroup>
 </table>
