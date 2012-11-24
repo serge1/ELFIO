@@ -514,12 +514,12 @@ class elfio
         section* operator[]( unsigned int index ) const
         {
             section* sec = 0;
-			
+            
             if ( index < parent->sections_.size() ) {
-			    sec = parent->sections_[index];
-			}
-			
-			return sec;
+                sec = parent->sections_[index];
+            }
+            
+            return sec;
         }
 
 //------------------------------------------------------------------------------

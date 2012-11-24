@@ -8,8 +8,8 @@ class ELFIDynamicReader : virtual public ELFIReaderImpl, virtual public IELFIDyn
     virtual ~ELFIDynamicReader();
 
     // Dynamic reader functions
-    virtual Elf_Xword  getEntriesNum() const;
-    virtual ELFIO_Err  get_entry( Elf_Xword    index,
+    virtual Elf_Xword getEntriesNum() const;
+    virtual ELFIO_Err get_entry( Elf_Xword    index,
                                  Elf_Sxword& tag,
                                  Elf_Xword&  value ) const;
 };
@@ -39,9 +39,9 @@ ELFIDynamicReader::getEntriesNum() const
 
 
 ELFIO_Err
-ELFIDynamicReader::get_entry( Elf_Xword    index,
-                             Elf_Sxword& tag,
-                             Elf_Xword&  value ) const
+ELFIDynamicReader::get_entry( Elf_Xword   index,
+                              Elf_Sxword& tag,
+                              Elf_Xword&  value ) const
 {
     if ( index >= getEntriesNum() ) {    // Is index valid
         return ERR_ELFIO_INDEX_ERROR;
