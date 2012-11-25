@@ -543,9 +543,9 @@ class dump
     notes( std::ostream& out, const elfio& reader )
     {
         Elf_Half no = reader.sections.size();
-        for ( Elf_Half i = 0; i < no; ++i ) {    // For all sections
+        for ( Elf_Half i = 0; i < no; ++i ) {                 // For all sections
             section* sec = reader.sections[i];
-            if ( SHT_NOTE == sec->get_type() ) {
+            if ( SHT_NOTE == sec->get_type() ) {              // Look at notes
                 note_section_accessor notes( reader, sec );
                 int no_notes = notes.get_notes_num();
                 if ( no > 0 ) {
@@ -559,6 +559,8 @@ class dump
                         Elf_Word    descsz;
                     
                         notes.get_note( j, type, name, desc, descsz );
+                        // 'name' usually contains \0 at the end. Try to fix it
+                        name = name.c_str();
                         note( out, j, type, name );
                     }
                     
