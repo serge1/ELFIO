@@ -1,6 +1,6 @@
 INCLUDES = -I$(top_srcdir)
 
-check_PROGRAMS = elfdump
+bin_PROGRAMS = elfdump
 
 elfdump_SOURCES = elfdump.cpp
 

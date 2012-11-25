@@ -32,8 +32,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = tutorial$(EXEEXT)
-subdir = examples/tutorial
+bin_PROGRAMS = writer$(EXEEXT)
+subdir = examples/writer
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
@@ -44,9 +44,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_tutorial_OBJECTS = tutorial.$(OBJEXT)
-tutorial_OBJECTS = $(am_tutorial_OBJECTS)
-tutorial_LDADD = $(LDADD)
+am_writer_OBJECTS = writer.$(OBJEXT)
+writer_OBJECTS = $(am_writer_OBJECTS)
+writer_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -56,8 +56,8 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(tutorial_SOURCES)
-DIST_SOURCES = $(tutorial_SOURCES)
+SOURCES = $(writer_SOURCES)
+DIST_SOURCES = $(writer_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -145,7 +145,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)
-tutorial_SOURCES = tutorial.cpp
+writer_SOURCES = writer.cpp
 all: all-am
 
 .SUFFIXES:
@@ -159,9 +159,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu examples/tutorial/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu examples/writer/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu examples/tutorial/Makefile
+	  $(AUTOMAKE) --gnu examples/writer/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -217,9 +217,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-tutorial$(EXEEXT): $(tutorial_OBJECTS) $(tutorial_DEPENDENCIES) $(EXTRA_tutorial_DEPENDENCIES) 
-	@rm -f tutorial$(EXEEXT)
-	$(CXXLINK) $(tutorial_OBJECTS) $(tutorial_LDADD) $(LIBS)
+writer$(EXEEXT): $(writer_OBJECTS) $(writer_DEPENDENCIES) $(EXTRA_writer_DEPENDENCIES) 
+	@rm -f writer$(EXEEXT)
+	$(CXXLINK) $(writer_OBJECTS) $(writer_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -227,7 +227,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tutorial.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/writer.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

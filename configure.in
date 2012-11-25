@@ -19,4 +19,4 @@ AC_OUTPUT([Makefile
            examples/Makefile
            examples/elfdump/Makefile
            examples/tutorial/Makefile
-           doc/Makefile])
+           examples/writer/Makefile])

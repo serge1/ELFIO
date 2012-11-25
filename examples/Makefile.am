@@ -1,1 +1,1 @@
-SUBDIRS = elfdump tutorial
+SUBDIRS = elfdump tutorial writer
