@@ -1,7 +1,7 @@
-INCLUDES = -I$(top_srcdir)/elfio
+INCLUDES = -I$(top_srcdir)
 
-check_PROGRAMS = ELFDump
+check_PROGRAMS = elfdump
 
-ELFDump_SOURCES  = ELFDump.cpp
+elfdump_SOURCES = elfdump.cpp
 
 EXTRA_DIST = ELFDump.vcxproj

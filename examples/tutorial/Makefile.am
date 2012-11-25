@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/elfio
+INCLUDES = -I$(top_srcdir)
 
 check_PROGRAMS = tutorial
 

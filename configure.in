@@ -17,6 +17,6 @@ dnl Checks for library functions.
 
 AC_OUTPUT([Makefile
            examples/Makefile
-           examples/ELFDump/Makefile
+           examples/elfdump/Makefile
            examples/tutorial/Makefile
            doc/Makefile])
