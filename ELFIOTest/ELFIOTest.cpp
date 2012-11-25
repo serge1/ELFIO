@@ -6,7 +6,7 @@
 #define BOOST_TEST_MODULE ELFIO_Test
 #include <boost/test/unit_test.hpp>
 
-#include <elfio.hpp>
+#include <elfio/elfio.hpp>
 
 using namespace ELFIO;
 

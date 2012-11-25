@@ -1,1 +1,1 @@
-SUBDIRS = ELFDump tutorial
+SUBDIRS = elfdump tutorial

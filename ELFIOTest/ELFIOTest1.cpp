@@ -7,7 +7,7 @@
 #include <boost/test/output_test_stream.hpp>
 using boost::test_tools::output_test_stream;
 
-#include <elfio.hpp>
+#include <elfio/elfio.hpp>
 
 using namespace ELFIO;
 
@@ -65,12 +65,12 @@ bool write_obj_i386( bool is64bit )
     sym_sec->set_entry_size( writer.get_default_entry_size( SHT_SYMTAB ) );
     
     symbol_section_accessor symbol_writer( writer, sym_sec );
-    Elf_Word nSymIndex = symbol_writer.add_entry( nStrIndex, 0, 0,
+    Elf_Word nSymIndex = symbol_writer.add_symbol( nStrIndex, 0, 0,
                                                   STB_LOCAL, STT_NOTYPE, 0,
                                                   data_sec->get_index() );
 
     // Another way to add symbol
-    symbol_writer.add_entry( str_writer, "_start", 0x00000000, 0,
+    symbol_writer.add_symbol( str_writer, "_start", 0x00000000, 0,
                              STB_WEAK, STT_FUNC, 0,
                              text_sec->get_index() );
 

@@ -413,7 +413,7 @@ class dump
                 section_header( out, i, sec );
             }
         
-            out << "Key to Flags: W (write), A (a lloc), X (execute)\n\n"
+            out << "Key to Flags: W (write), A (alloc), X (execute)\n\n"
                 << std::endl;
         }
     }

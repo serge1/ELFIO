@@ -78,10 +78,10 @@ class note_section_accessor
     }
 
 //------------------------------------------------------------------------------
-    void add_note( Elf_Word type,
+    void add_note( Elf_Word           type,
                    const std::string& name,
-                   const void* desc,
-                   Elf_Word descSize )
+                   const void*        desc,
+                   Elf_Word           descSize )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
@@ -116,9 +116,9 @@ class note_section_accessor
     void process_section()
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
-        const char* data    = note_section->get_data();
-        Elf_Xword   size    = note_section->get_size();
-        Elf_Xword   current = 0;
+        const char* data                     = note_section->get_data();
+        Elf_Xword   size                     = note_section->get_size();
+        Elf_Xword   current                  = 0;
 
         note_start_positions.clear();
 

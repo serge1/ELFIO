@@ -100,7 +100,7 @@ class relocation_section_accessor
     bool
     get_entry( Elf_Xword   index,
                Elf64_Addr& offset,
-               Elf_Word&  symbol,
+               Elf_Word&   symbol,
                Elf_Word&   type,
                Elf_Sxword& addend ) const
     {
@@ -268,7 +268,7 @@ class relocation_section_accessor
                unsigned char type )
     {
         Elf_Word str_index = str_writer.add_string( str );
-        Elf_Word sym_index = sym_writer.add_entry( str_index, value, size,
+        Elf_Word sym_index = sym_writer.add_symbol( str_index, value, size,
                                                    sym_info, other, shndx );
         add_entry( offset, sym_index, type );
     }
