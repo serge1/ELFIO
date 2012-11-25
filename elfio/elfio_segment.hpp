@@ -25,8 +25,6 @@ THE SOFTWARE.
 
 #include <fstream>
 #include <vector>
-#include "elf_types.hpp"
-#include "elfio_utils.hpp"
 
 namespace ELFIO {
 

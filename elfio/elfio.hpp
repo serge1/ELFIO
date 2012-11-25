@@ -37,11 +37,12 @@ THE SOFTWARE.
 #include <vector>
 #include <typeinfo>
 
-#include "elf_types.hpp"
-#include "elfio_header.hpp"
-#include "elfio_section.hpp"
-#include "elfio_segment.hpp"
-#include "elfio_strings.hpp"
+#include <elfio/elf_types.hpp>
+#include <elfio/elfio_utils.hpp>
+#include <elfio/elfio_header.hpp>
+#include <elfio/elfio_section.hpp>
+#include <elfio/elfio_segment.hpp>
+#include <elfio/elfio_strings.hpp>
 
 
 #define ELFIO_HEADER_ACCESS_GET( TYPE, FNAME ) \

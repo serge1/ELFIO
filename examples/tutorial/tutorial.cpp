@@ -1,5 +1,5 @@
 #include <iostream>
-#include <elfio.hpp>
+#include <elfio/elfio.hpp>
 
 using namespace ELFIO;
 

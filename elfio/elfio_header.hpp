@@ -24,8 +24,6 @@ THE SOFTWARE.
 #define ELF_HEADER_HPP
 
 #include <fstream>
-#include "elf_types.hpp"
-#include "elfio_utils.hpp"
 
 namespace ELFIO {
 
