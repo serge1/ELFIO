@@ -3,29 +3,33 @@
  *
  * Instructions:
  * 1. Compile and link this file with ELFIO library
- * 2. Execute result file WriteObj
+ * 2. Execute result file write_obj
  * 3. Link output file test.o:
  *    gcc -s -nostartfiles test.o -o test
  */
 
-#include <ELFIO.h>
+#include <elfio/elfio.h>
+
+using namespace ELFIO;
 
 int main( void )
 {
-    IELFO* pELFO;
-    ELFIO::GetInstance()->CreateELFO( &pELFO );
+    elfio writer;
 
     // You can't proceed before this function call!
-    pELFO->SetAttr( ELFCLASS32, ELFDATA2LSB, EV_CURRENT,
-                    ET_REL, EM_386, EV_CURRENT, 0 );
+    writer.create( ELFCLASS32, ELFDATA2LSB );
+    
+    writer.set_os_abi( ELFOSABI_LINUX );
+    writer.set_type( ET_EXEC );
+    writer.set_machine( EM_386 );
 
     // Create code section
-    IELFOSection* pTextSec = pELFO->AddSection( ".text",
-                                                SHT_PROGBITS,
-                                                SHF_ALLOC | SHF_EXECINSTR,
-                                                0,
-                                                0x10,
-                                                0 );
+    // Create code section
+    section* text_sec = writer.sections.add( ".text" );
+    text_sec->set_type( SHT_PROGBITS );
+    text_sec->set_flags( SHF_ALLOC | SHF_EXECINSTR );
+    text_sec->set_addr_align( 0x10 );
+    
     // Add data into it
     char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4
                     '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1
@@ -38,30 +42,26 @@ int main( void )
                     '\x2C', '\x20', '\x57', '\x6F', '\x72',
                     '\x6C', '\x64', '\x21', '\x0A'
                   };
-    pTextSec->SetData( text, sizeof( text ) );
+    text_sec->set_data( text, sizeof( text ) );
 
     // Create string table section
-    IELFOSection* pStrSec = pELFO->AddSection( ".strtab",
-                                               SHT_STRTAB,
-                                               0,
-                                               0,
-                                               1,
-                                               0 );
+    section* str_sec = writer.sections.add( ".strtab" );
+    str_sec->set_type( SHT_STRTAB );
+    
     // Create string table writer
-    IELFOStringWriter* pStrWriter = 0;
-    pELFO->CreateSectionWriter( IELFO::ELFO_STRING, pStrSec, (void**)&pStrWriter );
+    string_section_accessor ssa( str_sec );
     // Add label name
-    Elf32_Word nStrIndex = pStrWriter->AddString( "msg" );
-    pStrSec->Release();
+    Elf32_Word str_index = ssa.add_string( "msg" );
 
     // Create symbol table section
-    IELFOSection* pSymSec = pELFO->AddSection( ".symtab",
-                                               SHT_SYMTAB,
-                                               0,
-                                               2,
-                                               4,
-                                               sizeof(Elf32_Sym) );
-    pSymSec->SetLink( pStrSec->GetIndex() );
+    section* sym_sec = writer.sections.add( ".symtab" );
+    sym_sec->set_type( SHT_SYMTAB );
+    sym_sec->set_info( 2 );
+    sym_sec->set_addr_align( 0x4 );
+    sym_sec->set_entry_size(
+        writer.get_default_entry_size( SHT_SYMTAB ) );
+    sym_sec->set_link( str_sec->get_index() );
+    
     // Create symbol table writer
     IELFOSymbolTable* pSymWriter = 0;
     pELFO->CreateSectionWriter( IELFO::ELFO_SYMBOL, pSymSec, (void**)&pSymWriter );
@@ -96,33 +96,17 @@ int main( void )
     //                       pTextSec->GetIndex(),
     //                       11, (unsigned char)R_386_RELATIVE );
 
-    pStrWriter->Release();
-    pSymWriter->Release();
-    pRelWriter->Release();
-
-    pTextSec->Release();
-    pSymSec->Release();
-    pRelSec->Release();
-
     // Create note section
-    IELFOSection* pNoteSec = pELFO->AddSection( ".note",
-                                                SHT_NOTE,
-                                                0,
-                                                0,
-                                                1,
-                                                0 );
-    // Create notes writer
-    IELFONotesWriter* pNoteWriter = 0;
-    pELFO->CreateSectionWriter( IELFO::ELFO_NOTE, pNoteSec, (void**)&pNoteWriter );
-    // Add new entry
-    pNoteWriter->AddNote( 1, "Created by ELFIO", 0, 0 );
-    pNoteWriter->Release();
-    pNoteSec->Release();
+    section* note_sec = writer.sections.add( ".note" );
+    note_sec->set_type( SHT_NOTE );
+    note_sec->set_addr_align( 1 );
+    note_section_accessor note_writer( writer, note_sec );
+    note_writer.add_note( 0x01, "Created by ELFIO", 0, 0 );
+    char descr[6] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36};
+    note_writer.add_note( 0x01, "Never easier!", descr, sizeof( descr ) );
 
-    // Create ELF file
-    pELFO->Save( "test.o" );
-
-    pELFO->Release();
+    // Create ELF object file
+    writer.save( "hello.o" );
 
     return 0;
 }
