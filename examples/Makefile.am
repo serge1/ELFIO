@@ -1,1 +1,1 @@
-SUBDIRS = elfdump tutorial writer
+SUBDIRS = elfdump tutorial writer write_obj
