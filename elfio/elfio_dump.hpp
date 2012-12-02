@@ -402,40 +402,69 @@ class dump
     section_headers( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.sections.size();
-        
-        if ( n > 0 ) {
-            out 
-            << "Section Headers:"                                                  << std::endl
-            << "[  Nr ] Type              Addr     Size     ES Flg Lk Inf Al Name" << std::endl;
-            
-            for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
-                section* sec = reader.sections[i];
-                section_header( out, i, sec );
-            }
-        
-            out << "Key to Flags: W (write), A (alloc), X (execute)\n\n"
-                << std::endl;
+
+        if ( n == 0 ) {
+            return;
         }
+
+        out << "Section Headers:" << std::endl;
+        if ( reader.get_class() == ELFCLASS32 ) { // Output for 32-bit
+            out << "[  Nr ] Type              Addr     Size     ES Flg Lk Inf Al Name" << std::endl;
+        }
+        else {                                    // Output for 64-bit
+            out << "[  Nr ] Type              Addr             Size             ES   Flg" << std::endl
+                << "        Lk   Inf  Al      Name" << std::endl;
+        }
+            
+        for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
+            section* sec = reader.sections[i];
+            section_header( out, i, sec, reader.get_class() );
+        }
+        
+        out << "Key to Flags: W (write), A (alloc), X (execute)\n\n"
+            << std::endl;
     }
 
 //------------------------------------------------------------------------------
     static void
-    section_header( std::ostream& out, Elf_Half no, const section* sec )
+    section_header( std::ostream& out, Elf_Half no, const section* sec,
+                    unsigned char elf_class )
     {
         std::ios_base::fmtflags original_flags = out.flags();
-        out << "[" 
-            << DUMP_DEC_FORMAT(  5 ) << no
-            << "] "
-            << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() ) << " "
-            << DUMP_HEX_FORMAT(  8 ) << sec->get_address()                  << " "
-            << DUMP_HEX_FORMAT(  8 ) << sec->get_size()                     << " "
-            << DUMP_HEX_FORMAT(  2 ) << sec->get_entry_size()               << " "
-            << DUMP_STR_FORMAT(  3 ) << section_flags( sec->get_flags() )   << " "
-            << DUMP_DEC_FORMAT(  2 ) << sec->get_link()                     << " "
-            << DUMP_DEC_FORMAT(  3 ) << sec->get_info()                     << " "
-            << DUMP_DEC_FORMAT(  2 ) << sec->get_addr_align()               << " "
-            << DUMP_STR_FORMAT( 17 ) << sec->get_name()                     << " "
-            << std::endl;
+
+        if ( elf_class == ELFCLASS32 ) { // Output for 32-bit
+            out << "[" 
+                << DUMP_DEC_FORMAT(  5 ) << no
+                << "] "
+                << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() ) << " "
+                << DUMP_HEX_FORMAT(  8 ) << sec->get_address()                  << " "
+                << DUMP_HEX_FORMAT(  8 ) << sec->get_size()                     << " "
+                << DUMP_HEX_FORMAT(  2 ) << sec->get_entry_size()               << " "
+                << DUMP_STR_FORMAT(  3 ) << section_flags( sec->get_flags() )   << " "
+                << DUMP_HEX_FORMAT(  2 ) << sec->get_link()                     << " "
+                << DUMP_HEX_FORMAT(  3 ) << sec->get_info()                     << " "
+                << DUMP_HEX_FORMAT(  2 ) << sec->get_addr_align()               << " "
+                << DUMP_STR_FORMAT( 17 ) << sec->get_name()                     << " "
+                << std::endl;
+        }
+        else {                           // Output for 64-bit
+            out << "[" 
+                << DUMP_DEC_FORMAT(  5 ) << no
+                << "] "
+                << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() ) << " "
+                << DUMP_HEX_FORMAT( 16 ) << sec->get_address()                  << " "
+                << DUMP_HEX_FORMAT( 16 ) << sec->get_size()                     << " "
+                << DUMP_HEX_FORMAT(  4 ) << sec->get_entry_size()               << " "
+                << DUMP_STR_FORMAT(  3 ) << section_flags( sec->get_flags() )   << " "
+                << std::endl
+                << "        "
+                << DUMP_HEX_FORMAT(  4 ) << sec->get_link()                     << " "
+                << DUMP_HEX_FORMAT(  4 ) << sec->get_info()                     << " "
+                << DUMP_HEX_FORMAT(  4 ) << sec->get_addr_align()               << "    "
+                << DUMP_STR_FORMAT( 17 ) << sec->get_name()                     << " "
+                << std::endl;
+        }
+
         out.flags(original_flags);
 
         return; 
@@ -446,36 +475,65 @@ class dump
     segment_headers( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.segments.size();
-        if ( n > 0 ) {
-            out << "Segment headers:" << std::endl
-                << "[  Nr ] Type           VirtAddr PhysAddr FileSize Mem.Size Flags    Align"
-                << std::endl;
-            
-            for ( Elf_Half i = 0; i < n; ++i ) {
-                segment* seg = reader.segments[i];
-                segment_header( out, i, seg );
-            }
-            
-            out << std::endl;
+        if ( n == 0 ) {
+            return;
         }
+
+        out << "Segment headers:" << std::endl;
+        if ( reader.get_class() == ELFCLASS32 ) { // Output for 32-bit
+            out << "[  Nr ] Type           VirtAddr PhysAddr FileSize Mem.Size Flags    Align"
+                << std::endl;
+        }
+        else {                                    // Output for 64-bit
+            out << "[  Nr ] Type           VirtAddr         PhysAddr         Flags" << std::endl
+                << "                       FileSize         Mem.Size         Align"
+                << std::endl;
+        }
+            
+        for ( Elf_Half i = 0; i < n; ++i ) {
+            segment* seg = reader.segments[i];
+            segment_header( out, i, seg, reader.get_class() );
+        }
+            
+        out << std::endl;
     }
 
 //------------------------------------------------------------------------------
     static void
-    segment_header( std::ostream& out, Elf_Half no, const segment* seg )
+    segment_header( std::ostream& out, Elf_Half no, const segment* seg,
+                    unsigned int elf_class )
     {
         std::ios_base::fmtflags original_flags = out.flags();
-        out << "[" 
-            << DUMP_DEC_FORMAT(  5 ) << no
-            << "] "
-            << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() )  << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_virtual_address()           << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_physical_address()          << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_file_size()                 << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_memory_size()               << " "
-            << DUMP_STR_FORMAT(  8 ) << str_segment_flag( seg->get_flags() ) << " "
-            << DUMP_HEX_FORMAT(  8 ) << seg->get_align()                     << " "
-            << std::endl;
+
+        if ( elf_class == ELFCLASS32 ) { // Output for 32-bit
+            out << "[" 
+                << DUMP_DEC_FORMAT(  5 ) << no
+                << "] "
+                << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() )  << " "
+                << DUMP_HEX_FORMAT(  8 ) << seg->get_virtual_address()           << " "
+                << DUMP_HEX_FORMAT(  8 ) << seg->get_physical_address()          << " "
+                << DUMP_HEX_FORMAT(  8 ) << seg->get_file_size()                 << " "
+                << DUMP_HEX_FORMAT(  8 ) << seg->get_memory_size()               << " "
+                << DUMP_STR_FORMAT(  8 ) << str_segment_flag( seg->get_flags() ) << " "
+                << DUMP_HEX_FORMAT(  8 ) << seg->get_align()                     << " "
+                << std::endl;
+        }
+        else {                           // Output for 64-bit
+            out << "[" 
+                << DUMP_DEC_FORMAT(  5 ) << no
+                << "] "
+                << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() )  << " "
+                << DUMP_HEX_FORMAT( 16 ) << seg->get_virtual_address()           << " "
+                << DUMP_HEX_FORMAT( 16 ) << seg->get_physical_address()          << " "
+                << DUMP_STR_FORMAT( 16 ) << str_segment_flag( seg->get_flags() ) << " "
+                << std::endl
+                << "                       "
+                << DUMP_HEX_FORMAT( 16 ) << seg->get_file_size()                 << " "
+                << DUMP_HEX_FORMAT( 16 ) << seg->get_memory_size()               << " "
+                << DUMP_HEX_FORMAT( 16 ) << seg->get_align()                     << " "
+                << std::endl;
+        }
+
         out.flags(original_flags);
     }
     
@@ -491,10 +549,16 @@ class dump
 
                 Elf_Xword     sym_no = symbols.get_symbols_num();
                 if ( sym_no > 0 ) {
-                    out << "Symbol table (" << sec->get_name() << ")" << std::endl
-                        << "[  Nr ] Value    Size     Type    Bind      Sect Name"
-                        << std::endl;
-
+                    out << "Symbol table (" << sec->get_name() << ")" << std::endl;
+                    if ( reader.get_class() == ELFCLASS32 ) { // Output for 32-bit
+                        out << "[  Nr ] Value    Size     Type    Bind      Sect Name"
+                            << std::endl;
+                    }
+                    else {                                    // Output for 64-bit
+                        out << "[  Nr ] Value            Size             Type    Bind      Sect" << std::endl
+                            << "        Name"
+                            << std::endl;
+                    }
                     for ( int i = 0; i < sym_no; ++i ) {
                         std::string   name;
                         Elf64_Addr    value;
@@ -504,7 +568,7 @@ class dump
                         Elf_Half      section;
                         unsigned char other;
                         symbols.get_symbol( i, name, value, size, bind, type, section, other );
-                        symbol_table( out, i, name, value, size, bind, type, section );
+                        symbol_table( out, i, name, value, size, bind, type, section, reader.get_class() );
                     }
 
                     out << std::endl;
@@ -522,19 +586,38 @@ class dump
                   Elf_Xword     size,
                   unsigned char bind,
                   unsigned char type,
-                  Elf_Half      section )
+                  Elf_Half      section,
+                  unsigned int  elf_class )
     {
         std::ios_base::fmtflags original_flags = out.flags();
-        out << "[" 
-            << DUMP_DEC_FORMAT(  5 ) << no
-            << "] "
-            << DUMP_HEX_FORMAT(  8 ) << value                   << " "
-            << DUMP_HEX_FORMAT(  8 ) << size                    << " "
-            << DUMP_STR_FORMAT(  7 ) << str_symbol_type( type ) << " "
-            << DUMP_STR_FORMAT(  8 ) << str_symbol_bind( bind ) << " "
-            << DUMP_DEC_FORMAT(  5 ) << section                 << " "
-            << DUMP_STR_FORMAT(  1 ) << name                    << " "
-            << std::endl;
+
+        if ( elf_class == ELFCLASS32 ) { // Output for 32-bit
+            out << "[" 
+                << DUMP_DEC_FORMAT(  5 ) << no
+                << "] "
+                << DUMP_HEX_FORMAT(  8 ) << value                   << " "
+                << DUMP_HEX_FORMAT(  8 ) << size                    << " "
+                << DUMP_STR_FORMAT(  7 ) << str_symbol_type( type ) << " "
+                << DUMP_STR_FORMAT(  8 ) << str_symbol_bind( bind ) << " "
+                << DUMP_DEC_FORMAT(  5 ) << section                 << " "
+                << DUMP_STR_FORMAT(  1 ) << name                    << " "
+                << std::endl;
+        }
+        else {                           // Output for 64-bit
+            out << "[" 
+                << DUMP_DEC_FORMAT(  5 ) << no
+                << "] "
+                << DUMP_HEX_FORMAT( 16 ) << value                   << " "
+                << DUMP_HEX_FORMAT( 16 ) << size                    << " "
+                << DUMP_STR_FORMAT(  7 ) << str_symbol_type( type ) << " "
+                << DUMP_STR_FORMAT(  8 ) << str_symbol_bind( bind ) << " "
+                << DUMP_DEC_FORMAT(  5 ) << section                 << " "
+                << std::endl
+                << "        "
+                << DUMP_STR_FORMAT(  1 ) << name                    << " "
+                << std::endl;
+        }
+
         out.flags(original_flags);
     }
     
@@ -593,7 +676,7 @@ class dump
     static
     find_value_in_table( const T& table, const K& key )
     {
-        std::string res = "UNKNOWN";
+        std::string res = "?";
         for ( unsigned int i = 0; i < sizeof( table )/sizeof( table[0] ); ++i ) {
             if ( table[i].key == key ) {
                 res = table[i].str;
@@ -612,7 +695,7 @@ class dump
     format_assoc( const T& table, const K& key )
     {
         std::string str = find_value_in_table( table, key );
-        if ( str == "UNKNOWN" ) {
+        if ( str == "?" ) {
             std::ostringstream oss;
             oss << str << " (0x" << std::hex << key << ")";
             str = oss.str();
