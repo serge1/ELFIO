@@ -224,7 +224,7 @@ nobase_include_HEADERS = elfio/elf_types.hpp     elfio/elfi_dynamic.hpp     \
                          elfio/elfio_utils.hpp   elfio/elfo_dynamic.hpp     \
                          elfio/elfio_dump.hpp
 
-EXTRA_DIST = doc/elfio.pdf
+EXTRA_DIST = doc/site/elfio.pdf
 all: all-recursive
 
 .SUFFIXES:
@@ -479,6 +479,9 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -722,8 +725,8 @@ uninstall-am: uninstall-nobase_includeHEADERS
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am am--refresh check check-am clean clean-generic \
 	ctags ctags-recursive dist dist-all dist-bzip2 dist-gzip \
-	dist-lzip dist-lzma dist-shar dist-tarZ dist-xz dist-zip \
-	distcheck distclean distclean-generic distclean-tags \
+	dist-hook dist-lzip dist-lzma dist-shar dist-tarZ dist-xz \
+	dist-zip distcheck distclean distclean-generic distclean-tags \
 	distcleancheck distdir distuninstallcheck dvi dvi-am html \
 	html-am info info-am install install-am install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
@@ -736,6 +739,9 @@ uninstall-am: uninstall-nobase_includeHEADERS
 	tags-recursive uninstall uninstall-am \
 	uninstall-nobase_includeHEADERS
 
+dist-hook:
+	mv $(distdir)/doc/site/elfio.pdf $(distdir)/doc
+	rm -Rf $(distdir)/doc/site
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
