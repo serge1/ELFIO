@@ -370,6 +370,49 @@ static struct symbol_type_t {
 };
 
 
+static struct dynamic_tag_t {
+    const Elf_Word key;
+    const char*    str;
+} dynamic_tag_table [] = 
+{
+    { DT_NULL           , "NULL"            },
+    { DT_NEEDED         , "NEEDED"          },
+    { DT_PLTRELSZ       , "PLTRELSZ"        },
+    { DT_PLTGOT         , "PLTGOT"          },
+    { DT_HASH           , "HASH"            },
+    { DT_STRTAB         , "STRTAB"          },
+    { DT_SYMTAB         , "SYMTAB"          },
+    { DT_RELA           , "RELA"            },
+    { DT_RELASZ         , "RELASZ"          },
+    { DT_RELAENT        , "RELAENT"         },
+    { DT_STRSZ          , "STRSZ"           },
+    { DT_SYMENT         , "SYMENT"          },
+    { DT_INIT           , "INIT"            },
+    { DT_FINI           , "FINI"            },
+    { DT_SONAME         , "SONAME"          },
+    { DT_RPATH          , "RPATH"           },
+    { DT_SYMBOLIC       , "SYMBOLIC"        },
+    { DT_REL            , "REL"             },
+    { DT_RELSZ          , "RELSZ"           },
+    { DT_RELENT         , "RELENT"          },
+    { DT_PLTREL         , "PLTREL"          },
+    { DT_DEBUG          , "DEBUG"           },
+    { DT_TEXTREL        , "TEXTREL"         },
+    { DT_JMPREL         , "JMPREL"          },
+    { DT_BIND_NOW       , "BIND_NOW"        },
+    { DT_INIT_ARRAY     , "INIT_ARRAY"      },
+    { DT_FINI_ARRAY     , "FINI_ARRAY"      },
+    { DT_INIT_ARRAYSZ   , "INIT_ARRAYSZ"    },
+    { DT_FINI_ARRAYSZ   , "FINI_ARRAYSZ"    },
+    { DT_RUNPATH        , "RUNPATH"         },
+    { DT_FLAGS          , "FLAGS"           },
+    { DT_ENCODING       , "ENCODING"        },
+    { DT_PREINIT_ARRAY  , "PREINIT_ARRAY"   },
+    { DT_PREINIT_ARRAYSZ, "PREINIT_ARRAYSZ" },
+    { DT_MAXPOSTAGS     , "MAXPOSTAGS"      },
+};
+
+
 //------------------------------------------------------------------------------
 class dump
 {
@@ -668,6 +711,58 @@ class dump
             << std::endl;
     }
     
+//------------------------------------------------------------------------------
+    static void
+    dynamic_tags( std::ostream& out, const elfio& reader )
+    {
+        Elf_Half n = reader.sections.size();
+        for ( Elf_Half i = 0; i < n; ++i ) {    // For all sections
+            section* sec = reader.sections[i];
+            if ( SHT_DYNAMIC == sec->get_type() ) {
+                dynamic_section_accessor dynamic( reader, sec );
+
+                Elf_Xword dyn_no = dynamic.get_entries_num();
+                if ( dyn_no > 0 ) {
+                    out << "Dynamic section (" << sec->get_name() << ")" << std::endl;
+                    out << "[  Nr ] Tag              Name/Value" << std::endl;
+                    for ( int i = 0; i < dyn_no; ++i ) {
+                        Elf_Xword   tag;
+                        Elf_Xword   value;
+                        std::string str;
+                        dynamic.get_entry( i, tag, value, str );
+                        dynamic_tag( out, i, tag, value, str, reader.get_class() );
+                        if ( DT_NULL == tag ) {
+                            break;
+                        }
+                    }
+
+                    out << std::endl;
+                }
+            }
+        }
+    }
+    
+//------------------------------------------------------------------------------
+    static void
+    dynamic_tag( std::ostream& out,
+                 int           no,
+                 Elf_Xword     tag,
+                 Elf_Xword     value,
+                 std::string   str,
+                 unsigned int  elf_class )
+    {
+            out << "[" 
+                << DUMP_DEC_FORMAT(  5 ) << no
+                << "] "
+                << DUMP_STR_FORMAT( 16 ) << str_dynamic_tag( tag ) << " ";
+            if ( str.empty() ) {
+                out << DUMP_HEX_FORMAT( 16 ) << value                  << " ";
+            }
+            else {
+                out << DUMP_STR_FORMAT( 32 ) << str                    << " ";
+            }
+            out << std::endl;
+    }
     
   private:
 //------------------------------------------------------------------------------
@@ -755,6 +850,7 @@ class dump
     STR_FUNC_TABLE( segment_flag );
     STR_FUNC_TABLE( symbol_bind );
     STR_FUNC_TABLE( symbol_type );
+    STR_FUNC_TABLE( dynamic_tag );
 
 #undef STR_FUNC_TABLE
 #undef DUMP_DEC_FORMAT

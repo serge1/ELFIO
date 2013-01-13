@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef ELFI_RELOCATION_HPP
-#define ELFI_RELOCATION_HPP
+#ifndef ELFIO_RELOCATION_HPP
+#define ELFIO_RELOCATION_HPP
 
 namespace ELFIO {
 
@@ -77,7 +77,7 @@ class relocation_section_accessor
 {
   public:
 //------------------------------------------------------------------------------
-    relocation_section_accessor( elfio& elf_file_, section* section_ ) :
+    relocation_section_accessor( const elfio& elf_file_, section* section_ ) :
                                  elf_file( elf_file_ ),
                                  relocation_section( section_ )
     {
@@ -283,13 +283,6 @@ class relocation_section_accessor
     }
 
 //------------------------------------------------------------------------------
-    Elf_Half
-    getTargetSectionIndex() const
-    {
-        return (Elf_Half)relocation_section->get_info();
-    }
-
-//------------------------------------------------------------------------------
     template< class T >
     void
     generic_get_entry_rel( Elf_Xword   index,
@@ -365,10 +358,10 @@ class relocation_section_accessor
 
 //------------------------------------------------------------------------------
   private:
-    elfio&   elf_file;
-    section* relocation_section;
+    const elfio& elf_file;
+    section*     relocation_section;
 };
 
 } // namespace ELFIO
 
-#endif // ELFI_RELOCATION_HPP
+#endif // ELFIO_RELOCATION_HPP

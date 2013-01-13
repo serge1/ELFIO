@@ -915,9 +915,74 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_ppc_64 )
     checkSection( sec, 1, ".shstrtab", SHT_STRTAB, 0,
                         0, 17, 0, 0, 0, 0 );
 
-    sec =reader.sections[ ".note" ];
+    sec = reader.sections[ ".note" ];
     
     BOOST_CHECK_EQUAL( sec->get_index(), 2 );
     checkSection( sec, 2, ".note", SHT_NOTE, SHF_ALLOC,
                         0, 28, 0, 0, 4, 0 );
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( test_dynamic_64_1 )
+{
+    elfio reader;
+
+    reader.load( "../elf_examples/main" );
+
+    section* dynsec = reader.sections[".dynamic"];
+
+    dynamic_section_accessor da( reader, dynsec );
+
+    BOOST_CHECK_EQUAL( da.get_entries_num(), 26 );
+
+    Elf_Xword   tag;
+    Elf_Xword   value;
+    std::string str;
+    da.get_entry( 0, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, DT_NEEDED );
+    BOOST_CHECK_EQUAL( str, "libfunc.so" );
+    da.get_entry( 1, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, DT_NEEDED );
+    BOOST_CHECK_EQUAL( str, "libc.so.6" );
+    da.get_entry( 2, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, DT_INIT );
+    BOOST_CHECK_EQUAL( value, 0x400530 );
+    da.get_entry( 19, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, 0x6ffffff0 );
+    BOOST_CHECK_EQUAL( value, 0x40047e );
+    da.get_entry( 20, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, DT_NULL );
+    BOOST_CHECK_EQUAL( value, 0 );
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( test_dynamic_64_2 )
+{
+    elfio reader;
+
+    reader.load( "../elf_examples/libfunc.so" );
+
+    section* dynsec = reader.sections[".dynamic"];
+
+    dynamic_section_accessor da( reader, dynsec );
+
+    BOOST_CHECK_EQUAL( da.get_entries_num(), 24 );
+
+    Elf_Xword   tag;
+    Elf_Xword   value;
+    std::string str;
+    da.get_entry( 0, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, DT_NEEDED );
+    BOOST_CHECK_EQUAL( str, "libc.so.6" );
+    da.get_entry( 1, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, DT_INIT );
+    BOOST_CHECK_EQUAL( value, 0x480 );
+    da.get_entry( 18, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, 0x6ffffff9 );
+    BOOST_CHECK_EQUAL( value, 1 );
+    da.get_entry( 19, tag, value, str );
+    BOOST_CHECK_EQUAL( tag, DT_NULL );
+    BOOST_CHECK_EQUAL( value, 0 );
 }

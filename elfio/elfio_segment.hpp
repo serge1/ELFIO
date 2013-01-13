@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef ELFI_SEGMENT_HPP
-#define ELFI_SEGMENT_HPP
+#ifndef ELFIO_SEGMENT_HPP
+#define ELFIO_SEGMENT_HPP
 
 #include <fstream>
 #include <vector>
@@ -179,4 +179,4 @@ class segment_impl : public segment
 
 } // namespace ELFIO
 
-#endif // ELFI_SEGMENT_HPP
+#endif // ELFIO_SEGMENT_HPP

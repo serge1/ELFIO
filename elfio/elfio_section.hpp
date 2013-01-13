@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef ELFI_SECTION_HPP
-#define ELFI_SECTION_HPP
+#ifndef ELFIO_SECTION_HPP
+#define ELFIO_SECTION_HPP
 
 #include <string>
 #include <fstream>
@@ -271,4 +271,4 @@ class section_impl : public section
 
 } // namespace ELFIO
 
-#endif // ELFI_SECTION_HPP
+#endif // ELFIO_SECTION_HPP

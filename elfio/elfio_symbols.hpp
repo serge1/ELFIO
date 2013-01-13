@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef ELFI_SYMBOLS_HPP
-#define ELFI_SYMBOLS_HPP
+#ifndef ELFIO_SYMBOLS_HPP
+#define ELFIO_SYMBOLS_HPP
 
 namespace ELFIO {
 
@@ -273,4 +273,4 @@ class symbol_section_accessor
 
 } // namespace ELFIO
 
-#endif // ELFI_SYMBOLS_HPP
+#endif // ELFIO_SYMBOLS_HPP

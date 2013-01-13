@@ -26,9 +26,6 @@
     <ClInclude Include="..\elfio\elf_types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\elfio\elfi_dynamic.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\elfio\elfio.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -56,7 +53,7 @@
     <ClInclude Include="..\elfio\elfio_utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\elfio\elfo_dynamic.hpp">
+    <ClInclude Include="..\elfio\elfio_dynamic.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

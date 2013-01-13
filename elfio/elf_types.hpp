@@ -528,6 +528,7 @@ typedef uint64_t Elf64_Off;
 #define DT_ENCODING         32
 #define DT_PREINIT_ARRAY    32
 #define DT_PREINIT_ARRAYSZ  33
+#define DT_MAXPOSTAGS       34
 #define DT_LOOS     0x6000000D
 #define DT_HIOS     0x6ffff000
 #define DT_LOPROC   0x70000000

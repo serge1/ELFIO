@@ -62,7 +62,7 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>\Developer\boost_1_52_0\stage12\lib</AdditionalLibraryDirectories>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
     </Link>
     <PostBuildEvent>
       <Command>"$(TargetDir)\$(TargetName).exe" --result_code=no --report_level=short </Command>
@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\elfio\elfio.hpp" />
+    <ClInclude Include="..\elfio\elfio_dynamic.hpp" />
     <ClInclude Include="..\elfio\elfio_header.hpp" />
     <ClInclude Include="..\elfio\elfio_note.hpp" />
     <ClInclude Include="..\elfio\elfio_relocation.hpp" />
@@ -108,8 +109,6 @@
     <ClInclude Include="..\elfio\elfio_strings.hpp" />
     <ClInclude Include="..\elfio\elfio_symbols.hpp" />
     <ClInclude Include="..\elfio\elfio_utils.hpp" />
-    <ClInclude Include="..\elfio\elfi_dynamic.hpp" />
-    <ClInclude Include="..\elfio\elfo_dynamic.hpp" />
     <ClInclude Include="..\elfio\elf_types.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
