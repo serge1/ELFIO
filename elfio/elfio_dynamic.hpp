@@ -73,21 +73,45 @@ class dynamic_section_accessor
              tag == DT_RPATH  ||
              tag == DT_RUNPATH ) {
             string_section_accessor strsec =
-                elf_file.sections[ dynamic_section->get_link() ];
+                elf_file.sections[ get_string_table_index() ];
             str = strsec.get_string( value );
         }
         else {
-            str = "";
+            str.clear();
         }
 
         return true;
     }
 
 //------------------------------------------------------------------------------
+    void
+    add_entry( Elf_Xword& tag,
+               Elf_Xword& value )
+    {
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            generic_add_entry< Elf32_Dyn >( tag, value );
+        }
+        else {
+            generic_add_entry< Elf64_Dyn >( tag, value );
+        }
+    }
+
+//------------------------------------------------------------------------------
+    void
+    add_entry( Elf_Xword&   tag,
+               std::string& str )
+    {
+        string_section_accessor strsec =
+            elf_file.sections[ get_string_table_index() ];
+        Elf_Xword value = strsec.add_string( str );
+        add_entry( tag, value );
+    }
+
+//------------------------------------------------------------------------------
   private:
 //------------------------------------------------------------------------------
     Elf_Half
-    get_symbol_table_index() const
+    get_string_table_index() const
     {
         return (Elf_Half)dynamic_section->get_link();
     }
@@ -107,6 +131,9 @@ class dynamic_section_accessor
         tag = convertor( pEntry->d_tag );
         switch ( tag ) {
         case DT_NULL:
+        case DT_SYMBOLIC:
+        case DT_TEXTREL:
+        case DT_BIND_NOW:
             value = 0;
             break;
         case DT_NEEDED:
@@ -125,32 +152,6 @@ class dynamic_section_accessor
         case DT_RUNPATH:
         case DT_FLAGS:
         case DT_PREINIT_ARRAYSZ:
-/*
-        case DT_SUNW_SYMSZ:
-        case DT_SUNW_SORTENT:
-        case DT_SUNW_SYMSORTSZ:
-        case DT_SUNW_TLSSORTSZ:
-        case DT_SUNW_STRPAD:
-        case DT_SUNW_LDMACH:
-        case DT_SUNW_CAPCHAINENT:
-        case DT_SUNW_CAPCHAINSZ:
-        case DT_CHECKSUM:
-        case DT_PLTPADSZ:
-        case DT_MOVEENT:
-        case DT_MOVESZ:
-        case DT_POSFLAG_1:
-        case DT_SYMINSZ:
-        case DT_SYMINENT:
-        case DT_RELACOUNT:
-        case DT_RELCOUNT:
-        case DT_FLAGS_1:
-        case DT_VERDEFNUM:
-        case DT_VERNEEDNUM:
-        case DT_SPARC_REGISTER:
-        case DT_AUXILIARY:
-        case DT_USED:
-        case DT_FILTER:
-*/
             value = convertor( pEntry->d_un.d_val );
             break;
         case DT_PLTGOT:
@@ -170,6 +171,62 @@ class dynamic_section_accessor
             value = convertor( pEntry->d_un.d_ptr );
             break;
         }
+    }
+
+//------------------------------------------------------------------------------
+    template< class T >
+    void
+    generic_add_entry( Elf_Xword tag, Elf_Xword value )
+    {
+        const endianess_convertor& convertor = elf_file.get_convertor();
+
+        T entry;
+
+        switch ( tag ) {
+        case DT_NULL:
+        case DT_SYMBOLIC:
+        case DT_TEXTREL:
+        case DT_BIND_NOW:
+            value = 0;
+        case DT_NEEDED:
+        case DT_PLTRELSZ:
+        case DT_RELASZ:
+        case DT_RELAENT:
+        case DT_STRSZ:
+        case DT_SYMENT:
+        case DT_SONAME:
+        case DT_RPATH:
+        case DT_RELSZ:
+        case DT_RELENT:
+        case DT_PLTREL:
+        case DT_INIT_ARRAYSZ:
+        case DT_FINI_ARRAYSZ:
+        case DT_RUNPATH:
+        case DT_FLAGS:
+        case DT_PREINIT_ARRAYSZ:
+            entry.d_un.d_val = convertor( value );
+            break;
+        case DT_PLTGOT:
+        case DT_HASH:
+        case DT_STRTAB:
+        case DT_SYMTAB:
+        case DT_RELA:
+        case DT_INIT:
+        case DT_FINI:
+        case DT_REL:
+        case DT_DEBUG:
+        case DT_JMPREL:
+        case DT_INIT_ARRAY:
+        case DT_FINI_ARRAY:
+        case DT_PREINIT_ARRAY:
+        default:
+            entry.d_un.d_ptr = convertor( value );
+            break;
+        }
+
+        entry.d_tag = convertor( tag );
+
+        dynamic_section->append_data( reinterpret_cast<char*>( &entry ), sizeof( entry ) );
     }
 
 //------------------------------------------------------------------------------

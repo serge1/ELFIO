@@ -986,3 +986,58 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_2 )
     BOOST_CHECK_EQUAL( tag, DT_NULL );
     BOOST_CHECK_EQUAL( value, 0 );
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
+{
+    elfio reader;
+
+    reader.load( "../elf_examples/main" );
+
+    section* dynsec = reader.sections[".dynamic"];
+    dynamic_section_accessor da( reader, dynsec );
+    BOOST_CHECK_EQUAL( da.get_entries_num(), 26 );
+
+    section* strsec1 = reader.sections.add( ".dynstr" );
+    strsec1->set_type( SHT_STRTAB );
+    strsec1->set_entry_size( reader.get_default_entry_size( SHT_STRTAB ) );
+
+    section* dynsec1 = reader.sections.add( ".dynamic1" );
+    dynsec1->set_type( SHT_DYNAMIC );
+    dynsec1->set_entry_size( reader.get_default_entry_size( SHT_DYNAMIC ) );
+    dynsec1->set_link( strsec1->get_index() );
+    dynamic_section_accessor da1( reader, dynsec1 );
+
+    Elf_Xword   tag,   tag1;
+    Elf_Xword   value, value1;
+    std::string str,   str1;
+    
+    for ( int i = 0; i < da.get_entries_num(); ++i ) {
+        da.get_entry( i, tag, value, str );
+        if ( tag == DT_NEEDED ||
+             tag == DT_SONAME ||
+             tag == DT_RPATH  ||
+             tag == DT_RUNPATH ) {
+            da1.add_entry( tag, str );
+        }
+        else {
+            da1.add_entry( tag, value );
+        }
+    }
+    for ( int i = 0; i < da.get_entries_num(); ++i ) {
+        da.get_entry( i, tag, value, str );
+        da1.get_entry( i, tag1, value1, str1 );
+
+        BOOST_CHECK_EQUAL( tag, tag1 );
+        if ( tag == DT_NEEDED ||
+             tag == DT_SONAME ||
+             tag == DT_RPATH  ||
+             tag == DT_RUNPATH ) {
+            BOOST_CHECK_EQUAL( str, str1 );
+        }
+        else {
+            BOOST_CHECK_EQUAL( value, value1 );
+        }
+    }
+}
