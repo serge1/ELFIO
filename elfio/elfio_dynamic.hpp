@@ -125,6 +125,13 @@ class dynamic_section_accessor
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
+        // Check unusual case when dynamic section has no data
+        if( dynamic_section->get_data() == 0 ) {
+            tag   = DT_NULL;
+            value = 0;
+            return;
+        }
+
         const T* pEntry = reinterpret_cast<const T*>(
                 dynamic_section->get_data() +
                 index * dynamic_section->get_entry_size() );
