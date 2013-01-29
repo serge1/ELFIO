@@ -840,23 +840,23 @@ class dump
         return format_assoc( name##_table, key ); \
     }
 
-    STR_FUNC_TABLE( class );
-    STR_FUNC_TABLE( endian );
-    STR_FUNC_TABLE( version );
-    STR_FUNC_TABLE( type );
-    STR_FUNC_TABLE( machine );
-    STR_FUNC_TABLE( section_type );
-    STR_FUNC_TABLE( segment_type );
-    STR_FUNC_TABLE( segment_flag );
-    STR_FUNC_TABLE( symbol_bind );
-    STR_FUNC_TABLE( symbol_type );
-    STR_FUNC_TABLE( dynamic_tag );
+    STR_FUNC_TABLE( class )
+    STR_FUNC_TABLE( endian )
+    STR_FUNC_TABLE( version )
+    STR_FUNC_TABLE( type )
+    STR_FUNC_TABLE( machine )
+    STR_FUNC_TABLE( section_type )
+    STR_FUNC_TABLE( segment_type )
+    STR_FUNC_TABLE( segment_flag )
+    STR_FUNC_TABLE( symbol_bind )
+    STR_FUNC_TABLE( symbol_type )
+    STR_FUNC_TABLE( dynamic_tag )
 
 #undef STR_FUNC_TABLE
 #undef DUMP_DEC_FORMAT
 #undef DUMP_HEX_FORMAT
 #undef DUMP_STR_FORMAT
-};
+}; // class dump
     
 
 }; // namespace ELFIO
