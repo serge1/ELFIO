@@ -211,12 +211,13 @@ class section_impl : public section
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
         Elf_Xword size = get_size();
-        if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() &&
-             0 != size ) {
+        if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() ) {
             data = new char[size];
-            stream.seekg( (*convertor)( header.sh_offset ) );
-            stream.read( data, size );
-            data_size = size;
+            if ( 0 != size ) {
+                stream.seekg( (*convertor)( header.sh_offset ) );
+                stream.read( data, size );
+                data_size = size;
+            }
         }
     }
 
