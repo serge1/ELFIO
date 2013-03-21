@@ -261,7 +261,7 @@ class section_impl : public section
 
 //------------------------------------------------------------------------------
   private:
-    mutable T                  header;
+    T                          header;
     Elf_Half                   index;
     std::string                name;
     char*                      data;

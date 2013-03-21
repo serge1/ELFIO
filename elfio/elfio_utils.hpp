@@ -52,7 +52,7 @@ THE SOFTWARE.
     virtual void set_##NAME( TYPE value ) = 0
 
 #define ELFIO_GET_SET_ACCESS_DECL( TYPE, NAME ) \
-    virtual TYPE get_##NAME() const = 0;                \
+    virtual TYPE get_##NAME() const = 0;        \
     virtual void set_##NAME( TYPE value ) = 0
 
 namespace ELFIO {
