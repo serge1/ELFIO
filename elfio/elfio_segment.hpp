@@ -164,6 +164,7 @@ class segment_impl : public segment
                std::streampos data_offset )
     {
         ph.p_offset = data_offset;
+        ph.p_offset = (*convertor)(ph.p_offset);
         f.seekp( header_offset );
         f.write( reinterpret_cast<const char*>( &ph ), sizeof( ph ) );
     }
