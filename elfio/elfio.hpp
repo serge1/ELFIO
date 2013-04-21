@@ -333,6 +333,9 @@ class elfio
             section* sec = create_section();
             sec->load( stream, (std::streamoff)offset + i * entry_size );
             sec->set_index( i );
+            // To mark that the section is not permitted to reassign address
+            // during layout calculation
+            sec->set_address( sec->get_address() );
         }
 
         Elf_Half shstrndx = get_section_name_str_index();
@@ -444,7 +447,8 @@ class elfio
 
                 sections_[i]->save( f, headerPosition, (std::streamoff)current_file_pos );
 
-                if ( SHT_NOBITS != sections_[i]->get_type() ) {
+                if ( SHT_NOBITS != sections_[i]->get_type() &&
+                     SHT_NULL   != sections_[i]->get_type() ) {
                     current_file_pos += sections_[i]->get_size();
                 }
             }
@@ -466,6 +470,7 @@ class elfio
             }
 
             Elf_Xword current_data_pos = current_file_pos;
+            Elf_Xword add_to_memory_size = 0;
             // Write segment's data
             for ( unsigned int j = 0; j <segments[i]->get_sections_num(); ++j ) {
                 section* sec = sections[ segments[i]->get_section_index_at( j )];
@@ -481,12 +486,18 @@ class elfio
                     sec->set_address( segments[i]->get_virtual_address() );
                 }
                 sec->save( f, headerPosition, (std::streamoff)current_data_pos );
-                current_data_pos += sec->get_size();
+
+                if ( SHT_NOBITS != sec->get_type() && SHT_NULL != sec->get_type() ) {
+                    current_data_pos += sec->get_size();
+                }
+                else {
+                    add_to_memory_size += sec->get_size();
+                }
             }
 
             segments[i]->set_file_size( current_data_pos - current_file_pos );
             segments[i]->set_memory_size( current_data_pos - current_file_pos +
-                                          segments[i]->get_memory_size() );
+                                          add_to_memory_size );
             segments[i]->save( f, (std::streamoff)segment_header_position, (std::streamoff)current_file_pos );
             current_file_pos = current_data_pos;
             segment_header_position += header->get_segment_entry_size();
