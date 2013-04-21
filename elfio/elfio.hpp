@@ -469,7 +469,7 @@ class elfio
                 current_file_pos += segment_align - current_file_pos % segment_align;
             }
 
-            Elf_Xword current_data_pos = current_file_pos;
+            Elf_Xword current_data_pos   = current_file_pos;
             Elf_Xword add_to_memory_size = 0;
             // Write segment's data
             for ( unsigned int j = 0; j <segments[i]->get_sections_num(); ++j ) {

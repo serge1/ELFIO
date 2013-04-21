@@ -264,7 +264,7 @@ Relocation section '.rela.plt' at offset 0x15f8 contains 105 entries:
 000000619338  006800000007 R_X86_64_JUMP_SLO 0000000000000000 __ctype_b_loc + 0
 000000619340  006900000007 R_X86_64_JUMP_SLO 0000000000000000 __sprintf_chk + 0
 
-The decoding of unwind sections for machine type Advanced Micro Devices X86-64 is not currently supported.
+There are no unwind sections in this file.
 
 Symbol table '.dynsym' contains 121 entries:
    Num:    Value          Size Type    Bind   Vis      Ndx Name
