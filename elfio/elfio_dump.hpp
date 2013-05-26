@@ -23,6 +23,7 @@ THE SOFTWARE.
 #ifndef ELFIO_DUMP_HPP
 #define ELFIO_DUMP_HPP
 
+#include <algorithm>
 #include <string>
 #include <ostream>
 #include <sstream>
@@ -424,6 +425,8 @@ class dump
                                  std::hex << std::left
 
   public:
+    static const ELFIO::Elf_Xword MAX_DATA_ENTRIES = 64;
+
 //------------------------------------------------------------------------------
     static void
     header( std::ostream& out, const elfio& reader )
@@ -762,6 +765,107 @@ class dump
                 out << DUMP_STR_FORMAT( 32 ) << str                    << " ";
             }
             out << std::endl;
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    section_data( std::ostream& out, const section* sec )
+    {
+        std::ios_base::fmtflags original_flags = out.flags();
+
+        out << sec->get_name() << std::endl;
+        const char* pdata = sec->get_data();
+        ELFIO::Elf_Xword i;
+        for ( i = 0; i < std::min( sec->get_size(), MAX_DATA_ENTRIES ); ++i ) {
+            if ( i % 16 == 0 ) {
+                out << "[" <<  DUMP_HEX_FORMAT( 8 ) << i << "]";
+            }
+
+            out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
+
+            if ( i % 16 == 15 ) {
+                out << std::endl;
+            }
+        }
+        if ( i % 16 != 0 ) {
+            out << std::endl;
+        }
+
+        out.flags(original_flags);
+
+        return; 
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    section_datas( std::ostream& out, const elfio& reader )
+    {
+        Elf_Half n = reader.sections.size();
+
+        if ( n == 0 ) {
+            return;
+        }
+
+        out << "Section Data:" << std::endl;
+
+        for ( Elf_Half i = 1; i < n; ++i ) { // For all sections
+            section* sec = reader.sections[i];
+            if ( sec->get_type() == SHT_NOBITS ) {
+                continue;
+            }
+            section_data( out, sec );
+        }
+
+        out << std::endl;
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    segment_data( std::ostream& out, Elf_Half no, const segment* seg )
+    {
+        std::ios_base::fmtflags original_flags = out.flags();
+
+        out << "Segment # " << no << std::endl;
+        const char* pdata = seg->get_data();
+        ELFIO::Elf_Xword i;
+        for ( i = 0; i < std::min( seg->get_file_size(), MAX_DATA_ENTRIES ); ++i ) {
+            if ( i % 16 == 0 ) {
+                out << "[" <<  DUMP_HEX_FORMAT( 8 ) << i << "]";
+            }
+
+            out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
+
+            if ( i % 16 == 15 ) {
+                out << std::endl;
+            }
+        }
+        if ( i % 16 != 0 ) {
+            out << std::endl;
+        }
+
+        out.flags(original_flags);
+
+        return; 
+    }
+
+//------------------------------------------------------------------------------
+    static void
+    segment_datas( std::ostream& out, const elfio& reader )
+    {
+        Elf_Half n = reader.segments.size();
+
+        if ( n == 0 ) {
+            return;
+        }
+
+        out << "Segment Data:" << std::endl;
+
+        for ( Elf_Half i = 0; i < n; ++i ) { // For all sections
+            segment* seg = reader.segments[i];
+            segment_data( out, i, seg );
+        }
+
+        out << std::endl;
     }
     
   private:

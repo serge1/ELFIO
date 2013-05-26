@@ -52,6 +52,8 @@ int main( int argc, char** argv )
     dump::symbol_tables  ( std::cout, reader );
     dump::notes          ( std::cout, reader );
     dump::dynamic_tags   ( std::cout, reader );
+    dump::section_datas  ( std::cout, reader );
+    dump::segment_datas  ( std::cout, reader );
 
     return 0;
 }
