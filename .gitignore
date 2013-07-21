@@ -8,3 +8,5 @@ ELFIO.opensdf
 ELFIOTest/Debug
 
 examples/ELFDump/Debug
+
+/ELFIO.v12.suo
