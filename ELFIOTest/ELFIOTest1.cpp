@@ -232,6 +232,30 @@ void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
     BOOST_REQUIRE_EQUAL( file2.load( file_name2 ), true );
     
     for (int i = 0; i < file1.sections.size(); ++i ) {
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_address(),
+                           file2.sections[i]->get_address() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_addr_align(),
+                           file2.sections[i]->get_addr_align() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_entry_size(),
+                           file2.sections[i]->get_entry_size() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_flags(),
+                           file2.sections[i]->get_flags() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_index(),
+                           file2.sections[i]->get_index() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_info(),
+                           file2.sections[i]->get_info() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_link(),
+                           file2.sections[i]->get_link() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_name(),
+                           file2.sections[i]->get_name() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_name_string_offset(),
+                           file2.sections[i]->get_name_string_offset() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_size(),
+                           file2.sections[i]->get_size() );
+        BOOST_CHECK_EQUAL( file1.sections[i]->get_type(),
+                           file2.sections[i]->get_type() );
+
+
         if ( file1.sections[i]->get_type() == SHT_NULL ||
              file1.sections[i]->get_type() == SHT_NOBITS ) {
             continue;
