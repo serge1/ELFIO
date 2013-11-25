@@ -31,6 +31,7 @@ THE SOFTWARE.
 #endif
 
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <vector>
@@ -94,13 +95,19 @@ class elfio
 //------------------------------------------------------------------------------
     bool load( const std::string& file_name )
     {
-        clean();
-
         std::ifstream stream;
         stream.open( file_name.c_str(), std::ios::in | std::ios::binary );
         if ( !stream ) {
             return false;
         }
+
+        return load(stream);
+    }
+
+//------------------------------------------------------------------------------
+    bool load( std::istream &stream )
+    {
+        clean();
 
         unsigned char e_ident[EI_NIDENT];
 
@@ -325,7 +332,7 @@ class elfio
     }
 
 //------------------------------------------------------------------------------
-    Elf_Half load_sections( std::ifstream& stream )
+    Elf_Half load_sections( std::istream& stream )
     {
         Elf_Half  entry_size = header->get_section_entry_size();
         Elf_Half  num        = header->get_sections_num();
@@ -357,7 +364,7 @@ class elfio
     }
 
 //------------------------------------------------------------------------------
-    bool load_segments( std::ifstream& stream )
+    bool load_segments( std::istream& stream )
     {
         Elf_Half  entry_size = header->get_segment_entry_size();
         Elf_Half  num        = header->get_segments_num();

@@ -3,6 +3,7 @@
 #define ELFIO_NO_INTTYPES
 #endif
 
+#define BOOST_TEST_MAIN
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ELFIO_Test
 #include <boost/test/unit_test.hpp>

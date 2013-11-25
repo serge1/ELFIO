@@ -23,7 +23,7 @@ THE SOFTWARE.
 #ifndef ELFIO_SEGMENT_HPP
 #define ELFIO_SEGMENT_HPP
 
-#include <fstream>
+#include <iostream>
 #include <vector>
 
 namespace ELFIO {
@@ -51,12 +51,12 @@ class segment
 
   protected:
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
+    ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
     
-    virtual const std::vector<Elf_Half>& get_sections() const                = 0;
-    virtual void set_index( Elf_Half )                                       = 0;
-    virtual void load( std::ifstream& stream, std::streampos header_offset ) = 0;
-    virtual void save( std::ofstream& f, std::streampos header_offset,
-                       std::streampos data_offset )                          = 0;
+    virtual const std::vector<Elf_Half>& get_sections() const               = 0;
+    virtual void load( std::istream& stream, std::streampos header_offset ) = 0;
+    virtual void save( std::ostream& f,      std::streampos header_offset,
+                                             std::streampos data_offset )   = 0;
 };
 
 
@@ -153,7 +153,7 @@ class segment_impl : public segment
 
 //------------------------------------------------------------------------------
     void
-    load( std::ifstream& stream,
+    load( std::istream&  stream,
           std::streampos header_offset )
     {
         stream.seekg( header_offset );
@@ -170,7 +170,7 @@ class segment_impl : public segment
     }
 
 //------------------------------------------------------------------------------
-    void save( std::ofstream& f,
+    void save( std::ostream&  f,
                std::streampos header_offset,
                std::streampos data_offset )
     {

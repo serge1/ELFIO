@@ -24,7 +24,7 @@ THE SOFTWARE.
 #define ELFIO_SECTION_HPP
 
 #include <string>
-#include <fstream>
+#include <iostream>
 
 namespace ELFIO {
 
@@ -54,11 +54,11 @@ class section
 
   protected:
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
-    ELFIO_SET_ACCESS_DECL( Elf_Half,  index );
+    ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
     
-    virtual void load( std::ifstream& f,
+    virtual void load( std::istream&  f,
                        std::streampos header_offset ) = 0;
-    virtual void save( std::ofstream& f,
+    virtual void save( std::ostream&  f,
                        std::streampos header_offset,
                        std::streampos data_offset )   = 0;
     virtual bool is_address_initialized() const       = 0;
@@ -207,7 +207,7 @@ class section_impl : public section
 
 //------------------------------------------------------------------------------
     void
-    load( std::ifstream& stream,
+    load( std::istream&  stream,
           std::streampos header_offset )
     {
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ), '\0' );
@@ -227,7 +227,7 @@ class section_impl : public section
 
 //------------------------------------------------------------------------------
     void
-    save( std::ofstream& f,
+    save( std::ostream&  f,
           std::streampos header_offset,
           std::streampos data_offset )
     {
@@ -247,7 +247,7 @@ class section_impl : public section
   private:
 //------------------------------------------------------------------------------
     void
-    save_header( std::ofstream& f,
+    save_header( std::ostream&  f,
                  std::streampos header_offset ) const
     {
         f.seekp( header_offset );
@@ -256,7 +256,7 @@ class section_impl : public section
 
 //------------------------------------------------------------------------------
     void
-    save_data( std::ofstream& f,
+    save_data( std::ostream&  f,
                std::streampos data_offset ) const
     {
         f.seekp( data_offset );
