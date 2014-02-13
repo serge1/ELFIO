@@ -378,6 +378,18 @@ class elfio
             seg->load( stream, (std::streamoff)offset + i * entry_size );
             seg->set_index( i );
 
+            // add sections to the segments based on the load address
+            Elf64_Off segBaseOffset = seg->get_offset();
+            Elf64_Off segEndOffset = segBaseOffset + seg->get_memory_size();
+            Elf_Half sec_num = sections.size();
+            for(Elf_Half j = 0; j < sec_num; ++j) {
+                const section* psec = sections[j];
+                Elf64_Off secOffset = psec->get_offset();
+                if( segBaseOffset <= secOffset && secOffset < segEndOffset)
+                  seg->add_section_index(psec->get_index(),
+                                         psec->get_addr_align());
+            }
+
             // Add section into the segments' container
             segments_.push_back( seg );
         }

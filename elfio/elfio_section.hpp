@@ -54,6 +54,7 @@ class section
     virtual void        append_data( const std::string& data )          = 0;
 
   protected:
+    virtual Elf64_Off get_offset() const              = 0;
     virtual void set_index( Elf_Half )                = 0;
     virtual void load( std::ifstream& f,
                        std::streampos header_offset ) = 0;
@@ -194,6 +195,13 @@ class section_impl : public section
 
 //------------------------------------------------------------------------------
   protected:
+//------------------------------------------------------------------------------
+    Elf64_Off
+    get_offset() const
+    {
+        return header.sh_offset;
+    }
+
 //------------------------------------------------------------------------------
     void
     set_index( Elf_Half value )
