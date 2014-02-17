@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include <fstream>
 #include <algorithm>
 #include <vector>
+#include <deque>
 #include <typeinfo>
 
 #include <elfio/elf_types.hpp>
@@ -442,6 +443,44 @@ class elfio
         return !found;
     }
 
+//------------------------------------------------------------------------------
+    bool is_subsequence_of( segment* small, segment* big)
+    {
+        const std::vector<Elf_Half>& smallV = small->get_sections();
+        const std::vector<Elf_Half>& bigV = big->get_sections();
+        bool found = std::search(bigV.begin(), bigV.end(),
+                                 smallV.begin(), smallV.end()) != bigV.end();
+        return found && smallV.size() != bigV.size();
+    }
+
+//------------------------------------------------------------------------------
+    std::vector<segment*> get_ordered_segments( )
+    {
+        std::vector<segment*> res;
+        std::deque<segment*> worklist;
+        res.reserve(segments.size());
+
+        std::copy(segments_.begin(),segments_.end(),std::back_inserter(worklist));
+
+        while(!worklist.empty()) {
+            segment *seg = worklist.front();
+            worklist.pop_front();
+
+            size_t i = 0;
+            for( ; i < worklist.size(); ++i)
+            {
+                if( is_subsequence_of( seg, worklist[i] ) )
+                  break;
+            }
+
+            if( i < worklist.size() )
+              worklist.push_back(seg);
+            else
+              res.push_back(seg);
+        }
+        return res;
+    }
+
 
 //------------------------------------------------------------------------------
     bool save_sections_without_segments( std::ofstream& f )
@@ -473,46 +512,81 @@ class elfio
 //------------------------------------------------------------------------------
     bool save_segments_and_their_sections( std::ofstream& f )
     {
-        Elf64_Off segment_header_position = header->get_segments_offset();
+        std::vector<segment*> worklist;
+        std::vector<bool> section_generated(sections.size(),false);
+        std::vector<Elf_Xword> section_alignment(sections.size(),0);
 
-        for ( unsigned int i = 0; i < segments.size(); ++i ) {
-            Elf_Xword segment_align = segments[i]->get_align();
-            if ( segment_align > 1 && current_file_pos % segment_align != 0 ) {
-                current_file_pos += segment_align - current_file_pos % segment_align;
+        // get segments in a order in where segments which contain a
+        // sub sequence of other segments are located at the end
+        worklist = get_ordered_segments();
+
+        // calculate the final alignment for all sections
+        for ( unsigned int i = 0; i < segments.size(); ++i )
+        {
+            for ( unsigned int j = 0; j <segments[i]->get_sections_num(); ++j )
+            {
+                Elf_Half index = segments[i]->get_section_index_at( j );
+                section* sec = sections[ index ];
+                if(sec->get_addr_align() > section_alignment[index])
+                  section_alignment[index] = sec->get_addr_align();
+
+                if(segments[i]->get_align() > section_alignment[index] &&
+                   j == 0)
+                    section_alignment[index] = segments[i]->get_align();
             }
+        }
 
-            Elf_Xword current_data_pos   = current_file_pos;
-            Elf_Xword add_to_memory_size = 0;
+        for ( unsigned int i = 0; i < worklist.size(); ++i ) {
+
+            Elf_Xword segment_memory     = 0;
+            Elf_Xword segment_filesize   = 0;
+            Elf_Xword current_data_pos   = 0;
             // Write segment's data
-            for ( unsigned int j = 0; j <segments[i]->get_sections_num(); ++j ) {
-                section* sec = sections[ segments[i]->get_section_index_at( j )];
+            for ( unsigned int j = 0; j <worklist[i]->get_sections_num(); ++j ) {
+                Elf_Half index = worklist[i]->get_section_index_at( j );
 
-                Elf_Xword secAlign = sec->get_addr_align();
-                if ( secAlign > 1 && current_data_pos % secAlign != 0 ) {
-                    current_data_pos += secAlign - current_data_pos % secAlign;
-                }
-
+                section* sec = sections[ worklist[i]->get_section_index_at( j )];
                 std::streampos headerPosition = (std::streamoff)header->get_sections_offset() +
-                    header->get_section_entry_size()*sec->get_index();
-                if ( !sec->is_address_initialized() ) {
-                    sec->set_address( segments[i]->get_virtual_address() );
-                }
-                sec->save( f, headerPosition, (std::streamoff)current_data_pos );
+                                    header->get_section_entry_size()*sec->get_index();
 
-                if ( SHT_NOBITS != sec->get_type() && SHT_NULL != sec->get_type() ) {
-                    current_data_pos += sec->get_size();
+                // calculate the required alignment
+                // when the has already been generated then no alignment is required
+                Elf_Xword secAlign = 0;
+                if ( section_alignment[index] > 1 &&
+                    current_file_pos % section_alignment[index] != 0 &&
+                     !section_generated[index] ) {
+                  secAlign = section_alignment[index] - current_file_pos % section_alignment[index];
                 }
-                else {
-                    add_to_memory_size += sec->get_size();
+
+                // determine the segment file and memory sizes
+                segment_memory += sec->get_size();
+                if ( SHT_NOBITS != sec->get_type() && SHT_NULL != sec->get_type() )
+                    segment_filesize += sec->get_size();
+
+                if( section_generated[index] ) {
+                    current_data_pos = convertor(sec->get_offset());
+                    continue;
                 }
+
+                current_file_pos += secAlign;
+
+                if ( j == 0 )
+                  current_data_pos = current_file_pos;
+
+                if ( !sec->is_address_initialized() )
+                    sec->set_address( worklist[i]->get_virtual_address() );
+                sec->save( f, headerPosition, (std::streamoff)current_file_pos );
+                if ( SHT_NOBITS != sec->get_type() && SHT_NULL != sec->get_type() )
+                  current_file_pos += sec->get_size();
+                section_generated[index] = true;
             }
 
-            segments[i]->set_file_size( current_data_pos - current_file_pos );
-            segments[i]->set_memory_size( current_data_pos - current_file_pos +
-                                          add_to_memory_size );
-            segments[i]->save( f, (std::streamoff)segment_header_position, (std::streamoff)current_file_pos );
-            current_file_pos = current_data_pos;
-            segment_header_position += header->get_segment_entry_size();
+            Elf64_Off segment_header_position = header->get_segments_offset()  +
+                header->get_segment_entry_size()*worklist[i]->get_index();
+
+            worklist[i]->set_file_size( segment_filesize );
+            worklist[i]->set_memory_size( segment_memory );
+            worklist[i]->save( f, (std::streamoff)segment_header_position, (std::streamoff)current_data_pos );
         }
 
         return true;

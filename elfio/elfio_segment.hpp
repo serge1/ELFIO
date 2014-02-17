@@ -52,6 +52,7 @@ class segment
 
   protected:
     virtual Elf64_Off get_offset() const                                     = 0;
+    virtual const std::vector<Elf_Half>& get_sections() const                = 0;
     virtual void set_index( Elf_Half )                                       = 0;
     virtual void load( std::ifstream& stream, std::streampos header_offset ) = 0;
     virtual void save( std::ofstream& f, std::streampos header_offset,
@@ -139,6 +140,11 @@ class segment_impl : public segment
     get_offset() const
     {
         return ph.p_offset;
+    }
+//------------------------------------------------------------------------------
+    const std::vector<Elf_Half>& get_sections() const
+    {
+        return sections;
     }
 //------------------------------------------------------------------------------
     void
