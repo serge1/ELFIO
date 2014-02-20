@@ -1,6 +1,6 @@
 CXX=g++
-CPPFLAGS=-c -Wall -std=c++0x -I../elfio
-LDLIBS=-lboost_test_exec_monitor-mt
+CPPFLAGS=-c -Wall -std=c++0x -I..
+LDLIBS=-lboost_unit_test_framework-mt
 
 ELFIODIR=../elfio/
 SOURCES=ELFIOTest.cpp ELFIOTest1.cpp

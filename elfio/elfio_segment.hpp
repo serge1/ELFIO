@@ -34,8 +34,7 @@ class segment
   public:
     virtual ~segment() {};
 
-    virtual Elf_Half get_index() const = 0;
-
+    ELFIO_GET_ACCESS_DECL    ( Elf_Half,   index            );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word,   type             );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word,   flags            );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,  align            );
@@ -51,7 +50,8 @@ class segment
     virtual Elf_Half get_section_index_at( Elf_Half num )                const = 0;
 
   protected:
-    virtual Elf64_Off get_offset() const                                     = 0;
+    ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
+    
     virtual const std::vector<Elf_Half>& get_sections() const                = 0;
     virtual void set_index( Elf_Half )                                       = 0;
     virtual void load( std::ifstream& stream, std::streampos header_offset ) = 0;
@@ -136,16 +136,14 @@ class segment_impl : public segment
 //------------------------------------------------------------------------------
   protected:
 //------------------------------------------------------------------------------
-    Elf64_Off
-    get_offset() const
-    {
-        return ph.p_offset;
-    }
+    ELFIO_GET_ACCESS( Elf64_Off, offset, ph.p_offset );
+
 //------------------------------------------------------------------------------
     const std::vector<Elf_Half>& get_sections() const
     {
         return sections;
     }
+    
 //------------------------------------------------------------------------------
     void
     set_index( Elf_Half value )
@@ -184,9 +182,9 @@ class segment_impl : public segment
 
 //------------------------------------------------------------------------------
   private:
-    mutable T             ph;
+    T                     ph;
     Elf_Half              index;
-    mutable char*         data;
+    char*                 data;
     std::vector<Elf_Half> sections;
     endianess_convertor*  convertor;
 };

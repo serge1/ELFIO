@@ -34,8 +34,7 @@ class section
   public:
     virtual ~section() {};
 
-    virtual Elf_Half get_index() const = 0;
-
+    ELFIO_GET_ACCESS_DECL    ( Elf_Half,    index              );
     ELFIO_GET_SET_ACCESS_DECL( std::string, name               );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    type               );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   flags              );
@@ -54,8 +53,9 @@ class section
     virtual void        append_data( const std::string& data )          = 0;
 
   protected:
-    virtual Elf64_Off get_offset() const              = 0;
-    virtual void set_index( Elf_Half )                = 0;
+    ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
+    ELFIO_SET_ACCESS_DECL( Elf_Half,  index );
+    
     virtual void load( std::ifstream& f,
                        std::streampos header_offset ) = 0;
     virtual void save( std::ofstream& f,
@@ -196,11 +196,7 @@ class section_impl : public section
 //------------------------------------------------------------------------------
   protected:
 //------------------------------------------------------------------------------
-    Elf64_Off
-    get_offset() const
-    {
-        return header.sh_offset;
-    }
+    ELFIO_GET_ACCESS( Elf64_Off, offset, header.sh_offset );
 
 //------------------------------------------------------------------------------
     void

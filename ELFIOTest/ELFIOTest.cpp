@@ -3,6 +3,7 @@
 #define ELFIO_NO_INTTYPES
 #endif
 
+#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ELFIO_Test
 #include <boost/test/unit_test.hpp>
 
@@ -1013,7 +1014,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
     Elf_Xword   value, value1;
     std::string str,   str1;
     
-    for ( int i = 0; i < da.get_entries_num(); ++i ) {
+    for ( unsigned int i = 0; i < da.get_entries_num(); ++i ) {
         da.get_entry( i, tag, value, str );
         if ( tag == DT_NEEDED ||
              tag == DT_SONAME ||
@@ -1025,7 +1026,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
             da1.add_entry( tag, value );
         }
     }
-    for ( int i = 0; i < da.get_entries_num(); ++i ) {
+    for ( unsigned int i = 0; i < da.get_entries_num(); ++i ) {
         da.get_entry( i, tag, value, str );
         da1.get_entry( i, tag1, value1, str1 );
 
