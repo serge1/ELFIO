@@ -303,6 +303,7 @@ class elfio
             return 0;
         }
 
+        new_segment->set_index( (Elf_Half)segments_.size() );
         segments_.push_back( new_segment );
 
         return new_segment;
