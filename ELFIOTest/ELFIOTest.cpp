@@ -1027,6 +1027,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
             da1.add_entry( tag, value );
         }
     }
+    
     for ( unsigned int i = 0; i < da.get_entries_num(); ++i ) {
         da.get_entry( i, tag, value, str );
         da1.get_entry( i, tag1, value1, str1 );
