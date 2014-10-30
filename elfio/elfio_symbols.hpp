@@ -76,13 +76,13 @@ class symbol_section_accessor
 
 //------------------------------------------------------------------------------
     bool
-    get_symbol( std::string&   name,
-                Elf64_Addr&    value,
-                Elf_Xword&     size,
-                unsigned char& bind,
-                unsigned char& type,
-                Elf_Half&      section_index,
-                unsigned char& other ) const
+    get_symbol( const std::string& name,
+                Elf64_Addr&        value,
+                Elf_Xword&         size,
+                unsigned char&     bind,
+                unsigned char&     type,
+                Elf_Half&          section_index,
+                unsigned char&     other ) const
     {
         bool ret = false;
 
