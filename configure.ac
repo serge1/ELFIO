@@ -1,4 +1,4 @@
-AC_INIT([ELFIO], [2.2])
+AC_INIT([ELFIO], [2.3])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CXX
 AC_CONFIG_FILES([

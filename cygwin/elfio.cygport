@@ -1,7 +1,7 @@
 inherit python python3
 
 NAME="ELFIO"
-VERSION=2.2
+VERSION=2.3
 RELEASE=1
 CATEGORY="Devel System Libs"
 SUMMARY="ELFIO is a header-only C++ library intended for reading and generating
