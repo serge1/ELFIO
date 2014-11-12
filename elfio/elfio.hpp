@@ -490,13 +490,13 @@ class elfio
         const std::vector<Elf_Half>& sections1 = seg1->get_sections();
         const std::vector<Elf_Half>& sections2 = seg2->get_sections();
 
-        bool  found = std::search( sections2.begin(), sections2.end(),
-                                   sections1.begin(), sections1.end() )
-                                                             != sections2.end();
+        bool found = false;
+        if ( sections1.size() <  sections2.size() ) {
+            found = std::includes( sections2.begin(), sections2.end(),
+                                   sections1.begin(), sections1.end() );
+        }
 
-        return found                     &&
-               ( sections2.size() != 0 ) &&
-               ( sections1.size() != sections2.size() );
+        return found;
     }
 
 //------------------------------------------------------------------------------
