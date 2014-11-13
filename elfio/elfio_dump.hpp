@@ -413,6 +413,7 @@ static struct dynamic_tag_t {
     { DT_MAXPOSTAGS     , "MAXPOSTAGS"      },
 };
 
+static const ELFIO::Elf_Xword MAX_DATA_ENTRIES = 64;
 
 //------------------------------------------------------------------------------
 class dump
@@ -425,8 +426,6 @@ class dump
                                  std::hex << std::left
 
   public:
-    static const ELFIO::Elf_Xword MAX_DATA_ENTRIES = 64;
-
 //------------------------------------------------------------------------------
     static void
     header( std::ostream& out, const elfio& reader )
