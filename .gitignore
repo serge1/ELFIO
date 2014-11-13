@@ -1,5 +1,4 @@
 autom4te.cache
-build
 Debug
 ELFIO.sdf
 ELFIO.v11.suo
@@ -8,5 +7,52 @@ ELFIO.opensdf
 ELFIOTest/Debug
 
 examples/ELFDump/Debug
-
+elf_examples/*_copy
+elf_examples/*_copy.elf
 /ELFIO.v12.suo
+ELFIOTest/ELFIOTest
+
+# various unwanted files (backups, objects, cmake artifacts)
+*~
+*.o
+*.kate-swp
+*.swp
+.#*
+\#*#
+CMakeCache.txt
+Makefile
+CMakeFiles
+/build*/
+*.res
+
+# autotools artifacts
+.deps
+config.status
+
+# eclipse project files
+.settings
+.project
+.cproject
+.cdtproject
+.cdtbuild
+
+# netbeans project files
+/dist/
+Makefile
+.dep.inc
+nbproject
+
+# QtCreator project files
+CMakeLists.txt.user
+
+# ignore all _ prefixed directories (usually used for generated directories)
+_*/
+
+# Latex build output
+*.pdf
+*.log
+*.out
+*.aux
+*.bbl
+*.toc
+*.blg
