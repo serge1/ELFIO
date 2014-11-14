@@ -387,14 +387,23 @@ class elfio
             seg->load( stream, (std::streamoff)offset + i * entry_size );
             seg->set_index( i );
 
-            // add sections to the segments based on the load address
+            // add sections to the segments (similar to readelfs algorithm)
             Elf64_Off segBaseOffset = seg->get_offset();
-            Elf64_Off segEndOffset  = segBaseOffset + seg->get_memory_size();
-            Elf_Half sec_num        = sections.size();
-            for( Elf_Half j = 0; j < sec_num; ++j ) {
+            Elf64_Off segEndOffset  = segBaseOffset + seg->get_file_size();
+            Elf64_Off segVBaseAddr = seg->get_virtual_address();
+            Elf64_Off segVEndAddr  = segVBaseAddr + seg->get_memory_size();
+            for( Elf_Half j = 0; j < sections.size(); ++j ) {
                 const section* psec = sections[j];
-                Elf64_Off secOffset = psec->get_offset();
-                if( segBaseOffset <= secOffset && secOffset < segEndOffset ) {
+
+                // SHF_ALLOC sections are matched based on the virtual address
+                // otherwise the file offset is matched
+                if(psec->get_flags() & SHF_ALLOC
+                    ? (segVBaseAddr <= psec->get_address()
+                        && psec->get_address() + psec->get_size()
+                         <= segVEndAddr)
+                    : (segBaseOffset <= psec->get_offset()
+                        && psec->get_offset() + psec->get_size()
+                         <= segEndOffset)) {
                     seg->add_section_index( psec->get_index(),
                                             psec->get_addr_align() );
                 }
