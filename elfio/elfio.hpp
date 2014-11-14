@@ -159,8 +159,8 @@ class elfio
         set_current_file_position();
 
         is_still_good = is_still_good && save_header( f );
-        is_still_good = is_still_good && save_sections_without_segments( f );
         is_still_good = is_still_good && save_segments_and_their_sections( f );
+        is_still_good = is_still_good && save_sections_without_segments( f );
 
         f.close();
 
