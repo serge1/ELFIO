@@ -155,11 +155,23 @@ class elfio
         }
 
         bool is_still_good = true;
-        fill_final_attributes();
-        set_current_file_position();
+
+        // define layout specific header fields
+        // The position of the segment table is fixed after the header.
+        // The position of the section table is variable and needs to be fixed
+        // before saving.
+        header->set_segments_num( segments.size() );
+        header->set_segments_offset( segments.size() ? header->get_header_size() : 0 );
+        header->set_sections_num( sections.size() );
+        header->set_sections_offset( 0 );
+
+        // layout the first section right after the segment table
+        current_file_pos = header->get_header_size() +
+                    header->get_segment_entry_size() * header->get_segments_num();
 
         is_still_good = layout_segments_and_their_sections();
         is_still_good = is_still_good && layout_sections_without_segments();
+        is_still_good = is_still_good && layout_section_table();
 
         is_still_good = is_still_good && save_header( f );
         is_still_good = is_still_good && save_sections( f );
@@ -420,24 +432,6 @@ class elfio
     }
 
 //------------------------------------------------------------------------------
-    void fill_final_attributes()
-    {
-        // Fill not completed fields in the header
-        header->set_segments_num( segments.size() );
-        
-        if ( segments.size() == 0 ) {
-            header->set_segments_offset( 0 );
-        }
-        else {
-            header->set_segments_offset( header->get_header_size() );
-        }
-        
-        header->set_sections_num( sections.size() );
-        header->set_sections_offset( header->get_header_size() +
-            header->get_segment_entry_size() * segments.size() );
-    }
-
-//------------------------------------------------------------------------------
     bool save_header( std::ofstream& f )
     {
         return header->save( f );
@@ -471,16 +465,6 @@ class elfio
         }
         return true;
     }
-
-
-//------------------------------------------------------------------------------
-    void set_current_file_position()
-    {
-        current_file_pos = header->get_header_size() +
-            header->get_segment_entry_size() * header->get_segments_num() +
-            header->get_section_entry_size() * header->get_sections_num();
-    }
-
 
 //------------------------------------------------------------------------------
     bool is_section_without_segment( unsigned int section_index )
@@ -659,6 +643,15 @@ class elfio
             seg->set_offset(seg_start_pos);
         }
 
+        return true;
+    }
+
+//------------------------------------------------------------------------------
+    bool layout_section_table()
+    {
+        // simply place the section table at the end for now
+        // TODO should this table be aligned?
+        header->set_sections_offset(current_file_pos);
         return true;
     }
 
