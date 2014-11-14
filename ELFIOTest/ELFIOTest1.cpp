@@ -365,22 +365,40 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
     write_exe_i386( false, false, 0 );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( elf_exe_copy_64 )
+{
+    checkExeAreEqual( "../elf_examples/64bitLOAD.elf",
+                      "../elf_examples/64bitLOAD_copy.elf" );
+//     checkExeAreEqual( "../elf_examples/asm_64",
+//                       "../elf_examples/asm_64_copy" );
+//     checkExeAreEqual( "../elf_examples/hello_64",
+//                       "../elf_examples/hello_64_copy" );
+//     checkExeAreEqual( "../elf_examples/main",
+//                       "../elf_examples/main_copy" );
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( elf_exe_copy_32 )
 {
-//checkExeAreEqual( "../elf_examples/ls",
-//"../elf_examples/ls_copy" );
-//checkExeAreEqual( "../elf_examples/hello_32",
-//"../elf_examples/hello_32_copy" );
-    checkExeAreEqual( "../elf_examples/asm",
-        "../elf_examples/asm_copy" );
-//    checkExeAreEqual( "../elf_examples/asm64",
-//        "../elf_examples/asm64_copy" );
-//checkExeAreEqual( "../elf_examples/hello_64",
-//"../elf_examples/hello_64_copy" );
-//    checkExeAreEqual( "../elf_examples/test_ppc",
-//        "../elf_examples/test_ppc_copy" );
-    checkExeAreEqual("../elf_examples/read_write_arm_elf32_input",
-        "../elf_examples/read_write_arm_elf32_input_copy");
+//     checkExeAreEqual( "../elf_examples/asm",
+//                       "../elf_examples/asm_copy" );
+    checkExeAreEqual( "../elf_examples/arm_v7m_test_debug.elf",
+                      "../elf_examples/arm_v7m_test_debug_copy.elf" );
+    checkExeAreEqual( "../elf_examples/arm_v7m_test_release.elf",
+                      "../elf_examples/arm_v7m_test_release_copy.elf" );
+//     checkExeAreEqual( "../elf_examples/hello_32",
+//                       "../elf_examples/hello_32_copy" );
+    checkExeAreEqual( "../elf_examples/hello_arm",
+                      "../elf_examples/hello_arm_copy" );
+    checkExeAreEqual( "../elf_examples/hello_arm_stripped",
+                      "../elf_examples/hello_arm_stripped_copy" );
+//     checkExeAreEqual( "../elf_examples/ls",
+//                       "../elf_examples/ls_copy" );
+//     checkExeAreEqual( "../elf_examples/main32",
+//                       "../elf_examples/main32_copy" );
+    checkExeAreEqual( "../elf_examples/read_write_arm_elf32_input",
+                      "../elf_examples/read_write_arm_elf32_input_copy" );
+//     checkExeAreEqual( "../elf_examples/test_ppc",
+//                       "../elf_examples/test_ppc_copy" );
 }
