@@ -53,7 +53,7 @@ class section
     virtual void        append_data( const std::string& data )          = 0;
 
   protected:
-    ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
+    ELFIO_GET_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
     
     virtual void load( std::istream&  f,
@@ -196,7 +196,7 @@ class section_impl : public section
 //------------------------------------------------------------------------------
   protected:
 //------------------------------------------------------------------------------
-    ELFIO_GET_ACCESS( Elf64_Off, offset, header.sh_offset );
+    ELFIO_GET_SET_ACCESS( Elf64_Off, offset, header.sh_offset );
 
 //------------------------------------------------------------------------------
     void

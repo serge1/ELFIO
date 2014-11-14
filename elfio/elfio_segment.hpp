@@ -50,7 +50,7 @@ class segment
     virtual Elf_Half get_section_index_at( Elf_Half num )                const = 0;
 
   protected:
-    ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
+    ELFIO_GET_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
     
     virtual const std::vector<Elf_Half>& get_sections() const               = 0;
@@ -136,7 +136,7 @@ class segment_impl : public segment
 //------------------------------------------------------------------------------
   protected:
 //------------------------------------------------------------------------------
-    ELFIO_GET_ACCESS( Elf64_Off, offset, ph.p_offset );
+    ELFIO_GET_SET_ACCESS( Elf64_Off, offset, ph.p_offset );
 
 //------------------------------------------------------------------------------
     const std::vector<Elf_Half>& get_sections() const
