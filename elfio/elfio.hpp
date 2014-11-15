@@ -412,15 +412,16 @@ class elfio
 
                 // SHF_ALLOC sections are matched based on the virtual address
                 // otherwise the file offset is matched
-                if(psec->get_flags() & SHF_ALLOC
-                    ? (segVBaseAddr <= psec->get_address()
-                        && psec->get_address() + psec->get_size()
-                         <= segVEndAddr)
-                    : (segBaseOffset <= psec->get_offset()
-                        && psec->get_offset() + psec->get_size()
-                         <= segEndOffset)) {
-                    seg->add_section_index( psec->get_index(),
-                                            psec->get_addr_align() );
+                if( psec->get_type() != SHT_NULL
+                    && (psec->get_flags() & SHF_ALLOC
+                      ? (segVBaseAddr <= psec->get_address()
+                          && psec->get_address() + psec->get_size()
+                           <= segVEndAddr)
+                      : (segBaseOffset <= psec->get_offset()
+                          && psec->get_offset() + psec->get_size()
+                           <= segEndOffset))) {
+                      seg->add_section_index( psec->get_index(),
+                                              psec->get_addr_align() );
                 }
             }
 
@@ -508,6 +509,16 @@ class elfio
         std::copy( segments_.begin(), segments_.end(),
                    std::back_inserter( worklist )) ;
 
+        // bring the segments which start at address 0 to the front
+        size_t nextSlot = 0;
+        for( size_t i = 0; i < worklist.size(); ++i ) {
+            if( i != nextSlot && worklist[i]->is_offset_initialized()
+                && worklist[i]->get_offset() == 0 ) {
+                std::swap(worklist[i],worklist[nextSlot]);
+                ++nextSlot;
+            }
+        }
+
         while ( !worklist.empty() ) {
             segment *seg = worklist.front();
             worklist.pop_front();
@@ -573,12 +584,26 @@ class elfio
             Elf_Xword seg_start_pos = 0;
             segment* seg = worklist[i];
             
+            // special case: PHDR segments
+            // this segment contains the program headers but no sections
+            if( seg->get_type() == PT_PHDR && seg->get_sections_num() == 0 ) {
+              seg_start_pos = header->get_segments_offset();
+              segment_memory = segment_filesize =
+                  header->get_segment_entry_size() * header->get_segments_num();
+            // special case: segments with offset 0
+            } else if ( seg->is_offset_initialized() && seg->get_offset() == 0 ) {
+                seg_start_pos = 0;
+                if( seg->get_sections_num() )
+                    segment_memory = segment_filesize = current_file_pos;
             // new segments (no sections or not generated sections)
             // have to be aligned
-            if( !seg->get_sections_num()
+            } else if( !seg->get_sections_num()
                 || ( seg->get_sections_num()
                      && !section_generated[seg->get_section_index_at( 0 )] )) {
                 Elf64_Off error = current_file_pos % seg->get_align();
+
+                // this alignment seems to be optional
+                // many of the input files are not aligned in the elf file...
                 current_file_pos += ( seg->get_align() - error ) % seg->get_align();
                 seg_start_pos = current_file_pos;
             } else {
@@ -593,7 +618,7 @@ class elfio
 
                 Elf_Xword secAlign = 0;
                 // fix up the alignment
-                if ( j != 0 && sec->is_address_initialized()
+                if ( !section_generated[index] && sec->is_address_initialized()
                     && SHT_NOBITS != sec->get_type()
                     && SHT_NULL != sec->get_type() ) {
                     // align the sections based on the virtual addresses
@@ -601,11 +626,14 @@ class elfio
                     Elf64_Off req_offset = sec->get_address() - seg->get_virtual_address();
                     Elf64_Off cur_offset = current_file_pos - seg_start_pos;
                     secAlign = req_offset - cur_offset;
-                } else if (j != 0) {
+                } else if (!section_generated[index]) {
                     // if no address has been specified then only the section
                     // alignment constraint has to be matched
                     Elf64_Off error = current_file_pos % sec->get_addr_align();
                     secAlign = ( sec->get_addr_align() - error ) % sec->get_addr_align();
+                } else {
+                    // alignment for already generated sections
+                    secAlign = sec->get_offset() - seg_start_pos - segment_filesize;
                 }
 
                 // determine the segment file and memory sizes

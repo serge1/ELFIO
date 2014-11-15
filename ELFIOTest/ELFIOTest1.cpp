@@ -291,8 +291,22 @@ void checkExeAreEqual( std::string file_name1, std::string file_name2 )
     BOOST_REQUIRE_EQUAL( file2.load( file_name2 ), true );
 
     for (int i = 0; i < file1.segments.size(); ++i ) {
-        BOOST_REQUIRE_NE( file1.segments[i]->get_data(), (const char*)0 );
-        BOOST_REQUIRE_NE( file2.segments[i]->get_data(), (const char*)0 );
+        BOOST_CHECK_EQUAL( file1.segments[i]->get_align(),
+                           file2.segments[i]->get_align() );
+        BOOST_CHECK_EQUAL( file1.segments[i]->get_file_size(),
+                           file2.segments[i]->get_file_size() );
+        BOOST_CHECK_EQUAL( file1.segments[i]->get_memory_size(),
+                           file2.segments[i]->get_memory_size() );
+        BOOST_CHECK_EQUAL( file1.segments[i]->get_type(),
+                           file2.segments[i]->get_type() );
+
+        // skip data comparisons of the program header and of empty segments
+        if( file1.segments[i]->get_type() == PT_PHDR || !file1.segments[i]->get_file_size() )
+            continue;
+
+        BOOST_REQUIRE_NE(  file1.segments[i]->get_data(), (const char*)0 );
+        BOOST_REQUIRE_NE(  file2.segments[i]->get_data(), (const char*)0 );
+
         std::string pdata1( file1.segments[i]->get_data(),
                             file1.segments[i]->get_data() +
                                 file1.segments[i]->get_file_size() );
@@ -300,10 +314,15 @@ void checkExeAreEqual( std::string file_name1, std::string file_name2 )
                             file2.segments[i]->get_data() +
                                 file2.segments[i]->get_file_size() );
 
-        BOOST_CHECK_EQUAL( file1.segments[i]->get_file_size(),
-                           file2.segments[i]->get_file_size() );
-        BOOST_CHECK_EQUAL( file1.segments[i]->get_memory_size(),
-                           file2.segments[i]->get_memory_size() );
+        // truncate the data if the header and the segment table is
+        // part of the segment
+        Elf64_Off afterPHDR = file1.get_segments_offset() +
+            file1.get_segment_entry_size() * file1.segments.size();
+        if( file1.segments[i]->get_offset() < afterPHDR ) {
+            pdata1 = pdata1.substr(afterPHDR);
+            pdata2 = pdata2.substr(afterPHDR);
+        }
+
         BOOST_CHECK_EQUAL_COLLECTIONS( pdata1.begin(), pdata1.end(),
                                        pdata2.begin(), pdata2.end() );
     }
@@ -370,35 +389,44 @@ BOOST_AUTO_TEST_CASE( elf_exe_copy_64 )
 {
     checkExeAreEqual( "../elf_examples/64bitLOAD.elf",
                       "../elf_examples/64bitLOAD_copy.elf" );
-//     checkExeAreEqual( "../elf_examples/asm_64",
-//                       "../elf_examples/asm_64_copy" );
-//     checkExeAreEqual( "../elf_examples/hello_64",
-//                       "../elf_examples/hello_64_copy" );
-//     checkExeAreEqual( "../elf_examples/main",
-//                       "../elf_examples/main_copy" );
+    checkExeAreEqual( "../elf_examples/asm64",
+                      "../elf_examples/asm64_copy" );
+    checkExeAreEqual( "../elf_examples/hello_64",
+                      "../elf_examples/hello_64_copy" );
+
+    // The last segment (GNU_RELRO) is bigger than necessary.
+    // I don't see why but it contains a few bits of the .got.plt section.
+    // -> load, store, compare cycle fails
+//    checkExeAreEqual( "../elf_examples/main",
+//                      "../elf_examples/main_copy" );
+//    checkExeAreEqual( "../elf_examples/ls",
+//                      "../elf_examples/ls_copy" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( elf_exe_copy_32 )
 {
-//     checkExeAreEqual( "../elf_examples/asm",
-//                       "../elf_examples/asm_copy" );
+    checkExeAreEqual( "../elf_examples/asm",
+                      "../elf_examples/asm_copy" );
     checkExeAreEqual( "../elf_examples/arm_v7m_test_debug.elf",
                       "../elf_examples/arm_v7m_test_debug_copy.elf" );
     checkExeAreEqual( "../elf_examples/arm_v7m_test_release.elf",
                       "../elf_examples/arm_v7m_test_release_copy.elf" );
-//     checkExeAreEqual( "../elf_examples/hello_32",
-//                       "../elf_examples/hello_32_copy" );
+    checkExeAreEqual( "../elf_examples/hello_32",
+                      "../elf_examples/hello_32_copy" );
     checkExeAreEqual( "../elf_examples/hello_arm",
                       "../elf_examples/hello_arm_copy" );
     checkExeAreEqual( "../elf_examples/hello_arm_stripped",
                       "../elf_examples/hello_arm_stripped_copy" );
-//     checkExeAreEqual( "../elf_examples/ls",
-//                       "../elf_examples/ls_copy" );
-//     checkExeAreEqual( "../elf_examples/main32",
-//                       "../elf_examples/main32_copy" );
+
+    // The last segment (GNU_RELRO) is bigger than necessary.
+    // I don't see why but it contains a few bits of the .got.plt section.
+    // -> load, store, compare cycle fails
+//    checkExeAreEqual( "../elf_examples/main32",
+//                      "../elf_examples/main32_copy" );
+
     checkExeAreEqual( "../elf_examples/read_write_arm_elf32_input",
                       "../elf_examples/read_write_arm_elf32_input_copy" );
-//     checkExeAreEqual( "../elf_examples/test_ppc",
-//                       "../elf_examples/test_ppc_copy" );
+    checkExeAreEqual( "../elf_examples/test_ppc",
+                      "../elf_examples/test_ppc_copy" );
 }

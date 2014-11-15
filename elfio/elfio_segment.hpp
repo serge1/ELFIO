@@ -42,15 +42,17 @@ class segment
     ELFIO_GET_SET_ACCESS_DECL( Elf64_Addr, physical_address );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,  file_size        );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,  memory_size      );
+    ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
     virtual const char* get_data() const = 0;
 
     virtual Elf_Half add_section_index( Elf_Half index, Elf_Xword addr_align ) = 0;
     virtual Elf_Half get_sections_num()                                  const = 0;
     virtual Elf_Half get_section_index_at( Elf_Half num )                const = 0;
+    virtual bool is_offset_initialized()                                 const = 0;
 
   protected:
-    ELFIO_GET_SET_ACCESS_DECL( Elf64_Off, offset );
+    ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
     
     virtual const std::vector<Elf_Half>& get_sections() const               = 0;
@@ -69,6 +71,7 @@ class segment_impl : public segment
     segment_impl( endianess_convertor* convertor_ ) :
         convertor( convertor_ )
     {
+        is_offset_set = false;
         std::fill_n( reinterpret_cast<char*>( &ph ), sizeof( ph ), '\0' );
         data = 0;
     }
@@ -88,6 +91,7 @@ class segment_impl : public segment
     ELFIO_GET_SET_ACCESS( Elf64_Addr, physical_address, ph.p_paddr  );
     ELFIO_GET_SET_ACCESS( Elf_Xword,  file_size,        ph.p_filesz );
     ELFIO_GET_SET_ACCESS( Elf_Xword,  memory_size,      ph.p_memsz  );
+    ELFIO_GET_ACCESS( Elf64_Off, offset, ph.p_offset );
 
 //------------------------------------------------------------------------------
     Elf_Half
@@ -136,10 +140,26 @@ class segment_impl : public segment
 //------------------------------------------------------------------------------
   protected:
 //------------------------------------------------------------------------------
-    ELFIO_GET_SET_ACCESS( Elf64_Off, offset, ph.p_offset );
 
 //------------------------------------------------------------------------------
-    const std::vector<Elf_Half>& get_sections() const
+    void
+    set_offset( Elf64_Off value )
+    {
+        ph.p_offset = value;
+        ph.p_offset = (*convertor)( ph.p_offset );
+        is_offset_set = true;
+    }
+
+//------------------------------------------------------------------------------
+    bool
+    is_offset_initialized() const
+    {
+        return is_offset_set;
+    }
+
+//------------------------------------------------------------------------------
+    const std::vector<Elf_Half>&
+    get_sections() const
     {
         return sections;
     }
@@ -158,6 +178,7 @@ class segment_impl : public segment
     {
         stream.seekg( header_offset );
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
+        is_offset_set = true;
 
         if ( PT_NULL != get_type() && 0 != get_file_size() ) {
             stream.seekg( (*convertor)( ph.p_offset ) );
@@ -187,6 +208,7 @@ class segment_impl : public segment
     char*                 data;
     std::vector<Elf_Half> sections;
     endianess_convertor*  convertor;
+    bool                  is_offset_set;
 };
 
 } // namespace ELFIO
