@@ -4,7 +4,9 @@ ELFIO.sdf
 ELFIO.v11.suo
 ELFIO.opensdf
 
+
 ELFIOTest/Debug
+ELFIOTest/ELFIOTest.vcxproj.user
 
 examples/ELFDump/Debug
 
