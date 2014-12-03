@@ -412,14 +412,13 @@ class elfio
 
                 // SHF_ALLOC sections are matched based on the virtual address
                 // otherwise the file offset is matched
-                if( psec->get_type() != SHT_NULL
-                    && (psec->get_flags() & SHF_ALLOC
+                if( psec->get_flags() & SHF_ALLOC
                       ? (segVBaseAddr <= psec->get_address()
                           && psec->get_address() + psec->get_size()
                            <= segVEndAddr)
                       : (segBaseOffset <= psec->get_offset()
                           && psec->get_offset() + psec->get_size()
-                           <= segEndOffset))) {
+                           <= segEndOffset)) {
                       seg->add_section_index( psec->get_index(),
                                               psec->get_addr_align() );
                 }
@@ -583,15 +582,17 @@ class elfio
             Elf_Xword segment_filesize = 0;
             Elf_Xword seg_start_pos = current_file_pos;
             segment* seg = worklist[i];
-            
+
             // special case: PHDR segments
             // this segment contains the program headers but no sections
             if( seg->get_type() == PT_PHDR && seg->get_sections_num() == 0 ) {
               seg_start_pos = header->get_segments_offset();
               segment_memory = segment_filesize =
                   header->get_segment_entry_size() * header->get_segments_num();
-            // special case: segments with offset 0
-            } else if ( seg->is_offset_initialized() && seg->get_offset() == 0 ) {
+            // special case:
+            // segments which start with the NULL section and have further sections
+            } else if ( seg->get_sections_num() > 1
+                && sections[seg->get_section_index_at( 0 )]->get_type() == SHT_NULL ) {
                 seg_start_pos = 0;
                 if( seg->get_sections_num() )
                     segment_memory = segment_filesize = current_file_pos;
@@ -614,6 +615,12 @@ class elfio
                 Elf_Half index = seg->get_section_index_at( j );
 
                 section* sec = sections[ index ];
+
+                // the NULL section is always generated
+                if( SHT_NULL == sec->get_type()) {
+                  section_generated[index] = true;
+                  continue;
+                }
 
                 Elf_Xword secAlign = 0;
                 // fix up the alignment
