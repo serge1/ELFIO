@@ -678,7 +678,8 @@ class elfio
     bool layout_section_table()
     {
         // simply place the section table at the end for now
-        // TODO should this table be aligned?
+        Elf64_Off alignmentError = current_file_pos % 4;
+        current_file_pos += ( 4 - alignmentError ) % 4;
         header->set_sections_offset(current_file_pos);
         return true;
     }
