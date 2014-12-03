@@ -581,7 +581,7 @@ class elfio
         for ( unsigned int i = 0; i < worklist.size(); ++i ) {
             Elf_Xword segment_memory   = 0;
             Elf_Xword segment_filesize = 0;
-            Elf_Xword seg_start_pos = 0;
+            Elf_Xword seg_start_pos = current_file_pos;
             segment* seg = worklist[i];
             
             // special case: PHDR segments
@@ -595,18 +595,17 @@ class elfio
                 seg_start_pos = 0;
                 if( seg->get_sections_num() )
                     segment_memory = segment_filesize = current_file_pos;
-            // new segments (no sections or not generated sections)
+            // new segments with not generated sections
             // have to be aligned
-            } else if( !seg->get_sections_num()
-                || ( seg->get_sections_num()
-                     && !section_generated[seg->get_section_index_at( 0 )] )) {
-                Elf64_Off error = current_file_pos % seg->get_align();
+            } else if( seg->get_sections_num()
+                     && !section_generated[seg->get_section_index_at( 0 )] ) {
+                Elf64_Off cur_page_alignment = current_file_pos % seg->get_align();
+                Elf64_Off req_page_alignment = seg->get_virtual_address() % seg->get_align();
+                Elf64_Off error = req_page_alignment - cur_page_alignment;
 
-                // this alignment seems to be optional
-                // many of the input files are not aligned in the elf file...
-                current_file_pos += ( seg->get_align() - error ) % seg->get_align();
+                current_file_pos += ( seg->get_align() + error ) % seg->get_align();
                 seg_start_pos = current_file_pos;
-            } else {
+            } else if(seg->get_sections_num()) {
                 seg_start_pos = sections[seg->get_section_index_at( 0 )]->get_offset();
             }
 
