@@ -604,7 +604,7 @@ class dump
                             << "        Name"
                             << std::endl;
                     }
-                    for ( Elf_Xword i = 0; i < sym_no; ++i ) {
+                    for ( Elf_Half i = 0; i < sym_no; ++i ) {
                         std::string   name;
                         Elf64_Addr    value   = 0;
                         Elf_Xword     size    = 0;
@@ -727,7 +727,7 @@ class dump
                 if ( dyn_no > 0 ) {
                     out << "Dynamic section (" << sec->get_name() << ")" << std::endl;
                     out << "[  Nr ] Tag              Name/Value" << std::endl;
-                    for ( Elf_Xword i = 0; i < dyn_no; ++i ) {
+                    for ( int i = 0; i < dyn_no; ++i ) {
                         Elf_Xword   tag   = 0;
                         Elf_Xword   value = 0;
                         std::string str;

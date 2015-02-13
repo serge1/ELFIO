@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2001-2012 by Serge Lamikhov-Center
+Copyright (C) 2001-2015 by Serge Lamikhov-Center
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -156,7 +156,7 @@ class elfio
 
         bool is_still_good = true;
 
-        // define layout specific header fields
+        // Define layout specific header fields
         // The position of the segment table is fixed after the header.
         // The position of the section table is variable and needs to be fixed
         // before saving.
@@ -165,7 +165,7 @@ class elfio
         header->set_sections_num( sections.size() );
         header->set_sections_offset( 0 );
 
-        // layout the first section right after the segment table
+        // Layout the first section right after the segment table
         current_file_pos = header->get_header_size() +
                     header->get_segment_entry_size() * header->get_segments_num();
 
@@ -402,7 +402,7 @@ class elfio
             seg->load( stream, (std::streamoff)offset + i * entry_size );
             seg->set_index( i );
 
-            // add sections to the segments (similar to readelfs algorithm)
+            // Add sections to the segments (similar to readelfs algorithm)
             Elf64_Off segBaseOffset = seg->get_offset();
             Elf64_Off segEndOffset  = segBaseOffset + seg->get_file_size();
             Elf64_Off segVBaseAddr = seg->get_virtual_address();
@@ -508,7 +508,7 @@ class elfio
         std::copy( segments_.begin(), segments_.end(),
                    std::back_inserter( worklist )) ;
 
-        // bring the segments which start at address 0 to the front
+        // Bring the segments which start at address 0 to the front
         size_t nextSlot = 0;
         for( size_t i = 0; i < worklist.size(); ++i ) {
             if( i != nextSlot && worklist[i]->is_offset_initialized()
@@ -573,40 +573,44 @@ class elfio
         std::vector<bool>      section_generated(sections.size(),false);
         std::vector<Elf_Xword> section_alignment(sections.size(),0);
 
-        // get segments in a order in where segments which contain a
+        // Get segments in a order in where segments which contain a
         // sub sequence of other segments are located at the end
         worklist = get_ordered_segments();
 
         for ( unsigned int i = 0; i < worklist.size(); ++i ) {
             Elf_Xword segment_memory   = 0;
             Elf_Xword segment_filesize = 0;
-            Elf_Xword seg_start_pos = current_file_pos;
-            segment* seg = worklist[i];
+            Elf_Xword seg_start_pos    = current_file_pos;
+            segment* seg               = worklist[i];
 
-            // special case: PHDR segments
-            // this segment contains the program headers but no sections
-            if( seg->get_type() == PT_PHDR && seg->get_sections_num() == 0 ) {
-              seg_start_pos = header->get_segments_offset();
-              segment_memory = segment_filesize =
-                  header->get_segment_entry_size() * header->get_segments_num();
-            // special case:
-            // segments which start with the NULL section and have further sections
-            } else if ( seg->get_sections_num() > 1
-                && sections[seg->get_section_index_at( 0 )]->get_type() == SHT_NULL ) {
+            // Special case: PHDR segment
+            // This segment contains the program headers but no sections
+            if ( seg->get_type() == PT_PHDR && seg->get_sections_num() == 0 ) {
+                seg_start_pos = header->get_segments_offset();
+                segment_memory = segment_filesize =
+                    header->get_segment_entry_size() * header->get_segments_num();
+            }
+            // Special case:
+            // Segments which start with the NULL section and have further sections
+            else if ( seg->get_sections_num() > 1
+                      && sections[seg->get_section_index_at( 0 )]->get_type() == SHT_NULL ) {
                 seg_start_pos = 0;
-                if( seg->get_sections_num() )
+                if ( seg->get_sections_num() ) {
                     segment_memory = segment_filesize = current_file_pos;
-            // new segments with not generated sections
+                }
+            }
+            // New segments with not generated sections
             // have to be aligned
-            } else if( seg->get_sections_num()
+            else if ( seg->get_sections_num()
                      && !section_generated[seg->get_section_index_at( 0 )] ) {
                 Elf64_Off cur_page_alignment = current_file_pos % seg->get_align();
                 Elf64_Off req_page_alignment = seg->get_virtual_address() % seg->get_align();
-                Elf64_Off error = req_page_alignment - cur_page_alignment;
+                Elf64_Off error              = req_page_alignment - cur_page_alignment;
 
                 current_file_pos += ( seg->get_align() + error ) % seg->get_align();
                 seg_start_pos = current_file_pos;
-            } else if(seg->get_sections_num()) {
+            }
+            else if ( seg->get_sections_num() ) {
                 seg_start_pos = sections[seg->get_section_index_at( 0 )]->get_offset();
             }
 
@@ -616,35 +620,36 @@ class elfio
 
                 section* sec = sections[ index ];
 
-                // the NULL section is always generated
-                if( SHT_NULL == sec->get_type()) {
-                  section_generated[index] = true;
-                  continue;
+                // The NULL section is always generated
+                if ( SHT_NULL == sec->get_type()) {
+                    section_generated[index] = true;
+                    continue;
                 }
 
                 Elf_Xword secAlign = 0;
-                // fix up the alignment
+                // Fix up the alignment
                 if ( !section_generated[index] && sec->is_address_initialized()
                     && SHT_NOBITS != sec->get_type()
                     && SHT_NULL != sec->get_type() ) {
-                    // align the sections based on the virtual addresses
+                    // Align the sections based on the virtual addresses
                     // when possible (this is what matters for execution)
                     Elf64_Off req_offset = sec->get_address() - seg->get_virtual_address();
                     Elf64_Off cur_offset = current_file_pos - seg_start_pos;
-                    secAlign = req_offset - cur_offset;
-                } else if (!section_generated[index]) {
-                    // if no address has been specified then only the section
+                    secAlign             = req_offset - cur_offset;
+                }
+                else if (!section_generated[index]) {
+                    // If no address has been specified then only the section
                     // alignment constraint has to be matched
                     Elf64_Off error = current_file_pos % sec->get_addr_align();
                     secAlign = ( sec->get_addr_align() - error ) % sec->get_addr_align();
-                } else {
-                    // alignment for already generated sections
+                }
+                else {
+                    // Alignment for already generated sections
                     secAlign = sec->get_offset() - seg_start_pos - segment_filesize;
                 }
 
-                // determine the segment file and memory sizes
-                // special case .tbss section (NOBITS) in non TLS segment
-                //
+                // Determine the segment file and memory sizes
+                // Special case .tbss section (NOBITS) in non TLS segment
                 if ( (sec->get_flags() & SHF_ALLOC)
                     && !( (sec->get_flags() & SHF_TLS) && (seg->get_type() != PT_TLS)
                           && ( SHT_NOBITS == sec->get_type())) )
@@ -652,14 +657,14 @@ class elfio
                 if ( SHT_NOBITS != sec->get_type() && SHT_NULL != sec->get_type() )
                     segment_filesize += sec->get_size() + secAlign;
 
-                // nothing to be done when generating nested segments
+                // Nothing to be done when generating nested segments
                 if(section_generated[index]) {
                     continue;
                 }
 
                 current_file_pos += secAlign;
 
-                // set the section addresses when missing
+                // Set the section addresses when missing
                 if ( !sec->is_address_initialized() )
                     sec->set_address( seg->get_virtual_address()
                                       + current_file_pos - seg_start_pos);
@@ -683,7 +688,7 @@ class elfio
 //------------------------------------------------------------------------------
     bool layout_section_table()
     {
-        // simply place the section table at the end for now
+        // Simply place the section table at the end for now
         Elf64_Off alignmentError = current_file_pos % 4;
         current_file_pos += ( 4 - alignmentError ) % 4;
         header->set_sections_offset(current_file_pos);

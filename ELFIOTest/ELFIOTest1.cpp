@@ -319,8 +319,8 @@ void checkExeAreEqual( std::string file_name1, std::string file_name2 )
         Elf64_Off afterPHDR = file1.get_segments_offset() +
             file1.get_segment_entry_size() * file1.segments.size();
         if( file1.segments[i]->get_offset() < afterPHDR ) {
-            pdata1 = pdata1.substr(afterPHDR);
-            pdata2 = pdata2.substr(afterPHDR);
+            pdata1 = pdata1.substr( (unsigned int)afterPHDR );
+            pdata2 = pdata2.substr( (unsigned int)afterPHDR );
         }
 
         BOOST_CHECK_EQUAL_COLLECTIONS( pdata1.begin(), pdata1.end(),
@@ -350,12 +350,12 @@ BOOST_AUTO_TEST_CASE( section_header_address_update )
 {
     elfio reader;
 
-    write_exe_i386( false, true, 0x0100 );
+    write_exe_i386( false, true, 0x08048100 );
 
     reader.load( "../elf_examples/write_exe_i386_32" );
     section* sec = reader.sections[".text"];
     BOOST_REQUIRE_NE( sec, (section*)0 );
-    BOOST_CHECK_EQUAL( sec->get_address(), 0x00000100 );
+    BOOST_CHECK_EQUAL( sec->get_address(), 0x08048100 );
     
     write_exe_i386( false, false, 0 );
     
@@ -371,7 +371,7 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
 {
     elfio e;
 
-    write_exe_i386( false, true, 0x0100 );
+    write_exe_i386( false, true, 0x08048100 );
 
     e.load( "../elf_examples/write_exe_i386_32" );
     Elf_Half num     = e.sections.size();
@@ -379,9 +379,6 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
         e.sections.add( "new" );
     e.save( "../elf_examples/write_exe_i386_32" );
     BOOST_CHECK_EQUAL( num + 1, e.sections.size() );
-
-    // Just return back the overwritten file
-    write_exe_i386( false, false, 0 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -418,13 +415,6 @@ BOOST_AUTO_TEST_CASE( elf_exe_copy_32 )
                       "../elf_examples/hello_arm_copy" );
     checkExeAreEqual( "../elf_examples/hello_arm_stripped",
                       "../elf_examples/hello_arm_stripped_copy" );
-
-    // The last segment (GNU_RELRO) is bigger than necessary.
-    // I don't see why but it contains a few bits of the .got.plt section.
-    // -> load, store, compare cycle fails
-//    checkExeAreEqual( "../elf_examples/main32",
-//                      "../elf_examples/main32_copy" );
-
     checkExeAreEqual( "../elf_examples/read_write_arm_elf32_input",
                       "../elf_examples/read_write_arm_elf32_input_copy" );
     checkExeAreEqual( "../elf_examples/test_ppc",
