@@ -63,8 +63,8 @@ class string_section_accessor
         Elf_Word current_position = (Elf_Word)string_section->get_size();
 
         if ( current_position == 0 ) {
-            char empty_string[1] = {'\0'};
-            string_section->append_data( empty_string, 1 );
+            char empty_string = '\0';
+            string_section->append_data( &empty_string, 1 );
             current_position++;
         }
         string_section->append_data( str, (Elf_Word)std::strlen( str ) + 1 );
@@ -77,18 +77,7 @@ class string_section_accessor
     Elf_Word
     add_string( const std::string& str )
     {
-        // Strings are addeded to the end of the current section data
-        Elf_Word current_position = (Elf_Word)string_section->get_size();
-
-        char empty_string[1] = {'\0'};
-        if ( current_position == 0 ) {
-            string_section->append_data( empty_string, 1 );
-            current_position++;
-        }
-        string_section->append_data( str );
-        string_section->append_data( empty_string, 1 );
-
-        return current_position;
+        return add_string( str.c_str() );
     }
 
 //------------------------------------------------------------------------------
