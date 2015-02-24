@@ -60,8 +60,13 @@ class note_section_accessor
         const endianess_convertor& convertor = elf_file.get_convertor();
         type = convertor( *(Elf_Word*)( pData + 2*sizeof( Elf_Word ) ) );
         Elf_Word namesz = convertor( *(Elf_Word*)( pData ) );
-        name.assign( pData + 3*sizeof( Elf_Word ), namesz );
         descSize = convertor( *(Elf_Word*)( pData + sizeof( namesz ) ) );
+        Elf_Word max_name_size = note_section->get_size() - note_start_positions[index];
+        if ( namesz            > max_name_size ||
+             namesz + descSize > max_name_size ) {
+            return false;
+        }
+        name.assign( pData + 3 * sizeof( Elf_Word ), namesz );
         if ( 0 == descSize ) {
             desc = 0;
         }

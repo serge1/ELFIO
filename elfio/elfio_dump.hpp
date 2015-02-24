@@ -686,10 +686,11 @@ class dump
                         void*       desc;
                         Elf_Word    descsz;
                     
-                        notes.get_note( j, type, name, desc, descsz );
-                        // 'name' usually contains \0 at the end. Try to fix it
-                        name = name.c_str();
-                        note( out, j, type, name );
+                        if ( notes.get_note(j, type, name, desc, descsz) ) {
+                            // 'name' usually contains \0 at the end. Try to fix it
+                            name = name.c_str();
+                            note( out, j, type, name );
+                        }
                     }
                     
                     out << std::endl;
