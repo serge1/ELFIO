@@ -66,3 +66,4 @@ _*/
 *.bbl
 *.toc
 *.blg
+/examples/elfdump/ELFDump.vcxproj.user
