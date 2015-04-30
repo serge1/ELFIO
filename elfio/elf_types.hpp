@@ -275,7 +275,39 @@ typedef uint64_t Elf64_Off;
 #define EM_TILEPRO       188 // Tilera TILEPro multicore architecture family
 #define EM_MICROBLAZE    189 // Xilinx MicroBlaze 32-bit RISC soft processor core
 #define EM_CUDA          190 // NVIDIA CUDA architecture 
-
+#define EM_TILEGX        191 // Tilera TILE-Gx multicore architecture family
+#define EM_CLOUDSHIELD   192 // CloudShield architecture family
+#define EM_COREA_1ST     193 // KIPO-KAIST Core-A 1st generation processor family
+#define EM_COREA_2ND     194 // KIPO-KAIST Core-A 2nd generation processor family
+#define EM_ARC_COMPACT2  195 // Synopsys ARCompact V2
+#define EM_OPEN8         196 // Open8 8-bit RISC soft processor core
+#define EM_RL78          197 // Renesas RL78 family
+#define EM_VIDEOCORE5    198 // Broadcom VideoCore V processor
+#define EM_78KOR         199 // Renesas 78KOR family
+#define EM_56800EX       200 // Freescale 56800EX Digital Signal Controller (DSC)
+#define EM_BA1           201 // Beyond BA1 CPU architecture
+#define EM_BA2           202 // Beyond BA2 CPU architecture
+#define EM_XCORE         203 // XMOS xCORE processor family
+#define EM_MCHP_PIC      204 // Microchip 8-bit PIC(r) family
+#define EM_INTEL205      205 // Reserved by Intel
+#define EM_INTEL206      206 // Reserved by Intel
+#define EM_INTEL207      207 // Reserved by Intel
+#define EM_INTEL208      208 // Reserved by Intel
+#define EM_INTEL209      209 // Reserved by Intel
+#define EM_KM32          210 // KM211 KM32 32-bit processor
+#define EM_KMX32         211 // KM211 KMX32 32-bit processor
+#define EM_KMX16         212 // KM211 KMX16 16-bit processor
+#define EM_KMX8          213 // KM211 KMX8 8-bit processor
+#define EM_KVARC         214 // KM211 KVARC processor
+#define EM_CDP           215 // Paneve CDP architecture family
+#define EM_COGE          216 // Cognitive Smart Memory Processor
+#define EM_COOL          217 // iCelero CoolEngine
+#define EM_NORC          218 // Nanoradio Optimized RISC
+#define EM_CSR_KALIMBA   219 // CSR Kalimba architecture family
+#define EM_Z80           220 // Zilog Z80
+#define EM_VISIUM        221 // Controls and Data Services VISIUMcore processor
+#define EM_FT32          222 // FTDI Chip FT32 high performance 32-bit RISC architecture
+#define EM_MOXIE         223 // Moxie processor family
 
 // File version
 #define EV_NONE    0
