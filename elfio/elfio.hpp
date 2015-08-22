@@ -36,6 +36,7 @@ THE SOFTWARE.
 #include <algorithm>
 #include <vector>
 #include <deque>
+#include <iterator>
 #include <typeinfo>
 
 #include <elfio/elf_types.hpp>
