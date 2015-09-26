@@ -641,8 +641,12 @@ class elfio
                 else if (!section_generated[index]) {
                     // If no address has been specified then only the section
                     // alignment constraint has to be matched
-                    Elf64_Off error = current_file_pos % sec->get_addr_align();
-                    secAlign = ( sec->get_addr_align() - error ) % sec->get_addr_align();
+					Elf_Xword align = sec->get_addr_align();
+					if (align == 0) {
+						align = 1;
+					}
+                    Elf64_Off error = current_file_pos % align;
+                    secAlign = ( align - error ) % align;
                 }
                 else {
                     // Alignment for already generated sections
