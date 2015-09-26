@@ -345,6 +345,7 @@ class elfio
         set_section_name_str_index( 1 );
         section* shstrtab = sections.add( ".shstrtab" );
         shstrtab->set_type( SHT_STRTAB );
+        shstrtab->set_addr_align( 1 );
     }
 
 //------------------------------------------------------------------------------

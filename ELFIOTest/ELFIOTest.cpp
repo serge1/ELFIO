@@ -748,7 +748,7 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_i386_32 )
     sec = reader.sections[ ".shstrtab" ];
     
     checkSection( sec, 1, ".shstrtab", SHT_STRTAB, 0,
-                        0, 17, 0, 0, 0, 0 );
+                        0, 17, 0, 0, 1, 0 );
 
     sec =reader.sections[ ".note" ];
     
@@ -810,7 +810,7 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_ppc_32 )
     sec =reader.sections[ ".shstrtab" ];
     
     checkSection( sec, 1, ".shstrtab", SHT_STRTAB, 0,
-                        0, 17, 0, 0, 0, 0 );
+                        0, 17, 0, 0, 1, 0 );
 }
 
 
@@ -866,7 +866,7 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_i386_64 )
     sec =reader.sections[ ".shstrtab" ];
     
     checkSection( sec, 1, ".shstrtab", SHT_STRTAB, 0,
-                        0, 17, 0, 0, 0, 0 );
+                        0, 17, 0, 0, 1, 0 );
 }
 
 
@@ -916,7 +916,7 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_ppc_64 )
     sec =reader.sections[ ".shstrtab" ];
     
     checkSection( sec, 1, ".shstrtab", SHT_STRTAB, 0,
-                        0, 17, 0, 0, 0, 0 );
+                        0, 17, 0, 0, 1, 0 );
 
     sec = reader.sections[ ".note" ];
     
