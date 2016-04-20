@@ -44,12 +44,14 @@ class string_section_accessor
     const char*
     get_string( Elf_Word index ) const
     {
-        if ( index < string_section->get_size() ) {
-            const char* data = string_section->get_data();
-            if ( 0 != data ) {
-                return data + index;
+        if ( string_section ) {
+            if ( index < string_section->get_size() ) {
+                const char* data = string_section->get_data();
+                if ( 0 != data ) {
+                    return data + index;
+                }
             }
-        }
+	}
 
         return 0;
     }
