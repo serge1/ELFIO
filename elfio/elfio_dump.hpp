@@ -775,23 +775,25 @@ class dump
 
         out << sec->get_name() << std::endl;
         const char* pdata = sec->get_data();
-        ELFIO::Elf_Xword i;
-        for ( i = 0; i < std::min( sec->get_size(), MAX_DATA_ENTRIES ); ++i ) {
-            if ( i % 16 == 0 ) {
-                out << "[" <<  DUMP_HEX_FORMAT( 8 ) << i << "]";
+        if ( pdata ){
+            ELFIO::Elf_Xword i;
+            for ( i = 0; i < std::min( sec->get_size(), MAX_DATA_ENTRIES ); ++i ) {
+                if ( i % 16 == 0 ) {
+                    out << "[" <<  DUMP_HEX_FORMAT( 8 ) << i << "]";
+                }
+
+                out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
+
+                if ( i % 16 == 15 ) {
+                    out << std::endl;
+                }
             }
-
-            out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
-
-            if ( i % 16 == 15 ) {
+            if ( i % 16 != 0 ) {
                 out << std::endl;
             }
-        }
-        if ( i % 16 != 0 ) {
-            out << std::endl;
-        }
 
-        out.flags(original_flags);
+            out.flags(original_flags);
+        }
 
         return; 
     }
@@ -827,23 +829,25 @@ class dump
 
         out << "Segment # " << no << std::endl;
         const char* pdata = seg->get_data();
-        ELFIO::Elf_Xword i;
-        for ( i = 0; i < std::min( seg->get_file_size(), MAX_DATA_ENTRIES ); ++i ) {
-            if ( i % 16 == 0 ) {
-                out << "[" <<  DUMP_HEX_FORMAT( 8 ) << i << "]";
+        if ( pdata ) {
+            ELFIO::Elf_Xword i;
+            for ( i = 0; i < std::min( seg->get_file_size(), MAX_DATA_ENTRIES ); ++i ) {
+                if ( i % 16 == 0 ) {
+                    out << "[" <<  DUMP_HEX_FORMAT( 8 ) << i << "]";
+                }
+
+                out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
+
+                if ( i % 16 == 15 ) {
+                    out << std::endl;
+                }
             }
-
-            out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
-
-            if ( i % 16 == 15 ) {
+            if ( i % 16 != 0 ) {
                 out << std::endl;
             }
-        }
-        if ( i % 16 != 0 ) {
-            out << std::endl;
-        }
 
-        out.flags(original_flags);
+            out.flags(original_flags);
+        }
 
         return; 
     }
