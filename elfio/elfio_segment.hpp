@@ -183,7 +183,11 @@ class segment_impl : public segment
         if ( PT_NULL != get_type() && 0 != get_file_size() ) {
             stream.seekg( (*convertor)( ph.p_offset ) );
             Elf_Xword size = get_file_size();
-            data = new char[size];
+            try {
+                data = new char[size];
+            } catch (const std::bad_alloc&) {
+                data = 0;
+            }
             if ( 0 != data ) {
                 stream.read( data, size );
             }

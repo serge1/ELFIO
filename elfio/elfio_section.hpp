@@ -147,7 +147,11 @@ class section_impl : public section
     {
         if ( get_type() != SHT_NOBITS ) {
             delete [] data;
-            data = new char[size];
+            try {
+                data = new char[size];
+            } catch (const std::bad_alloc&) {
+                data_size = 0;
+            }
             if ( 0 != data && 0 != raw_data ) {
                 data_size = size;
                 std::copy( raw_data, raw_data + size, data );
@@ -174,7 +178,12 @@ class section_impl : public section
             }
             else {
                 data_size = 2*( data_size + size);
-                char* new_data = new char[data_size];
+                char* new_data;
+                try {
+                    new_data = new char[data_size];
+                } catch (const std::bad_alloc&) {
+                    new_data = 0;
+                }
                 if ( 0 != new_data ) {
                     std::copy( data, data + get_size(), new_data );
                     std::copy( raw_data, raw_data + size, new_data + get_size() );
@@ -216,7 +225,11 @@ class section_impl : public section
 
         Elf_Xword size = get_size();
         if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() ) {
-            data = new char[size];
+            try {
+                data = new char[size];
+            } catch (const std::bad_alloc&) {
+                data_size = 0;
+            }
             if ( 0 != size ) {
                 stream.seekg( (*convertor)( header.sh_offset ) );
                 stream.read( data, size );
