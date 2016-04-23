@@ -74,7 +74,8 @@ class elfio
 //------------------------------------------------------------------------------
     elfio() : sections( this ), segments( this )
     {
-        header      = 0;
+        header           = 0;
+        current_file_pos = 0;
         create( ELFCLASS32, ELFDATA2LSB );
     }
 
@@ -573,7 +574,6 @@ class elfio
     {
         std::vector<segment*>  worklist;
         std::vector<bool>      section_generated(sections.size(),false);
-        std::vector<Elf_Xword> section_alignment(sections.size(),0);
 
         // Get segments in a order in where segments which contain a
         // sub sequence of other segments are located at the end

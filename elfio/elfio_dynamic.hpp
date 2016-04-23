@@ -74,7 +74,12 @@ class dynamic_section_accessor
              tag == DT_RUNPATH ) {
             string_section_accessor strsec =
                 elf_file.sections[ get_string_table_index() ];
-            str = strsec.get_string( value );
+            const char* result = strsec.get_string( value );
+            if ( 0 == result ) {
+                str.clear();
+                return false;
+            }
+            str = result;
         }
         else {
             str.clear();

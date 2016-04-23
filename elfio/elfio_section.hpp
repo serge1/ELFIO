@@ -150,7 +150,9 @@ class section_impl : public section
             try {
                 data = new char[size];
             } catch (const std::bad_alloc&) {
+                data      = 0;
                 data_size = 0;
+                size      = 0;
             }
             if ( 0 != data && 0 != raw_data ) {
                 data_size = size;
@@ -183,6 +185,7 @@ class section_impl : public section
                     new_data = new char[data_size];
                 } catch (const std::bad_alloc&) {
                     new_data = 0;
+                    size     = 0;
                 }
                 if ( 0 != new_data ) {
                     std::copy( data, data + get_size(), new_data );
@@ -228,6 +231,7 @@ class section_impl : public section
             try {
                 data = new char[size];
             } catch (const std::bad_alloc&) {
+                data      = 0;
                 data_size = 0;
             }
             if ( 0 != size ) {
