@@ -71,10 +71,7 @@ class note_section_accessor
             desc = 0;
         }
         else {
-            int align = sizeof( Elf_Xword );
-            if ( elf_file.get_class() == ELFCLASS32 ) {
-                align = sizeof( Elf_Word );
-            }
+            int align = sizeof( Elf_Word );
             desc = const_cast<char*> ( pData + 3*sizeof( Elf_Word ) +
                                        ( ( namesz + align - 1 ) / align ) * align );
         }
