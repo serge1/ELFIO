@@ -66,7 +66,7 @@ class note_section_accessor
              namesz + descSize > max_name_size ) {
             return false;
         }
-        name.assign( pData + 3 * sizeof( Elf_Word ), namesz );
+        name.assign( pData + 3 * sizeof( Elf_Word ), namesz - 1);
         if ( 0 == descSize ) {
             desc = 0;
         }
