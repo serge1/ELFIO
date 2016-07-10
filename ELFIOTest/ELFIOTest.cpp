@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE( load32 )
     note_section_accessor notes( reader, sec );
     BOOST_CHECK_EQUAL( notes.get_notes_num(), 1 );
 
-    checkNote( notes, 0, 1, std::string( "GNU" ) + '\0', 16 );
+    checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
 }
 
 
@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE( load64 )
     note_section_accessor notes( reader, sec );
     BOOST_CHECK_EQUAL( notes.get_notes_num(), 1 );
 
-    checkNote( notes, 0, 1, std::string( "GNU" ) + '\0', 16 );
+    checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
 }
 
 
@@ -699,7 +699,7 @@ BOOST_AUTO_TEST_CASE( test_ppc )
     note_section_accessor notes( reader, sec );
     BOOST_CHECK_EQUAL( notes.get_notes_num(), 1 );
 
-    checkNote( notes, 0, 1, std::string( "GNU" ) + '\0', 16 );
+    checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
