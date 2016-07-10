@@ -26,6 +26,18 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
+// There are discrepancies in documentations. SCO documentation
+// (http://www.sco.com/developers/gabi/latest/ch5.pheader.html#note_section)
+// requires 8 byte entries alignment for 64-bit ELF file,
+// but Oracle's definition uses the same structure
+// for 32-bit and 64-bit formats.
+// (https://docs.oracle.com/cd/E23824_01/html/819-0690/chapter6-18048.html)
+//
+// It looks like EM_X86_64 Linux implementation is similar to Oracle's
+// definition. Therefore, the same alignment works for both formats
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 class note_section_accessor
 {
   public:
@@ -56,9 +68,10 @@ class note_section_accessor
         }
 
         const char* pData = note_section->get_data() + note_start_positions[index];
+        int align = sizeof( Elf_Word );
 
         const endianess_convertor& convertor = elf_file.get_convertor();
-        type = convertor( *(Elf_Word*)( pData + 2*sizeof( Elf_Word ) ) );
+        type = convertor( *(Elf_Word*)( pData + 2*align ) );
         Elf_Word namesz = convertor( *(Elf_Word*)( pData ) );
         descSize = convertor( *(Elf_Word*)( pData + sizeof( namesz ) ) );
         Elf_Word max_name_size = note_section->get_size() - note_start_positions[index];
@@ -66,17 +79,13 @@ class note_section_accessor
              namesz + descSize > max_name_size ) {
             return false;
         }
-        name.assign( pData + 3 * sizeof( Elf_Word ), namesz - 1);
+        name.assign( pData + 3*align, namesz - 1);
         if ( 0 == descSize ) {
             desc = 0;
         }
         else {
-            int align = sizeof( Elf_Xword );
-            if ( elf_file.get_class() == ELFCLASS32 ) {
-                align = sizeof( Elf_Word );
-            }
-            desc = const_cast<char*> ( pData + 3*sizeof( Elf_Word ) +
-                                       ( ( namesz + align - 1 ) / align ) * align );
+            desc = const_cast<char*> ( pData + 3*align +
+                                       ( ( namesz + align - 1 )/align )*align );
         }
 
         return true;
@@ -90,25 +99,24 @@ class note_section_accessor
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
+        int align            = sizeof( Elf_Word );
         Elf_Word nameLen     = (Elf_Word)name.size() + 1;
         Elf_Word nameLenConv = convertor( nameLen );
-        std::string buffer( reinterpret_cast<char*>( &nameLenConv ), sizeof( nameLenConv ) );
+        std::string buffer( reinterpret_cast<char*>( &nameLenConv ), align );
         Elf_Word descSizeConv = convertor( descSize );
-        buffer.append( reinterpret_cast<char*>( &descSizeConv ), sizeof( descSizeConv ) );
+        buffer.append( reinterpret_cast<char*>( &descSizeConv ), align );
         type = convertor( type );
-        buffer.append( reinterpret_cast<char*>( &type ), sizeof( type ) );
+        buffer.append( reinterpret_cast<char*>( &type ), align );
         buffer.append( name );
         buffer.append( 1, '\x00' );
         const char pad[] = { '\0', '\0', '\0', '\0' };
-        if ( nameLen % sizeof( Elf_Word ) != 0 ) {
-            buffer.append( pad, sizeof( Elf_Word ) -
-                                nameLen % sizeof( Elf_Word ) );
+        if ( nameLen % align != 0 ) {
+            buffer.append( pad, align - nameLen % align );
         }
         if ( desc != 0 && descSize != 0 ) {
             buffer.append( reinterpret_cast<const char*>( desc ), descSize );
-            if ( descSize % sizeof( Elf_Word ) != 0 ) {
-                buffer.append( pad, sizeof( Elf_Word ) -
-                                    descSize % sizeof( Elf_Word ) );
+            if ( descSize % align != 0 ) {
+                buffer.append( pad, align - descSize % align );
             }
         }
 
@@ -132,17 +140,13 @@ class note_section_accessor
             return;
         }
 
-        while ( current + 3*sizeof( Elf_Word ) <= size ) {
+        int align = sizeof( Elf_Word );
+        while ( current + 3*align <= size ) {
             note_start_positions.push_back( current );
             Elf_Word namesz = convertor(
                             *(Elf_Word*)( data + current ) );
             Elf_Word descsz = convertor(
                             *(Elf_Word*)( data + current + sizeof( namesz ) ) );
-
-            int align = sizeof( Elf_Xword );
-            if ( elf_file.get_class() == ELFCLASS32 ) {
-                align = sizeof( Elf_Word );
-            }
 
             current += 3*sizeof( Elf_Word ) +
                        ( ( namesz + align - 1 ) / align ) * align +
