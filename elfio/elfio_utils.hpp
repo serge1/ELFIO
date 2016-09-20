@@ -174,7 +174,7 @@ class endianess_convertor {
     get_host_encoding() const
     {
         static const int tmp = 1;
-        if ( 1 == *(char*)&tmp ) {
+        if ( 1 == *(const char*)&tmp ) {
             return ELFDATA2LSB;
         }
         else {

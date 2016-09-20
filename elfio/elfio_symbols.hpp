@@ -87,17 +87,17 @@ class symbol_section_accessor
         bool ret = false;
 
         if ( 0 != get_hash_table_index() ) {
-            Elf_Word nbucket = *(Elf_Word*)hash_section->get_data();
-            Elf_Word nchain  = *(Elf_Word*)( hash_section->get_data() +
+            Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
+            Elf_Word nchain  = *(const Elf_Word*)( hash_section->get_data() +
                                    sizeof( Elf_Word ) );
             Elf_Word val     = elf_hash( (const unsigned char*)name.c_str() );
 
-            Elf_Word y   = *(Elf_Word*)( hash_section->get_data() +
+            Elf_Word y   = *(const Elf_Word*)( hash_section->get_data() +
                                ( 2 + val % nbucket ) * sizeof( Elf_Word ) );
             std::string   str;
             get_symbol( y, str, value, size, bind, type, section_index, other );
             while ( str != name && STN_UNDEF != y && y < nchain ) {
-                y = *(Elf_Word*)( hash_section->get_data() +
+                y = *(const Elf_Word*)( hash_section->get_data() +
                         ( 2 + nbucket + y ) * sizeof( Elf_Word ) );
                 get_symbol( y, str, value, size, bind, type, section_index, other );
             }
