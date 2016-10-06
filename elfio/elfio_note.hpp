@@ -74,7 +74,7 @@ class note_section_accessor
         type = convertor( *(const Elf_Word*)( pData + 2*align ) );
         Elf_Word namesz = convertor( *(const Elf_Word*)( pData ) );
         descSize = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
-        Elf_Word max_name_size = note_section->get_size() - note_start_positions[index];
+        Elf_Xword max_name_size = note_section->get_size() - note_start_positions[index];
         if ( namesz            > max_name_size ||
              namesz + descSize > max_name_size ) {
             return false;
