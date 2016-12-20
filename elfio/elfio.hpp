@@ -632,7 +632,8 @@ class elfio
                 // Fix up the alignment
                 if ( !section_generated[index] && sec->is_address_initialized()
                     && SHT_NOBITS != sec->get_type()
-                    && SHT_NULL != sec->get_type() ) {
+                    && SHT_NULL != sec->get_type()
+                    && 0 != sec->get_size() ) {
                     // Align the sections based on the virtual addresses
                     // when possible (this is what matters for execution)
                     Elf64_Off req_offset = sec->get_address() - seg->get_virtual_address();
