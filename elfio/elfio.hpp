@@ -676,6 +676,11 @@ class elfio
                     // when possible (this is what matters for execution)
                     Elf64_Off req_offset = sec->get_address() - seg->get_virtual_address();
                     Elf64_Off cur_offset = current_file_pos - seg_start_pos;
+                    if ( req_offset < cur_offset) {
+                         // something has gone awfully wrong, abort!
+                         // secAlign would turn out negative, seeking backwards and overwriting previous data
+                         return false;
+                    }
                     secAlign             = req_offset - cur_offset;
                 }
                 else if (!section_generated[index]) {
