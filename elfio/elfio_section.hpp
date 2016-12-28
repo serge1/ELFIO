@@ -45,6 +45,7 @@ class section
     ELFIO_GET_SET_ACCESS_DECL( Elf64_Addr,  address            );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   size               );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    name_string_offset );
+    ELFIO_GET_ACCESS_DECL    ( Elf64_Off,   offset             );
 
     virtual const char* get_data() const                                = 0;
     virtual void        set_data( const char* pData, Elf_Word size )    = 0;
@@ -53,7 +54,7 @@ class section
     virtual void        append_data( const std::string& data )          = 0;
 
   protected:
-    ELFIO_GET_SET_ACCESS_DECL( Elf64_Off, offset );
+    ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
     
     virtual void load( std::istream&  f,
