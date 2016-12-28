@@ -248,6 +248,45 @@ class elfio
 
 //------------------------------------------------------------------------------
   private:
+      bool is_offset_in_section( Elf64_Off offset, const section* sec ) const {
+          return offset >= sec->get_offset() && offset < sec->get_offset()+sec->get_size();
+      }
+
+//------------------------------------------------------------------------------
+  public:
+
+      //! returns an empty string if no problems are detected,
+      //! or a string containing an error message if problems are found
+      std::string validate() const {
+
+          // check for overlapping sections in the file
+          for ( int i = 0; i < sections.size(); ++i) {
+              for ( int j = i+1; j < sections.size(); ++j ) {
+                  const section* a = sections[i];
+                  const section* b = sections[j];
+                  if (   !(a->get_type() & SHT_NOBITS)
+                      && !(b->get_type() & SHT_NOBITS)
+                      && (a->get_size() > 0)
+                      && (b->get_size() > 0)
+                      && (a->get_offset() > 0)
+                      && (b->get_offset() > 0)) {
+                      if (   is_offset_in_section( a->get_offset(), b )
+                          || is_offset_in_section( a->get_offset()+a->get_size()-1, b )
+                          || is_offset_in_section( b->get_offset(), a )
+                          || is_offset_in_section( b->get_offset()+b->get_size()-1, a )) {
+                          return "Sections " + a->get_name() + " and " + b->get_name() + " overlap in file";
+                      }
+                  }
+              }
+          }
+
+          // more checks to be added here...
+
+          return "";
+      }
+
+//------------------------------------------------------------------------------
+  private:
 //------------------------------------------------------------------------------
     void clean()
     {
