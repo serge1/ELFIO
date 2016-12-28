@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE( write_obj_i386_64 )
     BOOST_CHECK( output.match_pattern() );
 }
 
-bool write_exe_i386( bool is64bit, bool set_addr = false, Elf64_Addr addr = 0 )
+bool write_exe_i386( const std::string& filename, bool is64bit, bool set_addr = false, Elf64_Addr addr = 0 )
 {
     elfio writer;
 
@@ -201,11 +201,7 @@ bool write_exe_i386( bool is64bit, bool set_addr = false, Elf64_Addr addr = 0 )
     // Create ELF file
     writer.set_entry( 0x08048000 );
 
-    writer.save( 
-        is64bit ?
-        "../elf_examples/write_exe_i386_64" :
-        "../elf_examples/write_exe_i386_32"
-    );
+    writer.save( filename );
 
     return true;
 }
@@ -214,11 +210,13 @@ bool write_exe_i386( bool is64bit, bool set_addr = false, Elf64_Addr addr = 0 )
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( write_exe_i386_32 )
 {
-    BOOST_CHECK_EQUAL( true, write_exe_i386( false ) );
-    output_test_stream output( "../elf_examples/write_exe_i386_32_match", true, false );
-    std::ifstream input( "../elf_examples/write_exe_i386_32", std::ios::binary );
+    const std::string generated_file ( "../elf_examples/write_exe_i386_32" );
+    const std::string reference_file ( "../elf_examples/write_exe_i386_32_match" );
+    BOOST_CHECK_EQUAL( true, write_exe_i386( generated_file, false ) );
+    output_test_stream output( reference_file, true, false );
+    std::ifstream input( generated_file, std::ios::binary );
     output << input.rdbuf();
-    BOOST_CHECK( output.match_pattern() );
+    BOOST_CHECK_MESSAGE( output.match_pattern(), "Comparing " + generated_file + " and " + reference_file );
 }
 
 
@@ -350,16 +348,17 @@ BOOST_AUTO_TEST_CASE( section_header_address_update )
 {
     elfio reader;
 
-    write_exe_i386( false, true, 0x08048100 );
-
-    reader.load( "../elf_examples/write_exe_i386_32" );
+    const std::string file_w_addr ( "../elf_examples/write_exe_i386_32_w_addr" );
+    write_exe_i386( file_w_addr, false, true, 0x08048100 );
+    reader.load( file_w_addr );
     section* sec = reader.sections[".text"];
     BOOST_REQUIRE_NE( sec, (section*)0 );
     BOOST_CHECK_EQUAL( sec->get_address(), 0x08048100 );
+
     
-    write_exe_i386( false, false, 0 );
-    
-    reader.load( "../elf_examples/write_exe_i386_32" );
+    const std::string file_wo_addr ( "../elf_examples/write_exe_i386_32_wo_addr" );
+    write_exe_i386( file_wo_addr, false, false, 0 );
+    reader.load( file_wo_addr );
     sec = reader.sections[".text"];
     BOOST_REQUIRE_NE( sec, (section*)0 );
     BOOST_CHECK_EQUAL( sec->get_address(), 0x08048000 );
@@ -371,13 +370,14 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
 {
     elfio e;
 
-    write_exe_i386( false, true, 0x08048100 );
+    const std::string filename ( "../elf_examples/write_exe_i386_32_section_added" );
+    write_exe_i386( filename, false, true, 0x08048100 );
 
-    e.load( "../elf_examples/write_exe_i386_32" );
+    e.load( filename );
     Elf_Half num     = e.sections.size();
     //section* new_sec = 
         e.sections.add( "new" );
-    e.save( "../elf_examples/write_exe_i386_32" );
+    e.save( filename );
     BOOST_CHECK_EQUAL( num + 1, e.sections.size() );
 }
 

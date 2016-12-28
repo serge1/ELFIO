@@ -20,6 +20,9 @@ elf_examples/elf_dummy_header_i386_64.elf
 elf_examples/elf_dummy_header_ppc_32.elf
 elf_examples/elf_dummy_header_ppc_64.elf
 elf_examples/write_exe_i386_32
+elf_examples/write_exe_i386_32_w_addr
+elf_examples/write_exe_i386_32_wo_addr
+elf_examples/write_exe_i386_32_section_added
 
 /ELFIO.v12.suo
 ELFIOTest/ELFIOTest
