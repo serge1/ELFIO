@@ -709,7 +709,7 @@ class elfio
                     }
                     secAlign             = req_offset - cur_offset;
                 }
-                else if (!section_generated[index]) {
+                else if (!section_generated[index] && !sec->is_address_initialized() ) {
                     // If no address has been specified then only the section
                     // alignment constraint has to be matched
 					Elf_Xword align = sec->get_addr_align();
@@ -719,7 +719,7 @@ class elfio
                     Elf64_Off error = current_file_pos % align;
                     secAlign = ( align - error ) % align;
                 }
-                else {
+                else if (section_generated[index] ) {
                     // Alignment for already generated sections
                     secAlign = sec->get_offset() - seg_start_pos - segment_filesize;
                 }
