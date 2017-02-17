@@ -420,6 +420,18 @@ class elfio
     }
 
 //------------------------------------------------------------------------------
+    //! Checks whether the addresses of the section entirely fall within the given segment.
+    //! It doesn't matter if the addresses are memory addresses, or file offsets,
+    //!  they just need to be in the same address space
+    bool is_sect_in_seg ( Elf64_Off sect_begin, Elf_Xword sect_size, Elf64_Off seg_begin, Elf64_Off seg_end ) {
+        if ( sect_size > 0 ) {
+            return seg_begin <= sect_begin &&  sect_begin + sect_size <= seg_end;
+        } else {
+            return seg_begin <= sect_begin &&  sect_begin < seg_end;
+        }
+    }
+    
+//------------------------------------------------------------------------------
     bool load_segments( std::istream& stream )
     {
         Elf_Half  entry_size = header->get_segment_entry_size();
@@ -454,12 +466,8 @@ class elfio
                 // SHF_ALLOC sections are matched based on the virtual address
                 // otherwise the file offset is matched
                 if( psec->get_flags() & SHF_ALLOC
-                      ? (segVBaseAddr <= psec->get_address()
-                          && psec->get_address() + psec->get_size()
-                           <= segVEndAddr)
-                      : (segBaseOffset <= psec->get_offset()
-                          && psec->get_offset() + psec->get_size()
-                           <= segEndOffset)) {
+                      ? is_sect_in_seg( psec->get_address(), psec->get_size(), segVBaseAddr,  segVEndAddr )
+                      : is_sect_in_seg( psec->get_offset(),  psec->get_size(), segBaseOffset, segEndOffset )) {
                       seg->add_section_index( psec->get_index(),
                                               psec->get_addr_align() );
                 }
