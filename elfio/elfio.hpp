@@ -170,6 +170,8 @@ class elfio
         current_file_pos = header->get_header_size() +
                     header->get_segment_entry_size() * header->get_segments_num();
 
+        calc_segment_alignment();
+        
         is_still_good = layout_segments_and_their_sections();
         is_still_good = is_still_good && layout_sections_without_segments();
         is_still_good = is_still_good && layout_section_table();
@@ -468,8 +470,9 @@ class elfio
                 if( psec->get_flags() & SHF_ALLOC
                       ? is_sect_in_seg( psec->get_address(), psec->get_size(), segVBaseAddr,  segVEndAddr )
                       : is_sect_in_seg( psec->get_offset(),  psec->get_size(), segBaseOffset, segEndOffset )) {
-                      seg->add_section_index( psec->get_index(),
-                                              psec->get_addr_align() );
+                      // Alignment of segment shall not be updated, to preserve original value
+                      // It will be re-calculated on saving.
+                      seg->add_section_index( psec->get_index(), 0 );
                 }
             }
 
@@ -616,6 +619,20 @@ class elfio
 
 
 //------------------------------------------------------------------------------
+    void calc_segment_alignment( )
+    {
+        for( std::vector<segment*>::iterator s = segments_.begin(); s != segments_.end(); ++s ) {
+            segment* seg = *s;
+            for ( int i = 0; i < seg->get_sections_num(); ++i ) {
+                section* sect = sections_[ seg->get_section_index_at(i) ];
+                if ( sect->get_addr_align() > seg->get_align() ) {
+                    seg->set_align( sect->get_addr_align() );
+                }
+            }
+        }
+    }
+
+//------------------------------------------------------------------------------
     bool layout_segments_and_their_sections( )
     {
         std::vector<segment*>  worklist;
@@ -651,11 +668,12 @@ class elfio
             // have to be aligned
             else if ( seg->get_sections_num()
                      && !section_generated[seg->get_section_index_at( 0 )] ) {
-                Elf64_Off cur_page_alignment = current_file_pos % seg->get_align();
-                Elf64_Off req_page_alignment = seg->get_virtual_address() % seg->get_align();
+                Elf_Xword align = seg->get_align() > 0 ? seg->get_align() : 1;
+                Elf64_Off cur_page_alignment = current_file_pos % align;
+                Elf64_Off req_page_alignment = seg->get_virtual_address() % align;
                 Elf64_Off error              = req_page_alignment - cur_page_alignment;
 
-                current_file_pos += ( seg->get_align() + error ) % seg->get_align();
+                current_file_pos += ( seg->get_align() + error ) % align;
                 seg_start_pos = current_file_pos;
             }
             else if ( seg->get_sections_num() ) {
