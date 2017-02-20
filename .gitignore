@@ -11,6 +11,12 @@ ELFIOTest/Debug
 ELFIOTest/ELFIOTest.vcxproj.user
 
 examples/ELFDump/Debug
+examples/anonymizer/anonymizer
+examples/elfdump/elfdump
+examples/tutorial/tutorial
+examples/write_obj/write_obj
+examples/writer/writer
+
 
 # generated elf files
 elf_examples/*_copy

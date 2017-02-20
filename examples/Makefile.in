@@ -261,7 +261,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = elfdump tutorial writer write_obj
+SUBDIRS = elfdump tutorial writer write_obj Anonymizer
 all: all-recursive
 
 .SUFFIXES:
