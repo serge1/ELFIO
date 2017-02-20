@@ -29,6 +29,7 @@ elf_examples/write_exe_i386_32
 elf_examples/write_exe_i386_32_w_addr
 elf_examples/write_exe_i386_32_wo_addr
 elf_examples/write_exe_i386_32_section_added
+elf_examples/ppc-32bit-testcopy*.elf
 
 /ELFIO.v12.suo
 ELFIOTest/ELFIOTest

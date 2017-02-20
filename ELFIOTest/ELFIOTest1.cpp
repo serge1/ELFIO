@@ -219,6 +219,7 @@ BOOST_AUTO_TEST_CASE( write_exe_i386_32 )
     BOOST_CHECK_MESSAGE( output.match_pattern(), "Comparing " + generated_file + " and " + reference_file );
 }
 
+enum Tests { SEG_ALIGN = 1 };
 
 void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
 {
@@ -278,7 +279,7 @@ void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
 }
 
 
-void checkExeAreEqual( std::string file_name1, std::string file_name2 )
+void checkExeAreEqual( std::string file_name1, std::string file_name2, int skipTests = 0 )
 {
     checkObjestsAreEqual( file_name1, file_name2 );
     
@@ -289,8 +290,9 @@ void checkExeAreEqual( std::string file_name1, std::string file_name2 )
     BOOST_REQUIRE_EQUAL( file2.load( file_name2 ), true );
 
     for (int i = 0; i < file1.segments.size(); ++i ) {
-        BOOST_CHECK_EQUAL( file1.segments[i]->get_align(),
-                           file2.segments[i]->get_align() );
+        if ( !(skipTests & SEG_ALIGN) )
+            BOOST_CHECK_EQUAL( file1.segments[i]->get_align(),
+                               file2.segments[i]->get_align() );
         BOOST_CHECK_EQUAL( file1.segments[i]->get_file_size(),
                            file2.segments[i]->get_file_size() );
         BOOST_CHECK_EQUAL( file1.segments[i]->get_memory_size(),
@@ -420,3 +422,17 @@ BOOST_AUTO_TEST_CASE( elf_exe_copy_32 )
     checkExeAreEqual( "../elf_examples/test_ppc",
                       "../elf_examples/test_ppc_copy" );
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( elf_exe_loadsave_ppc32big3 )
+{
+    std::string in = "../elf_examples/ppc-32bit-specimen3.elf";
+    std::string out = "../elf_examples/ppc-32bit-testcopy3.elf";
+    elfio elf;
+    BOOST_REQUIRE_EQUAL( elf.load( in ), true );
+    BOOST_REQUIRE_EQUAL( elf.save( out ), true );
+
+    checkObjestsAreEqual( in, out);
+    checkExeAreEqual( in, out, SEG_ALIGN );
+}
+
