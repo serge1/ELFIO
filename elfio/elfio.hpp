@@ -426,11 +426,11 @@ class elfio
     //! It doesn't matter if the addresses are memory addresses, or file offsets,
     //!  they just need to be in the same address space
     bool is_sect_in_seg ( Elf64_Off sect_begin, Elf_Xword sect_size, Elf64_Off seg_begin, Elf64_Off seg_end ) {
-        if ( sect_size > 0 ) {
-            return seg_begin <= sect_begin &&  sect_begin + sect_size <= seg_end;
-        } else {
-            return seg_begin <= sect_begin &&  sect_begin < seg_end;
-        }
+        return seg_begin <= sect_begin
+                && sect_begin + sect_size <= seg_end
+                && sect_begin < seg_end;  // this is important criteria when sect_size == 0
+                                          // Example:  seg_begin=10, seg_end=12 (-> covering the bytes 10 and 11)
+                                          //           sect_begin=12, sect_size=0  -> shall return false!
     }
     
 //------------------------------------------------------------------------------
