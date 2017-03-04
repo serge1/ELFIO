@@ -931,9 +931,11 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_1 )
 {
     elfio reader;
 
-    reader.load( "../elf_examples/main" );
+    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/main" ),
+                         true );
 
     section* dynsec = reader.sections[".dynamic"];
+    BOOST_REQUIRE( dynsec != NULL);
 
     dynamic_section_accessor da( reader, dynsec );
 
@@ -965,9 +967,11 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_2 )
 {
     elfio reader;
 
-    reader.load( "../elf_examples/libfunc.so" );
+    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/libfunc.so" ),
+                         true );
 
     section* dynsec = reader.sections[".dynamic"];
+    BOOST_REQUIRE( dynsec != NULL);
 
     dynamic_section_accessor da( reader, dynsec );
 
@@ -996,9 +1000,12 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
 {
     elfio reader;
 
-    reader.load( "../elf_examples/main" );
+    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/main" ),
+                         true );
 
     section* dynsec = reader.sections[".dynamic"];
+    BOOST_REQUIRE( dynsec != NULL);
+
     dynamic_section_accessor da( reader, dynsec );
     BOOST_CHECK_EQUAL( da.get_entries_num(), 26 );
 
