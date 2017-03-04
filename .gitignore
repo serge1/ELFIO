@@ -49,6 +49,8 @@ CMakeFiles
 # autotools artifacts
 .deps
 config.status
+test-driver
+ELFIOTest/runELFtests.trs
 
 # eclipse project files
 .settings

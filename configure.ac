@@ -9,5 +9,6 @@ AC_CONFIG_FILES([
            examples/writer/Makefile
            examples/anonymizer/Makefile
            examples/write_obj/Makefile
+           ELFIOTest/Makefile
 ])
 AC_OUTPUT
