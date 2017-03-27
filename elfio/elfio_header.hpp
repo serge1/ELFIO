@@ -38,12 +38,12 @@ class elf_header
     ELFIO_GET_ACCESS_DECL( unsigned char, class              );
     ELFIO_GET_ACCESS_DECL( unsigned char, elf_version        );
     ELFIO_GET_ACCESS_DECL( unsigned char, encoding           );
-    ELFIO_GET_ACCESS_DECL( Elf_Word,      version            );
     ELFIO_GET_ACCESS_DECL( Elf_Half,      header_size        );
     ELFIO_GET_ACCESS_DECL( Elf_Half,      section_entry_size );
     ELFIO_GET_ACCESS_DECL( Elf_Half,      segment_entry_size );
 
-    ELFIO_GET_SET_ACCESS_DECL( unsigned char, os_abi          );
+	ELFIO_GET_SET_ACCESS_DECL( Elf_Word,      version         );
+	ELFIO_GET_SET_ACCESS_DECL( unsigned char, os_abi          );
     ELFIO_GET_SET_ACCESS_DECL( unsigned char, abi_version     );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Half,      type            );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Half,      machine         );
@@ -86,8 +86,6 @@ template< class T > class elf_header_impl : public elf_header
         header.e_ident[EI_CLASS]   = elf_header_impl_types<T>::file_class;
         header.e_ident[EI_DATA]    = encoding;
         header.e_ident[EI_VERSION] = EV_CURRENT;
-        header.e_version           = EV_CURRENT;
-        header.e_version           = (*convertor)( header.e_version );
         header.e_ehsize            = ( sizeof( header ) );
         header.e_ehsize            = (*convertor)( header.e_ehsize );
         header.e_shstrndx          = (*convertor)( (Elf_Half)1 );
@@ -95,6 +93,8 @@ template< class T > class elf_header_impl : public elf_header
         header.e_shentsize         = sizeof( typename elf_header_impl_types<T>::Shdr_type );
         header.e_phentsize         = (*convertor)( header.e_phentsize );
         header.e_shentsize         = (*convertor)( header.e_shentsize );
+
+		set_version( EV_CURRENT );
     }
 
     bool
@@ -119,12 +119,12 @@ template< class T > class elf_header_impl : public elf_header
     ELFIO_GET_ACCESS( unsigned char, class,              header.e_ident[EI_CLASS] );
     ELFIO_GET_ACCESS( unsigned char, elf_version,        header.e_ident[EI_VERSION] );
     ELFIO_GET_ACCESS( unsigned char, encoding,           header.e_ident[EI_DATA] );
-    ELFIO_GET_ACCESS( Elf_Word,      version,            header.e_version );
     ELFIO_GET_ACCESS( Elf_Half,      header_size,        header.e_ehsize );
     ELFIO_GET_ACCESS( Elf_Half,      section_entry_size, header.e_shentsize );
     ELFIO_GET_ACCESS( Elf_Half,      segment_entry_size, header.e_phentsize );
 
-    ELFIO_GET_SET_ACCESS( unsigned char, os_abi,          header.e_ident[EI_OSABI] );
+	ELFIO_GET_SET_ACCESS( Elf_Word,      version,         header.e_version);
+	ELFIO_GET_SET_ACCESS( unsigned char, os_abi,          header.e_ident[EI_OSABI] );
     ELFIO_GET_SET_ACCESS( unsigned char, abi_version,     header.e_ident[EI_ABIVERSION] );
     ELFIO_GET_SET_ACCESS( Elf_Half,      type,            header.e_type );
     ELFIO_GET_SET_ACCESS( Elf_Half,      machine,         header.e_machine );
