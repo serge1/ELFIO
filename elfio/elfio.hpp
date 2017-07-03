@@ -111,11 +111,9 @@ class elfio
     {
         clean();
 
-        unsigned char e_ident[EI_NIDENT];
-
-        // Read ELF file signature
-        stream.seekg( 0 );
-        stream.read( reinterpret_cast<char*>( &e_ident ), sizeof( e_ident ) );
+	unsigned char e_ident[EI_NIDENT];
+	// Read ELF file signature
+	stream.read( reinterpret_cast<char*>( &e_ident ), sizeof( e_ident ) );
 
         // Is it ELF file?
         if ( stream.gcount() != sizeof( e_ident ) ||
@@ -132,7 +130,6 @@ class elfio
         }
 
         convertor.setup( e_ident[EI_DATA] );
-
         header = create_header( e_ident[EI_CLASS], e_ident[EI_DATA] );
         if ( 0 == header ) {
             return false;
