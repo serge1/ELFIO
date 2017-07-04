@@ -148,12 +148,11 @@ class elfio
     {
         std::ofstream f( file_name.c_str(), std::ios::out | std::ios::binary );
 
-        if ( !f ) {
+        if ( !f || !header) {
             return false;
         }
 
         bool is_still_good = true;
-
         // Define layout specific header fields
         // The position of the segment table is fixed after the header.
         // The position of the section table is variable and needs to be fixed
