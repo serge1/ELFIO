@@ -92,6 +92,21 @@ class segment_impl : public segment
     ELFIO_GET_SET_ACCESS( Elf_Xword,  file_size,        ph.p_filesz );
     ELFIO_GET_SET_ACCESS( Elf_Xword,  memory_size,      ph.p_memsz  );
     ELFIO_GET_ACCESS( Elf64_Off, offset, ph.p_offset );
+    size_t stream_size;
+
+//------------------------------------------------------------------------------
+    const size_t 
+    get_stream_size() const 
+    {
+       return stream_size;
+    }
+
+//------------------------------------------------------------------------------
+    void 
+    set_stream_size(size_t value)
+    {
+       stream_size = value;
+    }
 
 //------------------------------------------------------------------------------
     Elf_Half
@@ -176,6 +191,10 @@ class segment_impl : public segment
     load( std::istream&  stream,
           std::streampos header_offset )
     {
+
+	stream.seekg ( 0, stream.end );
+	set_stream_size ( stream.tellg() );
+
         stream.seekg( header_offset );
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
         is_offset_set = true;
@@ -183,14 +202,19 @@ class segment_impl : public segment
         if ( PT_NULL != get_type() && 0 != get_file_size() ) {
             stream.seekg( (*convertor)( ph.p_offset ) );
             Elf_Xword size = get_file_size();
-            try {
-                data = new char[size];
-            } catch (const std::bad_alloc&) {
-                data = 0;
-            }
-            if ( 0 != data ) {
-                stream.read( data, size );
-            }
+	    if ( size > get_stream_size() ) {
+		data = 0;
+	    } else {
+		try {
+		    data = new char[size + 1];
+		} catch (const std::bad_alloc&) {
+		    data = 0;
+		}
+		if ( 0 != data ) {
+		    stream.read( data, size );
+		    data[size] = 0;
+		}
+	    }
         }
     }
 
