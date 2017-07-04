@@ -243,19 +243,20 @@ class section_impl : public section
 
 
         Elf_Xword size = get_size();
-        if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() && size < get_stream_size()) {
-            try {
-                data = new char[size];
-            } catch (const std::bad_alloc&) {
-                data      = 0;
-                data_size = 0;
-            }
-            if ( 0 != size ) {
-                stream.seekg( (*convertor)( header.sh_offset ) );
-                stream.read( data, size );
-                data_size = size;
-            }
-        }
+	if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() && size < get_stream_size()) {
+	    try {
+		data = new char[size + 1];
+	    } catch (const std::bad_alloc&) {
+		data      = 0;
+		data_size = 0;
+	    }
+	    if ( 0 != size ) {
+		stream.seekg( (*convertor)( header.sh_offset ) );
+		stream.read( data, size );
+		data[size] = 0; //ensure data is ended with 0 to avoid oob read
+		data_size = size;
+	    }
+	}
     }
 
 //------------------------------------------------------------------------------
