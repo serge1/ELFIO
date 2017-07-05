@@ -50,19 +50,21 @@ THE SOFTWARE.
 TYPE                                           \
 get_##FNAME() const                            \
 {                                              \
-    return header->get_##FNAME();              \
+  return header? header->get_##FNAME() : 0;    \
 }
 
 #define ELFIO_HEADER_ACCESS_GET_SET( TYPE, FNAME ) \
 TYPE                                               \
 get_##FNAME() const                                \
 {                                                  \
-    return header->get_##FNAME();                  \
+  return header? header->get_##FNAME() : 0;        \
 }                                                  \
 void                                               \
 set_##FNAME( TYPE val )                            \
-{                                                  \
-    header->set_##FNAME( val );                    \
+{ 						   \
+  if (header) { 			    	   \
+      header->set_##FNAME( val );                  \
+  } 						   \
 }                                                  \
 
 namespace ELFIO {

@@ -42,8 +42,8 @@ class elf_header
     ELFIO_GET_ACCESS_DECL( Elf_Half,      section_entry_size );
     ELFIO_GET_ACCESS_DECL( Elf_Half,      segment_entry_size );
 
-	ELFIO_GET_SET_ACCESS_DECL( Elf_Word,      version         );
-	ELFIO_GET_SET_ACCESS_DECL( unsigned char, os_abi          );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,      version         );
+    ELFIO_GET_SET_ACCESS_DECL( unsigned char, os_abi          );
     ELFIO_GET_SET_ACCESS_DECL( unsigned char, abi_version     );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Half,      type            );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Half,      machine         );
@@ -123,8 +123,8 @@ template< class T > class elf_header_impl : public elf_header
     ELFIO_GET_ACCESS( Elf_Half,      section_entry_size, header.e_shentsize );
     ELFIO_GET_ACCESS( Elf_Half,      segment_entry_size, header.e_phentsize );
 
-	ELFIO_GET_SET_ACCESS( Elf_Word,      version,         header.e_version);
-	ELFIO_GET_SET_ACCESS( unsigned char, os_abi,          header.e_ident[EI_OSABI] );
+    ELFIO_GET_SET_ACCESS( Elf_Word,      version,         header.e_version);
+    ELFIO_GET_SET_ACCESS( unsigned char, os_abi,          header.e_ident[EI_OSABI] );
     ELFIO_GET_SET_ACCESS( unsigned char, abi_version,     header.e_ident[EI_ABIVERSION] );
     ELFIO_GET_SET_ACCESS( Elf_Half,      type,            header.e_type );
     ELFIO_GET_SET_ACCESS( Elf_Half,      machine,         header.e_machine );
