@@ -30,12 +30,13 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
-class string_section_accessor
+template< class S >
+class string_section_accessor_template
 {
   public:
 //------------------------------------------------------------------------------
-    string_section_accessor( section* section_ ) :
-                             string_section( section_ )
+    string_section_accessor_template( S* section_ ) :
+                                      string_section( section_ )
     {
     }
 
@@ -88,8 +89,11 @@ class string_section_accessor
 
 //------------------------------------------------------------------------------
   private:
-    section* string_section;
+    S* string_section;
 };
+
+using string_section_accessor = string_section_accessor_template<section>;
+using const_string_section_accessor = string_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

@@ -73,13 +73,14 @@ template<> struct get_sym_and_type< Elf64_Rela >
 
 
 //------------------------------------------------------------------------------
-class relocation_section_accessor
+template< class S >
+class relocation_section_accessor_template
 {
   public:
 //------------------------------------------------------------------------------
-    relocation_section_accessor( const elfio& elf_file_, section* section_ ) :
-                                 elf_file( elf_file_ ),
-                                 relocation_section( section_ )
+    relocation_section_accessor_template( const elfio& elf_file_, S* section_ ) :
+                                          elf_file( elf_file_ ),
+                                          relocation_section( section_ )
     {
     }
 
@@ -361,8 +362,11 @@ class relocation_section_accessor
 //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    section*     relocation_section;
+    S*           relocation_section;
 };
+
+using relocation_section_accessor = relocation_section_accessor_template<section>;
+using const_relocation_section_accessor = relocation_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

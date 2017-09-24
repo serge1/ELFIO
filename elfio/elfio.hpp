@@ -853,6 +853,16 @@ class elfio
         }
 
 //------------------------------------------------------------------------------
+        std::vector<section*>::const_iterator begin() const {
+            return parent->sections_.cbegin();
+        }
+
+//------------------------------------------------------------------------------
+        std::vector<section*>::const_iterator end() const {
+            return parent->sections_.cend();
+        }
+
+//------------------------------------------------------------------------------
       private:
         elfio* parent;
     } sections;
@@ -895,6 +905,16 @@ class elfio
 //------------------------------------------------------------------------------
         std::vector<segment*>::iterator end() {
             return parent->segments_.end();
+        }
+
+//------------------------------------------------------------------------------
+        std::vector<segment*>::const_iterator begin() const {
+            return parent->segments_.cbegin();
+        }
+
+//------------------------------------------------------------------------------
+        std::vector<segment*>::const_iterator end() const {
+            return parent->segments_.cend();
         }
 
 //------------------------------------------------------------------------------

@@ -26,13 +26,14 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
-class dynamic_section_accessor
+template< class S >
+class dynamic_section_accessor_template
 {
   public:
 //------------------------------------------------------------------------------
-    dynamic_section_accessor( const elfio& elf_file_, section* section_ ) :
-                              elf_file( elf_file_ ),
-                              dynamic_section( section_ )
+    dynamic_section_accessor_template( const elfio& elf_file_, S* section_ ) :
+                                       elf_file( elf_file_ ),
+                                       dynamic_section( section_ )
     {
     }
 
@@ -245,8 +246,11 @@ class dynamic_section_accessor
 //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    section*     dynamic_section;
+    S*           dynamic_section;
 };
+
+using dynamic_section_accessor = dynamic_section_accessor_template<section>;
+using const_dynamic_section_accessor = dynamic_section_accessor_template<const section>;
 
 } // namespace ELFIO
 
