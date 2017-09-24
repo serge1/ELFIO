@@ -38,12 +38,13 @@ namespace ELFIO {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class note_section_accessor
+template< class S >
+class note_section_accessor_template
 {
   public:
 //------------------------------------------------------------------------------
-    note_section_accessor( const elfio& elf_file_, section* section_ ) :
-                           elf_file( elf_file_ ), note_section( section_ )
+    note_section_accessor_template( const elfio& elf_file_, S* section_ ) :
+                                    elf_file( elf_file_ ), note_section( section_ )
     {
         process_section();
     }
@@ -157,9 +158,12 @@ class note_section_accessor
 //------------------------------------------------------------------------------
   private:
     const elfio&           elf_file;
-    section*               note_section;
+    S*                     note_section;
     std::vector<Elf_Xword> note_start_positions;
 };
+
+using note_section_accessor = note_section_accessor_template<section>;
+using const_note_section_accessor = note_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

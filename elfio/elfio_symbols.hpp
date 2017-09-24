@@ -26,13 +26,14 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
-class symbol_section_accessor
+template< class S >
+class symbol_section_accessor_template
 {
   public:
 //------------------------------------------------------------------------------
-    symbol_section_accessor( const elfio& elf_file_, section* symbol_section_ ) :
-                             elf_file( elf_file_ ),
-                             symbol_section( symbol_section_ )
+    symbol_section_accessor_template( const elfio& elf_file_, S* symbol_section_ ) :
+                                      elf_file( elf_file_ ),
+                                      symbol_section( symbol_section_ )
     {
         find_hash_section();
     }
@@ -268,10 +269,13 @@ class symbol_section_accessor
 //------------------------------------------------------------------------------
   private:
     const elfio&   elf_file;
-    section*       symbol_section;
+    S*             symbol_section;
     Elf_Half       hash_section_index;
     const section* hash_section;
 };
+
+using symbol_section_accessor = symbol_section_accessor_template<section>;
+using const_symbol_section_accessor = symbol_section_accessor_template<const section>;
 
 } // namespace ELFIO
 
