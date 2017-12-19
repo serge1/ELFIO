@@ -95,8 +95,8 @@ class segment_impl : public segment
     size_t stream_size;
 
 //------------------------------------------------------------------------------
-    const size_t 
-    get_stream_size() const 
+    size_t
+    get_stream_size() const
     {
        return stream_size;
     }
