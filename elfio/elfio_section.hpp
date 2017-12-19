@@ -47,7 +47,7 @@ class section
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    name_string_offset );
     ELFIO_GET_ACCESS_DECL    ( Elf64_Off,   offset             );
     size_t stream_size;
-    const size_t get_stream_size() const 
+    size_t get_stream_size() const
      {
 	return stream_size;
      }
