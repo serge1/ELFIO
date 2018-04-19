@@ -169,7 +169,7 @@ class elfio
                     header->get_segment_entry_size() * header->get_segments_num();
 
         calc_segment_alignment();
-        
+
         is_still_good = layout_segments_and_their_sections();
         is_still_good = is_still_good && layout_sections_without_segments();
         is_still_good = is_still_good && layout_section_table();
@@ -430,7 +430,7 @@ class elfio
                                           // Example:  seg_begin=10, seg_end=12 (-> covering the bytes 10 and 11)
                                           //           sect_begin=12, sect_size=0  -> shall return false!
     }
-    
+
 //------------------------------------------------------------------------------
     bool load_segments( std::istream& stream )
     {
@@ -520,7 +520,7 @@ class elfio
     bool is_section_without_segment( unsigned int section_index )
     {
         bool found = false;
-        
+
         for ( unsigned int j = 0; !found && ( j < segments.size() ); ++j ) {
             for ( unsigned int k = 0;
                   !found && ( k < segments[j]->get_sections_num() );
@@ -553,7 +553,7 @@ class elfio
     {
         std::vector<segment*> res;
         std::deque<segment*>  worklist;
-        
+
         res.reserve(segments.size());
         std::copy( segments_.begin(), segments_.end(),
                    std::back_inserter( worklist )) ;
@@ -563,6 +563,9 @@ class elfio
         for( size_t i = 0; i < worklist.size(); ++i ) {
             if( i != nextSlot && worklist[i]->is_offset_initialized()
                 && worklist[i]->get_offset() == 0 ) {
+                if (worklist[nextSlot]->get_offset() == 0) {
+                    ++nextSlot;
+                }
                 std::swap(worklist[i],worklist[nextSlot]);
                 ++nextSlot;
             }
@@ -799,11 +802,11 @@ class elfio
         section* operator[]( unsigned int index ) const
         {
             section* sec = 0;
-            
+
             if ( index < parent->sections_.size() ) {
                 sec = parent->sections_[index];
             }
-            
+
             return sec;
         }
 
@@ -839,7 +842,7 @@ class elfio
 
             return new_section;
         }
-        
+
 //------------------------------------------------------------------------------
         std::vector<section*>::iterator begin() {
             return parent->sections_.begin();
