@@ -408,8 +408,8 @@ class elfio
         if ( SHN_UNDEF != shstrndx ) {
             string_section_accessor str_reader( sections[shstrndx] );
             for ( Elf_Half i = 0; i < num; ++i ) {
-                Elf_Word offset = sections[i]->get_name_string_offset();
-                const char* p = str_reader.get_string( offset );
+                Elf_Word section_offset = sections[i]->get_name_string_offset();
+                const char* p = str_reader.get_string( section_offset );
                 if ( p != 0 ) {
                     sections[i]->set_name( p );
                 }
