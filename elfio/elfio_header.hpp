@@ -93,8 +93,7 @@ template< class T > class elf_header_impl : public elf_header
         header.e_shentsize         = sizeof( typename elf_header_impl_types<T>::Shdr_type );
         header.e_phentsize         = (*convertor)( header.e_phentsize );
         header.e_shentsize         = (*convertor)( header.e_shentsize );
-
-		set_version( EV_CURRENT );
+        header.e_version           = EV_CURRENT;
     }
 
     bool
