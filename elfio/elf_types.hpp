@@ -489,7 +489,7 @@ typedef uint64_t Elf64_Off;
 #define STB_HIPROC   15
 
 // Note types
-#define NT_AMDGPU_METADATA 1
+#define NT_AMDGPU_METADATA          1
 #define NT_AMD_AMDGPU_HSA_METADATA 10
 #define NT_AMD_AMDGPU_ISA          11
 #define NT_AMD_AMDGPU_PAL_METADATA 12
