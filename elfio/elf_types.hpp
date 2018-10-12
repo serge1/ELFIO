@@ -349,24 +349,75 @@ typedef uint64_t Elf64_Off;
 #define ELFDATA2MSB 2
 
 // OS extensions
-#define ELFOSABI_NONE     0 // No extensions or unspecified
-#define ELFOSABI_HPUX     1 // Hewlett-Packard HP-UX
-#define ELFOSABI_NETBSD   2 // NetBSD
-#define ELFOSABI_LINUX    3 // Linux
-#define ELFOSABI_SOLARIS  6 // Sun Solaris
-#define ELFOSABI_AIX      7 // AIX
-#define ELFOSABI_IRIX     8 // IRIX
-#define ELFOSABI_FREEBSD  9 // FreeBSD
-#define ELFOSABI_TRU64   10 // Compaq TRU64 UNIX
-#define ELFOSABI_MODESTO 11 // Novell Modesto
-#define ELFOSABI_OPENBSD 12 // Open BSD
-#define ELFOSABI_OPENVMS 13 // Open VMS
-#define ELFOSABI_NSK     14 // Hewlett-Packard Non-Stop Kernel
-#define ELFOSABI_AROS    15 // Amiga Research OS
-#define ELFOSABI_FENIXOS 16 // The FenixOS highly scalable multi-core OS
-//                       64-255 Architecture-specific value range
+#define ELFOSABI_NONE           0 // No extensions or unspecified
+#define ELFOSABI_HPUX           1 // Hewlett-Packard HP-UX
+#define ELFOSABI_NETBSD         2 // NetBSD
+#define ELFOSABI_LINUX          3 // Linux
+#define ELFOSABI_SOLARIS        6 // Sun Solaris
+#define ELFOSABI_AIX            7 // AIX
+#define ELFOSABI_IRIX           8 // IRIX
+#define ELFOSABI_FREEBSD        9 // FreeBSD
+#define ELFOSABI_TRU64         10 // Compaq TRU64 UNIX
+#define ELFOSABI_MODESTO       11 // Novell Modesto
+#define ELFOSABI_OPENBSD       12 // Open BSD
+#define ELFOSABI_OPENVMS       13 // Open VMS
+#define ELFOSABI_NSK           14 // Hewlett-Packard Non-Stop Kernel
+#define ELFOSABI_AROS          15 // Amiga Research OS
+#define ELFOSABI_FENIXOS       16 // The FenixOS highly scalable multi-core OS
+//                             64-255 Architecture-specific value range
+#define ELFOSABI_AMDGPU_HSA    64 // AMDGPU OS for HSA compatible compute
+                                  // kernels.
+#define ELFOSABI_AMDGPU_PAL    65 // AMDGPU OS for AMD PAL compatible graphics
+                                  // shaders and compute kernels.
+#define ELFOSABI_AMDGPU_MESA3D 66 // AMDGPU OS for Mesa3D compatible graphics
+                                  // shaders and compute kernels.
 
 
+// AMDGPU specific e_flags
+#define EF_AMDGPU_MACH  0x0ff // AMDGPU processor selection mask.
+#define EF_AMDGPU_XNACK 0x100 // Indicates if the XNACK target feature is
+                              // enabled for all code contained in the ELF.
+// AMDGPU processors
+#define EF_AMDGPU_MACH_NONE                0x000 // Unspecified processor.
+#define EF_AMDGPU_MACH_R600_R600           0x001
+#define EF_AMDGPU_MACH_R600_R630           0x002
+#define EF_AMDGPU_MACH_R600_RS880          0x003
+#define EF_AMDGPU_MACH_R600_RV670          0x004
+#define EF_AMDGPU_MACH_R600_RV710          0x005
+#define EF_AMDGPU_MACH_R600_RV730          0x006
+#define EF_AMDGPU_MACH_R600_RV770          0x007
+#define EF_AMDGPU_MACH_R600_CEDAR          0x008
+#define EF_AMDGPU_MACH_R600_CYPRESS        0x009
+#define EF_AMDGPU_MACH_R600_JUNIPER        0x00a
+#define EF_AMDGPU_MACH_R600_REDWOOD        0x00b
+#define EF_AMDGPU_MACH_R600_SUMO           0x00c
+#define EF_AMDGPU_MACH_R600_BARTS          0x00d
+#define EF_AMDGPU_MACH_R600_CAICOS         0x00e
+#define EF_AMDGPU_MACH_R600_CAYMAN         0x00f
+#define EF_AMDGPU_MACH_R600_TURKS          0x010
+#define EF_AMDGPU_MACH_R600_RESERVED_FIRST 0x011
+#define EF_AMDGPU_MACH_R600_RESERVED_LAST  0x01f
+#define EF_AMDGPU_MACH_R600_FIRST          EF_AMDGPU_MACH_R600_R600
+#define EF_AMDGPU_MACH_R600_LAST           EF_AMDGPU_MACH_R600_TURKS
+#define EF_AMDGPU_MACH_AMDGCN_GFX600       0x020
+#define EF_AMDGPU_MACH_AMDGCN_GFX601       0x021
+#define EF_AMDGPU_MACH_AMDGCN_GFX700       0x022
+#define EF_AMDGPU_MACH_AMDGCN_GFX701       0x023
+#define EF_AMDGPU_MACH_AMDGCN_GFX702       0x024
+#define EF_AMDGPU_MACH_AMDGCN_GFX703       0x025
+#define EF_AMDGPU_MACH_AMDGCN_GFX704       0x026
+#define EF_AMDGPU_MACH_AMDGCN_GFX801       0x028
+#define EF_AMDGPU_MACH_AMDGCN_GFX802       0x029
+#define EF_AMDGPU_MACH_AMDGCN_GFX803       0x02a
+#define EF_AMDGPU_MACH_AMDGCN_GFX810       0x02b
+#define EF_AMDGPU_MACH_AMDGCN_GFX900       0x02c
+#define EF_AMDGPU_MACH_AMDGCN_GFX902       0x02d
+#define EF_AMDGPU_MACH_AMDGCN_GFX904       0x02e
+#define EF_AMDGPU_MACH_AMDGCN_GFX906       0x02f
+#define EF_AMDGPU_MACH_AMDGCN_RESERVED0    0x027
+#define EF_AMDGPU_MACH_AMDGCN_RESERVED1    0x030
+#define EF_AMDGPU_MACH_AMDGCN_FIRST        EF_AMDGPU_MACH_AMDGCN_GFX600
+#define EF_AMDGPU_MACH_AMDGCN_LAST         EF_AMDGPU_MACH_AMDGCN_GFX906
 
 /////////////////////
 // Sections constants
@@ -437,18 +488,25 @@ typedef uint64_t Elf64_Off;
 #define STB_LOPROC   13
 #define STB_HIPROC   15
 
+// Note types
+#define NT_AMDGPU_METADATA 1
+#define NT_AMD_AMDGPU_HSA_METADATA 10
+#define NT_AMD_AMDGPU_ISA          11
+#define NT_AMD_AMDGPU_PAL_METADATA 12
+
 // Symbol types
-#define STT_NOTYPE   0
-#define STT_OBJECT   1
-#define STT_FUNC     2
-#define STT_SECTION  3
-#define STT_FILE     4
-#define STT_COMMON   5
-#define STT_TLS      6
-#define STT_LOOS    10
-#define STT_HIOS    12
-#define STT_LOPROC  13
-#define STT_HIPROC  15
+#define STT_NOTYPE             0
+#define STT_OBJECT             1
+#define STT_FUNC               2
+#define STT_SECTION            3
+#define STT_FILE               4
+#define STT_COMMON             5
+#define STT_TLS                6
+#define STT_LOOS              10
+#define STT_AMDGPU_HSA_KERNEL 10
+#define STT_HIOS              12
+#define STT_LOPROC            13
+#define STT_HIPROC            15
 
 // Symbol visibility
 #define STV_DEFAULT   0
@@ -462,30 +520,43 @@ typedef uint64_t Elf64_Off;
 // Relocation types
 #define R_386_NONE             0
 #define R_X86_64_NONE          0
+#define R_AMDGPU_NONE          0
 #define R_386_32               1
 #define R_X86_64_64            1
+#define R_AMDGPU_ABS32_LO      1
 #define R_386_PC32             2
 #define R_X86_64_PC32          2
+#define R_AMDGPU_ABS32_HI      2
 #define R_386_GOT32            3
 #define R_X86_64_GOT32         3
+#define R_AMDGPU_ABS64         3
 #define R_386_PLT32            4
 #define R_X86_64_PLT32         4
+#define R_AMDGPU_REL32         4
 #define R_386_COPY             5
 #define R_X86_64_COPY          5
+#define R_AMDGPU_REL64         5
 #define R_386_GLOB_DAT         6
 #define R_X86_64_GLOB_DAT      6
+#define R_AMDGPU_ABS32         6
 #define R_386_JMP_SLOT         7
 #define R_X86_64_JUMP_SLOT     7
+#define R_AMDGPU_GOTPCREL      7
 #define R_386_RELATIVE         8
 #define R_X86_64_RELATIVE      8
+#define R_AMDGPU_GOTPCREL32_LO 8
 #define R_386_GOTOFF           9
 #define R_X86_64_GOTPCREL      9
+#define R_AMDGPU_GOTPCREL32_HI 9
 #define R_386_GOTPC           10
 #define R_X86_64_32           10
+#define R_AMDGPU_REL32_LO     10
 #define R_386_32PLT           11
 #define R_X86_64_32S          11
+#define R_AMDGPU_REL32_HI     11
 #define R_X86_64_16           12
 #define R_X86_64_PC16         13
+#define R_AMDGPU_RELATIVE64   13
 #define R_386_TLS_TPOFF       14
 #define R_X86_64_8            14
 #define R_386_TLS_IE          15
