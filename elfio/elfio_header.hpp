@@ -86,6 +86,7 @@ template< class T > class elf_header_impl : public elf_header
         header.e_ident[EI_CLASS]   = elf_header_impl_types<T>::file_class;
         header.e_ident[EI_DATA]    = encoding;
         header.e_ident[EI_VERSION] = EV_CURRENT;
+        header.e_version           = (*convertor)( (Elf_Word)EV_CURRENT );
         header.e_ehsize            = ( sizeof( header ) );
         header.e_ehsize            = (*convertor)( header.e_ehsize );
         header.e_shstrndx          = (*convertor)( (Elf_Half)1 );
@@ -93,8 +94,6 @@ template< class T > class elf_header_impl : public elf_header
         header.e_shentsize         = sizeof( typename elf_header_impl_types<T>::Shdr_type );
         header.e_phentsize         = (*convertor)( header.e_phentsize );
         header.e_shentsize         = (*convertor)( header.e_shentsize );
-
-		set_version( EV_CURRENT );
     }
 
     bool
