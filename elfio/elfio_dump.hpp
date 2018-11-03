@@ -752,7 +752,7 @@ class dump
 //------------------------------------------------------------------------------
     static void
     dynamic_tag( std::ostream& out,
-                 int           no,
+                 Elf_Xword     no,
                  Elf_Xword     tag,
                  Elf_Xword     value,
                  std::string   str,
