@@ -4,11 +4,13 @@ Release
 ELFIO.sdf
 ELFIO.v11.suo
 ELFIO.opensdf
+ELFIO.v12.suo
 .vs
 
-
 ELFIOTest/Debug
+ELFIOTest/Release
 ELFIOTest/ELFIOTest.vcxproj.user
+ELFIOTest/ELFIOTest
 
 examples/ELFDump/Debug
 examples/anonymizer/anonymizer
@@ -31,9 +33,6 @@ elf_examples/write_exe_i386_32_wo_addr
 elf_examples/write_exe_i386_32_section_added
 elf_examples/ppc-32bit-testcopy*.elf
 
-/ELFIO.v12.suo
-ELFIOTest/ELFIOTest
-
 # various unwanted files (backups, objects, cmake artifacts)
 *~
 *.o
@@ -52,7 +51,7 @@ CMakeFiles
 config.status
 test-driver
 ELFIOTest/runELFtests.trs
-Makefile.in
+#Makefile.in
 
 # eclipse project files
 .settings
