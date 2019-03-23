@@ -91,8 +91,8 @@ class dynamic_section_accessor_template
 
 //------------------------------------------------------------------------------
     void
-    add_entry( Elf_Xword& tag,
-               Elf_Xword& value )
+    add_entry( Elf_Xword tag,
+               Elf_Xword value )
     {
         if ( elf_file.get_class() == ELFCLASS32 ) {
             generic_add_entry< Elf32_Dyn >( tag, value );
@@ -104,8 +104,8 @@ class dynamic_section_accessor_template
 
 //------------------------------------------------------------------------------
     void
-    add_entry( Elf_Xword&   tag,
-               std::string& str )
+    add_entry(       Elf_Xword   tag,
+               const std::string& str )
     {
         string_section_accessor strsec =
             elf_file.sections[ get_string_table_index() ];
