@@ -113,9 +113,9 @@ class elfio
     {
         clean();
 
-	unsigned char e_ident[EI_NIDENT];
-	// Read ELF file signature
-	stream.read( reinterpret_cast<char*>( &e_ident ), sizeof( e_ident ) );
+        unsigned char e_ident[EI_NIDENT];
+        // Read ELF file signature
+        stream.read( reinterpret_cast<char*>( &e_ident ), sizeof( e_ident ) );
 
         // Is it ELF file?
         if ( stream.gcount() != sizeof( e_ident ) ||
@@ -721,10 +721,10 @@ class elfio
                 else if (!section_generated[index] && !sec->is_address_initialized() ) {
                     // If no address has been specified then only the section
                     // alignment constraint has to be matched
-					Elf_Xword align = sec->get_addr_align();
-					if (align == 0) {
-						align = 1;
-					}
+                    Elf_Xword align = sec->get_addr_align();
+                    if (align == 0) {
+                        align = 1;
+                    }
                     Elf64_Off error = current_file_pos % align;
                     secAlign = ( align - error ) % align;
                 }
