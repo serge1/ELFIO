@@ -148,9 +148,19 @@ class elfio
 //------------------------------------------------------------------------------
     bool save( const std::string& file_name )
     {
-        std::ofstream f( file_name.c_str(), std::ios::out | std::ios::binary );
+        std::ofstream stream;
+        stream.open( file_name.c_str(), std::ios::out | std::ios::binary );
+        if ( !stream ) {
+            return false;
+        }
 
-        if ( !f || !header) {
+        return save(stream);
+    }
+
+//------------------------------------------------------------------------------
+    bool save( std::ostream &stream )
+    {
+        if ( !stream || !header) {
             return false;
         }
 
@@ -174,11 +184,9 @@ class elfio
         is_still_good = is_still_good && layout_sections_without_segments();
         is_still_good = is_still_good && layout_section_table();
 
-        is_still_good = is_still_good && save_header( f );
-        is_still_good = is_still_good && save_sections( f );
-        is_still_good = is_still_good && save_segments( f );
-
-        f.close();
+        is_still_good = is_still_good && save_header( stream );
+        is_still_good = is_still_good && save_sections( stream );
+        is_still_good = is_still_good && save_segments( stream );
 
         return is_still_good;
     }
@@ -482,13 +490,13 @@ class elfio
     }
 
 //------------------------------------------------------------------------------
-    bool save_header( std::ofstream& f )
+    bool save_header( std::ostream& f )
     {
         return header->save( f );
     }
 
 //------------------------------------------------------------------------------
-    bool save_sections( std::ofstream& f )
+    bool save_sections( std::ostream& f )
     {
         for ( unsigned int i = 0; i < sections_.size(); ++i ) {
             section *sec = sections_.at(i);
@@ -503,7 +511,7 @@ class elfio
     }
 
 //------------------------------------------------------------------------------
-    bool save_segments( std::ofstream& f )
+    bool save_segments( std::ostream& f )
     {
         for ( unsigned int i = 0; i < segments_.size(); ++i ) {
             segment *seg = segments_.at(i);
