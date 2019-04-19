@@ -57,7 +57,7 @@ class segment
     
     virtual const std::vector<Elf_Half>& get_sections() const               = 0;
     virtual void load( std::istream& stream, std::streampos header_offset ) = 0;
-    virtual void save( std::ostream& f,      std::streampos header_offset,
+    virtual void save( std::ostream& stream, std::streampos header_offset,
                                              std::streampos data_offset )   = 0;
 };
 
@@ -192,8 +192,8 @@ class segment_impl : public segment
           std::streampos header_offset )
     {
 
-	stream.seekg ( 0, stream.end );
-	set_stream_size ( stream.tellg() );
+    stream.seekg ( 0, stream.end );
+    set_stream_size ( stream.tellg() );
 
         stream.seekg( header_offset );
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
@@ -202,31 +202,34 @@ class segment_impl : public segment
         if ( PT_NULL != get_type() && 0 != get_file_size() ) {
             stream.seekg( (*convertor)( ph.p_offset ) );
             Elf_Xword size = get_file_size();
-	    if ( size > get_stream_size() ) {
-		data = 0;
-	    } else {
-		try {
-		    data = new char[size + 1];
-		} catch (const std::bad_alloc&) {
-		    data = 0;
-		}
-		if ( 0 != data ) {
-		    stream.read( data, size );
-		    data[size] = 0;
-		}
-	    }
+
+            if ( size > get_stream_size() ) {
+                data = 0;
+            }
+            else {
+                try {
+                    data = new char[size + 1];
+                } catch (const std::bad_alloc&) {
+                    data = 0;
+                }
+            
+                if ( 0 != data ) {
+                    stream.read( data, size );
+                    data[size] = 0;
+                }
+            }
         }
     }
 
 //------------------------------------------------------------------------------
-    void save( std::ostream&  f,
+    void save( std::ostream&  stream,
                std::streampos header_offset,
                std::streampos data_offset )
     {
         ph.p_offset = data_offset;
         ph.p_offset = (*convertor)(ph.p_offset);
-        f.seekp( header_offset );
-        f.write( reinterpret_cast<const char*>( &ph ), sizeof( ph ) );
+        stream.seekp( header_offset );
+        stream.write( reinterpret_cast<const char*>( &ph ), sizeof( ph ) );
     }
 
 //------------------------------------------------------------------------------

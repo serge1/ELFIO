@@ -61,10 +61,10 @@ get_##FNAME() const                                \
 }                                                  \
 void                                               \
 set_##FNAME( TYPE val )                            \
-{ 						   \
-  if (header) { 			    	   \
+{                          \
+  if (header) {                        \
       header->set_##FNAME( val );                  \
-  } 						   \
+  }                            \
 }                                                  \
 
 namespace ELFIO {
@@ -490,13 +490,13 @@ class elfio
     }
 
 //------------------------------------------------------------------------------
-    bool save_header( std::ostream& f )
+    bool save_header( std::ostream& stream )
     {
-        return header->save( f );
+        return header->save( stream );
     }
 
 //------------------------------------------------------------------------------
-    bool save_sections( std::ostream& f )
+    bool save_sections( std::ostream& stream )
     {
         for ( unsigned int i = 0; i < sections_.size(); ++i ) {
             section *sec = sections_.at(i);
@@ -505,13 +505,13 @@ class elfio
                 (std::streamoff)header->get_sections_offset() +
                 header->get_section_entry_size() * sec->get_index();
 
-            sec->save(f,headerPosition,sec->get_offset());
+            sec->save(stream,headerPosition,sec->get_offset());
         }
         return true;
     }
 
 //------------------------------------------------------------------------------
-    bool save_segments( std::ostream& f )
+    bool save_segments( std::ostream& stream )
     {
         for ( unsigned int i = 0; i < segments_.size(); ++i ) {
             segment *seg = segments_.at(i);
@@ -519,7 +519,7 @@ class elfio
             std::streampos headerPosition = header->get_segments_offset()  +
                 header->get_segment_entry_size()*seg->get_index();
 
-            seg->save( f, headerPosition, seg->get_offset() );
+            seg->save( stream, headerPosition, seg->get_offset() );
         }
         return true;
     }
