@@ -251,10 +251,10 @@ class section_impl : public section
                 data_size = 0;
             }
 
-            if ( 0 != size ) {
+            if ( ( 0 != size ) && ( 0 != data ) ) {
                 stream.seekg( (*convertor)( header.sh_offset ) );
                 stream.read( data, size );
-                data[size] = 0; //ensure data is ended with 0 to avoid oob read
+                data[size] = 0; // Ensure data is ended with 0 to avoid oob read
                 data_size = size;
             }
         }
