@@ -74,7 +74,7 @@ checkSection( const section* sec,
 ////////////////////////////////////////////////////////////////////////////////
 void
 checkSection( const section* sec,
-              std::string name,
+              const std::string &name,
               Elf_Word    type,
               Elf_Xword   flags,
               Elf64_Addr  address,
