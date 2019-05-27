@@ -35,11 +35,11 @@ int main( int, char* argv[] )
         if ( 0 < nNum ) {
             std::printf( "\nSection name: %s\n", pSec->GetName().c_str() );
             std::printf( "  Num Type Offset   Addend    Calc   SymValue   SymName\n" );
-            for ( Elf_Xword i = 0; i < nNum; ++i ) {
-                pRel->GetEntry( i, offset, symbolValue, symbolName,
+            for ( Elf_Xword j = 0; j < nNum; ++j ) {
+                pRel->GetEntry( j, offset, symbolValue, symbolName,
                                 type, addend, calcValue );
                 std::printf( "[%4llx] %02x %08llx %08llx %08llx %08llx %s\n",
-                             i, type, offset,
+                             j, type, offset,
                              addend, calcValue,
                              symbolValue, symbolName.c_str() );
             }
