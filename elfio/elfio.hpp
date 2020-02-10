@@ -33,11 +33,13 @@ THE SOFTWARE.
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <functional>
 #include <algorithm>
 #include <vector>
 #include <deque>
 #include <iterator>
 #include <typeinfo>
+#include <cassert>
 
 #include <elfio/elf_types.hpp>
 #include <elfio/elfio_utils.hpp>
