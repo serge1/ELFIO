@@ -110,6 +110,45 @@ class symbol_section_accessor_template
         return ret;
     }
 
+ //------------------------------------------------------------------------------
+    bool
+    get_symbol( const Elf64_Addr& value,
+                std::string&      name,
+                Elf_Xword&        size,
+                unsigned char&    bind,
+                unsigned char&    type,
+                Elf_Half&         section_index,
+                unsigned char&    other ) const
+    {
+
+
+        const endianess_convertor& convertor = elf_file.get_convertor();
+        section* string_section = elf_file.sections[get_string_table_index()];
+
+        Elf_Xword  idx = 0;
+        bool match = false;
+        Elf64_Addr v = 0;
+
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            match = generic_search_symbols<Elf32_Sym>([&convertor, &value](const Elf32_Sym* sym) {
+                    return convertor(sym->st_value) == value;
+                }, idx);
+        } else {
+            match = generic_search_symbols<Elf64_Sym>([&convertor, &value](const Elf64_Sym* sym) {
+                    return convertor(sym->st_value) == value;
+                }, idx);
+        }
+
+        if (match) {
+	    bool found = get_symbol( idx, name, v, size, bind, type, section_index, other );
+	    assert(found);
+	    assert(v == value);
+            return true;
+        }
+
+        return false;
+    }
+
 //------------------------------------------------------------------------------
     Elf_Word
     add_symbol( Elf_Word name, Elf64_Addr value, Elf_Xword size,
@@ -199,6 +238,40 @@ class symbol_section_accessor_template
     get_hash_table_index() const
     {
         return hash_section_index;
+    }
+
+//------------------------------------------------------------------------------
+    template< class T >
+    const T*
+    generic_get_symbol_ptr(Elf_Xword index) const {
+        if ( index < get_symbols_num() ) {
+            const T* pSym = reinterpret_cast<const T*>(
+                symbol_section->get_data() +
+                    index * symbol_section->get_entry_size() );
+
+            return pSym;
+        }
+
+        return nullptr;
+    }
+
+//------------------------------------------------------------------------------
+    template< class T >
+    bool
+    generic_search_symbols(std::function<bool(const T*)> match, Elf_Xword& idx) const {
+        for (Elf_Xword i = 0; i < get_symbols_num(); i++){
+            const T* symPtr = generic_get_symbol_ptr<T>(i);
+
+            if (symPtr == nullptr)
+                return false;
+
+            if (match(symPtr)) {
+                idx = i;
+                return true;
+            }
+        }
+
+        return false;
     }
 
 //------------------------------------------------------------------------------
