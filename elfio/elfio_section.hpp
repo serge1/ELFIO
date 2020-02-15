@@ -48,14 +48,14 @@ class section
     ELFIO_GET_ACCESS_DECL    ( Elf64_Off,   offset             );
     size_t stream_size;
     size_t get_stream_size() const
-     {
-    return stream_size;
-     }
+    {
+        return stream_size;
+    }
 
     void set_stream_size(size_t value)
-     {
-    stream_size = value;
-     }
+    {
+        stream_size = value;
+    }
 
     virtual const char* get_data() const                                = 0;
     virtual void        set_data( const char* pData, Elf_Word size )    = 0;
