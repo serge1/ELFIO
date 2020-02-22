@@ -1,0 +1,21 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "g++ build",
+            "command": "make",
+            "args": [
+                "INCLUDES=-I..",
+                "CXXFLAGS='-g -O0'"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/ELFIOTest",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}

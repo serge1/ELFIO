@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.ipp": "cpp",
+        "strstream": "cpp",
+        "cerrno": "cpp",
+        "csetjmp": "cpp",
+        "cstdarg": "cpp",
+        "rope": "cpp",
+        "iostream": "cpp",
+        "streambuf": "cpp",
+        "*.tcc": "cpp",
+        "regex": "cpp"
+    }
+}
