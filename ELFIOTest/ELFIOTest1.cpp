@@ -436,3 +436,50 @@ BOOST_AUTO_TEST_CASE( elf_exe_loadsave_ppc32big3 )
     checkExeAreEqual( in, out, SEG_ALIGN );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( get_symbol_32 )
+{
+    elfio            elf;
+    std::string      name;
+    ELFIO::Elf_Xword size;
+    unsigned char    bind;
+    unsigned char    type;
+     ELFIO::Elf_Half section_index;
+    unsigned char    other;
+    std::string      in = "../elf_examples/hello_32";
+
+    BOOST_REQUIRE_EQUAL( elf.load(in), true );
+    section* psymsec = elf.sections[ ".symtab" ];
+    const symbol_section_accessor symbols( elf, psymsec );
+
+    BOOST_CHECK_EQUAL( true, 
+        symbols.get_symbol( 0x08048478, name, size, bind,
+                                        type, section_index, other) );
+    BOOST_CHECK_EQUAL( "_IO_stdin_used", name );
+    BOOST_CHECK_EQUAL( 14, section_index );
+    BOOST_CHECK_EQUAL( 4, size );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( get_symbol_64 )
+{
+    elfio            elf;
+    std::string      name;
+    ELFIO::Elf_Xword size;
+    unsigned char    bind;
+    unsigned char    type;
+     ELFIO::Elf_Half section_index;
+    unsigned char    other;
+    std::string      in = "../elf_examples/hello_64";
+
+    BOOST_REQUIRE_EQUAL( elf.load(in), true );
+    section* psymsec = elf.sections[ ".symtab" ];
+    const symbol_section_accessor symbols( elf, psymsec );
+
+    BOOST_CHECK_EQUAL( true, 
+        symbols.get_symbol(0x00400498, name, size, bind,
+                                       type, section_index, other) );
+    BOOST_CHECK_EQUAL( "main", name );
+    BOOST_CHECK_EQUAL( 12, section_index );
+    BOOST_CHECK_EQUAL( 21, size );
+}
