@@ -1,0 +1,30 @@
+language: cpp
+
+dist: bionic
+
+compiler:
+- gcc
+
+os:
+- linux
+
+branches:
+    only:
+    - master
+
+notifications:
+    email: false
+
+before_install:
+- sudo apt-get update -qq
+
+install:
+- sudo apt-get install libboost-test-dev
+
+script:
+- autoreconf -f -i
+- ./configure CXXFLAGS=--std=c++11
+- make
+- cd ELFIOTest; autoreconf -f -i
+- cd ELFIOTest; ./configure CXXFLAGS=--std=c++11
+- cd ELFIOTest; make check
