@@ -596,7 +596,7 @@ class dump
             if ( SHT_SYMTAB == sec->get_type() || SHT_DYNSYM == sec->get_type() ) {
                 symbol_section_accessor symbols( reader, sec );
 
-                Elf_Xword     sym_no = symbols.get_symbols_num();
+                Elf_Xword sym_no = symbols.get_symbols_num();
                 if ( sym_no > 0 ) {
                     out << "Symbol table (" << sec->get_name() << ")" << std::endl;
                     if ( reader.get_class() == ELFCLASS32 ) { // Output for 32-bit
@@ -608,7 +608,7 @@ class dump
                             << "        Name"
                             << std::endl;
                     }
-                    for ( Elf_Half i = 0; i < sym_no; ++i ) {
+                    for ( Elf_Xword i = 0; i < sym_no; ++i ) {
                         std::string   name;
                         Elf64_Addr    value   = 0;
                         Elf_Xword     size    = 0;
@@ -684,13 +684,13 @@ class dump
                     out << "Note section (" << sec->get_name() << ")" << std::endl
                         << "    No Type     Name"
                         << std::endl;
-                    for ( int j = 0; j < no_notes; ++j ) {    // For all notes
+                    for ( Elf_Word j = 0; j < no_notes; ++j ) {    // For all notes
                         Elf_Word    type;
                         std::string name;
                         void*       desc;
                         Elf_Word    descsz;
                     
-                        if ( notes.get_note(j, type, name, desc, descsz) ) {
+                        if ( notes.get_note( j, type, name, desc, descsz ) ) {
                             // 'name' usually contains \0 at the end. Try to fix it
                             name = name.c_str();
                             note( out, j, type, name );
