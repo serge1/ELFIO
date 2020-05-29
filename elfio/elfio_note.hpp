@@ -74,9 +74,10 @@ class note_section_accessor_template
         const endianess_convertor& convertor = elf_file.get_convertor();
         type = convertor( *(const Elf_Word*)( pData + 2*align ) );
         Elf_Word namesz = convertor( *(const Elf_Word*)( pData ) );
-        descSize = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
+        descSize        = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
         Elf_Xword max_name_size = note_section->get_size() - note_start_positions[index];
-        if ( namesz            > max_name_size ||
+        if ( namesz            < 1             ||
+             namesz            > max_name_size ||
              namesz + descSize > max_name_size ) {
             return false;
         }

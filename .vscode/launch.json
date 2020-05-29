@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "g++ build and debug active file",
+            "name": "Run ELFIO Tests",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/ELFIOTest/ELFIOTest",
@@ -22,7 +22,28 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "g++ build",
+            "preLaunchTask": "ELFIO Test build",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Run ELF Dump",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/elfdump/elfdump",
+            "args": ["test"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "ELF Dump Build",
             "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
