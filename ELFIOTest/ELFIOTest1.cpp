@@ -26,15 +26,15 @@ bool write_obj_i386( bool is64bit )
     text_sec->set_type( SHT_PROGBITS );
     text_sec->set_flags( SHF_ALLOC | SHF_EXECINSTR );
     text_sec->set_addr_align( 0x10 );
-    
+
     // Add data into it
-    char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4		      
-                    '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1		      
-                    '\xB9', '\x00', '\x00', '\x00', '\x00',   // mov ecx, msg		      
-                    '\xBA', '\x0E', '\x00', '\x00', '\x00',   // mov edx, 14		      
-                    '\xCD', '\x80',                           // int 0x80		      
-                    '\xB8', '\x01', '\x00', '\x00', '\x00',   // mov eax, 1		      
-                    '\xCD', '\x80'                            // int 0x80		      
+    char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4
+                    '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1
+                    '\xB9', '\x00', '\x00', '\x00', '\x00',   // mov ecx, msg
+                    '\xBA', '\x0E', '\x00', '\x00', '\x00',   // mov edx, 14
+                    '\xCD', '\x80',                           // int 0x80
+                    '\xB8', '\x01', '\x00', '\x00', '\x00',   // mov eax, 1
+                    '\xCD', '\x80'                            // int 0x80
                   };
     text_sec->set_data( text, sizeof( text ) );
 
@@ -43,7 +43,7 @@ bool write_obj_i386( bool is64bit )
     data_sec->set_type( SHT_PROGBITS );
     data_sec->set_flags( SHF_ALLOC | SHF_WRITE );
     data_sec->set_addr_align( 4 );
-    
+
     char data[] = { '\x48', '\x65', '\x6C', '\x6C', '\x6F',   // msg: db   'Hello, World!', 10
                     '\x2C', '\x20', '\x57', '\x6F', '\x72',
                     '\x6C', '\x64', '\x21', '\x0A'
@@ -63,7 +63,7 @@ bool write_obj_i386( bool is64bit )
     sym_sec->set_link( str_sec->get_index() );
     sym_sec->set_addr_align( 4 );
     sym_sec->set_entry_size( writer.get_default_entry_size( SHT_SYMTAB ) );
-    
+
     symbol_section_accessor symbol_writer( writer, sym_sec );
     Elf_Word nSymIndex = symbol_writer.add_symbol( nStrIndex, 0, 0,
                                                   STB_LOCAL, STT_NOTYPE, 0,
@@ -96,13 +96,13 @@ bool write_obj_i386( bool is64bit )
     section* note_sec = writer.sections.add( ".note" );
     note_sec->set_type( SHT_NOTE );
     note_sec->set_addr_align( 1 );
-    
+
     // Create notes writer
     note_section_accessor note_writer( writer, note_sec );
     note_writer.add_note( 0x77, "Created by ELFIO", 0, 0 );
 
     // Create ELF file
-    writer.save( 
+    writer.save(
         is64bit ?
         "../elf_examples/write_obj_i386_64.o" :
         "../elf_examples/write_obj_i386_32.o"
@@ -150,15 +150,15 @@ bool write_exe_i386( const std::string& filename, bool is64bit, bool set_addr = 
     if ( set_addr ) {
         text_sec->set_address( addr );
     }
-    
+
     // Add data into it
-    char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4		      
-                    '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1		      
-                    '\xB9', '\x20', '\x80', '\x04', '\x08',   // mov ecx, msg		      
-                    '\xBA', '\x0E', '\x00', '\x00', '\x00',   // mov edx, 14		      
-                    '\xCD', '\x80',                           // int 0x80		      
-                    '\xB8', '\x01', '\x00', '\x00', '\x00',   // mov eax, 1		      
-                    '\xCD', '\x80'                            // int 0x80		      
+    char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4
+                    '\xBB', '\x01', '\x00', '\x00', '\x00',   // mov ebx, 1
+                    '\xB9', '\x20', '\x80', '\x04', '\x08',   // mov ecx, msg
+                    '\xBA', '\x0E', '\x00', '\x00', '\x00',   // mov edx, 14
+                    '\xCD', '\x80',                           // int 0x80
+                    '\xB8', '\x01', '\x00', '\x00', '\x00',   // mov eax, 1
+                    '\xCD', '\x80'                            // int 0x80
                   };
     text_sec->set_data( text, sizeof( text ) );
 
@@ -229,7 +229,7 @@ void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
     BOOST_CHECK_EQUAL( file1.save( file_name2 ), true );
     BOOST_REQUIRE_EQUAL( file1.load( file_name1 ), true );
     BOOST_REQUIRE_EQUAL( file2.load( file_name2 ), true );
-    
+
     for (int i = 0; i < file1.sections.size(); ++i ) {
         BOOST_CHECK_EQUAL( file1.sections[i]->get_address(),
                            file2.sections[i]->get_address() );
@@ -262,7 +262,7 @@ void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
         BOOST_REQUIRE_NE( file1.sections[i]->get_data(), (const char*)0 );
         BOOST_REQUIRE_NE( file2.sections[i]->get_data(), (const char*)0 );
         std::string pdata1( file1.sections[i]->get_data(),
-                            file1.sections[i]->get_data() +                
+                            file1.sections[i]->get_data() +
                                 file1.sections[i]->get_size() );
         std::string pdata2( file2.sections[i]->get_data(),
                             file2.sections[i]->get_data() +
@@ -282,7 +282,7 @@ void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
 void checkExeAreEqual( std::string file_name1, std::string file_name2, int skipTests = 0 )
 {
     checkObjestsAreEqual( file_name1, file_name2 );
-    
+
     elfio file1;
     elfio file2;
 
@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE( section_header_address_update )
     BOOST_REQUIRE_NE( sec, (section*)0 );
     BOOST_CHECK_EQUAL( sec->get_address(), 0x08048100 );
 
-    
+
     const std::string file_wo_addr ( "../elf_examples/write_exe_i386_32_wo_addr" );
     write_exe_i386( file_wo_addr, false, false, 0 );
     reader.load( file_wo_addr );
@@ -377,7 +377,7 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
 
     e.load( filename );
     Elf_Half num     = e.sections.size();
-    //section* new_sec = 
+    //section* new_sec =
         e.sections.add( "new" );
     e.save( filename );
     BOOST_CHECK_EQUAL( num + 1, e.sections.size() );
@@ -452,7 +452,7 @@ BOOST_AUTO_TEST_CASE( get_symbol_32 )
     section* psymsec = elf.sections[ ".symtab" ];
     const symbol_section_accessor symbols( elf, psymsec );
 
-    BOOST_CHECK_EQUAL( true, 
+    BOOST_CHECK_EQUAL( true,
         symbols.get_symbol( 0x08048478, name, size, bind,
                                         type, section_index, other) );
     BOOST_CHECK_EQUAL( "_IO_stdin_used", name );
@@ -476,10 +476,79 @@ BOOST_AUTO_TEST_CASE( get_symbol_64 )
     section* psymsec = elf.sections[ ".symtab" ];
     const symbol_section_accessor symbols( elf, psymsec );
 
-    BOOST_CHECK_EQUAL( true, 
+    BOOST_CHECK_EQUAL( true,
         symbols.get_symbol(0x00400498, name, size, bind,
                                        type, section_index, other) );
     BOOST_CHECK_EQUAL( "main", name );
     BOOST_CHECK_EQUAL( 12, section_index );
     BOOST_CHECK_EQUAL( 21, size );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( null_section_inside_segment )
+{
+    // This test case checks the load/save of SHT_NULL sections in a segment
+    // See https://github.com/serge1/ELFIO/issues/19
+    //
+    // Note: The test case checking the load/save of a segment containing no section
+    // is covered by elf_object_copy_32: ../elf_examples/hello_32 has empty segments
+
+    // Create an ELF file with SHT_NULL sections at the beginning/middle/end of a segment
+    elfio writer;
+    writer.create( ELFCLASS32, ELFDATA2LSB );
+    writer.set_os_abi( ELFOSABI_LINUX );
+    writer.set_type( ET_EXEC );
+    writer.set_machine( EM_386 );
+    // Create code section 1
+    section* text_sec1 = writer.sections.add( ".text1" );
+    text_sec1->set_type( SHT_PROGBITS );
+    text_sec1->set_flags( SHF_ALLOC | SHF_EXECINSTR );
+    text_sec1->set_addr_align( 0x10 );
+    text_sec1->set_address( 0x08048000 );
+    char text[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    text_sec1->set_data( text, sizeof( text ) );
+    // Create code section 2
+    section* text_sec2 = writer.sections.add( ".text2" );
+    text_sec2->set_type( SHT_PROGBITS );
+    text_sec2->set_flags( SHF_ALLOC | SHF_EXECINSTR );
+    text_sec2->set_addr_align( 0x10 );
+    text_sec2->set_address( 0x08048010 );
+    text_sec2->set_data( text, sizeof( text ) );
+    // Create null sections
+    section* null_sec1 = writer.sections.add( "null" );
+    null_sec1->set_type( SHT_NULL );
+    null_sec1->set_flags( SHF_ALLOC | SHF_EXECINSTR );
+    null_sec1->set_address( 0x08048000 );
+    section* null_sec2 = writer.sections.add( "null" );
+    null_sec2->set_type( SHT_NULL );
+    null_sec2->set_flags( SHF_ALLOC | SHF_EXECINSTR );
+    null_sec2->set_address( 0x08048010 );
+    section* null_sec3 = writer.sections.add( "null" );
+    null_sec3->set_type( SHT_NULL );
+    null_sec3->set_flags( SHF_ALLOC | SHF_EXECINSTR );
+    null_sec3->set_address( 0x08048020 );
+    // Create a loadable segment
+    segment* text_seg = writer.segments.add();
+    text_seg->set_type( PT_LOAD );
+    text_seg->set_virtual_address( 0x08048000 );
+    text_seg->set_physical_address( 0x08048000 );
+    text_seg->set_flags( PF_X | PF_R );
+    text_seg->set_align( 0x1000 );
+    // Add sections into the loadable segment
+    text_seg->add_section_index( null_sec1->get_index(), null_sec1->get_addr_align() );
+    text_seg->add_section_index( text_sec1->get_index(), text_sec1->get_addr_align() );
+    text_seg->add_section_index( null_sec2->get_index(), null_sec2->get_addr_align() );
+    text_seg->add_section_index( text_sec2->get_index(), text_sec2->get_addr_align() );
+    text_seg->add_section_index( null_sec3->get_index(), null_sec3->get_addr_align() );
+    // Setup entry point
+    writer.set_entry( 0x08048000 );
+    // Create ELF file
+    std::string f1 = "../elf_examples/null_section_inside_segment1";
+    std::string f2 = "../elf_examples/null_section_inside_segment2";
+    BOOST_CHECK_EQUAL( writer.save(f1), true );
+
+    // Load and check the ELF file created above
+    elfio elf;
+    BOOST_CHECK_EQUAL( elf.load(f1), true );
+    BOOST_CHECK_EQUAL( elf.save(f2), true );
 }
