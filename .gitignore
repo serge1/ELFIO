@@ -11,13 +11,19 @@ ELFIOTest/Debug
 ELFIOTest/Release
 ELFIOTest/ELFIOTest.vcxproj.user
 ELFIOTest/ELFIOTest
+ELFIOTest/ELFIOTest.exe
 
 examples/ELFDump/Debug
 examples/anonymizer/anonymizer
+examples/anonymizer/anonymizer.exe
 examples/elfdump/elfdump
+examples/elfdump/elfdump.exe
 examples/tutorial/tutorial
+examples/tutorial/tutorial.exe
 examples/write_obj/write_obj
+examples/write_obj/write_obj.exe
 examples/writer/writer
+examples/writer/writer.exe
 
 
 # generated elf files
@@ -32,6 +38,8 @@ elf_examples/write_exe_i386_32_w_addr
 elf_examples/write_exe_i386_32_wo_addr
 elf_examples/write_exe_i386_32_section_added
 elf_examples/ppc-32bit-testcopy*.elf
+elf_examples/null_section_inside_segment*
+elf_examples/segment_containing_no_section*
 
 # various unwanted files (backups, objects, cmake artifacts)
 *~
@@ -50,6 +58,7 @@ CMakeFiles
 .deps
 config.status
 ELFIOTest/runELFtests.trs
+test-driver
 
 # eclipse project files
 .settings
