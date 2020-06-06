@@ -666,9 +666,7 @@ class elfio
                     header->get_segment_entry_size() * header->get_segments_num();
             }
             // Special case:
-            // Segments which start with the NULL section and have further sections
-            else if ( seg->get_sections_num() > 1
-                      && sections[seg->get_section_index_at( 0 )]->get_type() == SHT_NULL ) {
+            else if ( seg->is_offset_initialized() && seg->get_offset() == 0 ) {
                 seg_start_pos = 0;
                 if ( seg->get_sections_num() ) {
                     segment_memory = segment_filesize = current_file_pos;
