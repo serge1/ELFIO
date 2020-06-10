@@ -46,24 +46,16 @@ class section
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   size               );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    name_string_offset );
     ELFIO_GET_ACCESS_DECL    ( Elf64_Off,   offset             );
-    size_t stream_size;
-    size_t get_stream_size() const
-    {
-        return stream_size;
-    }
-
-    void set_stream_size(size_t value)
-    {
-        stream_size = value;
-    }
 
     virtual const char* get_data() const                                = 0;
     virtual void        set_data( const char* pData, Elf_Word size )    = 0;
     virtual void        set_data( const std::string& data )             = 0;
     virtual void        append_data( const char* pData, Elf_Word size ) = 0;
     virtual void        append_data( const std::string& data )          = 0;
+    virtual size_t      get_stream_size() const                         = 0;
+    virtual void        set_stream_size( size_t value )                 = 0;
 
-  protected:
+protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
     
@@ -298,6 +290,18 @@ class section_impl : public section
         stream.write( get_data(), get_size() );
     }
 
+    //------------------------------------------------------------------------------
+    size_t get_stream_size() const
+    {
+        return stream_size;
+    }
+
+    //------------------------------------------------------------------------------
+    void set_stream_size(size_t value)
+    {
+        stream_size = value;
+    }
+
 //------------------------------------------------------------------------------
   private:
     T                          header;
@@ -307,6 +311,7 @@ class section_impl : public section
     Elf_Word                   data_size;
     const endianess_convertor* convertor;
     bool                       is_address_set;
+    size_t                     stream_size;
 };
 
 } // namespace ELFIO
