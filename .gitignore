@@ -6,6 +6,7 @@ ELFIO.v11.suo
 ELFIO.opensdf
 ELFIO.v12.suo
 .vs
+tmp/
 
 ELFIOTest/Debug
 ELFIOTest/Release
