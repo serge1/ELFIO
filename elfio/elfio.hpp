@@ -38,7 +38,6 @@ THE SOFTWARE.
 #include <vector>
 #include <deque>
 #include <iterator>
-#include <typeinfo>
 
 #include <elfio/elf_types.hpp>
 #include <elfio/elfio_utils.hpp>
