@@ -105,6 +105,17 @@ class symbol_section_accessor_template
                 ret = true;
             }
         }
+        else {
+            for ( Elf_Xword i = 0; i < get_symbols_num() && !ret; i++ ) {
+                std::string symbol_name;
+                if ( get_symbol( i, symbol_name, value, size, bind, type,
+                                 section_index, other) ) {
+                    if ( symbol_name == name ) {
+                        ret = true;
+                    }
+                }
+            }
+        }
 
         return ret;
     }
@@ -240,7 +251,7 @@ class symbol_section_accessor_template
     template< class T >
     const T*
     generic_get_symbol_ptr(Elf_Xword index) const {
-        if ( index < get_symbols_num() ) {
+        if ( 0 != symbol_section->get_data() && index < get_symbols_num() ) {
             const T* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
                     index * symbol_section->get_entry_size() );
@@ -282,7 +293,7 @@ class symbol_section_accessor_template
     {
         bool ret = false;
 
-        if ( index < get_symbols_num() ) {
+        if ( 0 != symbol_section->get_data() && index < get_symbols_num() ) {
             const T* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
                     index * symbol_section->get_entry_size() );

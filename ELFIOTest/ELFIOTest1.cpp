@@ -552,3 +552,36 @@ BOOST_AUTO_TEST_CASE( null_section_inside_segment )
     BOOST_CHECK_EQUAL( elf.load(f1), true );
     BOOST_CHECK_EQUAL( elf.save(f2), true );
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(invalid_file)
+{
+    elfio             elf;
+    std::string       name;
+    ELFIO::Elf64_Addr value;
+    ELFIO::Elf_Xword  size;
+    unsigned char     bind;
+    unsigned char     type;
+    ELFIO::Elf_Half   section_index;
+    unsigned char     other;
+    std::string       in = "../elf_examples/crash.elf";
+
+    BOOST_REQUIRE_EQUAL(elf.load(in), true);
+    section *psymsec = elf.sections[".symtab"];
+    BOOST_REQUIRE_NE(psymsec, (void*)0);
+    const symbol_section_accessor symbols(elf, psymsec);
+
+    BOOST_CHECK_EQUAL( true,
+                       symbols.get_symbol( "main", value, size, bind,
+                                           type, section_index, other ) );
+    BOOST_CHECK_EQUAL( 0x402560, value );
+
+    BOOST_CHECK_EQUAL(
+        true, symbols.get_symbol( "frame_dummy", value, size, bind,
+                                  type, section_index, other ) );
+    BOOST_CHECK_EQUAL( 0x402550, value );
+
+    BOOST_CHECK_EQUAL( false,
+                       symbols.get_symbol( 0x00400498, name, size, bind,
+                                           type, section_index, other ) );
+}
