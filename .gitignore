@@ -59,7 +59,6 @@ CMakeFiles
 .deps
 config.status
 ELFIOTest/runELFtests.trs
-test-driver
 
 # eclipse project files
 .settings
