@@ -103,7 +103,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ELFIOTest_OBJECTS = ELFIOTest.$(OBJEXT) ELFIOTest1.$(OBJEXT)
 ELFIOTest_OBJECTS = $(am_ELFIOTest_OBJECTS)
-ELFIOTest_DEPENDENCIES =
+ELFIOTest_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -473,7 +473,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/..
 ELFIOTest_SOURCES = ELFIOTest.cpp ELFIOTest1.cpp
-ELFIOTest_LDADD = -lboost_unit_test_framework
 TESTS = runELFtests
 all: all-am
 
