@@ -317,7 +317,7 @@ void checkExeAreEqual( std::string file_name1, std::string file_name2, int skipT
         // truncate the data if the header and the segment table is
         // part of the segment
         Elf64_Off afterPHDR = file1.get_segments_offset() +
-            file1.get_segment_entry_size() * file1.segments.size();
+            file1.get_segment_entry_size() * (Elf64_Off)file1.segments.size();
         if( file1.segments[i]->get_offset() < afterPHDR ) {
             pdata1 = pdata1.substr( (unsigned int)afterPHDR );
             pdata2 = pdata2.substr( (unsigned int)afterPHDR );

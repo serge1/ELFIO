@@ -133,7 +133,6 @@ class symbol_section_accessor_template
 
 
         const endianess_convertor& convertor = elf_file.get_convertor();
-        section* string_section = elf_file.sections[get_string_table_index()];
 
         Elf_Xword  idx   = 0;
         bool       match = false;

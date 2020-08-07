@@ -72,13 +72,14 @@ class note_section_accessor_template
         int align = sizeof( Elf_Word );
 
         const endianess_convertor& convertor = elf_file.get_convertor();
-        type = convertor( *(const Elf_Word*)( pData + 2*align ) );
+        type            = convertor( *(const Elf_Word*)( pData + 2*align ) );
         Elf_Word namesz = convertor( *(const Elf_Word*)( pData ) );
         descSize        = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
+
         Elf_Xword max_name_size = note_section->get_size() - note_start_positions[index];
         if ( namesz            < 1             ||
              namesz            > max_name_size ||
-             namesz + descSize > max_name_size ) {
+            (Elf_Xword)namesz + descSize > max_name_size ) {
             return false;
         }
         name.assign( pData + 3*align, namesz - 1);
@@ -142,17 +143,17 @@ class note_section_accessor_template
             return;
         }
 
-        int align = sizeof( Elf_Word );
-        while ( current + 3*align <= size ) {
+        Elf_Word align = sizeof( Elf_Word );
+        while ( current + (Elf_Xword)3*align <= size ) {
             note_start_positions.push_back( current );
             Elf_Word namesz = convertor(
                             *(const Elf_Word*)( data + current ) );
             Elf_Word descsz = convertor(
                             *(const Elf_Word*)( data + current + sizeof( namesz ) ) );
 
-            current += 3*sizeof( Elf_Word ) +
-                       ( ( namesz + align - 1 ) / align ) * align +
-                       ( ( descsz + align - 1 ) / align ) * align;
+            current += (Elf_Xword)3*sizeof( Elf_Word ) +
+                       ( ( namesz + align - 1 ) / align ) * (Elf_Xword)align +
+                       ( ( descsz + align - 1 ) / align ) * (Elf_Xword)align;
         }
     }
 

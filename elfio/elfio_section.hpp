@@ -79,6 +79,8 @@ class section_impl : public section
         is_address_set = false;
         data           = 0;
         data_size      = 0;
+        index          = 0;
+        stream_size    = 0;
     }
 
 //------------------------------------------------------------------------------

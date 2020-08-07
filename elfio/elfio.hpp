@@ -176,7 +176,7 @@ class elfio
 
         // Layout the first section right after the segment table
         current_file_pos = header->get_header_size() +
-                    header->get_segment_entry_size() * header->get_segments_num();
+            header->get_segment_entry_size() * (Elf_Xword)header->get_segments_num();
 
         calc_segment_alignment();
 
@@ -404,7 +404,7 @@ class elfio
 
         for ( Elf_Half i = 0; i < num; ++i ) {
             section* sec = create_section();
-            sec->load( stream, (std::streamoff)offset + i * entry_size );
+            sec->load( stream, (std::streamoff)offset + (std::streampos)i * entry_size );
             sec->set_index( i );
             // To mark that the section is not permitted to reassign address
             // during layout calculation
@@ -460,7 +460,7 @@ class elfio
                 return false;
             }
 
-            seg->load( stream, (std::streamoff)offset + i * entry_size );
+            seg->load( stream, (std::streamoff)offset + (std::streampos)i * entry_size );
             seg->set_index( i );
 
             // Add sections to the segments (similar to readelfs algorithm)
@@ -503,7 +503,7 @@ class elfio
 
             std::streampos headerPosition =
                 (std::streamoff)header->get_sections_offset() +
-                header->get_section_entry_size() * sec->get_index();
+                (std::streampos)header->get_section_entry_size() * sec->get_index();
 
             sec->save(stream,headerPosition,sec->get_offset());
         }
@@ -517,7 +517,7 @@ class elfio
             segment *seg = segments_.at(i);
 
             std::streampos headerPosition = header->get_segments_offset()  +
-                header->get_segment_entry_size()*seg->get_index();
+                (std::streampos)header->get_segment_entry_size()*seg->get_index();
 
             seg->save( stream, headerPosition, seg->get_offset() );
         }
@@ -662,7 +662,7 @@ class elfio
             if ( seg->get_type() == PT_PHDR && seg->get_sections_num() == 0 ) {
                 seg_start_pos = header->get_segments_offset();
                 segment_memory = segment_filesize =
-                    header->get_segment_entry_size() * header->get_segments_num();
+                    header->get_segment_entry_size() * (Elf_Xword)header->get_segments_num();
             }
             // Special case:
             else if ( seg->is_offset_initialized() && seg->get_offset() == 0 ) {

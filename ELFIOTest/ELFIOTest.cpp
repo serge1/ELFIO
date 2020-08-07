@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE( load64 )
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
     checkHeader( reader, ELFCLASS64, ELFDATA2LSB, EV_CURRENT, ET_EXEC,
-                          EM_X86_64, 1, 0x4003c0, 0, 29, 8, 0, 0 );
+                 EM_X86_64, 1, 0x4003c0, 0, 29, 8, 0, 0 );
 
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
@@ -304,22 +304,22 @@ BOOST_AUTO_TEST_CASE( load64 )
     sec =reader.sections[ 1 ];
     
     checkSection( sec, 1, ".interp", SHT_PROGBITS, SHF_ALLOC,
-                        0x0000000000400200, 0x1c, 0, 0, 1, 0 );
+                  0x0000000000400200, 0x1c, 0, 0, 1, 0 );
 
     sec =reader.sections[ 9 ];
     
     checkSection( sec, 9, ".rela.plt", SHT_RELA, SHF_ALLOC,
-                        0x0000000000400340, 0x30, 4, 11, 8, 0x18 );
+                  0x0000000000400340, 0x30, 4, 11, 8, 0x18 );
 
     sec =reader.sections[ 20 ];
     
     checkSection( sec, 20, ".dynamic", SHT_DYNAMIC, SHF_WRITE | SHF_ALLOC,
-                        0x0000000000600698, 0x190, 5, 0, 8, 0x10 );
+                  0x0000000000600698, 0x190, 5, 0, 8, 0x10 );
 
     sec =reader.sections[ 28 ];
     
     checkSection( sec, 28, ".strtab", SHT_STRTAB, 0,
-                        0x0, 0x23f, 0, 0, 1, 0 );
+                  0x0, 0x23f, 0, 0, 1, 0 );
 
     const section* sec1 = reader.sections[ ".strtab" ];
     BOOST_CHECK_EQUAL( sec->get_index(), sec1->get_index() );
@@ -328,15 +328,15 @@ BOOST_AUTO_TEST_CASE( load64 )
     // Check segments
     segment* seg = reader.segments[0];
     checkSegment( seg, PT_PHDR, 0x0000000000400040, 0x0000000000400040,
-                        0x00000000000001c0, 0x00000000000001c0, PF_R + PF_X, 8 );
+                  0x00000000000001c0, 0x00000000000001c0, PF_R + PF_X, 8 );
 
     seg = reader.segments[2];
     checkSegment( seg, PT_LOAD, 0x0000000000400000, 0x0000000000400000,
-                        0x000000000000066c, 0x000000000000066c, PF_R + PF_X, 0x200000 );
+                  0x000000000000066c, 0x000000000000066c, PF_R + PF_X, 0x200000 );
 
     seg = reader.segments[7];
     checkSegment( seg, 0x6474E551, 0x0, 0x0,
-                        0x0, 0x0, PF_R + PF_W, 8 );
+                  0x0, 0x0, PF_R + PF_W, 8 );
 
     ////////////////////////////////////////////////////////////////////////////
     // Check symbol table

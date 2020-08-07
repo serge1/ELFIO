@@ -629,7 +629,7 @@ class dump
 //------------------------------------------------------------------------------
     static void
     symbol_table( std::ostream& out,
-                  Elf_Half      no,
+                  Elf_Xword     no,
                   std::string&  name,
                   Elf64_Addr    value,
                   Elf_Xword     size,
@@ -679,7 +679,7 @@ class dump
             section* sec = reader.sections[i];
             if ( SHT_NOTE == sec->get_type() ) {              // Look at notes
                 note_section_accessor notes( reader, sec );
-                int no_notes = notes.get_notes_num();
+                Elf_Word no_notes = notes.get_notes_num();
                 if ( no > 0 ) {
                     out << "Note section (" << sec->get_name() << ")" << std::endl
                         << "    No Type     Name"
