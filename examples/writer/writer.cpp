@@ -64,6 +64,7 @@ int main( void )
     // Add code section into program segment
     data_seg->add_section_index( data_sec->get_index(), data_sec->get_addr_align() );
 
+    // Add optional signature for the file producer
     section* note_sec = writer.sections.add( ".note" );
     note_sec->set_type( SHT_NOTE );
     note_sec->set_addr_align( 1 );

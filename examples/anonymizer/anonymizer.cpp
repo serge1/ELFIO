@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 #include <string>
 #include <iostream>
-#include <elfio/elfio_dump.hpp>
+#include <elfio/elfio.hpp>
 #include <fstream>
 #include <random>
 
