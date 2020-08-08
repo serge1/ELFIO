@@ -50,21 +50,21 @@ THE SOFTWARE.
 TYPE                                           \
 get_##FNAME() const                            \
 {                                              \
-  return header? header->get_##FNAME() : 0;    \
+  return header ? (header->get_##FNAME()) : 0; \
 }
 
 #define ELFIO_HEADER_ACCESS_GET_SET( TYPE, FNAME ) \
 TYPE                                               \
 get_##FNAME() const                                \
 {                                                  \
-  return header? header->get_##FNAME() : 0;        \
+  return header ? (header->get_##FNAME()) : 0;     \
 }                                                  \
 void                                               \
 set_##FNAME( TYPE val )                            \
-{                          \
-  if (header) {                        \
+{                                                  \
+  if (header) {                                    \
       header->set_##FNAME( val );                  \
-  }                            \
+  }                                                \
 }                                                  \
 
 namespace ELFIO {
@@ -466,8 +466,8 @@ class elfio
             // Add sections to the segments (similar to readelfs algorithm)
             Elf64_Off segBaseOffset = seg->get_offset();
             Elf64_Off segEndOffset  = segBaseOffset + seg->get_file_size();
-            Elf64_Off segVBaseAddr = seg->get_virtual_address();
-            Elf64_Off segVEndAddr  = segVBaseAddr + seg->get_memory_size();
+            Elf64_Off segVBaseAddr  = seg->get_virtual_address();
+            Elf64_Off segVEndAddr   = segVBaseAddr + seg->get_memory_size();
             for( Elf_Half j = 0; j < sections.size(); ++j ) {
                 const section* psec = sections[j];
 
