@@ -314,6 +314,10 @@ typedef uint64_t Elf64_Off;
 #define EM_CEVA          245 // CEVA Processor Architecture Family
 #define EM_CEVA_X2       246 // CEVA X2 Processor Family
 #define EM_BPF           247 // Linux BPF – in-kernel virtual machine
+#define EM_GRAPHCORE_IPU 248 // Graphcore Intelligent Processing Unit
+#define EM_IMG1          249 // Imagination Technologies
+#define EM_NFP           250 // Netronome Flow Processor (P)
+#define EM_CSKY          252 // C-SKY processor family
 
 // File version
 #define EV_NONE    0

@@ -249,7 +249,7 @@ class dynamic_section_accessor_template
     S*           dynamic_section;
 };
 
-using dynamic_section_accessor = dynamic_section_accessor_template<section>;
+using dynamic_section_accessor       = dynamic_section_accessor_template<section>;
 using const_dynamic_section_accessor = dynamic_section_accessor_template<const section>;
 
 } // namespace ELFIO
