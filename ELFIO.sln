@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ELFDump", "examples\elfdump\ELFDump.vcxproj", "{CBAA735F-E237-4976-909F-2349920ED871}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ELFIOTest", "ELFIOTest\ELFIOTest.vcxproj", "{FC8A3379-B8AA-4C32-804F-F8C43AFBC2A1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ELFIOTest", "tests\ELFIOTest.vcxproj", "{FC8A3379-B8AA-4C32-804F-F8C43AFBC2A1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "writer", "examples\writer\writer.vcxproj", "{4E5A96DB-F6E9-4EEE-90BE-67B722DA8C84}"
 EndProject

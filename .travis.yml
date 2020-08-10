@@ -25,7 +25,7 @@ script:
 - autoreconf -f -i
 - ./configure CXXFLAGS=--std=c++11
 - make
-- cd ELFIOTest
+- cd tests
 - autoreconf -f -i
 - ./configure CXXFLAGS=--std=c++11
 - make check

@@ -7,12 +7,15 @@ ELFIO.opensdf
 ELFIO.v12.suo
 .vs
 tmp/
+docs
 
-ELFIOTest/Debug
-ELFIOTest/Release
-ELFIOTest/ELFIOTest.vcxproj.user
-ELFIOTest/ELFIOTest
-ELFIOTest/ELFIOTest.exe
+tests/Debug
+tests/Release
+tests/ELFIOTest.vcxproj.user
+tests/ELFIOTest
+tests/ELFIOTest.exe
+tests/runELFtests.trs
+
 
 examples/ELFDump/Debug
 examples/anonymizer/anonymizer
