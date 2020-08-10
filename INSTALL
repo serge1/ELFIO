@@ -11,5 +11,6 @@ Makefile(s) that come with the distribution package are provided only for
 compilation of example files.
 
 To compile the examples, use the commands below:
+    autoreconf -f -i
     ./configure
     make
