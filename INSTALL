@@ -7,8 +7,8 @@ For example:
 Alternatively, it is possible to modify compiler's include search path -
 '-I<dir>' option in GCC; '/I<dir>' in MSVC.
 
-Makefile(s) that come with the distribution package are provided for
-example files compilation only.
+Makefile(s) that come with the distribution package are provided only for
+compilation of example files.
 
 To compile the examples, use the commands below:
     ./configure
