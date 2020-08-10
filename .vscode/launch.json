@@ -30,7 +30,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/examples/elfdump/elfdump",
-            "args": ["elf_examples/crash.elf"],
+            "args": ["tests/elf_examples/crash.elf"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

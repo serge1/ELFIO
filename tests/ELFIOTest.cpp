@@ -184,7 +184,7 @@ void
 BOOST_AUTO_TEST_CASE( load32 )
 {
     elfio reader;
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/hello_32" ), true );
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_32" ), true );
     checkHeader( reader, ELFCLASS32, ELFDATA2LSB, EV_CURRENT, ET_EXEC,
                           EM_386, 1, 0x80482b0, 0, 28, 7, 0, 0 );
 
@@ -284,7 +284,7 @@ BOOST_AUTO_TEST_CASE( load64 )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/hello_64" ), true );
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_64" ), true );
 
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
@@ -393,7 +393,7 @@ BOOST_AUTO_TEST_CASE( hello_64_o )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/hello_64.o" ), true );
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_64.o" ), true );
 
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
@@ -458,7 +458,7 @@ BOOST_AUTO_TEST_CASE( hello_32_o )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/hello_32.o" ), true );
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_32.o" ), true );
 
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
@@ -517,7 +517,7 @@ BOOST_AUTO_TEST_CASE( test_ppc_o )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/test_ppc.o" ), true );
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/test_ppc.o" ), true );
 
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
@@ -594,7 +594,7 @@ BOOST_AUTO_TEST_CASE( test_ppc )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/test_ppc" ), true );
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/test_ppc" ), true );
 
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
@@ -725,10 +725,10 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_i386_32 )
     BOOST_CHECK_EQUAL( note_sec->get_index(), 2 );
 
     // Create ELF file
-    writer.save( "../elf_examples/elf_dummy_header_i386_32.elf" );
+    writer.save( "elf_examples/elf_dummy_header_i386_32.elf" );
 
     elfio reader;
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/elf_dummy_header_i386_32.elf" ),
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/elf_dummy_header_i386_32.elf" ),
                          true );
 
     ////////////////////////////////////////////////////////////////////////////
@@ -781,10 +781,10 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_ppc_32 )
     BOOST_CHECK_EQUAL( note_sec->get_index(), 2 );
 
     // Create ELF file
-    writer.save( "../elf_examples/elf_dummy_header_ppc_32.elf" );
+    writer.save( "elf_examples/elf_dummy_header_ppc_32.elf" );
 
     elfio reader;
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/elf_dummy_header_ppc_32.elf" ),
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/elf_dummy_header_ppc_32.elf" ),
                          true );
 
     ////////////////////////////////////////////////////////////////////////////
@@ -837,10 +837,10 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_i386_64 )
     BOOST_CHECK_EQUAL( note_sec->get_index(), 2 );
 
     // Create ELF file
-    writer.save( "../elf_examples/elf_dummy_header_i386_64.elf" );
+    writer.save( "elf_examples/elf_dummy_header_i386_64.elf" );
 
     elfio reader;
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/elf_dummy_header_i386_64.elf" ),
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/elf_dummy_header_i386_64.elf" ),
                          true );
 
     ////////////////////////////////////////////////////////////////////////////
@@ -893,10 +893,10 @@ BOOST_AUTO_TEST_CASE( test_dummy_out_ppc_64 )
     BOOST_CHECK_EQUAL( note_sec->get_index(), 2 );
 
     // Create ELF file
-    writer.save( "../elf_examples/elf_dummy_header_ppc_64.elf" );
+    writer.save( "elf_examples/elf_dummy_header_ppc_64.elf" );
 
     elfio reader;
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/elf_dummy_header_ppc_64.elf" ),
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/elf_dummy_header_ppc_64.elf" ),
                          true );
 
     ////////////////////////////////////////////////////////////////////////////
@@ -927,7 +927,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_1 )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/main" ),
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/main" ),
                          true );
 
     section* dynsec = reader.sections[".dynamic"];
@@ -963,7 +963,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_2 )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/libfunc.so" ),
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/libfunc.so" ),
                          true );
 
     section* dynsec = reader.sections[".dynamic"];
@@ -996,7 +996,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
 {
     elfio reader;
 
-    BOOST_REQUIRE_EQUAL( reader.load( "../elf_examples/main" ),
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/main" ),
                          true );
 
     section* dynsec = reader.sections[".dynamic"];

@@ -31,19 +31,19 @@ examples/writer/writer.exe
 
 
 # generated elf files
-elf_examples/*_copy
-elf_examples/*_copy.elf
-elf_examples/elf_dummy_header_i386_32.elf
-elf_examples/elf_dummy_header_i386_64.elf
-elf_examples/elf_dummy_header_ppc_32.elf
-elf_examples/elf_dummy_header_ppc_64.elf
-elf_examples/write_exe_i386_32
-elf_examples/write_exe_i386_32_w_addr
-elf_examples/write_exe_i386_32_wo_addr
-elf_examples/write_exe_i386_32_section_added
-elf_examples/ppc-32bit-testcopy*.elf
-elf_examples/null_section_inside_segment*
-elf_examples/segment_containing_no_section*
+tests/elf_examples/*_copy
+tests/elf_examples/*_copy.elf
+tests/elf_examples/elf_dummy_header_i386_32.elf
+tests/elf_examples/elf_dummy_header_i386_64.elf
+tests/elf_examples/elf_dummy_header_ppc_32.elf
+tests/elf_examples/elf_dummy_header_ppc_64.elf
+tests/elf_examples/write_exe_i386_32
+tests/elf_examples/write_exe_i386_32_w_addr
+tests/elf_examples/write_exe_i386_32_wo_addr
+tests/elf_examples/write_exe_i386_32_section_added
+tests/elf_examples/ppc-32bit-testcopy*.elf
+tests/elf_examples/null_section_inside_segment*
+tests/elf_examples/segment_containing_no_section*
 
 # various unwanted files (backups, objects, cmake artifacts)
 *~

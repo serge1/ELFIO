@@ -104,8 +104,8 @@ bool write_obj_i386( bool is64bit )
     // Create ELF file
     writer.save(
         is64bit ?
-        "../elf_examples/write_obj_i386_64.o" :
-        "../elf_examples/write_obj_i386_32.o"
+        "elf_examples/write_obj_i386_64.o" :
+        "elf_examples/write_obj_i386_32.o"
     );
 
     return true;
@@ -116,8 +116,8 @@ bool write_obj_i386( bool is64bit )
 BOOST_AUTO_TEST_CASE( write_obj_i386_32 )
 {
     BOOST_CHECK_EQUAL( true, write_obj_i386( false ) );
-    output_test_stream output( "../elf_examples/write_obj_i386_32_match.o", true, false );
-    std::ifstream input( "../elf_examples/write_obj_i386_32.o", std::ios::binary );
+    output_test_stream output( "elf_examples/write_obj_i386_32_match.o", true, false );
+    std::ifstream input( "elf_examples/write_obj_i386_32.o", std::ios::binary );
     output << input.rdbuf();
     BOOST_CHECK( output.match_pattern() );
 }
@@ -127,8 +127,8 @@ BOOST_AUTO_TEST_CASE( write_obj_i386_32 )
 BOOST_AUTO_TEST_CASE( write_obj_i386_64 )
 {
     BOOST_CHECK_EQUAL( true, write_obj_i386( true ) );
-    output_test_stream output( "../elf_examples/write_obj_i386_64_match.o", true, false );
-    std::ifstream input( "../elf_examples/write_obj_i386_64.o", std::ios::binary );
+    output_test_stream output( "elf_examples/write_obj_i386_64_match.o", true, false );
+    std::ifstream input( "elf_examples/write_obj_i386_64.o", std::ios::binary );
     output << input.rdbuf();
     BOOST_CHECK( output.match_pattern() );
 }
@@ -210,8 +210,8 @@ bool write_exe_i386( const std::string& filename, bool is64bit, bool set_addr = 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( write_exe_i386_32 )
 {
-    const std::string generated_file ( "../elf_examples/write_exe_i386_32" );
-    const std::string reference_file ( "../elf_examples/write_exe_i386_32_match" );
+    const std::string generated_file ( "elf_examples/write_exe_i386_32" );
+    const std::string reference_file ( "elf_examples/write_exe_i386_32_match" );
     BOOST_CHECK_EQUAL( true, write_exe_i386( generated_file, false ) );
     output_test_stream output( reference_file, true, false );
     std::ifstream input( generated_file, std::ios::binary );
@@ -332,16 +332,16 @@ void checkExeAreEqual( std::string file_name1, std::string file_name2, int skipT
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( elf_object_copy_32 )
 {
-    checkObjestsAreEqual( "../elf_examples/hello_32.o",
-                          "../elf_examples/hello_32_copy.o" );
-    checkObjestsAreEqual( "../elf_examples/hello_64.o",
-                          "../elf_examples/hello_64_copy.o" );
-    checkObjestsAreEqual( "../elf_examples/test_ppc.o",
-                          "../elf_examples/test_ppc_copy.o" );
-    checkObjestsAreEqual( "../elf_examples/write_obj_i386_32.o",
-                          "../elf_examples/write_obj_i386_32_copy.o" );
-    checkObjestsAreEqual( "../elf_examples/write_obj_i386_64.o",
-                          "../elf_examples/write_obj_i386_64_copy.o" );
+    checkObjestsAreEqual( "elf_examples/hello_32.o",
+                          "elf_examples/hello_32_copy.o" );
+    checkObjestsAreEqual( "elf_examples/hello_64.o",
+                          "elf_examples/hello_64_copy.o" );
+    checkObjestsAreEqual( "elf_examples/test_ppc.o",
+                          "elf_examples/test_ppc_copy.o" );
+    checkObjestsAreEqual( "elf_examples/write_obj_i386_32.o",
+                          "elf_examples/write_obj_i386_32_copy.o" );
+    checkObjestsAreEqual( "elf_examples/write_obj_i386_64.o",
+                          "elf_examples/write_obj_i386_64_copy.o" );
 }
 
 
@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE( section_header_address_update )
 {
     elfio reader;
 
-    const std::string file_w_addr ( "../elf_examples/write_exe_i386_32_w_addr" );
+    const std::string file_w_addr ( "elf_examples/write_exe_i386_32_w_addr" );
     write_exe_i386( file_w_addr, false, true, 0x08048100 );
     reader.load( file_w_addr );
     section* sec = reader.sections[".text"];
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE( section_header_address_update )
     BOOST_CHECK_EQUAL( sec->get_address(), 0x08048100 );
 
 
-    const std::string file_wo_addr ( "../elf_examples/write_exe_i386_32_wo_addr" );
+    const std::string file_wo_addr ( "elf_examples/write_exe_i386_32_wo_addr" );
     write_exe_i386( file_wo_addr, false, false, 0 );
     reader.load( file_wo_addr );
     sec = reader.sections[".text"];
@@ -372,7 +372,7 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
 {
     elfio e;
 
-    const std::string filename ( "../elf_examples/write_exe_i386_32_section_added" );
+    const std::string filename ( "elf_examples/write_exe_i386_32_section_added" );
     write_exe_i386( filename, false, true, 0x08048100 );
 
     e.load( filename );
@@ -386,48 +386,48 @@ BOOST_AUTO_TEST_CASE( elfio_copy )
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( elf_exe_copy_64 )
 {
-    checkExeAreEqual( "../elf_examples/64bitLOAD.elf",
-                      "../elf_examples/64bitLOAD_copy.elf" );
-    checkExeAreEqual( "../elf_examples/asm64",
-                      "../elf_examples/asm64_copy" );
-    checkExeAreEqual( "../elf_examples/hello_64",
-                      "../elf_examples/hello_64_copy" );
+    checkExeAreEqual( "elf_examples/64bitLOAD.elf",
+                      "elf_examples/64bitLOAD_copy.elf" );
+    checkExeAreEqual( "elf_examples/asm64",
+                      "elf_examples/asm64_copy" );
+    checkExeAreEqual( "elf_examples/hello_64",
+                      "elf_examples/hello_64_copy" );
 
     // The last segment (GNU_RELRO) is bigger than necessary.
     // I don't see why but it contains a few bits of the .got.plt section.
     // -> load, store, compare cycle fails
-//    checkExeAreEqual( "../elf_examples/main",
-//                      "../elf_examples/main_copy" );
-//    checkExeAreEqual( "../elf_examples/ls",
-//                      "../elf_examples/ls_copy" );
+//    checkExeAreEqual( "elf_examples/main",
+//                      "elf_examples/main_copy" );
+//    checkExeAreEqual( "elf_examples/ls",
+//                      "elf_examples/ls_copy" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( elf_exe_copy_32 )
 {
-    checkExeAreEqual( "../elf_examples/asm",
-                      "../elf_examples/asm_copy" );
-    checkExeAreEqual( "../elf_examples/arm_v7m_test_debug.elf",
-                      "../elf_examples/arm_v7m_test_debug_copy.elf" );
-    checkExeAreEqual( "../elf_examples/arm_v7m_test_release.elf",
-                      "../elf_examples/arm_v7m_test_release_copy.elf" );
-    checkExeAreEqual( "../elf_examples/hello_32",
-                      "../elf_examples/hello_32_copy" );
-    checkExeAreEqual( "../elf_examples/hello_arm",
-                      "../elf_examples/hello_arm_copy" );
-    checkExeAreEqual( "../elf_examples/hello_arm_stripped",
-                      "../elf_examples/hello_arm_stripped_copy" );
-    checkExeAreEqual( "../elf_examples/read_write_arm_elf32_input",
-                      "../elf_examples/read_write_arm_elf32_input_copy" );
-    checkExeAreEqual( "../elf_examples/test_ppc",
-                      "../elf_examples/test_ppc_copy" );
+    checkExeAreEqual( "elf_examples/asm",
+                      "elf_examples/asm_copy" );
+    checkExeAreEqual( "elf_examples/arm_v7m_test_debug.elf",
+                      "elf_examples/arm_v7m_test_debug_copy.elf" );
+    checkExeAreEqual( "elf_examples/arm_v7m_test_release.elf",
+                      "elf_examples/arm_v7m_test_release_copy.elf" );
+    checkExeAreEqual( "elf_examples/hello_32",
+                      "elf_examples/hello_32_copy" );
+    checkExeAreEqual( "elf_examples/hello_arm",
+                      "elf_examples/hello_arm_copy" );
+    checkExeAreEqual( "elf_examples/hello_arm_stripped",
+                      "elf_examples/hello_arm_stripped_copy" );
+    checkExeAreEqual( "elf_examples/read_write_arm_elf32_input",
+                      "elf_examples/read_write_arm_elf32_input_copy" );
+    checkExeAreEqual( "elf_examples/test_ppc",
+                      "elf_examples/test_ppc_copy" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( elf_exe_loadsave_ppc32big3 )
 {
-    std::string in = "../elf_examples/ppc-32bit-specimen3.elf";
-    std::string out = "../elf_examples/ppc-32bit-testcopy3.elf";
+    std::string in = "elf_examples/ppc-32bit-specimen3.elf";
+    std::string out = "elf_examples/ppc-32bit-testcopy3.elf";
     elfio elf;
     BOOST_REQUIRE_EQUAL( elf.load( in ), true );
     BOOST_REQUIRE_EQUAL( elf.save( out ), true );
@@ -446,7 +446,7 @@ BOOST_AUTO_TEST_CASE( get_symbol_32 )
     unsigned char    type;
      ELFIO::Elf_Half section_index;
     unsigned char    other;
-    std::string      in = "../elf_examples/hello_32";
+    std::string      in = "elf_examples/hello_32";
 
     BOOST_REQUIRE_EQUAL( elf.load(in), true );
     section* psymsec = elf.sections[ ".symtab" ];
@@ -470,7 +470,7 @@ BOOST_AUTO_TEST_CASE( get_symbol_64 )
     unsigned char    type;
      ELFIO::Elf_Half section_index;
     unsigned char    other;
-    std::string      in = "../elf_examples/hello_64";
+    std::string      in = "elf_examples/hello_64";
 
     BOOST_REQUIRE_EQUAL( elf.load(in), true );
     section* psymsec = elf.sections[ ".symtab" ];
@@ -491,7 +491,7 @@ BOOST_AUTO_TEST_CASE( null_section_inside_segment )
     // See https://github.com/serge1/ELFIO/issues/19
     //
     // Note: The test case checking the load/save of a segment containing no section
-    // is covered by elf_object_copy_32: ../elf_examples/hello_32 has empty segments
+    // is covered by elf_object_copy_32: elf_examples/hello_32 has empty segments
 
     // Create an ELF file with SHT_NULL sections at the beginning/middle/end of a segment
     elfio writer;
@@ -543,8 +543,8 @@ BOOST_AUTO_TEST_CASE( null_section_inside_segment )
     // Setup entry point
     writer.set_entry( 0x08048000 );
     // Create ELF file
-    std::string f1 = "../elf_examples/null_section_inside_segment1";
-    std::string f2 = "../elf_examples/null_section_inside_segment2";
+    std::string f1 = "elf_examples/null_section_inside_segment1";
+    std::string f2 = "elf_examples/null_section_inside_segment2";
     BOOST_CHECK_EQUAL( writer.save(f1), true );
 
     // Load and check the ELF file created above
@@ -564,7 +564,7 @@ BOOST_AUTO_TEST_CASE(invalid_file)
     unsigned char     type;
     ELFIO::Elf_Half   section_index;
     unsigned char     other;
-    std::string       in = "../elf_examples/crash.elf";
+    std::string       in = "elf_examples/crash.elf";
 
     BOOST_REQUIRE_EQUAL(elf.load(in), true);
     section *psymsec = elf.sections[".symtab"];
