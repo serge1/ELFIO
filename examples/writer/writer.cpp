@@ -7,11 +7,11 @@ int main( void )
     elfio writer;
     
     // You can't proceed without this function call!
-    writer.create( ELFCLASS32, ELFDATA2LSB );
+    writer.create( ELFCLASS64, ELFDATA2LSB );
 
     writer.set_os_abi( ELFOSABI_LINUX );
     writer.set_type( ET_EXEC );
-    writer.set_machine( EM_386 );
+    writer.set_machine( EM_X86_64 );
 
     // Create code section
     section* text_sec = writer.sections.add( ".text" );
@@ -41,7 +41,7 @@ int main( void )
     // Add code section into program segment
     text_seg->add_section_index( text_sec->get_index(), text_sec->get_addr_align() );
 
-    // Create data section*
+    // Create data section
     section* data_sec = writer.sections.add( ".data" );
     data_sec->set_type( SHT_PROGBITS );
     data_sec->set_flags( SHF_ALLOC | SHF_WRITE );
@@ -77,7 +77,7 @@ int main( void )
     writer.set_entry( 0x08048000 );
 
     // Create ELF file
-    writer.save( "hello_i386_32" );
+    writer.save("hello_x86_64");
 
     return 0;
 }

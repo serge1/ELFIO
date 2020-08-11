@@ -44,6 +44,8 @@ tests/elf_examples/write_exe_i386_32_section_added
 tests/elf_examples/ppc-32bit-testcopy*.elf
 tests/elf_examples/null_section_inside_segment*
 tests/elf_examples/segment_containing_no_section*
+examples/writer/hello_x86_64
+examples/write_obj/hello
 
 # various unwanted files (backups, objects, cmake artifacts)
 *~

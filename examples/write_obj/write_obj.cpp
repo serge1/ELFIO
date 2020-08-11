@@ -7,7 +7,7 @@
  * 2. Execute result file write_obj
  *    ./write_obj
  * 3. Link output file hello.o:
- *    gcc -m32 -s -nostartfiles -nostdlib hello.o -o hello
+ *    ld -m elf x64 -o hello hello.o
  * 4. Run the result file:
  *    ./hello
  */
@@ -21,11 +21,11 @@ int main( void )
     elfio writer;
 
     // You can't proceed before this function call!
-    writer.create( ELFCLASS32, ELFDATA2LSB );
+    writer.create( ELFCLASS64, ELFDATA2LSB );
 
     writer.set_os_abi( ELFOSABI_LINUX );
     writer.set_type( ET_REL );
-    writer.set_machine( EM_386 );
+    writer.set_machine(EM_X86_64);
 
     // This is our code
     char text[] = { '\xB8', '\x04', '\x00', '\x00', '\x00',   // mov eax, 4
