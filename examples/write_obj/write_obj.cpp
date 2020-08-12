@@ -7,7 +7,7 @@
  * 2. Execute result file write_obj
  *    ./write_obj
  * 3. Link output file hello.o:
- *    ld -m elf x64 -o hello hello.o
+ *    ld -o hello hello.o
  * 4. Run the result file:
  *    ./hello
  */
@@ -60,7 +60,7 @@ int main( void )
     // Create symbol table section
     section* sym_sec = writer.sections.add( ".symtab" );
     sym_sec->set_type      ( SHT_SYMTAB );
-    sym_sec->set_info      ( 2 );
+    sym_sec->set_info      ( 1 );
     sym_sec->set_addr_align( 0x4 );
     sym_sec->set_entry_size( writer.get_default_entry_size( SHT_SYMTAB ) );
     sym_sec->set_link      ( str_sec->get_index() );
