@@ -1,7 +1,8 @@
 /*
-anonymizer.cpp - Overwrites all data from an ELF file with random data.
+anonymizer.cpp - Overwrites string table for a function name.
 
 Copyright (C) 2017 by Martin Bickel
+Copyright (C) 2020 by Serge Lamikhov-Center
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,93 +23,62 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/*
+To run the example, you may use the following script:
+
+#!/usr/bin/bash
+
+make
+cp anonymizer temp.elf
+readelf -a temp.elf > before.txt
+./anonymizer temp.elf
+readelf -a temp.elf > after.txt
+diff before.txt after.txt
+
+*/
+
 #ifdef _MSC_VER
-  #define _SCL_SECURE_NO_WARNINGS
-  #define ELFIO_NO_INTTYPES
+#define _SCL_SECURE_NO_WARNINGS
+#define ELFIO_NO_INTTYPES
 #endif
 
 #include <string>
 #include <iostream>
-#include <elfio/elfio.hpp>
 #include <fstream>
-#include <random>
+#include <elfio/elfio.hpp>
 
 using namespace ELFIO;
 
-
-bool preserve_name( const std::string& name ) {
-    static std::vector<std::string> names_to_preserve = { ".shstrtab",
-                                                           ".rodata",
-                                                           ".bss",
-                                                           ".data",
-                                                           ".text",
-                                                           ".text_vle" };
-
-    for ( auto s = names_to_preserve.begin(); s != names_to_preserve.end(); ++s )
-        if ( *s == name)
-            return true;
-    return false;
-}
-
-std::default_random_engine generator(0xe1f);
-std::uniform_int_distribution<int> distribution(0,255);
-
-void randomize_data( const std::string& filename, long offset, long size ) {
-    std::ofstream file (filename, std::ios::in|std::ios::out|std::ios::binary);
-    if ( !file )
-        throw "error opening file" + filename;
-    file.seekp(offset);
-    for ( long i = 0; i < size; ++i ) {
-        const char value = distribution(generator);
-        file.write(&value, 1 );
-    }
-}
-
-void overwrite_data( const std::string& filename, long offset, const std::string& data ) {
-    std::ofstream file (filename, std::ios::in|std::ios::out|std::ios::binary);
-    if ( !file )
-        throw "error opening file" + filename;
-    file.seekp(offset);
-    file.write(data.c_str(), data.length()+1 );
-}
-
-
-
-std::string generate( int length ) {
-
-    static int counters[6] = { 0, 0, 10, 100, 1000, 10000 };
-
-    int counter = counters[length > 5 ? 5 : length ]++;
-    
-    auto s = std::to_string(counter);
-    if ( s.length() > length ) {
-        throw "String length error at " + std::to_string( counter ) + "; expecting " + std::to_string( length ) + " bytes ";
-    }
-
-    while (s.length() < length)
-        s = "s" + s;
-    return s;
-}
-
-
-void processStringTable( const section* s, const std::string& filename ) {
-    std::cout << "Info: processing string table section" << std::endl;
-    int counter = 0;
-    int index = 1;
-    while ( index < s->get_size() ) {
-        auto len = strlen( s->get_data()+index );
-        if ( len && !preserve_name( s->get_data()+index ))
-            overwrite_data( filename, s->get_offset() + index, generate( len ));
-        index += len + 1;
-        counter++;
-    }
-    std::cout << counter << " strings found " << std::endl;
-}
-
-int main( int argc, char** argv )
+void overwrite_data(const std::string &filename, long offset, std::string &str)
 {
-    try {
-        if ( argc != 2 ) {
+    std::ofstream file(filename, std::ios::in | std::ios::out | std::ios::binary);
+    if (!file)
+        throw "Error opening file" + filename;
+    std::string data(str.length(), '-');
+    file.seekp(offset);
+    file.write(data.c_str(), data.length() + 1);
+}
+
+void process_string_table(const section *s, const std::string &filename)
+{
+    std::cout << "Info: processing string table section" << std::endl;
+    int index = 1;
+    while (index < s->get_size())
+    {
+        auto str = std::string(s->get_data() + index);
+        // For the example purpose, we rename main function name only
+        if (str == "main")
+            overwrite_data(filename, s->get_offset() + index, str);
+        index += str.length() + 1;
+    }
+}
+
+int main(int argc, char **argv)
+{
+    try
+    {
+        if (argc != 2)
+        {
             std::cout << "Usage: anonymizer <file_name>\n";
             return 1;
         }
@@ -117,28 +87,28 @@ int main( int argc, char** argv )
 
         elfio reader;
 
-        if ( !reader.load( filename ) ) {
+        if (!reader.load(filename))
+        {
             std::cerr << "File " << filename << " is not found or it is not an ELF file\n";
             return 1;
         }
 
-        for ( auto sect = reader.sections.begin(); sect != reader.sections.end(); ++sect ) {
-            section* s = *sect;
-            if ( s->get_type() == SHT_STRTAB ) {
-                processStringTable(s, filename);
-            } else if ( s->get_type() == SHT_SYMTAB  ) {
-                std::cout << "Skipping symbol table." << std::endl;
-            } else if ( s->get_type() == SHT_PROGBITS ) {
-                if ( s->get_size() > 0 ) {
-                    randomize_data(filename, s->get_offset(), s->get_size());
-                    std::cout << "Sanitized " << s->get_size() << " Bytes in section" << std::endl;
-                }
+        for (auto section = reader.sections.begin(); section != reader.sections.end(); ++section)
+        {
+            if ((*section)->get_type() == SHT_STRTAB &&
+                std::string((*section)->get_name()) == std::string(".strtab"))
+            {
+                process_string_table(*section, filename);
             }
         }
         return 0;
-    } catch ( const std::string& s ) {
+    }
+    catch (const std::string &s)
+    {
         std::cerr << s << std::endl;
-    } catch ( const char* s ) {
+    }
+    catch (const char *s)
+    {
         std::cerr << s << std::endl;
     }
     return 1;
