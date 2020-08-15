@@ -737,7 +737,8 @@ class elfio
                     && !( (sec->get_flags() & SHF_TLS) && (seg->get_type() != PT_TLS)
                           && ( SHT_NOBITS == sec->get_type())) )
                     segment_memory += sec->get_size() + secAlign;
-                if ( SHT_NOBITS != sec->get_type() && SHT_NULL != sec->get_type() )
+
+                if ( SHT_NOBITS != sec->get_type() )
                     segment_filesize += sec->get_size() + secAlign;
 
                 // Nothing to be done when generating nested segments
@@ -755,8 +756,9 @@ class elfio
                 if ( 0 != sec->get_index() )
                   sec->set_offset(current_file_pos);
 
-                if ( SHT_NOBITS != sec->get_type() && SHT_NULL != sec->get_type() )
+                if ( SHT_NOBITS != sec->get_type() )
                   current_file_pos += sec->get_size();
+
                 section_generated[index] = true;
             }
 
