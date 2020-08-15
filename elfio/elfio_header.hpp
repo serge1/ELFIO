@@ -72,7 +72,8 @@ template<> struct elf_header_impl_types<Elf64_Ehdr> {
 template< class T > class elf_header_impl : public elf_header
 {
   public:
-    elf_header_impl( endianess_convertor* convertor_,
+      //------------------------------------------------------------------------------
+      elf_header_impl( endianess_convertor* convertor_,
                      unsigned char encoding )
     {
         convertor = convertor_;
@@ -96,6 +97,7 @@ template< class T > class elf_header_impl : public elf_header
         header.e_shentsize         = (*convertor)( header.e_shentsize );
     }
 
+    //------------------------------------------------------------------------------
     bool
     load( std::istream& stream )
     {
@@ -105,6 +107,7 @@ template< class T > class elf_header_impl : public elf_header
         return (stream.gcount() == sizeof( header ) );
     }
 
+    //------------------------------------------------------------------------------
     bool
     save( std::ostream& stream ) const
     {
@@ -114,6 +117,7 @@ template< class T > class elf_header_impl : public elf_header
         return stream.good();
     }
 
+    //------------------------------------------------------------------------------
     // ELF header functions
     ELFIO_GET_ACCESS( unsigned char, class,              header.e_ident[EI_CLASS] );
     ELFIO_GET_ACCESS( unsigned char, elf_version,        header.e_ident[EI_VERSION] );
