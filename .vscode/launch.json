@@ -8,10 +8,13 @@
             "name": "Run ELFIO Tests",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/ELFIOTest/ELFIOTest",
-            "args": [],
+            "program": "${workspaceFolder}/tests/ELFIOTest",
+            "args": [
+                "-r",
+                "short"
+            ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/ELFIOTest",
+            "cwd": "${workspaceFolder}/tests",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",

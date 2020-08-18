@@ -9,12 +9,15 @@
                 "CXXFLAGS='-g -O0'"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/ELFIOTest",
+                "cwd": "${workspaceRoot}/tests"
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
             "type": "shell",
@@ -25,7 +28,7 @@
                 "CXXFLAGS='-g -O0'"
             ],
             "options": {
-                "cwd": "${workspaceRoot}",
+                "cwd": "${workspaceRoot}"
             },
             "group": {
                 "kind": "build",

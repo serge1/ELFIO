@@ -215,7 +215,23 @@ class symbol_section_accessor_template
     }
 
 //------------------------------------------------------------------------------
-  private:
+    Elf_Xword
+    arrange_local_symbols()
+    {
+        int nRet = 0;
+
+        if (elf_file.get_class() == ELFCLASS32) {
+            nRet = generic_arrange_local_symbols<Elf32_Sym>();
+        }
+        else {
+            nRet = generic_arrange_local_symbols<Elf64_Sym>();
+        }
+
+        return nRet;
+    }
+
+//------------------------------------------------------------------------------
+  private :
 //------------------------------------------------------------------------------
     void
     find_hash_section()
@@ -343,6 +359,61 @@ class symbol_section_accessor_template
         Elf_Word nRet = symbol_section->get_size() / sizeof( entry ) - 1;
 
         return nRet;
+    }
+
+    //------------------------------------------------------------------------------
+    template <class T>
+    Elf_Xword
+    generic_arrange_local_symbols()
+    {
+        const endianess_convertor &convertor = elf_file.get_convertor();
+        const Elf_Xword           size       = symbol_section->get_entry_size();
+
+        Elf_Xword first_not_local = 1; // Skip the first entry
+        Elf_Xword current         = 0;
+        Elf_Xword count           = get_symbols_num();
+
+        while (true)
+        {
+            T *p1 = nullptr;
+            T *p2 = nullptr;
+
+            while (first_not_local < count)
+            {
+                p1 = const_cast<T *>(generic_get_symbol_ptr<T>(first_not_local));
+                if (ELF_ST_BIND(convertor(p1->st_info)) != STB_LOCAL)
+                    break;
+                ++first_not_local;
+            }
+            
+            current = first_not_local + 1;
+            while (current < count)
+            {
+                p2 = const_cast<T *>(generic_get_symbol_ptr<T>(current));
+                if (ELF_ST_BIND(convertor(p2->st_info)) == STB_LOCAL)
+                    break;
+                ++current;
+            }
+
+            if (first_not_local < count && current < count)
+            {
+                // Swap the symbols
+                T tmp;
+                memcpy(&tmp, p1, size);
+                memcpy(p1, p2, size);
+                memcpy(p2, &tmp, size);
+            }
+            else
+            {
+                // Update 'info' field of the section
+                symbol_section->set_info(first_not_local);
+                break;
+            }
+        }
+
+        // Elf_Word nRet = symbol_section->get_size() / sizeof(entry) - 1;
+
+        return first_not_local;
     }
 
 //------------------------------------------------------------------------------
