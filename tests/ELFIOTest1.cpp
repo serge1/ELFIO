@@ -589,14 +589,14 @@ BOOST_AUTO_TEST_CASE(invalid_file)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
 {
-    std::string name = "";
+    std::string name              = "";
     ELFIO::Elf64_Addr value       = 0;
     ELFIO::Elf_Xword size         = 0;
     unsigned char bind            = STB_LOCAL;
     unsigned char type            = STT_FUNC;
     ELFIO::Elf_Half section_index = 0;
     unsigned char other           = 0;
-    const std::string file_name = "elf_examples/test_symbols_order.elf";
+    const std::string file_name   = "elf_examples/test_symbols_order.elf";
 
     elfio writer;
     writer.create(ELFCLASS64, ELFDATA2LSB);
@@ -667,20 +667,20 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
     auto bound = psymsec->get_info();
     auto num   = rsymbols.get_symbols_num();
 
-    BOOST_CHECK_LE(bound, num);
+    BOOST_CHECK_LE((Elf_Xword)bound, num);
 
     // Check that all symbols are LOCAL until the bound value
-    for (auto i = 0; i < bound; i++)
+    for (Elf_Word i = 0; i < bound; i++)
     {
         rsymbols.get_symbol(i, name, value, size, bind, type, section_index, other);
-        BOOST_CHECK_EQUAL(bind, STB_LOCAL);
+        BOOST_CHECK_EQUAL(bind, (unsigned char)STB_LOCAL);
     }
 
     // Check that all symbols are not LOCAL after the bound value
-    for (auto i = bound; i < num; i++)
+    for (Elf_Word i = bound; i < num; i++)
     {
         rsymbols.get_symbol(i, name, value, size, bind, type, section_index, other);
 
-        BOOST_CHECK_NE(bind, STB_LOCAL);
+        BOOST_CHECK_NE(bind, (unsigned char)STB_LOCAL);
     }
 }
