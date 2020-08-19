@@ -1,7 +1,7 @@
 /*
 elfdump.cpp - Dump ELF file using ELFIO library.
 
-Copyright (C) 2001-2015 by Serge Lamikhov-Center
+Copyright (C) 2001-2020 by Serge Lamikhov-Center
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
