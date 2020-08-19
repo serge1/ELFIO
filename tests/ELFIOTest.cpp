@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE( load32 )
     seg = reader.segments[6];
     checkSegment( seg, 0x6474E551, 0x0, 0x0,
                        0x0, 0x0, PF_R + PF_W, 4 );
-
+    
     ////////////////////////////////////////////////////////////////////////////
     // Check symbol table
     sec = reader.sections[ ".symtab" ];
@@ -266,14 +266,14 @@ BOOST_AUTO_TEST_CASE( load32 )
     checkRelocation( &reloc1, 0, 0x08049578, 0x0, "__gmon_start__", R_X86_64_JUMP_SLOT, 0, 0 );
     checkRelocation( &reloc1, 1, 0x0804957c, 0x0, "__libc_start_main", R_X86_64_JUMP_SLOT, 0, 0 );
     checkRelocation( &reloc1, 2, 0x08049580, 0x0, "puts", R_X86_64_JUMP_SLOT, 0, 0 );
-
+    
     ////////////////////////////////////////////////////////////////////////////
     // Check note reader
     sec = reader.sections[ ".note.ABI-tag" ];
     
 
     note_section_accessor notes( reader, sec );
-    BOOST_CHECK_EQUAL( notes.get_notes_num(), 1 );
+    BOOST_CHECK_EQUAL( notes.get_notes_num(), 1u );
 
     checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
 }
@@ -382,7 +382,7 @@ BOOST_AUTO_TEST_CASE( load64 )
     
 
     note_section_accessor notes( reader, sec );
-    BOOST_CHECK_EQUAL( notes.get_notes_num(), 1 );
+    BOOST_CHECK_EQUAL( notes.get_notes_num(), 1u );
 
     checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
 }
@@ -686,17 +686,18 @@ BOOST_AUTO_TEST_CASE( test_ppc )
 
     checkRelocation( &reloc1, 0, 0x10010be4, 0x100008e0, "__cxa_atexit", 21, 0, 0 );
     checkRelocation( &reloc1, 1, 0x10010be8, 0x0, "__gmon_start__", 21, 0, 0 );
-
+ 
     ////////////////////////////////////////////////////////////////////////////
     // Check note reader
     sec =reader.sections[ ".note.ABI-tag" ];
     
 
     note_section_accessor notes( reader, sec );
-    BOOST_CHECK_EQUAL( notes.get_notes_num(), 1 );
+    BOOST_CHECK_EQUAL( notes.get_notes_num(), 1u );
 
     checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( test_dummy_out_i386_32 )
