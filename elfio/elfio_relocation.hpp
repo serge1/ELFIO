@@ -200,6 +200,38 @@ class relocation_section_accessor_template
         return ret;
     }
 
+    //------------------------------------------------------------------------------
+    bool
+    set_entry(Elf_Xword  index,
+              Elf64_Addr offset,
+              Elf_Word   symbol,
+              Elf_Word   type,
+              Elf_Sxword addend)
+    {
+        if (index >= get_entries_num()) { // Is index valid
+            return false;
+        }
+
+        if (elf_file.get_class() == ELFCLASS32) {
+            if (SHT_REL == relocation_section->get_type()) {
+                generic_set_entry_rel<Elf32_Rel>(index, offset, symbol, type, addend);
+            }
+            else if (SHT_RELA == relocation_section->get_type()) {
+                generic_set_entry_rela<Elf32_Rela>(index, offset, symbol, type, addend);
+            }
+        }
+        else {
+            if (SHT_REL == relocation_section->get_type()) {
+                generic_set_entry_rel<Elf64_Rel>(index, offset, symbol, type, addend);
+            }
+            else if (SHT_RELA == relocation_section->get_type()) {
+                generic_set_entry_rela<Elf64_Rela>(index, offset, symbol, type, addend);
+            }
+        }
+
+        return true;
+    }
+
 //------------------------------------------------------------------------------
     void
     add_entry( Elf64_Addr offset, Elf_Xword info )
@@ -323,6 +355,58 @@ class relocation_section_accessor_template
         symbol        = get_sym_and_type<T>::get_r_sym( tmp );
         type          = get_sym_and_type<T>::get_r_type( tmp );
         addend        = convertor( pEntry->r_addend );
+    }
+
+    //------------------------------------------------------------------------------
+    template <class T>
+    void
+    generic_set_entry_rel(Elf_Xword  index,
+                          Elf64_Addr offset,
+                          Elf_Word   symbol,
+                          Elf_Word   type,
+                          Elf_Sxword addend)
+    {
+        const endianess_convertor &convertor = elf_file.get_convertor();
+
+        T *pEntry = const_cast<T *>(reinterpret_cast<const T *>(relocation_section->get_data() +
+                                                                index * relocation_section->get_entry_size()));
+
+        if (elf_file.get_class() == ELFCLASS32) {
+            pEntry->r_info = ELF32_R_INFO((Elf_Xword)symbol, type);
+        }
+        else {
+            pEntry->r_info = ELF64_R_INFO((Elf_Xword)symbol, type);
+        }
+        pEntry->r_offset = offset;
+        pEntry->r_offset = convertor(pEntry->r_offset);
+        pEntry->r_info   = convertor(pEntry->r_info);
+    }
+
+    //------------------------------------------------------------------------------
+    template <class T>
+    void
+    generic_set_entry_rela(Elf_Xword  index,
+                           Elf64_Addr offset,
+                           Elf_Word   symbol,
+                           Elf_Word   type,
+                           Elf_Sxword addend)
+    {
+        const endianess_convertor &convertor = elf_file.get_convertor();
+
+        T *pEntry = const_cast<T *>(reinterpret_cast<const T *>(relocation_section->get_data() +
+                                                                index * relocation_section->get_entry_size()));
+
+        if (elf_file.get_class() == ELFCLASS32) {
+            pEntry->r_info = ELF32_R_INFO((Elf_Xword)symbol, type);
+        }
+        else {
+            pEntry->r_info = ELF64_R_INFO((Elf_Xword)symbol, type);
+        }
+        pEntry->r_offset = offset;
+        pEntry->r_addend = addend;
+        pEntry->r_offset = convertor(pEntry->r_offset);
+        pEntry->r_info   = convertor(pEntry->r_info);
+        pEntry->r_addend = convertor(pEntry->r_addend);
     }
 
 //------------------------------------------------------------------------------

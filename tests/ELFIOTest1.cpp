@@ -650,7 +650,7 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
     value = 8;
     symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
 
-    symbols.arrange_local_symbols([symbols](Elf_Xword first, Elf_Xword second) -> void {
+    symbols.arrange_local_symbols([&](Elf_Xword first, Elf_Xword second) -> void {
         static int counter = 0;
         BOOST_CHECK_EQUAL(first, ++counter);
         // std::string name              = "";
@@ -701,4 +701,162 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
         BOOST_CHECK_NE(bind, (unsigned char)STB_LOCAL);
     }
     BOOST_CHECK_EQUAL(name, "Str8");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(rearrange_local_symbols_with_reallocation)
+{
+    std::string name              = "";
+    ELFIO::Elf64_Addr value       = 0;
+    ELFIO::Elf_Xword size         = 0;
+    unsigned char bind            = STB_LOCAL;
+    unsigned char type            = STT_FUNC;
+    ELFIO::Elf_Half section_index = 0;
+    unsigned char other           = 0;
+    const std::string file_name   = "elf_examples/test_symbols_order.elf";
+
+    elfio writer;
+    writer.create(ELFCLASS64, ELFDATA2LSB);
+    writer.set_os_abi(ELFOSABI_LINUX);
+    writer.set_type(ET_EXEC);
+    writer.set_machine(EM_X86_64);
+
+    section *text_sec = writer.sections.add(".text");
+    text_sec->set_type(SHT_PROGBITS);
+    text_sec->set_flags(SHF_ALLOC | SHF_EXECINSTR);
+    text_sec->set_addr_align(0x10);
+
+    section* str_sec = writer.sections.add(".strtab");
+    str_sec->set_type(SHT_STRTAB);
+    str_sec->set_addr_align(0x1);
+    string_section_accessor str_writer(str_sec);
+
+    section* sym_sec = writer.sections.add(".symtab");
+    sym_sec->set_type(SHT_SYMTAB);
+    sym_sec->set_info(0);
+    sym_sec->set_link(str_sec->get_index());
+    sym_sec->set_addr_align(4);
+    sym_sec->set_entry_size(writer.get_default_entry_size(SHT_SYMTAB));
+    symbol_section_accessor symbols(writer, sym_sec);
+
+    name = "Str1";
+    bind = STB_GLOBAL;
+    value = 1;
+    Elf_Word sym1 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+    name = "Str2";
+    bind = STB_LOCAL;
+    value = 2;
+    Elf_Word sym2 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+    name = "Str3";
+    bind = STB_WEAK;
+    value = 3;
+    Elf_Word sym3 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+    name = "Str4";
+    bind = STB_LOCAL;
+    value = 4;
+    Elf_Word sym4 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+    name = "Str5";
+    bind = STB_LOCAL;
+    value = 5;
+    Elf_Word sym5 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+    name = "Str6";
+    bind = STB_GLOBAL;
+    value = 6;
+    Elf_Word sym6 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+    name = "Str7";
+    bind = STB_LOCAL;
+    value = 7;
+    Elf_Word sym7 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+    name = "Str8";
+    bind = STB_WEAK;
+    value = 8;
+    Elf_Word sym8 = symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
+
+    section* rel_sec = writer.sections.add(".rel.text");
+    rel_sec->set_type(SHT_REL);
+    rel_sec->set_info(text_sec->get_index());
+    rel_sec->set_addr_align(0x4);
+    rel_sec->set_entry_size(writer.get_default_entry_size(SHT_REL));
+    rel_sec->set_link(sym_sec->get_index());
+
+    relocation_section_accessor rela(writer, rel_sec);
+    // Add relocation entry (adjust address at offset 11)
+    rela.add_entry(1, sym1, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(8, sym8, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(6, sym6, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(2, sym2, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(3, sym3, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(8, sym8, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(7, sym7, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(2, sym2, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(11, sym1, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(18, sym8, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(16, sym6, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(12, sym2, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(13, sym3, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(17, sym7, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(14, sym4, (unsigned char)R_386_RELATIVE);
+    rela.add_entry(15, sym5, (unsigned char)R_386_RELATIVE);
+
+    std::vector<std::string> before;
+
+    for (Elf_Word i = 0; i < rela.get_entries_num(); i++)
+    {
+        Elf64_Addr offset;
+        Elf_Word   symbol;
+        Elf_Word   rtype;
+        Elf_Sxword addend;
+
+        rela.get_entry(i, offset, symbol, rtype, addend);
+        symbols.get_symbol(symbol, name, value, size, bind, type, section_index, other);
+        before.push_back(name);
+    }
+
+    symbols.arrange_local_symbols([&](Elf_Xword first, Elf_Xword second) -> void {
+        Elf64_Addr offset;
+        Elf_Word   symbol;
+        Elf_Word   rtype;
+        Elf_Sxword addend;
+        for (Elf_Word i = 0; i < rela.get_entries_num(); i++) {
+            rela.get_entry(i,  offset, symbol, rtype, addend);
+            if (symbol == first) {
+                rela.set_entry(i, offset, second, rtype, addend);
+            }
+            if (symbol == second) {
+                rela.set_entry(i, offset, first, rtype, addend);
+            }
+        }
+    });
+
+    BOOST_REQUIRE_EQUAL(writer.save(file_name), true);
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    elfio reader;
+    BOOST_REQUIRE_EQUAL(reader.load(file_name), true);
+
+    auto prelsec = reader.sections[".rel.text"];
+    auto psyms   = reader.sections[".symtab"];
+
+    BOOST_REQUIRE_NE(prelsec, nullptr);
+    BOOST_REQUIRE_NE(psyms, nullptr);
+
+    const_relocation_section_accessor rel(reader, prelsec);
+    const_symbol_section_accessor syms(reader, psyms);
+
+    std::vector<std::string> after;
+
+    for (Elf_Word i = 0; i < rel.get_entries_num(); i++)
+    {
+        Elf64_Addr offset;
+        Elf_Word   symbol;
+        Elf_Word   rtype;
+        Elf_Sxword addend;
+
+        rel.get_entry(i, offset, symbol, rtype, addend);
+        syms.get_symbol(symbol, name, value, size, bind, type, section_index, other);
+        after.push_back(name);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(before.begin(), before.end(), after.begin(), after.end());
 }
