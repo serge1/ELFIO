@@ -617,8 +617,8 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
     sym_sec->set_entry_size(writer.get_default_entry_size(SHT_SYMTAB));
     symbol_section_accessor symbols(writer, sym_sec);
 
-    name  = "Str1";
-    bind  = STB_GLOBAL;
+    name = "Str1";
+    bind = STB_GLOBAL;
     value = 1;
     symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
     name  = "Str2";
@@ -650,11 +650,27 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
     value = 8;
     symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
 
-    symbols.arrange_local_symbols();
+    symbols.arrange_local_symbols([symbols](Elf_Xword first, Elf_Xword second) -> void {
+        static int counter = 0;
+        BOOST_CHECK_EQUAL(first, ++counter);
+        // std::string name              = "";
+        // ELFIO::Elf64_Addr value       = 0;
+        // ELFIO::Elf_Xword size         = 0;
+        // unsigned char bind            = STB_LOCAL;
+        // unsigned char type            = STT_FUNC;
+        // ELFIO::Elf_Half section_index = 0;
+        // unsigned char other           = 0;
+
+        // std::cout << first << " " << second << std::endl;
+        // symbols.get_symbol(first, name, value, size, bind, type, section_index, other);
+        // std::cout << "  " << name;
+        // symbols.get_symbol(second, name, value, size, bind, type, section_index, other);
+        // std::cout << "  " << name << std::endl;
+    });
 
     BOOST_REQUIRE_EQUAL(writer.save(file_name), true);
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     elfio reader;
     BOOST_REQUIRE_EQUAL(reader.load(file_name), true);
@@ -675,6 +691,7 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
         rsymbols.get_symbol(i, name, value, size, bind, type, section_index, other);
         BOOST_CHECK_EQUAL(bind, (unsigned char)STB_LOCAL);
     }
+    BOOST_CHECK_EQUAL(name, "Str7");
 
     // Check that all symbols are not LOCAL after the bound value
     for (Elf_Word i = bound; i < num; i++)
@@ -683,4 +700,5 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
 
         BOOST_CHECK_NE(bind, (unsigned char)STB_LOCAL);
     }
+    BOOST_CHECK_EQUAL(name, "Str8");
 }

@@ -216,15 +216,15 @@ class symbol_section_accessor_template
 
 //------------------------------------------------------------------------------
     Elf_Xword
-    arrange_local_symbols()
+    arrange_local_symbols(std::function<void(Elf_Xword first, Elf_Xword second)> func = nullptr)
     {
         int nRet = 0;
 
         if (elf_file.get_class() == ELFCLASS32) {
-            nRet = generic_arrange_local_symbols<Elf32_Sym>();
+            nRet = generic_arrange_local_symbols<Elf32_Sym>(func);
         }
         else {
-            nRet = generic_arrange_local_symbols<Elf64_Sym>();
+            nRet = generic_arrange_local_symbols<Elf64_Sym>(func);
         }
 
         return nRet;
@@ -364,12 +364,12 @@ class symbol_section_accessor_template
     //------------------------------------------------------------------------------
     template <class T>
     Elf_Xword
-    generic_arrange_local_symbols()
+    generic_arrange_local_symbols(std::function<void (Elf_Xword first, Elf_Xword second)> func)
     {
         const endianess_convertor &convertor = elf_file.get_convertor();
         const Elf_Xword           size       = symbol_section->get_entry_size();
 
-        Elf_Xword first_not_local = 1; // Skip the first entry
+        Elf_Xword first_not_local = 1; // Skip the first entry. It is always NOTYPE
         Elf_Xword current         = 0;
         Elf_Xword count           = get_symbols_num();
 
@@ -397,6 +397,9 @@ class symbol_section_accessor_template
 
             if (first_not_local < count && current < count)
             {
+                if (func)
+                    func(first_not_local, current);
+
                 // Swap the symbols
                 T tmp;
                 memcpy(&tmp, p1, size);
