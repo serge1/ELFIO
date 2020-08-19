@@ -364,7 +364,7 @@ class relocation_section_accessor_template
                           Elf64_Addr offset,
                           Elf_Word   symbol,
                           Elf_Word   type,
-                          Elf_Sxword addend)
+                          Elf_Sxword)
     {
         const endianess_convertor &convertor = elf_file.get_convertor();
 

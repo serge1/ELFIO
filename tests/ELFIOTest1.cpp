@@ -650,7 +650,7 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols)
     value = 8;
     symbols.add_symbol(str_writer, name.c_str(), value, size, bind, type, other, section_index);
 
-    symbols.arrange_local_symbols([&](Elf_Xword first, Elf_Xword second) -> void {
+    symbols.arrange_local_symbols([&](Elf_Xword first, Elf_Xword) -> void {
         static int counter = 0;
         BOOST_CHECK_EQUAL(first, ++counter);
         // std::string name              = "";
@@ -820,10 +820,10 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols_with_reallocation)
         for (Elf_Word i = 0; i < rela.get_entries_num(); i++) {
             rela.get_entry(i,  offset, symbol, rtype, addend);
             if (symbol == first) {
-                rela.set_entry(i, offset, second, rtype, addend);
+                rela.set_entry(i, offset, (Elf_Word)second, rtype, addend);
             }
             if (symbol == second) {
-                rela.set_entry(i, offset, first, rtype, addend);
+                rela.set_entry(i, offset, (Elf_Word)first, rtype, addend);
             }
         }
     });
