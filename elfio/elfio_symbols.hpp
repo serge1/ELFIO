@@ -402,9 +402,9 @@ class symbol_section_accessor_template
 
                 // Swap the symbols
                 T tmp;
-                memcpy(&tmp, p1, size);
-                memcpy(p1, p2, size);
-                memcpy(p2, &tmp, size);
+                std::copy(p1,   p1 + 1,   &tmp);
+                std::copy(p2,   p2 + 1,   p1);
+                std::copy(&tmp, &tmp + 1, p2);
             }
             else
             {
