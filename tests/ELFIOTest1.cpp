@@ -812,23 +812,7 @@ BOOST_AUTO_TEST_CASE(rearrange_local_symbols_with_reallocation)
         before.push_back(name);
     }
 
-    // symbols.arrange_local_symbols([&](Elf_Xword first, Elf_Xword second) -> void {
-    //     Elf64_Addr offset;
-    //     Elf_Word   symbol;
-    //     Elf_Word   rtype;
-    //     Elf_Sxword addend;
-    //     for (Elf_Word i = 0; i < rela.get_entries_num(); i++) {
-    //         rela.get_entry(i,  offset, symbol, rtype, addend);
-    //         if (symbol == first) {
-    //             rela.set_entry(i, offset, (Elf_Word)second, rtype, addend);
-    //         }
-    //         if (symbol == second) {
-    //             rela.set_entry(i, offset, (Elf_Word)first, rtype, addend);
-    //         }
-    //     }
-    // });
-
-    symbols.arrange_local_symbols([&](Elf_Xword first, Elf_Xword second) -> void {
+    symbols.arrange_local_symbols([&](Elf_Xword first, Elf_Xword second) {
         rela.swap_symbols(first, second);
     });
 
