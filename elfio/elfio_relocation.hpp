@@ -306,6 +306,28 @@ class relocation_section_accessor_template
         add_entry( offset, sym_index, type );
     }
 
+    //------------------------------------------------------------------------------
+    void
+    swap_symbols(Elf_Xword first, Elf_Xword second)
+    {
+        Elf64_Addr offset;
+        Elf_Word   symbol;
+        Elf_Word   rtype;
+        Elf_Sxword addend;
+        for (Elf_Word i = 0; i < get_entries_num(); i++)
+        {
+            get_entry(i, offset, symbol, rtype, addend);
+            if (symbol == first)
+            {
+                set_entry(i, offset, (Elf_Word)second, rtype, addend);
+            }
+            if (symbol == second)
+            {
+                set_entry(i, offset, (Elf_Word)first, rtype, addend);
+            }
+        }
+    }
+
 //------------------------------------------------------------------------------
   private:
 //------------------------------------------------------------------------------
