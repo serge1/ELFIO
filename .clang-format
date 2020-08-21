@@ -1,0 +1,27 @@
+{
+  BasedOnStyle                         : LLVM,
+
+  AlignConsecutiveAssignments          : true,
+  AlignConsecutiveDeclarations         : true,
+  AlignConsecutiveMacros               : true,
+  AlignEscapedNewlines                 : true,
+  AlignOperands                        : true,
+  AlignTrailingComments                : true,
+
+  UseTab                               : Never,
+  IndentWidth                          : 4,
+  TabWidth                             : 4,
+  BreakBeforeBraces                    : Stroustrup,
+  AllowShortIfStatementsOnASingleLine  : false,
+  IndentCaseLabels                     : false,
+  ColumnLimit                          : 90,
+  AccessModifierOffset                 : -4,
+  NamespaceIndentation                 : Inner,
+  PointerAlignment                     : Left,
+  FixNamespaceComments                 : true,
+  SortIncludes                         : false,
+
+  ReflowComments                       : false,
+  SpacesInConditionalStatement         : true,
+  SpacesInParentheses                  : true,
+}
