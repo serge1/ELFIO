@@ -49,36 +49,36 @@ diff before.txt after.txt
 
 using namespace ELFIO;
 
-void overwrite_data(const std::string &filename, long offset, std::string &str)
+void overwrite_data( const std::string& filename,
+                     long               offset,
+                     std::string&       str )
 {
-    std::ofstream file(filename, std::ios::in | std::ios::out | std::ios::binary);
-    if (!file)
+    std::ofstream file( filename,
+                        std::ios::in | std::ios::out | std::ios::binary );
+    if ( !file )
         throw "Error opening file" + filename;
-    std::string data(str.length(), '-');
-    file.seekp(offset);
-    file.write(data.c_str(), data.length() + 1);
+    std::string data( str.length(), '-' );
+    file.seekp( offset );
+    file.write( data.c_str(), data.length() + 1 );
 }
 
-void process_string_table(const section *s, const std::string &filename)
+void process_string_table( const section* s, const std::string& filename )
 {
     std::cout << "Info: processing string table section" << std::endl;
     int index = 1;
-    while (index < s->get_size())
-    {
-        auto str = std::string(s->get_data() + index);
+    while ( index < s->get_size() ) {
+        auto str = std::string( s->get_data() + index );
         // For the example purpose, we rename main function name only
-        if (str == "main")
-            overwrite_data(filename, s->get_offset() + index, str);
+        if ( str == "main" )
+            overwrite_data( filename, s->get_offset() + index, str );
         index += str.length() + 1;
     }
 }
 
-int main(int argc, char **argv)
+int main( int argc, char** argv )
 {
-    try
-    {
-        if (argc != 2)
-        {
+    try {
+        if ( argc != 2 ) {
             std::cout << "Usage: anonymizer <file_name>\n";
             return 1;
         }
@@ -87,28 +87,26 @@ int main(int argc, char **argv)
 
         elfio reader;
 
-        if (!reader.load(filename))
-        {
-            std::cerr << "File " << filename << " is not found or it is not an ELF file\n";
+        if ( !reader.load( filename ) ) {
+            std::cerr << "File " << filename
+                      << " is not found or it is not an ELF file\n";
             return 1;
         }
 
-        for (auto section = reader.sections.begin(); section != reader.sections.end(); ++section)
-        {
-            if ((*section)->get_type() == SHT_STRTAB &&
-                std::string((*section)->get_name()) == std::string(".strtab"))
-            {
-                process_string_table(*section, filename);
+        for ( auto section = reader.sections.begin();
+              section != reader.sections.end(); ++section ) {
+            if ( ( *section )->get_type() == SHT_STRTAB &&
+                 std::string( ( *section )->get_name() ) ==
+                     std::string( ".strtab" ) ) {
+                process_string_table( *section, filename );
             }
         }
         return 0;
     }
-    catch (const std::string &s)
-    {
+    catch ( const std::string& s ) {
         std::cerr << s << std::endl;
     }
-    catch (const char *s)
-    {
+    catch ( const char* s ) {
         std::cerr << s << std::endl;
     }
     return 1;

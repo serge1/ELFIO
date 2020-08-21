@@ -38,63 +38,62 @@ namespace ELFIO {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-template< class S >
-class note_section_accessor_template
+template <class S> class note_section_accessor_template
 {
   public:
-//------------------------------------------------------------------------------
-    note_section_accessor_template( const elfio& elf_file_, S* section_ ) :
-                                    elf_file( elf_file_ ), note_section( section_ )
+    //------------------------------------------------------------------------------
+    note_section_accessor_template( const elfio& elf_file_, S* section_ )
+        : elf_file( elf_file_ ), note_section( section_ )
     {
         process_section();
     }
 
-//------------------------------------------------------------------------------
-    Elf_Word
-    get_notes_num() const
+    //------------------------------------------------------------------------------
+    Elf_Word get_notes_num() const
     {
         return (Elf_Word)note_start_positions.size();
     }
 
-//------------------------------------------------------------------------------
-    bool
-    get_note( Elf_Word     index,
-              Elf_Word&    type,
-              std::string& name,
-              void*&       desc,
-              Elf_Word&    descSize ) const
+    //------------------------------------------------------------------------------
+    bool get_note( Elf_Word     index,
+                   Elf_Word&    type,
+                   std::string& name,
+                   void*&       desc,
+                   Elf_Word&    descSize ) const
     {
         if ( index >= note_section->get_size() ) {
             return false;
         }
 
-        const char* pData = note_section->get_data() + note_start_positions[index];
+        const char* pData =
+            note_section->get_data() + note_start_positions[index];
         int align = sizeof( Elf_Word );
 
         const endianess_convertor& convertor = elf_file.get_convertor();
-        type            = convertor( *(const Elf_Word*)( pData + 2*align ) );
+        type            = convertor( *(const Elf_Word*)( pData + 2 * align ) );
         Elf_Word namesz = convertor( *(const Elf_Word*)( pData ) );
-        descSize        = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
+        descSize = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
 
-        Elf_Xword max_name_size = note_section->get_size() - note_start_positions[index];
-        if ( namesz            < 1             ||
-             namesz            > max_name_size ||
-            (Elf_Xword)namesz + descSize > max_name_size ) {
+        Elf_Xword max_name_size =
+            note_section->get_size() - note_start_positions[index];
+        if ( namesz < 1 || namesz > max_name_size ||
+             (Elf_Xword)namesz + descSize > max_name_size ) {
             return false;
         }
-        name.assign( pData + 3*align, namesz - 1);
+        name.assign( pData + 3 * align, namesz - 1 );
         if ( 0 == descSize ) {
             desc = 0;
         }
         else {
-            desc = const_cast<char*> ( pData + 3*align +
-                                       ( ( namesz + align - 1 )/align )*align );
+            desc =
+                const_cast<char*>( pData + 3 * align +
+                                   ( ( namesz + align - 1 ) / align ) * align );
         }
 
         return true;
     }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
     void add_note( Elf_Word           type,
                    const std::string& name,
                    const void*        desc,
@@ -102,11 +101,12 @@ class note_section_accessor_template
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
-        int align            = sizeof( Elf_Word );
-        Elf_Word nameLen     = (Elf_Word)name.size() + 1;
-        Elf_Word nameLenConv = convertor( nameLen );
+        int         align       = sizeof( Elf_Word );
+        Elf_Word    nameLen     = (Elf_Word)name.size() + 1;
+        Elf_Word    nameLenConv = convertor( nameLen );
         std::string buffer( reinterpret_cast<char*>( &nameLenConv ), align );
-        Elf_Word descSizeConv = convertor( descSize );
+        Elf_Word    descSizeConv = convertor( descSize );
+        
         buffer.append( reinterpret_cast<char*>( &descSizeConv ), align );
         type = convertor( type );
         buffer.append( reinterpret_cast<char*>( &type ), align );
@@ -128,13 +128,13 @@ class note_section_accessor_template
     }
 
   private:
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
     void process_section()
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
-        const char* data                     = note_section->get_data();
-        Elf_Xword   size                     = note_section->get_size();
-        Elf_Xword   current                  = 0;
+        const char*                data      = note_section->get_data();
+        Elf_Xword                  size      = note_section->get_size();
+        Elf_Xword                  current   = 0;
 
         note_start_positions.clear();
 
@@ -144,28 +144,28 @@ class note_section_accessor_template
         }
 
         Elf_Word align = sizeof( Elf_Word );
-        while ( current + (Elf_Xword)3*align <= size ) {
+        while ( current + (Elf_Xword)3 * align <= size ) {
             note_start_positions.push_back( current );
-            Elf_Word namesz = convertor(
-                            *(const Elf_Word*)( data + current ) );
+            Elf_Word namesz = convertor( *(const Elf_Word*)( data + current ) );
             Elf_Word descsz = convertor(
-                            *(const Elf_Word*)( data + current + sizeof( namesz ) ) );
+                *(const Elf_Word*)( data + current + sizeof( namesz ) ) );
 
-            current += (Elf_Xword)3*sizeof( Elf_Word ) +
+            current += (Elf_Xword)3 * sizeof( Elf_Word ) +
                        ( ( namesz + align - 1 ) / align ) * (Elf_Xword)align +
                        ( ( descsz + align - 1 ) / align ) * (Elf_Xword)align;
         }
     }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
   private:
     const elfio&           elf_file;
     S*                     note_section;
     std::vector<Elf_Xword> note_start_positions;
 };
 
-using note_section_accessor       = note_section_accessor_template<section>;
-using const_note_section_accessor = note_section_accessor_template<const section>;
+using note_section_accessor = note_section_accessor_template<section>;
+using const_note_section_accessor =
+    note_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

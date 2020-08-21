@@ -26,40 +26,38 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
-template< class S >
-class symbol_section_accessor_template
+template <class S> class symbol_section_accessor_template
 {
   public:
-//------------------------------------------------------------------------------
-    symbol_section_accessor_template( const elfio& elf_file_, S* symbol_section_ ) :
-                                      elf_file( elf_file_ ),
-                                      symbol_section( symbol_section_ )
+    //------------------------------------------------------------------------------
+    symbol_section_accessor_template( const elfio& elf_file_,
+                                      S*           symbol_section_ )
+        : elf_file( elf_file_ ), symbol_section( symbol_section_ )
     {
         find_hash_section();
     }
 
-//------------------------------------------------------------------------------
-    Elf_Xword
-    get_symbols_num() const
+    //------------------------------------------------------------------------------
+    Elf_Xword get_symbols_num() const
     {
         Elf_Xword nRet = 0;
         if ( 0 != symbol_section->get_entry_size() ) {
-            nRet = symbol_section->get_size() / symbol_section->get_entry_size();
+            nRet =
+                symbol_section->get_size() / symbol_section->get_entry_size();
         }
 
         return nRet;
     }
 
-//------------------------------------------------------------------------------
-    bool
-    get_symbol( Elf_Xword      index,
-                std::string&   name,
-                Elf64_Addr&    value,
-                Elf_Xword&     size,
-                unsigned char& bind,
-                unsigned char& type,
-                Elf_Half&      section_index,
-                unsigned char& other ) const
+    //------------------------------------------------------------------------------
+    bool get_symbol( Elf_Xword      index,
+                     std::string&   name,
+                     Elf64_Addr&    value,
+                     Elf_Xword&     size,
+                     unsigned char& bind,
+                     unsigned char& type,
+                     Elf_Half&      section_index,
+                     unsigned char& other ) const
     {
         bool ret = false;
 
@@ -75,33 +73,35 @@ class symbol_section_accessor_template
         return ret;
     }
 
-//------------------------------------------------------------------------------
-    bool
-    get_symbol( const std::string& name,
-                Elf64_Addr&        value,
-                Elf_Xword&         size,
-                unsigned char&     bind,
-                unsigned char&     type,
-                Elf_Half&          section_index,
-                unsigned char&     other ) const
+    //------------------------------------------------------------------------------
+    bool get_symbol( const std::string& name,
+                     Elf64_Addr&        value,
+                     Elf_Xword&         size,
+                     unsigned char&     bind,
+                     unsigned char&     type,
+                     Elf_Half&          section_index,
+                     unsigned char&     other ) const
     {
         bool ret = false;
 
         if ( 0 != get_hash_table_index() ) {
-            Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
-            Elf_Word nchain  = *(const Elf_Word*)( hash_section->get_data() +
-                                   sizeof( Elf_Word ) );
-            Elf_Word val     = elf_hash( (const unsigned char*)name.c_str() );
-            Elf_Word y       = *(const Elf_Word*)( hash_section->get_data() +
-                                ( 2 + val % nbucket ) * sizeof( Elf_Word ) );
-            std::string   str;
+            Elf_Word    nbucket = *(const Elf_Word*)hash_section->get_data();
+            Elf_Word    nchain  = *(const Elf_Word*)( hash_section->get_data() +
+                                                  sizeof( Elf_Word ) );
+            Elf_Word    val = elf_hash( (const unsigned char*)name.c_str() );
+            Elf_Word    y   = *(const Elf_Word*)( hash_section->get_data() +
+                                             ( 2 + val % nbucket ) *
+                                                 sizeof( Elf_Word ) );
+            std::string str;
             get_symbol( y, str, value, size, bind, type, section_index, other );
             while ( str != name && STN_UNDEF != y && y < nchain ) {
                 y = *(const Elf_Word*)( hash_section->get_data() +
-                        ( 2 + nbucket + y ) * sizeof( Elf_Word ) );
-                get_symbol( y, str, value, size, bind, type, section_index, other );
+                                        ( 2 + nbucket + y ) *
+                                            sizeof( Elf_Word ) );
+                get_symbol( y, str, value, size, bind, type, section_index,
+                            other );
             }
-            if (  str == name ) {
+            if ( str == name ) {
                 ret = true;
             }
         }
@@ -109,7 +109,7 @@ class symbol_section_accessor_template
             for ( Elf_Xword i = 0; i < get_symbols_num() && !ret; i++ ) {
                 std::string symbol_name;
                 if ( get_symbol( i, symbol_name, value, size, bind, type,
-                                 section_index, other) ) {
+                                 section_index, other ) ) {
                     if ( symbol_name == name ) {
                         ret = true;
                     }
@@ -120,17 +120,15 @@ class symbol_section_accessor_template
         return ret;
     }
 
- //------------------------------------------------------------------------------
-    bool
-    get_symbol( const Elf64_Addr& value,
-                std::string&      name,
-                Elf_Xword&        size,
-                unsigned char&    bind,
-                unsigned char&    type,
-                Elf_Half&         section_index,
-                unsigned char&    other ) const
+    //------------------------------------------------------------------------------
+    bool get_symbol( const Elf64_Addr& value,
+                     std::string&      name,
+                     Elf_Xword&        size,
+                     unsigned char&    bind,
+                     unsigned char&    type,
+                     Elf_Half&         section_index,
+                     unsigned char&    other ) const
     {
-
 
         const endianess_convertor& convertor = elf_file.get_convertor();
 
@@ -139,27 +137,35 @@ class symbol_section_accessor_template
         Elf64_Addr v     = 0;
 
         if ( elf_file.get_class() == ELFCLASS32 ) {
-            match = generic_search_symbols<Elf32_Sym>([&](const Elf32_Sym* sym) {
-                    return convertor(sym->st_value) == value;
-                }, idx);
-        } else {
-            match = generic_search_symbols<Elf64_Sym>([&](const Elf64_Sym* sym) {
-                    return convertor(sym->st_value) == value;
-                }, idx);
+            match = generic_search_symbols<Elf32_Sym>(
+                [&]( const Elf32_Sym* sym ) {
+                    return convertor( sym->st_value ) == value;
+                },
+                idx );
+        }
+        else {
+            match = generic_search_symbols<Elf64_Sym>(
+                [&]( const Elf64_Sym* sym ) {
+                    return convertor( sym->st_value ) == value;
+                },
+                idx );
         }
 
         if ( match ) {
-            return get_symbol( idx, name, v, size, bind, type, section_index, other );
+            return get_symbol( idx, name, v, size, bind, type, section_index,
+                               other );
         }
 
         return false;
     }
 
-//------------------------------------------------------------------------------
-    Elf_Word
-    add_symbol( Elf_Word name, Elf64_Addr value, Elf_Xword size,
-                unsigned char info, unsigned char other,
-                Elf_Half shndx )
+    //------------------------------------------------------------------------------
+    Elf_Word add_symbol( Elf_Word      name,
+                         Elf64_Addr    value,
+                         Elf_Xword     size,
+                         unsigned char info,
+                         unsigned char other,
+                         Elf_Half      shndx )
     {
         Elf_Word nRet;
 
@@ -173,72 +179,82 @@ class symbol_section_accessor_template
         }
 
         if ( elf_file.get_class() == ELFCLASS32 ) {
-            nRet = generic_add_symbol<Elf32_Sym>( name, value, size, info, other,
-                                                  shndx );
+            nRet = generic_add_symbol<Elf32_Sym>( name, value, size, info,
+                                                  other, shndx );
         }
         else {
-            nRet = generic_add_symbol<Elf64_Sym>( name, value, size, info, other,
-                                                  shndx );
+            nRet = generic_add_symbol<Elf64_Sym>( name, value, size, info,
+                                                  other, shndx );
         }
 
         return nRet;
     }
 
-//------------------------------------------------------------------------------
-    Elf_Word
-    add_symbol( Elf_Word name, Elf64_Addr value, Elf_Xword size,
-                unsigned char bind, unsigned char type, unsigned char other,
-                Elf_Half shndx )
+    //------------------------------------------------------------------------------
+    Elf_Word add_symbol( Elf_Word      name,
+                         Elf64_Addr    value,
+                         Elf_Xword     size,
+                         unsigned char bind,
+                         unsigned char type,
+                         unsigned char other,
+                         Elf_Half      shndx )
     {
-        return add_symbol( name, value, size, ELF_ST_INFO( bind, type ), other, shndx );
+        return add_symbol( name, value, size, ELF_ST_INFO( bind, type ), other,
+                           shndx );
     }
 
-//------------------------------------------------------------------------------
-    Elf_Word
-    add_symbol( string_section_accessor& pStrWriter, const char* str,
-                Elf64_Addr value, Elf_Xword size,
-                unsigned char info, unsigned char other,
-                Elf_Half shndx )
+    //------------------------------------------------------------------------------
+    Elf_Word add_symbol( string_section_accessor& pStrWriter,
+                         const char*              str,
+                         Elf64_Addr               value,
+                         Elf_Xword                size,
+                         unsigned char            info,
+                         unsigned char            other,
+                         Elf_Half                 shndx )
     {
         Elf_Word index = pStrWriter.add_string( str );
         return add_symbol( index, value, size, info, other, shndx );
     }
 
-//------------------------------------------------------------------------------
-    Elf_Word
-    add_symbol( string_section_accessor& pStrWriter, const char* str,
-                Elf64_Addr value, Elf_Xword size,
-                unsigned char bind, unsigned char type, unsigned char other,
-                Elf_Half shndx )
+    //------------------------------------------------------------------------------
+    Elf_Word add_symbol( string_section_accessor& pStrWriter,
+                         const char*              str,
+                         Elf64_Addr               value,
+                         Elf_Xword                size,
+                         unsigned char            bind,
+                         unsigned char            type,
+                         unsigned char            other,
+                         Elf_Half                 shndx )
     {
-        return add_symbol( pStrWriter, str, value, size, ELF_ST_INFO( bind, type ), other, shndx );
+        return add_symbol( pStrWriter, str, value, size,
+                           ELF_ST_INFO( bind, type ), other, shndx );
     }
 
-//------------------------------------------------------------------------------
-    Elf_Xword
-    arrange_local_symbols(std::function<void(Elf_Xword first, Elf_Xword second)> func = nullptr)
+    //------------------------------------------------------------------------------
+    Elf_Xword arrange_local_symbols(
+        std::function<void( Elf_Xword first, Elf_Xword second )> func =
+            nullptr )
     {
         int nRet = 0;
 
-        if (elf_file.get_class() == ELFCLASS32) {
-            nRet = generic_arrange_local_symbols<Elf32_Sym>(func);
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            nRet = generic_arrange_local_symbols<Elf32_Sym>( func );
         }
         else {
-            nRet = generic_arrange_local_symbols<Elf64_Sym>(func);
+            nRet = generic_arrange_local_symbols<Elf64_Sym>( func );
         }
 
         return nRet;
     }
 
-//------------------------------------------------------------------------------
-  private :
-//------------------------------------------------------------------------------
-    void
-    find_hash_section()
+    //------------------------------------------------------------------------------
+  private:
+    //------------------------------------------------------------------------------
+    void find_hash_section()
     {
         hash_section       = 0;
         hash_section_index = 0;
-        Elf_Half nSecNo = elf_file.sections.size();
+        Elf_Half nSecNo    = elf_file.sections.size();
         for ( Elf_Half i = 0; i < nSecNo && 0 == hash_section_index; ++i ) {
             const section* sec = elf_file.sections[i];
             if ( sec->get_link() == symbol_section->get_index() ) {
@@ -248,28 +264,22 @@ class symbol_section_accessor_template
         }
     }
 
-//------------------------------------------------------------------------------
-    Elf_Half
-    get_string_table_index() const
+    //------------------------------------------------------------------------------
+    Elf_Half get_string_table_index() const
     {
         return (Elf_Half)symbol_section->get_link();
     }
 
-//------------------------------------------------------------------------------
-    Elf_Half
-    get_hash_table_index() const
-    {
-        return hash_section_index;
-    }
+    //------------------------------------------------------------------------------
+    Elf_Half get_hash_table_index() const { return hash_section_index; }
 
-//------------------------------------------------------------------------------
-    template< class T >
-    const T*
-    generic_get_symbol_ptr(Elf_Xword index) const {
+    //------------------------------------------------------------------------------
+    template <class T> const T* generic_get_symbol_ptr( Elf_Xword index ) const
+    {
         if ( 0 != symbol_section->get_data() && index < get_symbols_num() ) {
             const T* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
-                    index * symbol_section->get_entry_size() );
+                index * symbol_section->get_entry_size() );
 
             return pSym;
         }
@@ -277,17 +287,18 @@ class symbol_section_accessor_template
         return nullptr;
     }
 
-//------------------------------------------------------------------------------
-    template< class T >
-    bool
-    generic_search_symbols(std::function<bool(const T*)> match, Elf_Xword& idx) const {
-        for (Elf_Xword i = 0; i < get_symbols_num(); i++){
-            const T* symPtr = generic_get_symbol_ptr<T>(i);
+    //------------------------------------------------------------------------------
+    template <class T>
+    bool generic_search_symbols( std::function<bool( const T* )> match,
+                                 Elf_Xword&                      idx ) const
+    {
+        for ( Elf_Xword i = 0; i < get_symbols_num(); i++ ) {
+            const T* symPtr = generic_get_symbol_ptr<T>( i );
 
-            if (symPtr == nullptr)
+            if ( symPtr == nullptr )
                 return false;
 
-            if (match(symPtr)) {
+            if ( match( symPtr ) ) {
                 idx = i;
                 return true;
             }
@@ -296,37 +307,40 @@ class symbol_section_accessor_template
         return false;
     }
 
-//------------------------------------------------------------------------------
-    template< class T >
-    bool
-    generic_get_symbol( Elf_Xword index,
-                        std::string& name, Elf64_Addr& value,
-                        Elf_Xword& size,
-                        unsigned char& bind, unsigned char& type,
-                        Elf_Half& section_index,
-                        unsigned char& other ) const
+    //------------------------------------------------------------------------------
+    template <class T>
+    bool generic_get_symbol( Elf_Xword      index,
+                             std::string&   name,
+                             Elf64_Addr&    value,
+                             Elf_Xword&     size,
+                             unsigned char& bind,
+                             unsigned char& type,
+                             Elf_Half&      section_index,
+                             unsigned char& other ) const
     {
         bool ret = false;
 
         if ( 0 != symbol_section->get_data() && index < get_symbols_num() ) {
             const T* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
-                    index * symbol_section->get_entry_size() );
+                index * symbol_section->get_entry_size() );
 
             const endianess_convertor& convertor = elf_file.get_convertor();
 
-            section* string_section = elf_file.sections[get_string_table_index()];
+            section* string_section =
+                elf_file.sections[get_string_table_index()];
             string_section_accessor str_reader( string_section );
-            const char* pStr = str_reader.get_string( convertor( pSym->st_name ) );
+            const char*             pStr =
+                str_reader.get_string( convertor( pSym->st_name ) );
             if ( 0 != pStr ) {
                 name = pStr;
             }
-            value   = convertor( pSym->st_value );
-            size    = convertor( pSym->st_size );
-            bind    = ELF_ST_BIND( pSym->st_info );
-            type    = ELF_ST_TYPE( pSym->st_info );
+            value         = convertor( pSym->st_value );
+            size          = convertor( pSym->st_size );
+            bind          = ELF_ST_BIND( pSym->st_info );
+            type          = ELF_ST_TYPE( pSym->st_info );
             section_index = convertor( pSym->st_shndx );
-            other   = pSym->st_other;
+            other         = pSym->st_other;
 
             ret = true;
         }
@@ -334,12 +348,14 @@ class symbol_section_accessor_template
         return ret;
     }
 
-//------------------------------------------------------------------------------
-    template< class T >
-    Elf_Word
-    generic_add_symbol( Elf_Word name, Elf64_Addr value, Elf_Xword size,
-                        unsigned char info, unsigned char other,
-                        Elf_Half shndx )
+    //------------------------------------------------------------------------------
+    template <class T>
+    Elf_Word generic_add_symbol( Elf_Word      name,
+                                 Elf64_Addr    value,
+                                 Elf_Xword     size,
+                                 unsigned char info,
+                                 unsigned char other,
+                                 Elf_Half      shndx )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
@@ -363,53 +379,50 @@ class symbol_section_accessor_template
 
     //------------------------------------------------------------------------------
     template <class T>
-    Elf_Xword
-    generic_arrange_local_symbols(std::function<void (Elf_Xword first, Elf_Xword second)> func)
+    Elf_Xword generic_arrange_local_symbols(
+        std::function<void( Elf_Xword first, Elf_Xword second )> func )
     {
-        const endianess_convertor &convertor = elf_file.get_convertor();
-        const Elf_Xword           size       = symbol_section->get_entry_size();
+        const endianess_convertor& convertor = elf_file.get_convertor();
+        const Elf_Xword            size      = symbol_section->get_entry_size();
 
-        Elf_Xword first_not_local = 1; // Skip the first entry. It is always NOTYPE
-        Elf_Xword current         = 0;
-        Elf_Xword count           = get_symbols_num();
+        Elf_Xword first_not_local =
+            1; // Skip the first entry. It is always NOTYPE
+        Elf_Xword current = 0;
+        Elf_Xword count   = get_symbols_num();
 
-        while (true)
-        {
-            T *p1 = nullptr;
-            T *p2 = nullptr;
+        while ( true ) {
+            T* p1 = nullptr;
+            T* p2 = nullptr;
 
-            while (first_not_local < count)
-            {
-                p1 = const_cast<T *>(generic_get_symbol_ptr<T>(first_not_local));
-                if (ELF_ST_BIND(convertor(p1->st_info)) != STB_LOCAL)
+            while ( first_not_local < count ) {
+                p1 = const_cast<T*>(
+                    generic_get_symbol_ptr<T>( first_not_local ) );
+                if ( ELF_ST_BIND( convertor( p1->st_info ) ) != STB_LOCAL )
                     break;
                 ++first_not_local;
             }
-            
+
             current = first_not_local + 1;
-            while (current < count)
-            {
-                p2 = const_cast<T *>(generic_get_symbol_ptr<T>(current));
-                if (ELF_ST_BIND(convertor(p2->st_info)) == STB_LOCAL)
+            while ( current < count ) {
+                p2 = const_cast<T*>( generic_get_symbol_ptr<T>( current ) );
+                if ( ELF_ST_BIND( convertor( p2->st_info ) ) == STB_LOCAL )
                     break;
                 ++current;
             }
 
-            if (first_not_local < count && current < count)
-            {
-                if (func)
-                    func(first_not_local, current);
+            if ( first_not_local < count && current < count ) {
+                if ( func )
+                    func( first_not_local, current );
 
                 // Swap the symbols
                 T tmp;
-                std::copy(p1,   p1 + 1,   &tmp);
-                std::copy(p2,   p2 + 1,   p1);
-                std::copy(&tmp, &tmp + 1, p2);
+                std::copy( p1, p1 + 1, &tmp );
+                std::copy( p2, p2 + 1, p1 );
+                std::copy( &tmp, &tmp + 1, p2 );
             }
-            else
-            {
+            else {
                 // Update 'info' field of the section
-                symbol_section->set_info(first_not_local);
+                symbol_section->set_info( first_not_local );
                 break;
             }
         }
@@ -419,7 +432,7 @@ class symbol_section_accessor_template
         return first_not_local;
     }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
   private:
     const elfio&   elf_file;
     S*             symbol_section;
@@ -428,7 +441,8 @@ class symbol_section_accessor_template
 };
 
 using symbol_section_accessor = symbol_section_accessor_template<section>;
-using const_symbol_section_accessor = symbol_section_accessor_template<const section>;
+using const_symbol_section_accessor =
+    symbol_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

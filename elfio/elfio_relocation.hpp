@@ -25,8 +25,8 @@ THE SOFTWARE.
 
 namespace ELFIO {
 
-template<typename T> struct get_sym_and_type;
-template<> struct get_sym_and_type< Elf32_Rel >
+template <typename T> struct get_sym_and_type;
+template <> struct get_sym_and_type<Elf32_Rel>
 {
     static int get_r_sym( Elf_Xword info )
     {
@@ -37,7 +37,7 @@ template<> struct get_sym_and_type< Elf32_Rel >
         return ELF32_R_TYPE( (Elf_Word)info );
     }
 };
-template<> struct get_sym_and_type< Elf32_Rela >
+template <> struct get_sym_and_type<Elf32_Rela>
 {
     static int get_r_sym( Elf_Xword info )
     {
@@ -48,104 +48,87 @@ template<> struct get_sym_and_type< Elf32_Rela >
         return ELF32_R_TYPE( (Elf_Word)info );
     }
 };
-template<> struct get_sym_and_type< Elf64_Rel >
+template <> struct get_sym_and_type<Elf64_Rel>
 {
-    static int get_r_sym( Elf_Xword info )
-    {
-        return ELF64_R_SYM( info );
-    }
-    static int get_r_type( Elf_Xword info )
-    {
-        return ELF64_R_TYPE( info );
-    }
+    static int get_r_sym( Elf_Xword info ) { return ELF64_R_SYM( info ); }
+    static int get_r_type( Elf_Xword info ) { return ELF64_R_TYPE( info ); }
 };
-template<> struct get_sym_and_type< Elf64_Rela >
+template <> struct get_sym_and_type<Elf64_Rela>
 {
-    static int get_r_sym( Elf_Xword info )
-    {
-        return ELF64_R_SYM( info );
-    }
-    static int get_r_type( Elf_Xword info )
-    {
-        return ELF64_R_TYPE( info );
-    }
+    static int get_r_sym( Elf_Xword info ) { return ELF64_R_SYM( info ); }
+    static int get_r_type( Elf_Xword info ) { return ELF64_R_TYPE( info ); }
 };
-
 
 //------------------------------------------------------------------------------
-template< class S >
-class relocation_section_accessor_template
+template <class S> class relocation_section_accessor_template
 {
   public:
-//------------------------------------------------------------------------------
-    relocation_section_accessor_template( const elfio& elf_file_, S* section_ ) :
-                                          elf_file( elf_file_ ),
-                                          relocation_section( section_ )
+    //------------------------------------------------------------------------------
+    relocation_section_accessor_template( const elfio& elf_file_, S* section_ )
+        : elf_file( elf_file_ ), relocation_section( section_ )
     {
     }
 
-//------------------------------------------------------------------------------
-    Elf_Xword
-    get_entries_num() const
+    //------------------------------------------------------------------------------
+    Elf_Xword get_entries_num() const
     {
         Elf_Xword nRet = 0;
 
         if ( 0 != relocation_section->get_entry_size() ) {
-            nRet = relocation_section->get_size() / relocation_section->get_entry_size();
+            nRet = relocation_section->get_size() /
+                   relocation_section->get_entry_size();
         }
 
         return nRet;
     }
 
-//------------------------------------------------------------------------------
-    bool
-    get_entry( Elf_Xword   index,
-               Elf64_Addr& offset,
-               Elf_Word&   symbol,
-               Elf_Word&   type,
-               Elf_Sxword& addend ) const
+    //------------------------------------------------------------------------------
+    bool get_entry( Elf_Xword   index,
+                    Elf64_Addr& offset,
+                    Elf_Word&   symbol,
+                    Elf_Word&   type,
+                    Elf_Sxword& addend ) const
     {
-        if ( index >= get_entries_num() ) {    // Is index valid
+        if ( index >= get_entries_num() ) { // Is index valid
             return false;
         }
 
         if ( elf_file.get_class() == ELFCLASS32 ) {
             if ( SHT_REL == relocation_section->get_type() ) {
-                generic_get_entry_rel< Elf32_Rel >( index, offset, symbol,
-                                                    type,  addend );
+                generic_get_entry_rel<Elf32_Rel>( index, offset, symbol, type,
+                                                  addend );
             }
             else if ( SHT_RELA == relocation_section->get_type() ) {
-                generic_get_entry_rela< Elf32_Rela >( index, offset, symbol,
-                                                      type,  addend );
+                generic_get_entry_rela<Elf32_Rela>( index, offset, symbol, type,
+                                                    addend );
             }
         }
         else {
             if ( SHT_REL == relocation_section->get_type() ) {
-                generic_get_entry_rel< Elf64_Rel >( index, offset, symbol,
-                                                    type,  addend );
+                generic_get_entry_rel<Elf64_Rel>( index, offset, symbol, type,
+                                                  addend );
             }
             else if ( SHT_RELA == relocation_section->get_type() ) {
-                generic_get_entry_rela< Elf64_Rela >( index, offset, symbol,
-                                                      type,  addend );
+                generic_get_entry_rela<Elf64_Rela>( index, offset, symbol, type,
+                                                    addend );
             }
         }
 
         return true;
     }
 
-//------------------------------------------------------------------------------
-    bool
-    get_entry( Elf_Xword    index,
-               Elf64_Addr&  offset,
-               Elf64_Addr&  symbolValue,
-               std::string& symbolName,
-               Elf_Word&    type,
-               Elf_Sxword&  addend,
-               Elf_Sxword&  calcValue ) const
+    //------------------------------------------------------------------------------
+    bool get_entry( Elf_Xword    index,
+                    Elf64_Addr&  offset,
+                    Elf64_Addr&  symbolValue,
+                    std::string& symbolName,
+                    Elf_Word&    type,
+                    Elf_Sxword&  addend,
+                    Elf_Sxword&  calcValue ) const
     {
         // Do regular job
         Elf_Word symbol;
-        bool ret = get_entry( index, offset, symbol, type, addend );
+        bool     ret = get_entry( index, offset, symbol, type, addend );
 
         // Find the symbol
         Elf_Xword     size;
@@ -154,44 +137,45 @@ class relocation_section_accessor_template
         Elf_Half      section;
         unsigned char other;
 
-        symbol_section_accessor symbols( elf_file, elf_file.sections[get_symbol_table_index()] );
-        ret = ret && symbols.get_symbol( symbol, symbolName, symbolValue,
-                                         size, bind, symbolType, section, other );
+        symbol_section_accessor symbols(
+            elf_file, elf_file.sections[get_symbol_table_index()] );
+        ret = ret && symbols.get_symbol( symbol, symbolName, symbolValue, size,
+                                         bind, symbolType, section, other );
 
         if ( ret ) { // Was it successful?
             switch ( type ) {
-            case R_386_NONE:        // none
+            case R_386_NONE: // none
                 calcValue = 0;
                 break;
-            case R_386_32:          // S + A
+            case R_386_32: // S + A
                 calcValue = symbolValue + addend;
                 break;
-            case R_386_PC32:        // S + A - P
+            case R_386_PC32: // S + A - P
                 calcValue = symbolValue + addend - offset;
                 break;
-            case R_386_GOT32:       // G + A - P
+            case R_386_GOT32: // G + A - P
                 calcValue = 0;
                 break;
-            case R_386_PLT32:       // L + A - P
+            case R_386_PLT32: // L + A - P
                 calcValue = 0;
                 break;
-            case R_386_COPY:        // none
+            case R_386_COPY: // none
                 calcValue = 0;
                 break;
-            case R_386_GLOB_DAT:    // S
-            case R_386_JMP_SLOT:    // S
+            case R_386_GLOB_DAT: // S
+            case R_386_JMP_SLOT: // S
                 calcValue = symbolValue;
                 break;
-            case R_386_RELATIVE:    // B + A
+            case R_386_RELATIVE: // B + A
                 calcValue = addend;
                 break;
-            case R_386_GOTOFF:      // S + A - GOT
+            case R_386_GOTOFF: // S + A - GOT
                 calcValue = 0;
                 break;
-            case R_386_GOTPC:       // GOT + A - P
+            case R_386_GOTPC: // GOT + A - P
                 calcValue = 0;
                 break;
-            default:                // Not recognized symbol!
+            default: // Not recognized symbol!
                 calcValue = 0;
                 break;
             }
@@ -201,80 +185,81 @@ class relocation_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    bool
-    set_entry(Elf_Xword  index,
-              Elf64_Addr offset,
-              Elf_Word   symbol,
-              Elf_Word   type,
-              Elf_Sxword addend)
+    bool set_entry( Elf_Xword  index,
+                    Elf64_Addr offset,
+                    Elf_Word   symbol,
+                    Elf_Word   type,
+                    Elf_Sxword addend )
     {
-        if (index >= get_entries_num()) { // Is index valid
+        if ( index >= get_entries_num() ) { // Is index valid
             return false;
         }
 
-        if (elf_file.get_class() == ELFCLASS32) {
-            if (SHT_REL == relocation_section->get_type()) {
-                generic_set_entry_rel<Elf32_Rel>(index, offset, symbol, type, addend);
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            if ( SHT_REL == relocation_section->get_type() ) {
+                generic_set_entry_rel<Elf32_Rel>( index, offset, symbol, type,
+                                                  addend );
             }
-            else if (SHT_RELA == relocation_section->get_type()) {
-                generic_set_entry_rela<Elf32_Rela>(index, offset, symbol, type, addend);
+            else if ( SHT_RELA == relocation_section->get_type() ) {
+                generic_set_entry_rela<Elf32_Rela>( index, offset, symbol, type,
+                                                    addend );
             }
         }
         else {
-            if (SHT_REL == relocation_section->get_type()) {
-                generic_set_entry_rel<Elf64_Rel>(index, offset, symbol, type, addend);
+            if ( SHT_REL == relocation_section->get_type() ) {
+                generic_set_entry_rel<Elf64_Rel>( index, offset, symbol, type,
+                                                  addend );
             }
-            else if (SHT_RELA == relocation_section->get_type()) {
-                generic_set_entry_rela<Elf64_Rela>(index, offset, symbol, type, addend);
+            else if ( SHT_RELA == relocation_section->get_type() ) {
+                generic_set_entry_rela<Elf64_Rela>( index, offset, symbol, type,
+                                                    addend );
             }
         }
 
         return true;
     }
 
-//------------------------------------------------------------------------------
-    void
-    add_entry( Elf64_Addr offset, Elf_Xword info )
+    //------------------------------------------------------------------------------
+    void add_entry( Elf64_Addr offset, Elf_Xword info )
     {
         if ( elf_file.get_class() == ELFCLASS32 ) {
-            generic_add_entry< Elf32_Rel >( offset, info );
+            generic_add_entry<Elf32_Rel>( offset, info );
         }
         else {
-            generic_add_entry< Elf64_Rel >( offset, info );
+            generic_add_entry<Elf64_Rel>( offset, info );
         }
     }
 
-//------------------------------------------------------------------------------
-    void
-    add_entry( Elf64_Addr offset, Elf_Word symbol, unsigned char type )
+    //------------------------------------------------------------------------------
+    void add_entry( Elf64_Addr offset, Elf_Word symbol, unsigned char type )
     {
         Elf_Xword info;
         if ( elf_file.get_class() == ELFCLASS32 ) {
             info = ELF32_R_INFO( (Elf_Xword)symbol, type );
         }
         else {
-            info = ELF64_R_INFO((Elf_Xword)symbol, type );
+            info = ELF64_R_INFO( (Elf_Xword)symbol, type );
         }
 
         add_entry( offset, info );
     }
 
-//------------------------------------------------------------------------------
-    void
-    add_entry( Elf64_Addr offset, Elf_Xword info, Elf_Sxword addend )
+    //------------------------------------------------------------------------------
+    void add_entry( Elf64_Addr offset, Elf_Xword info, Elf_Sxword addend )
     {
         if ( elf_file.get_class() == ELFCLASS32 ) {
-            generic_add_entry< Elf32_Rela >( offset, info, addend );
+            generic_add_entry<Elf32_Rela>( offset, info, addend );
         }
         else {
-            generic_add_entry< Elf64_Rela >( offset, info, addend );
+            generic_add_entry<Elf64_Rela>( offset, info, addend );
         }
     }
 
-//------------------------------------------------------------------------------
-    void
-    add_entry( Elf64_Addr offset, Elf_Word symbol, unsigned char type,
-               Elf_Sxword addend )
+    //------------------------------------------------------------------------------
+    void add_entry( Elf64_Addr    offset,
+                    Elf_Word      symbol,
+                    unsigned char type,
+                    Elf_Sxword    addend )
     {
         Elf_Xword info;
         if ( elf_file.get_class() == ELFCLASS32 ) {
@@ -287,70 +272,63 @@ class relocation_section_accessor_template
         add_entry( offset, info, addend );
     }
 
-//------------------------------------------------------------------------------
-    void
-    add_entry( string_section_accessor str_writer,
-               const char* str,
-               symbol_section_accessor sym_writer,
-               Elf64_Addr value,
-               Elf_Word size,
-               unsigned char sym_info,
-               unsigned char other,
-               Elf_Half shndx,
-               Elf64_Addr offset,
-               unsigned char type )
+    //------------------------------------------------------------------------------
+    void add_entry( string_section_accessor str_writer,
+                    const char*             str,
+                    symbol_section_accessor sym_writer,
+                    Elf64_Addr              value,
+                    Elf_Word                size,
+                    unsigned char           sym_info,
+                    unsigned char           other,
+                    Elf_Half                shndx,
+                    Elf64_Addr              offset,
+                    unsigned char           type )
     {
         Elf_Word str_index = str_writer.add_string( str );
         Elf_Word sym_index = sym_writer.add_symbol( str_index, value, size,
-                                                   sym_info, other, shndx );
+                                                    sym_info, other, shndx );
         add_entry( offset, sym_index, type );
     }
 
     //------------------------------------------------------------------------------
-    void
-    swap_symbols(Elf_Xword first, Elf_Xword second)
+    void swap_symbols( Elf_Xword first, Elf_Xword second )
     {
         Elf64_Addr offset;
         Elf_Word   symbol;
         Elf_Word   rtype;
         Elf_Sxword addend;
-        for (Elf_Word i = 0; i < get_entries_num(); i++)
-        {
-            get_entry(i, offset, symbol, rtype, addend);
-            if (symbol == first)
-            {
-                set_entry(i, offset, (Elf_Word)second, rtype, addend);
+        for ( Elf_Word i = 0; i < get_entries_num(); i++ ) {
+            get_entry( i, offset, symbol, rtype, addend );
+            if ( symbol == first ) {
+                set_entry( i, offset, (Elf_Word)second, rtype, addend );
             }
-            if (symbol == second)
-            {
-                set_entry(i, offset, (Elf_Word)first, rtype, addend);
+            if ( symbol == second ) {
+                set_entry( i, offset, (Elf_Word)first, rtype, addend );
             }
         }
     }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
   private:
-//------------------------------------------------------------------------------
-    Elf_Half
-    get_symbol_table_index() const
+    //------------------------------------------------------------------------------
+    Elf_Half get_symbol_table_index() const
     {
         return (Elf_Half)relocation_section->get_link();
     }
 
-//------------------------------------------------------------------------------
-    template< class T >
-    void
-    generic_get_entry_rel( Elf_Xword   index,
-                           Elf64_Addr& offset,
-                           Elf_Word&   symbol,
-                           Elf_Word&   type,
-                           Elf_Sxword& addend ) const
+    //------------------------------------------------------------------------------
+    template <class T>
+    void generic_get_entry_rel( Elf_Xword   index,
+                                Elf64_Addr& offset,
+                                Elf_Word&   symbol,
+                                Elf_Word&   type,
+                                Elf_Sxword& addend ) const
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
         const T* pEntry = reinterpret_cast<const T*>(
-                relocation_section->get_data() +
-                index * relocation_section->get_entry_size() );
+            relocation_section->get_data() +
+            index * relocation_section->get_entry_size() );
         offset        = convertor( pEntry->r_offset );
         Elf_Xword tmp = convertor( pEntry->r_info );
         symbol        = get_sym_and_type<T>::get_r_sym( tmp );
@@ -358,20 +336,19 @@ class relocation_section_accessor_template
         addend        = 0;
     }
 
-//------------------------------------------------------------------------------
-    template< class T >
-    void
-    generic_get_entry_rela( Elf_Xword   index,
-                            Elf64_Addr& offset,
-                            Elf_Word&   symbol,
-                            Elf_Word&   type,
-                            Elf_Sxword& addend ) const
+    //------------------------------------------------------------------------------
+    template <class T>
+    void generic_get_entry_rela( Elf_Xword   index,
+                                 Elf64_Addr& offset,
+                                 Elf_Word&   symbol,
+                                 Elf_Word&   type,
+                                 Elf_Sxword& addend ) const
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
         const T* pEntry = reinterpret_cast<const T*>(
-                relocation_section->get_data() +
-                index * relocation_section->get_entry_size() );
+            relocation_section->get_data() +
+            index * relocation_section->get_entry_size() );
         offset        = convertor( pEntry->r_offset );
         Elf_Xword tmp = convertor( pEntry->r_info );
         symbol        = get_sym_and_type<T>::get_r_sym( tmp );
@@ -381,60 +358,59 @@ class relocation_section_accessor_template
 
     //------------------------------------------------------------------------------
     template <class T>
-    void
-    generic_set_entry_rel(Elf_Xword  index,
-                          Elf64_Addr offset,
-                          Elf_Word   symbol,
-                          Elf_Word   type,
-                          Elf_Sxword)
+    void generic_set_entry_rel( Elf_Xword  index,
+                                Elf64_Addr offset,
+                                Elf_Word   symbol,
+                                Elf_Word   type,
+                                Elf_Sxword )
     {
-        const endianess_convertor &convertor = elf_file.get_convertor();
+        const endianess_convertor& convertor = elf_file.get_convertor();
 
-        T *pEntry = const_cast<T *>(reinterpret_cast<const T *>(relocation_section->get_data() +
-                                                                index * relocation_section->get_entry_size()));
+        T* pEntry = const_cast<T*>( reinterpret_cast<const T*>(
+            relocation_section->get_data() +
+            index * relocation_section->get_entry_size() ) );
 
-        if (elf_file.get_class() == ELFCLASS32) {
-            pEntry->r_info = ELF32_R_INFO((Elf_Xword)symbol, type);
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            pEntry->r_info = ELF32_R_INFO( (Elf_Xword)symbol, type );
         }
         else {
-            pEntry->r_info = ELF64_R_INFO((Elf_Xword)symbol, type);
+            pEntry->r_info = ELF64_R_INFO( (Elf_Xword)symbol, type );
         }
         pEntry->r_offset = offset;
-        pEntry->r_offset = convertor(pEntry->r_offset);
-        pEntry->r_info   = convertor(pEntry->r_info);
+        pEntry->r_offset = convertor( pEntry->r_offset );
+        pEntry->r_info   = convertor( pEntry->r_info );
     }
 
     //------------------------------------------------------------------------------
     template <class T>
-    void
-    generic_set_entry_rela(Elf_Xword  index,
-                           Elf64_Addr offset,
-                           Elf_Word   symbol,
-                           Elf_Word   type,
-                           Elf_Sxword addend)
+    void generic_set_entry_rela( Elf_Xword  index,
+                                 Elf64_Addr offset,
+                                 Elf_Word   symbol,
+                                 Elf_Word   type,
+                                 Elf_Sxword addend )
     {
-        const endianess_convertor &convertor = elf_file.get_convertor();
+        const endianess_convertor& convertor = elf_file.get_convertor();
 
-        T *pEntry = const_cast<T *>(reinterpret_cast<const T *>(relocation_section->get_data() +
-                                                                index * relocation_section->get_entry_size()));
+        T* pEntry = const_cast<T*>( reinterpret_cast<const T*>(
+            relocation_section->get_data() +
+            index * relocation_section->get_entry_size() ) );
 
-        if (elf_file.get_class() == ELFCLASS32) {
-            pEntry->r_info = ELF32_R_INFO((Elf_Xword)symbol, type);
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            pEntry->r_info = ELF32_R_INFO( (Elf_Xword)symbol, type );
         }
         else {
-            pEntry->r_info = ELF64_R_INFO((Elf_Xword)symbol, type);
+            pEntry->r_info = ELF64_R_INFO( (Elf_Xword)symbol, type );
         }
         pEntry->r_offset = offset;
         pEntry->r_addend = addend;
-        pEntry->r_offset = convertor(pEntry->r_offset);
-        pEntry->r_info   = convertor(pEntry->r_info);
-        pEntry->r_addend = convertor(pEntry->r_addend);
+        pEntry->r_offset = convertor( pEntry->r_offset );
+        pEntry->r_info   = convertor( pEntry->r_info );
+        pEntry->r_addend = convertor( pEntry->r_addend );
     }
 
-//------------------------------------------------------------------------------
-    template< class T >
-    void
-    generic_add_entry( Elf64_Addr offset, Elf_Xword info )
+    //------------------------------------------------------------------------------
+    template <class T>
+    void generic_add_entry( Elf64_Addr offset, Elf_Xword info )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
@@ -444,11 +420,12 @@ class relocation_section_accessor_template
         entry.r_offset = convertor( entry.r_offset );
         entry.r_info   = convertor( entry.r_info );
 
-        relocation_section->append_data( reinterpret_cast<char*>( &entry ), sizeof( entry ) );
+        relocation_section->append_data( reinterpret_cast<char*>( &entry ),
+                                         sizeof( entry ) );
     }
 
-//------------------------------------------------------------------------------
-    template< class T >
+    //------------------------------------------------------------------------------
+    template <class T>
     void
     generic_add_entry( Elf64_Addr offset, Elf_Xword info, Elf_Sxword addend )
     {
@@ -462,17 +439,20 @@ class relocation_section_accessor_template
         entry.r_info   = convertor( entry.r_info );
         entry.r_addend = convertor( entry.r_addend );
 
-        relocation_section->append_data( reinterpret_cast<char*>( &entry ), sizeof( entry ) );
+        relocation_section->append_data( reinterpret_cast<char*>( &entry ),
+                                         sizeof( entry ) );
     }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
     S*           relocation_section;
 };
 
-using relocation_section_accessor       = relocation_section_accessor_template<section>;
-using const_relocation_section_accessor = relocation_section_accessor_template<const section>;
+using relocation_section_accessor =
+    relocation_section_accessor_template<section>;
+using const_relocation_section_accessor =
+    relocation_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

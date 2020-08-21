@@ -24,25 +24,25 @@ THE SOFTWARE.
 #define ELFTYPES_H
 
 #ifndef ELFIO_NO_OWN_TYPES
-    #if !defined(ELFIO_NO_CSTDINT) && !defined(ELFIO_NO_INTTYPES)
-        #include <stdint.h>
-    #else
-        typedef unsigned char  uint8_t;
-        typedef signed char    int8_t;
-        typedef unsigned short uint16_t;
-        typedef signed short   int16_t;
-        #ifdef _MSC_VER
-            typedef unsigned __int32 uint32_t;
-            typedef signed   __int32 int32_t;
-            typedef unsigned __int64 uint64_t;
-            typedef signed   __int64 int64_t;
-        #else
-            typedef unsigned int       uint32_t;
-            typedef signed   int       int32_t;
-            typedef unsigned long long uint64_t;
-            typedef signed   long long int64_t;
-        #endif // _MSC_VER
-    #endif // ELFIO_NO_CSTDINT
+#if !defined( ELFIO_NO_CSTDINT ) && !defined( ELFIO_NO_INTTYPES )
+#include <stdint.h>
+#else
+typedef unsigned char    uint8_t;
+typedef signed char      int8_t;
+typedef unsigned short   uint16_t;
+typedef signed short     int16_t;
+#ifdef _MSC_VER
+typedef unsigned __int32 uint32_t;
+typedef signed __int32   int32_t;
+typedef unsigned __int64 uint64_t;
+typedef signed __int64   int64_t;
+#else
+typedef unsigned int       uint32_t;
+typedef signed int         int32_t;
+typedef unsigned long long uint64_t;
+typedef signed long long   int64_t;
+#endif // _MSC_VER
+#endif // ELFIO_NO_CSTDINT
 #endif // ELFIO_NO_OWN_TYPES
 
 namespace ELFIO {
@@ -59,10 +59,10 @@ typedef uint32_t Elf32_Off;
 typedef uint64_t Elf64_Addr;
 typedef uint64_t Elf64_Off;
 
-#define Elf32_Half Elf_Half
-#define Elf64_Half Elf_Half
-#define Elf32_Word Elf_Word
-#define Elf64_Word Elf_Word
+#define Elf32_Half  Elf_Half
+#define Elf64_Half  Elf_Half
+#define Elf32_Word  Elf_Word
+#define Elf64_Word  Elf_Word
 #define Elf32_Sword Elf_Sword
 #define Elf64_Sword Elf_Sword
 
@@ -70,137 +70,139 @@ typedef uint64_t Elf64_Off;
 // ELF Header Constants
 
 // File type
-#define ET_NONE        0
-#define ET_REL         1
-#define ET_EXEC        2
-#define ET_DYN         3
-#define ET_CORE        4
+#define ET_NONE   0
+#define ET_REL    1
+#define ET_EXEC   2
+#define ET_DYN    3
+#define ET_CORE   4
 #define ET_LOOS   0xFE00
 #define ET_HIOS   0xFEFF
 #define ET_LOPROC 0xFF00
 #define ET_HIPROC 0xFFFF
 
-
-#define EM_NONE          0   // No machine
-#define EM_M32           1   // AT&T WE 32100
-#define EM_SPARC         2   // SUN SPARC
-#define EM_386           3   // Intel 80386
-#define EM_68K           4   // Motorola m68k family
-#define EM_88K           5   // Motorola m88k family
-#define EM_486           6   // Intel 80486// Reserved for future use
-#define EM_860           7   // Intel 80860
-#define EM_MIPS          8   // MIPS R3000 (officially, big-endian only)
-#define EM_S370          9   // IBM System/370
-#define EM_MIPS_RS3_LE   10  // MIPS R3000 little-endian (Oct 4 1999 Draft) Deprecated
-#define EM_res011        11  // Reserved
-#define EM_res012        12  // Reserved
-#define EM_res013        13  // Reserved
-#define EM_res014        14  // Reserved
-#define EM_PARISC        15  // HPPA
-#define EM_res016        16  // Reserved
-#define EM_VPP550        17  // Fujitsu VPP500
-#define EM_SPARC32PLUS   18  // Sun's "v8plus"
-#define EM_960           19  // Intel 80960
-#define EM_PPC           20  // PowerPC
-#define EM_PPC64         21  // 64-bit PowerPC
-#define EM_S390          22  // IBM S/390
-#define EM_SPU           23  // Sony/Toshiba/IBM SPU
-#define EM_res024        24  // Reserved
-#define EM_res025        25  // Reserved
-#define EM_res026        26  // Reserved
-#define EM_res027        27  // Reserved
-#define EM_res028        28  // Reserved
-#define EM_res029        29  // Reserved
-#define EM_res030        30  // Reserved
-#define EM_res031        31  // Reserved
-#define EM_res032        32  // Reserved
-#define EM_res033        33  // Reserved
-#define EM_res034        34  // Reserved
-#define EM_res035        35  // Reserved
-#define EM_V800          36  // NEC V800 series
-#define EM_FR20          37  // Fujitsu FR20
-#define EM_RH32          38  // TRW RH32
-#define EM_MCORE         39  // Motorola M*Core // May also be taken by Fujitsu MMA
-#define EM_RCE           39  // Old name for MCore
-#define EM_ARM           40  // ARM
-#define EM_OLD_ALPHA     41  // Digital Alpha
-#define EM_SH            42  // Renesas (formerly Hitachi) / SuperH SH
-#define EM_SPARCV9       43  // SPARC v9 64-bit
-#define EM_TRICORE       44  // Siemens Tricore embedded processor
-#define EM_ARC           45  // ARC Cores
-#define EM_H8_300        46  // Renesas (formerly Hitachi) H8/300
-#define EM_H8_300H       47  // Renesas (formerly Hitachi) H8/300H
-#define EM_H8S           48  // Renesas (formerly Hitachi) H8S
-#define EM_H8_500        49  // Renesas (formerly Hitachi) H8/500
-#define EM_IA_64         50  // Intel IA-64 Processor
-#define EM_MIPS_X        51  // Stanford MIPS-X
-#define EM_COLDFIRE      52  // Motorola Coldfire
-#define EM_68HC12        53  // Motorola M68HC12
-#define EM_MMA           54  // Fujitsu Multimedia Accelerator
-#define EM_PCP           55  // Siemens PCP
-#define EM_NCPU          56  // Sony nCPU embedded RISC processor
-#define EM_NDR1          57  // Denso NDR1 microprocesspr
-#define EM_STARCORE      58  // Motorola Star*Core processor
-#define EM_ME16          59  // Toyota ME16 processor
-#define EM_ST100         60  // STMicroelectronics ST100 processor
-#define EM_TINYJ         61  // Advanced Logic Corp. TinyJ embedded processor
-#define EM_X86_64        62  // Advanced Micro Devices X86-64 processor
-#define EM_PDSP          63  // Sony DSP Processor
-#define EM_PDP10         64  // Digital Equipment Corp. PDP-10
-#define EM_PDP11         65  // Digital Equipment Corp. PDP-11
-#define EM_FX66          66  // Siemens FX66 microcontroller
-#define EM_ST9PLUS       67  // STMicroelectronics ST9+ 8/16 bit microcontroller
-#define EM_ST7           68  // STMicroelectronics ST7 8-bit microcontroller
-#define EM_68HC16        69  // Motorola MC68HC16 Microcontroller
-#define EM_68HC11        70  // Motorola MC68HC11 Microcontroller
-#define EM_68HC08        71  // Motorola MC68HC08 Microcontroller
-#define EM_68HC05        72  // Motorola MC68HC05 Microcontroller
-#define EM_SVX           73  // Silicon Graphics SVx
-#define EM_ST19          74  // STMicroelectronics ST19 8-bit cpu
-#define EM_VAX           75  // Digital VAX
-#define EM_CRIS          76  // Axis Communications 32-bit embedded processor
-#define EM_JAVELIN       77  // Infineon Technologies 32-bit embedded cpu
-#define EM_FIREPATH      78  // Element 14 64-bit DSP processor
-#define EM_ZSP           79  // LSI Logic's 16-bit DSP processor
-#define EM_MMIX          80  // Donald Knuth's educational 64-bit processor
-#define EM_HUANY         81  // Harvard's machine-independent format
-#define EM_PRISM         82  // SiTera Prism
-#define EM_AVR           83  // Atmel AVR 8-bit microcontroller
-#define EM_FR30          84  // Fujitsu FR30
-#define EM_D10V          85  // Mitsubishi D10V
-#define EM_D30V          86  // Mitsubishi D30V
-#define EM_V850          87  // NEC v850
-#define EM_M32R          88  // Renesas M32R (formerly Mitsubishi M32R)
-#define EM_MN10300       89  // Matsushita MN10300
-#define EM_MN10200       90  // Matsushita MN10200
-#define EM_PJ            91  // picoJava
-#define EM_OPENRISC      92  // OpenRISC 32-bit embedded processor
-#define EM_ARC_A5        93  // ARC Cores Tangent-A5
-#define EM_XTENSA        94  // Tensilica Xtensa Architecture
-#define EM_VIDEOCORE     95  // Alphamosaic VideoCore processor
-#define EM_TMM_GPP       96  // Thompson Multimedia General Purpose Processor
-#define EM_NS32K         97  // National Semiconductor 32000 series
-#define EM_TPC           98  // Tenor Network TPC processor
-#define EM_SNP1K         99  // Trebia SNP 1000 processor
-#define EM_ST200         100 // STMicroelectronics ST200 microcontroller
-#define EM_IP2K          101 // Ubicom IP2022 micro controller
-#define EM_MAX           102 // MAX Processor
-#define EM_CR            103 // National Semiconductor CompactRISC
-#define EM_F2MC16        104 // Fujitsu F2MC16
-#define EM_MSP430        105 // TI msp430 micro controller
-#define EM_BLACKFIN      106 // ADI Blackfin
-#define EM_SE_C33        107 // S1C33 Family of Seiko Epson processors
-#define EM_SEP           108 // Sharp embedded microprocessor
-#define EM_ARCA          109 // Arca RISC Microprocessor
-#define EM_UNICORE       110 // Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University
-#define EM_EXCESS        111 // eXcess: 16/32/64-bit configurable embedded CPU
-#define EM_DXP           112 // Icera Semiconductor Inc. Deep Execution Processor
-#define EM_ALTERA_NIOS2  113 // Altera Nios II soft-core processor
-#define EM_CRX           114 // National Semiconductor CRX
-#define EM_XGATE         115 // Motorola XGATE embedded processor
-#define EM_C166          116 // Infineon C16x/XC16x processor
-#define EM_M16C          117 // Renesas M16C series microprocessors
-#define EM_DSPIC30F      118 // Microchip Technology dsPIC30F Digital Signal Controller
+#define EM_NONE  0 // No machine
+#define EM_M32   1 // AT&T WE 32100
+#define EM_SPARC 2 // SUN SPARC
+#define EM_386   3 // Intel 80386
+#define EM_68K   4 // Motorola m68k family
+#define EM_88K   5 // Motorola m88k family
+#define EM_486   6 // Intel 80486// Reserved for future use
+#define EM_860   7 // Intel 80860
+#define EM_MIPS  8 // MIPS R3000 (officially, big-endian only)
+#define EM_S370  9 // IBM System/370
+#define EM_MIPS_RS3_LE \
+    10 // MIPS R3000 little-endian (Oct 4 1999 Draft) Deprecated
+#define EM_res011      11 // Reserved
+#define EM_res012      12 // Reserved
+#define EM_res013      13 // Reserved
+#define EM_res014      14 // Reserved
+#define EM_PARISC      15 // HPPA
+#define EM_res016      16 // Reserved
+#define EM_VPP550      17 // Fujitsu VPP500
+#define EM_SPARC32PLUS 18 // Sun's "v8plus"
+#define EM_960         19 // Intel 80960
+#define EM_PPC         20 // PowerPC
+#define EM_PPC64       21 // 64-bit PowerPC
+#define EM_S390        22 // IBM S/390
+#define EM_SPU         23 // Sony/Toshiba/IBM SPU
+#define EM_res024      24 // Reserved
+#define EM_res025      25 // Reserved
+#define EM_res026      26 // Reserved
+#define EM_res027      27 // Reserved
+#define EM_res028      28 // Reserved
+#define EM_res029      29 // Reserved
+#define EM_res030      30 // Reserved
+#define EM_res031      31 // Reserved
+#define EM_res032      32 // Reserved
+#define EM_res033      33 // Reserved
+#define EM_res034      34 // Reserved
+#define EM_res035      35 // Reserved
+#define EM_V800        36 // NEC V800 series
+#define EM_FR20        37 // Fujitsu FR20
+#define EM_RH32        38 // TRW RH32
+#define EM_MCORE       39 // Motorola M*Core // May also be taken by Fujitsu MMA
+#define EM_RCE         39 // Old name for MCore
+#define EM_ARM         40 // ARM
+#define EM_OLD_ALPHA   41 // Digital Alpha
+#define EM_SH          42 // Renesas (formerly Hitachi) / SuperH SH
+#define EM_SPARCV9     43 // SPARC v9 64-bit
+#define EM_TRICORE     44 // Siemens Tricore embedded processor
+#define EM_ARC         45 // ARC Cores
+#define EM_H8_300      46 // Renesas (formerly Hitachi) H8/300
+#define EM_H8_300H     47 // Renesas (formerly Hitachi) H8/300H
+#define EM_H8S         48 // Renesas (formerly Hitachi) H8S
+#define EM_H8_500      49 // Renesas (formerly Hitachi) H8/500
+#define EM_IA_64       50 // Intel IA-64 Processor
+#define EM_MIPS_X      51 // Stanford MIPS-X
+#define EM_COLDFIRE    52 // Motorola Coldfire
+#define EM_68HC12      53 // Motorola M68HC12
+#define EM_MMA         54 // Fujitsu Multimedia Accelerator
+#define EM_PCP         55 // Siemens PCP
+#define EM_NCPU        56 // Sony nCPU embedded RISC processor
+#define EM_NDR1        57 // Denso NDR1 microprocesspr
+#define EM_STARCORE    58 // Motorola Star*Core processor
+#define EM_ME16        59 // Toyota ME16 processor
+#define EM_ST100       60 // STMicroelectronics ST100 processor
+#define EM_TINYJ       61 // Advanced Logic Corp. TinyJ embedded processor
+#define EM_X86_64      62 // Advanced Micro Devices X86-64 processor
+#define EM_PDSP        63 // Sony DSP Processor
+#define EM_PDP10       64 // Digital Equipment Corp. PDP-10
+#define EM_PDP11       65 // Digital Equipment Corp. PDP-11
+#define EM_FX66        66 // Siemens FX66 microcontroller
+#define EM_ST9PLUS     67 // STMicroelectronics ST9+ 8/16 bit microcontroller
+#define EM_ST7         68 // STMicroelectronics ST7 8-bit microcontroller
+#define EM_68HC16      69 // Motorola MC68HC16 Microcontroller
+#define EM_68HC11      70 // Motorola MC68HC11 Microcontroller
+#define EM_68HC08      71 // Motorola MC68HC08 Microcontroller
+#define EM_68HC05      72 // Motorola MC68HC05 Microcontroller
+#define EM_SVX         73 // Silicon Graphics SVx
+#define EM_ST19        74 // STMicroelectronics ST19 8-bit cpu
+#define EM_VAX         75 // Digital VAX
+#define EM_CRIS        76 // Axis Communications 32-bit embedded processor
+#define EM_JAVELIN     77 // Infineon Technologies 32-bit embedded cpu
+#define EM_FIREPATH    78 // Element 14 64-bit DSP processor
+#define EM_ZSP         79 // LSI Logic's 16-bit DSP processor
+#define EM_MMIX        80 // Donald Knuth's educational 64-bit processor
+#define EM_HUANY       81 // Harvard's machine-independent format
+#define EM_PRISM       82 // SiTera Prism
+#define EM_AVR         83 // Atmel AVR 8-bit microcontroller
+#define EM_FR30        84 // Fujitsu FR30
+#define EM_D10V        85 // Mitsubishi D10V
+#define EM_D30V        86 // Mitsubishi D30V
+#define EM_V850        87 // NEC v850
+#define EM_M32R        88 // Renesas M32R (formerly Mitsubishi M32R)
+#define EM_MN10300     89 // Matsushita MN10300
+#define EM_MN10200     90 // Matsushita MN10200
+#define EM_PJ          91 // picoJava
+#define EM_OPENRISC    92 // OpenRISC 32-bit embedded processor
+#define EM_ARC_A5      93 // ARC Cores Tangent-A5
+#define EM_XTENSA      94 // Tensilica Xtensa Architecture
+#define EM_VIDEOCORE   95 // Alphamosaic VideoCore processor
+#define EM_TMM_GPP     96 // Thompson Multimedia General Purpose Processor
+#define EM_NS32K       97 // National Semiconductor 32000 series
+#define EM_TPC         98 // Tenor Network TPC processor
+#define EM_SNP1K       99 // Trebia SNP 1000 processor
+#define EM_ST200       100 // STMicroelectronics ST200 microcontroller
+#define EM_IP2K        101 // Ubicom IP2022 micro controller
+#define EM_MAX         102 // MAX Processor
+#define EM_CR          103 // National Semiconductor CompactRISC
+#define EM_F2MC16      104 // Fujitsu F2MC16
+#define EM_MSP430      105 // TI msp430 micro controller
+#define EM_BLACKFIN    106 // ADI Blackfin
+#define EM_SE_C33      107 // S1C33 Family of Seiko Epson processors
+#define EM_SEP         108 // Sharp embedded microprocessor
+#define EM_ARCA        109 // Arca RISC Microprocessor
+#define EM_UNICORE \
+    110 // Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University
+#define EM_EXCESS       111 // eXcess: 16/32/64-bit configurable embedded CPU
+#define EM_DXP          112 // Icera Semiconductor Inc. Deep Execution Processor
+#define EM_ALTERA_NIOS2 113 // Altera Nios II soft-core processor
+#define EM_CRX          114 // National Semiconductor CRX
+#define EM_XGATE        115 // Motorola XGATE embedded processor
+#define EM_C166         116 // Infineon C16x/XC16x processor
+#define EM_M16C         117 // Renesas M16C series microprocessors
+#define EM_DSPIC30F \
+    118 // Microchip Technology dsPIC30F Digital Signal Controller
 #define EM_CE            119 // Freescale Communication Engine RISC core
 #define EM_M32C          120 // Renesas M32C series microprocessors
 #define EM_res121        121 // Reserved
@@ -250,7 +252,8 @@ typedef uint64_t Elf64_Off;
 #define EM_QDSP6         164 // QUALCOMM DSP6 Processor
 #define EM_8051          165 // Intel 8051 and variants
 #define EM_STXP7X        166 // STMicroelectronics STxP7x family
-#define EM_NDS32         167 // Andes Technology compact code size embedded RISC processor family
+#define EM_NDS32 \
+    167 // Andes Technology compact code size embedded RISC processor family
 #define EM_ECOG1         168 // Cyan Technology eCOG1X family
 #define EM_ECOG1X        168 // Cyan Technology eCOG1X family
 #define EM_MAXQ30        169 // Dallas Semiconductor MAXQ30 Core Micro-controllers
@@ -274,7 +277,7 @@ typedef uint64_t Elf64_Off;
 #define EM_TILE64        187 // Tilera TILE64 multicore architecture family
 #define EM_TILEPRO       188 // Tilera TILEPro multicore architecture family
 #define EM_MICROBLAZE    189 // Xilinx MicroBlaze 32-bit RISC soft processor core
-#define EM_CUDA          190 // NVIDIA CUDA architecture 
+#define EM_CUDA          190 // NVIDIA CUDA architecture
 #define EM_TILEGX        191 // Tilera TILE-Gx multicore architecture family
 #define EM_CLOUDSHIELD   192 // CloudShield architecture family
 #define EM_COREA_1ST     193 // KIPO-KAIST Core-A 1st generation processor family
@@ -324,23 +327,23 @@ typedef uint64_t Elf64_Off;
 #define EV_CURRENT 1
 
 // Identification index
-#define EI_MAG0        0
-#define EI_MAG1        1
-#define EI_MAG2        2
-#define EI_MAG3        3
-#define EI_CLASS       4
-#define EI_DATA        5
-#define EI_VERSION     6
-#define EI_OSABI       7
-#define EI_ABIVERSION  8
-#define EI_PAD         9
+#define EI_MAG0       0
+#define EI_MAG1       1
+#define EI_MAG2       2
+#define EI_MAG3       3
+#define EI_CLASS      4
+#define EI_DATA       5
+#define EI_VERSION    6
+#define EI_OSABI      7
+#define EI_ABIVERSION 8
+#define EI_PAD        9
 #define EI_NIDENT     16
 
 // Magic number
 #define ELFMAG0 0x7F
-#define ELFMAG1  'E'
-#define ELFMAG2  'L'
-#define ELFMAG3  'F'
+#define ELFMAG1 'E'
+#define ELFMAG2 'L'
+#define ELFMAG3 'F'
 
 // File class
 #define ELFCLASSNONE 0
@@ -353,34 +356,37 @@ typedef uint64_t Elf64_Off;
 #define ELFDATA2MSB 2
 
 // OS extensions
-#define ELFOSABI_NONE           0 // No extensions or unspecified
-#define ELFOSABI_HPUX           1 // Hewlett-Packard HP-UX
-#define ELFOSABI_NETBSD         2 // NetBSD
-#define ELFOSABI_LINUX          3 // Linux
-#define ELFOSABI_SOLARIS        6 // Sun Solaris
-#define ELFOSABI_AIX            7 // AIX
-#define ELFOSABI_IRIX           8 // IRIX
-#define ELFOSABI_FREEBSD        9 // FreeBSD
-#define ELFOSABI_TRU64         10 // Compaq TRU64 UNIX
-#define ELFOSABI_MODESTO       11 // Novell Modesto
-#define ELFOSABI_OPENBSD       12 // Open BSD
-#define ELFOSABI_OPENVMS       13 // Open VMS
-#define ELFOSABI_NSK           14 // Hewlett-Packard Non-Stop Kernel
-#define ELFOSABI_AROS          15 // Amiga Research OS
-#define ELFOSABI_FENIXOS       16 // The FenixOS highly scalable multi-core OS
+#define ELFOSABI_NONE    0  // No extensions or unspecified
+#define ELFOSABI_HPUX    1  // Hewlett-Packard HP-UX
+#define ELFOSABI_NETBSD  2  // NetBSD
+#define ELFOSABI_LINUX   3  // Linux
+#define ELFOSABI_SOLARIS 6  // Sun Solaris
+#define ELFOSABI_AIX     7  // AIX
+#define ELFOSABI_IRIX    8  // IRIX
+#define ELFOSABI_FREEBSD 9  // FreeBSD
+#define ELFOSABI_TRU64   10 // Compaq TRU64 UNIX
+#define ELFOSABI_MODESTO 11 // Novell Modesto
+#define ELFOSABI_OPENBSD 12 // Open BSD
+#define ELFOSABI_OPENVMS 13 // Open VMS
+#define ELFOSABI_NSK     14 // Hewlett-Packard Non-Stop Kernel
+#define ELFOSABI_AROS    15 // Amiga Research OS
+#define ELFOSABI_FENIXOS 16 // The FenixOS highly scalable multi-core OS
 //                             64-255 Architecture-specific value range
-#define ELFOSABI_AMDGPU_HSA    64 // AMDGPU OS for HSA compatible compute
-                                  // kernels.
-#define ELFOSABI_AMDGPU_PAL    65 // AMDGPU OS for AMD PAL compatible graphics
-                                  // shaders and compute kernels.
-#define ELFOSABI_AMDGPU_MESA3D 66 // AMDGPU OS for Mesa3D compatible graphics
-                                  // shaders and compute kernels.
-
+#define ELFOSABI_AMDGPU_HSA \
+    64 // AMDGPU OS for HSA compatible compute \
+        // kernels.
+#define ELFOSABI_AMDGPU_PAL \
+    65 // AMDGPU OS for AMD PAL compatible graphics \
+        // shaders and compute kernels.
+#define ELFOSABI_AMDGPU_MESA3D \
+    66 // AMDGPU OS for Mesa3D compatible graphics \
+        // shaders and compute kernels.
 
 // AMDGPU specific e_flags
-#define EF_AMDGPU_MACH  0x0ff // AMDGPU processor selection mask.
-#define EF_AMDGPU_XNACK 0x100 // Indicates if the XNACK target feature is
-                              // enabled for all code contained in the ELF.
+#define EF_AMDGPU_MACH 0x0ff // AMDGPU processor selection mask.
+#define EF_AMDGPU_XNACK \
+    0x100 // Indicates if the XNACK target feature is \
+          // enabled for all code contained in the ELF.
 // AMDGPU processors
 #define EF_AMDGPU_MACH_NONE                0x000 // Unspecified processor.
 #define EF_AMDGPU_MACH_R600_R600           0x001
@@ -427,7 +433,7 @@ typedef uint64_t Elf64_Off;
 // Sections constants
 
 // Section indexes
-#define SHN_UNDEF          0
+#define SHN_UNDEF     0
 #define SHN_LORESERVE 0xFF00
 #define SHN_LOPROC    0xFF00
 #define SHN_HIPROC    0xFF1F
@@ -439,23 +445,23 @@ typedef uint64_t Elf64_Off;
 #define SHN_HIRESERVE 0xFFFF
 
 // Section types
-#define SHT_NULL                   0
-#define SHT_PROGBITS               1
-#define SHT_SYMTAB                 2
-#define SHT_STRTAB                 3
-#define SHT_RELA                   4
-#define SHT_HASH                   5
-#define SHT_DYNAMIC                6
-#define SHT_NOTE                   7
-#define SHT_NOBITS                 8
-#define SHT_REL                    9
-#define SHT_SHLIB                 10
-#define SHT_DYNSYM                11
-#define SHT_INIT_ARRAY            14
-#define SHT_FINI_ARRAY            15
-#define SHT_PREINIT_ARRAY         16
-#define SHT_GROUP                 17
-#define SHT_SYMTAB_SHNDX          18
+#define SHT_NULL          0
+#define SHT_PROGBITS      1
+#define SHT_SYMTAB        2
+#define SHT_STRTAB        3
+#define SHT_RELA          4
+#define SHT_HASH          5
+#define SHT_DYNAMIC       6
+#define SHT_NOTE          7
+#define SHT_NOBITS        8
+#define SHT_REL           9
+#define SHT_SHLIB         10
+#define SHT_DYNSYM        11
+#define SHT_INIT_ARRAY    14
+#define SHT_FINI_ARRAY    15
+#define SHT_PREINIT_ARRAY 16
+#define SHT_GROUP         17
+#define SHT_SYMTAB_SHNDX  18
 #define SHT_LOOS          0x60000000
 #define SHT_HIOS          0x6fffffff
 #define SHT_LOPROC        0x70000000
@@ -464,28 +470,28 @@ typedef uint64_t Elf64_Off;
 #define SHT_HIUSER        0xFFFFFFFF
 
 // Section attribute flags
-#define SHF_WRITE                   0x1
-#define SHF_ALLOC                   0x2
-#define SHF_EXECINSTR               0x4
-#define SHF_MERGE                  0x10
-#define SHF_STRINGS                0x20
-#define SHF_INFO_LINK              0x40
-#define SHF_LINK_ORDER             0x80
-#define SHF_OS_NONCONFORMING      0x100
-#define SHF_GROUP                 0x200
-#define SHF_TLS                   0x400
+#define SHF_WRITE            0x1
+#define SHF_ALLOC            0x2
+#define SHF_EXECINSTR        0x4
+#define SHF_MERGE            0x10
+#define SHF_STRINGS          0x20
+#define SHF_INFO_LINK        0x40
+#define SHF_LINK_ORDER       0x80
+#define SHF_OS_NONCONFORMING 0x100
+#define SHF_GROUP            0x200
+#define SHF_TLS              0x400
 #define SHF_MASKOS           0x0ff00000
 #define SHF_MASKPROC         0xF0000000
 
 // Section group flags
-#define GRP_COMDAT          0x1
+#define GRP_COMDAT   0x1
 #define GRP_MASKOS   0x0ff00000
 #define GRP_MASKPROC 0xf0000000
 
 // Symbol binding
-#define STB_LOCAL     0
-#define STB_GLOBAL    1
-#define STB_WEAK      2
+#define STB_LOCAL    0
+#define STB_GLOBAL   1
+#define STB_WEAK     2
 #define STB_LOOS     10
 #define STB_HIOS     12
 #define STB_MULTIDEF 13
@@ -493,19 +499,19 @@ typedef uint64_t Elf64_Off;
 #define STB_HIPROC   15
 
 // Note types
-#define NT_AMDGPU_METADATA          1
+#define NT_AMDGPU_METADATA         1
 #define NT_AMD_AMDGPU_HSA_METADATA 10
 #define NT_AMD_AMDGPU_ISA          11
 #define NT_AMD_AMDGPU_PAL_METADATA 12
 
 // Symbol types
-#define STT_NOTYPE             0
-#define STT_OBJECT             1
-#define STT_FUNC               2
-#define STT_SECTION            3
-#define STT_FILE               4
-#define STT_COMMON             5
-#define STT_TLS                6
+#define STT_NOTYPE            0
+#define STT_OBJECT            1
+#define STT_FUNC              2
+#define STT_SECTION           3
+#define STT_FILE              4
+#define STT_COMMON            5
+#define STT_TLS               6
 #define STT_LOOS              10
 #define STT_AMDGPU_HSA_KERNEL 10
 #define STT_HIOS              12
@@ -522,161 +528,161 @@ typedef uint64_t Elf64_Off;
 #define STN_UNDEF 0
 
 // Relocation types
-#define R_386_NONE             0
-#define R_X86_64_NONE          0
-#define R_AMDGPU_NONE          0
-#define R_386_32               1
-#define R_X86_64_64            1
-#define R_AMDGPU_ABS32_LO      1
-#define R_386_PC32             2
-#define R_X86_64_PC32          2
-#define R_AMDGPU_ABS32_HI      2
-#define R_386_GOT32            3
-#define R_X86_64_GOT32         3
-#define R_AMDGPU_ABS64         3
-#define R_386_PLT32            4
-#define R_X86_64_PLT32         4
-#define R_AMDGPU_REL32         4
-#define R_386_COPY             5
-#define R_X86_64_COPY          5
-#define R_AMDGPU_REL64         5
-#define R_386_GLOB_DAT         6
-#define R_X86_64_GLOB_DAT      6
-#define R_AMDGPU_ABS32         6
-#define R_386_JMP_SLOT         7
-#define R_X86_64_JUMP_SLOT     7
-#define R_AMDGPU_GOTPCREL      7
-#define R_386_RELATIVE         8
-#define R_X86_64_RELATIVE      8
-#define R_AMDGPU_GOTPCREL32_LO 8
-#define R_386_GOTOFF           9
-#define R_X86_64_GOTPCREL      9
-#define R_AMDGPU_GOTPCREL32_HI 9
-#define R_386_GOTPC           10
-#define R_X86_64_32           10
-#define R_AMDGPU_REL32_LO     10
-#define R_386_32PLT           11
-#define R_X86_64_32S          11
-#define R_AMDGPU_REL32_HI     11
-#define R_X86_64_16           12
-#define R_X86_64_PC16         13
-#define R_AMDGPU_RELATIVE64   13
-#define R_386_TLS_TPOFF       14
-#define R_X86_64_8            14
-#define R_386_TLS_IE          15
-#define R_X86_64_PC8          15
-#define R_386_TLS_GOTIE       16
-#define R_X86_64_DTPMOD64     16
-#define R_386_TLS_LE          17
-#define R_X86_64_DTPOFF64     17
-#define R_386_TLS_GD          18
-#define R_X86_64_TPOFF64      18
-#define R_386_TLS_LDM         19
-#define R_X86_64_TLSGD        19
-#define R_386_16              20
-#define R_X86_64_TLSLD        20
-#define R_386_PC16            21
-#define R_X86_64_DTPOFF32     21
-#define R_386_8               22
-#define R_X86_64_GOTTPOFF     22
-#define R_386_PC8             23
-#define R_X86_64_TPOFF32      23
-#define R_386_TLS_GD_32       24
-#define R_X86_64_PC64         24
-#define R_386_TLS_GD_PUSH     25
-#define R_X86_64_GOTOFF64     25
-#define R_386_TLS_GD_CALL     26
-#define R_X86_64_GOTPC32      26
-#define R_386_TLS_GD_POP      27
-#define R_X86_64_GOT64        27
-#define R_386_TLS_LDM_32      28
-#define R_X86_64_GOTPCREL64   28
-#define R_386_TLS_LDM_PUSH    29
-#define R_X86_64_GOTPC64      29
-#define R_386_TLS_LDM_CALL    30
-#define R_X86_64_GOTPLT64     30
-#define R_386_TLS_LDM_POP     31
-#define R_X86_64_PLTOFF64     31
-#define R_386_TLS_LDO_32      32
-#define R_386_TLS_IE_32       33
-#define R_386_TLS_LE_32       34
-#define R_X86_64_GOTPC32_TLSDESC  34
-#define R_386_TLS_DTPMOD32    35
-#define R_X86_64_TLSDESC_CALL 35
-#define R_386_TLS_DTPOFF32    36
-#define R_X86_64_TLSDESC      36
-#define R_386_TLS_TPOFF32     37
-#define R_X86_64_IRELATIVE    37
-#define R_386_SIZE32          38
-#define R_386_TLS_GOTDESC     39
-#define R_386_TLS_DESC_CALL   40
-#define R_386_TLS_DESC        41
-#define R_386_IRELATIVE       42
-#define R_386_GOT32X          43
-#define R_X86_64_GNU_VTINHERIT  250
-#define R_X86_64_GNU_VTENTRY    251
+#define R_386_NONE               0
+#define R_X86_64_NONE            0
+#define R_AMDGPU_NONE            0
+#define R_386_32                 1
+#define R_X86_64_64              1
+#define R_AMDGPU_ABS32_LO        1
+#define R_386_PC32               2
+#define R_X86_64_PC32            2
+#define R_AMDGPU_ABS32_HI        2
+#define R_386_GOT32              3
+#define R_X86_64_GOT32           3
+#define R_AMDGPU_ABS64           3
+#define R_386_PLT32              4
+#define R_X86_64_PLT32           4
+#define R_AMDGPU_REL32           4
+#define R_386_COPY               5
+#define R_X86_64_COPY            5
+#define R_AMDGPU_REL64           5
+#define R_386_GLOB_DAT           6
+#define R_X86_64_GLOB_DAT        6
+#define R_AMDGPU_ABS32           6
+#define R_386_JMP_SLOT           7
+#define R_X86_64_JUMP_SLOT       7
+#define R_AMDGPU_GOTPCREL        7
+#define R_386_RELATIVE           8
+#define R_X86_64_RELATIVE        8
+#define R_AMDGPU_GOTPCREL32_LO   8
+#define R_386_GOTOFF             9
+#define R_X86_64_GOTPCREL        9
+#define R_AMDGPU_GOTPCREL32_HI   9
+#define R_386_GOTPC              10
+#define R_X86_64_32              10
+#define R_AMDGPU_REL32_LO        10
+#define R_386_32PLT              11
+#define R_X86_64_32S             11
+#define R_AMDGPU_REL32_HI        11
+#define R_X86_64_16              12
+#define R_X86_64_PC16            13
+#define R_AMDGPU_RELATIVE64      13
+#define R_386_TLS_TPOFF          14
+#define R_X86_64_8               14
+#define R_386_TLS_IE             15
+#define R_X86_64_PC8             15
+#define R_386_TLS_GOTIE          16
+#define R_X86_64_DTPMOD64        16
+#define R_386_TLS_LE             17
+#define R_X86_64_DTPOFF64        17
+#define R_386_TLS_GD             18
+#define R_X86_64_TPOFF64         18
+#define R_386_TLS_LDM            19
+#define R_X86_64_TLSGD           19
+#define R_386_16                 20
+#define R_X86_64_TLSLD           20
+#define R_386_PC16               21
+#define R_X86_64_DTPOFF32        21
+#define R_386_8                  22
+#define R_X86_64_GOTTPOFF        22
+#define R_386_PC8                23
+#define R_X86_64_TPOFF32         23
+#define R_386_TLS_GD_32          24
+#define R_X86_64_PC64            24
+#define R_386_TLS_GD_PUSH        25
+#define R_X86_64_GOTOFF64        25
+#define R_386_TLS_GD_CALL        26
+#define R_X86_64_GOTPC32         26
+#define R_386_TLS_GD_POP         27
+#define R_X86_64_GOT64           27
+#define R_386_TLS_LDM_32         28
+#define R_X86_64_GOTPCREL64      28
+#define R_386_TLS_LDM_PUSH       29
+#define R_X86_64_GOTPC64         29
+#define R_386_TLS_LDM_CALL       30
+#define R_X86_64_GOTPLT64        30
+#define R_386_TLS_LDM_POP        31
+#define R_X86_64_PLTOFF64        31
+#define R_386_TLS_LDO_32         32
+#define R_386_TLS_IE_32          33
+#define R_386_TLS_LE_32          34
+#define R_X86_64_GOTPC32_TLSDESC 34
+#define R_386_TLS_DTPMOD32       35
+#define R_X86_64_TLSDESC_CALL    35
+#define R_386_TLS_DTPOFF32       36
+#define R_X86_64_TLSDESC         36
+#define R_386_TLS_TPOFF32        37
+#define R_X86_64_IRELATIVE       37
+#define R_386_SIZE32             38
+#define R_386_TLS_GOTDESC        39
+#define R_386_TLS_DESC_CALL      40
+#define R_386_TLS_DESC           41
+#define R_386_IRELATIVE          42
+#define R_386_GOT32X             43
+#define R_X86_64_GNU_VTINHERIT   250
+#define R_X86_64_GNU_VTENTRY     251
 
 // Segment types
-#define PT_NULL             0
-#define PT_LOAD             1
-#define PT_DYNAMIC          2
-#define PT_INTERP           3
-#define PT_NOTE             4
-#define PT_SHLIB            5
-#define PT_PHDR             6
-#define PT_TLS              7
+#define PT_NULL    0
+#define PT_LOAD    1
+#define PT_DYNAMIC 2
+#define PT_INTERP  3
+#define PT_NOTE    4
+#define PT_SHLIB   5
+#define PT_PHDR    6
+#define PT_TLS     7
 #define PT_LOOS    0x60000000
 #define PT_HIOS    0x6fffffff
 #define PT_LOPROC  0x70000000
 #define PT_HIPROC  0x7FFFFFFF
 
 // Segment flags
-#define PF_X                 1 // Execute
-#define PF_W                 2 // Write
-#define PF_R                 4 // Read
+#define PF_X        1          // Execute
+#define PF_W        2          // Write
+#define PF_R        4          // Read
 #define PF_MASKOS   0x0ff00000 // Unspecified
 #define PF_MASKPROC 0xf0000000 // Unspecified
 
 // Dynamic Array Tags
-#define DT_NULL              0
-#define DT_NEEDED            1
-#define DT_PLTRELSZ          2
-#define DT_PLTGOT            3
-#define DT_HASH              4
-#define DT_STRTAB            5
-#define DT_SYMTAB            6
-#define DT_RELA              7
-#define DT_RELASZ            8
-#define DT_RELAENT           9
-#define DT_STRSZ            10
-#define DT_SYMENT           11
-#define DT_INIT             12
-#define DT_FINI             13
-#define DT_SONAME           14
-#define DT_RPATH            15
-#define DT_SYMBOLIC         16
-#define DT_REL              17
-#define DT_RELSZ            18
-#define DT_RELENT           19
-#define DT_PLTREL           20
-#define DT_DEBUG            21
-#define DT_TEXTREL          22
-#define DT_JMPREL           23
-#define DT_BIND_NOW         24
-#define DT_INIT_ARRAY       25
-#define DT_FINI_ARRAY       26
-#define DT_INIT_ARRAYSZ     27
-#define DT_FINI_ARRAYSZ     28
-#define DT_RUNPATH          29
-#define DT_FLAGS            30
-#define DT_ENCODING         32
-#define DT_PREINIT_ARRAY    32
-#define DT_PREINIT_ARRAYSZ  33
-#define DT_MAXPOSTAGS       34
-#define DT_LOOS     0x6000000D
-#define DT_HIOS     0x6ffff000
-#define DT_LOPROC   0x70000000
-#define DT_HIPROC   0x7FFFFFFF
+#define DT_NULL            0
+#define DT_NEEDED          1
+#define DT_PLTRELSZ        2
+#define DT_PLTGOT          3
+#define DT_HASH            4
+#define DT_STRTAB          5
+#define DT_SYMTAB          6
+#define DT_RELA            7
+#define DT_RELASZ          8
+#define DT_RELAENT         9
+#define DT_STRSZ           10
+#define DT_SYMENT          11
+#define DT_INIT            12
+#define DT_FINI            13
+#define DT_SONAME          14
+#define DT_RPATH           15
+#define DT_SYMBOLIC        16
+#define DT_REL             17
+#define DT_RELSZ           18
+#define DT_RELENT          19
+#define DT_PLTREL          20
+#define DT_DEBUG           21
+#define DT_TEXTREL         22
+#define DT_JMPREL          23
+#define DT_BIND_NOW        24
+#define DT_INIT_ARRAY      25
+#define DT_FINI_ARRAY      26
+#define DT_INIT_ARRAYSZ    27
+#define DT_FINI_ARRAYSZ    28
+#define DT_RUNPATH         29
+#define DT_FLAGS           30
+#define DT_ENCODING        32
+#define DT_PREINIT_ARRAY   32
+#define DT_PREINIT_ARRAYSZ 33
+#define DT_MAXPOSTAGS      34
+#define DT_LOOS            0x6000000D
+#define DT_HIOS            0x6ffff000
+#define DT_LOPROC          0x70000000
+#define DT_HIPROC          0x7FFFFFFF
 
 // DT_FLAGS values
 #define DF_ORIGIN     0x1
@@ -685,45 +691,46 @@ typedef uint64_t Elf64_Off;
 #define DF_BIND_NOW   0x8
 #define DF_STATIC_TLS 0x10
 
-
 // ELF file header
-struct Elf32_Ehdr {
+struct Elf32_Ehdr
+{
     unsigned char e_ident[EI_NIDENT];
-    Elf_Half    e_type;
-    Elf_Half    e_machine;
-    Elf_Word    e_version;
-    Elf32_Addr  e_entry;
-    Elf32_Off   e_phoff;
-    Elf32_Off   e_shoff;
-    Elf_Word    e_flags;
-    Elf_Half    e_ehsize;
-    Elf_Half    e_phentsize;
-    Elf_Half    e_phnum;
-    Elf_Half    e_shentsize;
-    Elf_Half    e_shnum;
-    Elf_Half    e_shstrndx;
+    Elf_Half      e_type;
+    Elf_Half      e_machine;
+    Elf_Word      e_version;
+    Elf32_Addr    e_entry;
+    Elf32_Off     e_phoff;
+    Elf32_Off     e_shoff;
+    Elf_Word      e_flags;
+    Elf_Half      e_ehsize;
+    Elf_Half      e_phentsize;
+    Elf_Half      e_phnum;
+    Elf_Half      e_shentsize;
+    Elf_Half      e_shnum;
+    Elf_Half      e_shstrndx;
 };
 
-struct Elf64_Ehdr {
+struct Elf64_Ehdr
+{
     unsigned char e_ident[EI_NIDENT];
-    Elf_Half    e_type;
-    Elf_Half    e_machine;
-    Elf_Word    e_version;
-    Elf64_Addr  e_entry;
-    Elf64_Off   e_phoff;
-    Elf64_Off   e_shoff;
-    Elf_Word    e_flags;
-    Elf_Half    e_ehsize;
-    Elf_Half    e_phentsize;
-    Elf_Half    e_phnum;
-    Elf_Half    e_shentsize;
-    Elf_Half    e_shnum;
-    Elf_Half    e_shstrndx;
+    Elf_Half      e_type;
+    Elf_Half      e_machine;
+    Elf_Word      e_version;
+    Elf64_Addr    e_entry;
+    Elf64_Off     e_phoff;
+    Elf64_Off     e_shoff;
+    Elf_Word      e_flags;
+    Elf_Half      e_ehsize;
+    Elf_Half      e_phentsize;
+    Elf_Half      e_phnum;
+    Elf_Half      e_shentsize;
+    Elf_Half      e_shnum;
+    Elf_Half      e_shstrndx;
 };
-
 
 // Section header
-struct Elf32_Shdr {
+struct Elf32_Shdr
+{
     Elf_Word   sh_name;
     Elf_Word   sh_type;
     Elf_Word   sh_flags;
@@ -736,7 +743,8 @@ struct Elf32_Shdr {
     Elf_Word   sh_entsize;
 };
 
-struct Elf64_Shdr {
+struct Elf64_Shdr
+{
     Elf_Word   sh_name;
     Elf_Word   sh_type;
     Elf_Xword  sh_flags;
@@ -749,9 +757,9 @@ struct Elf64_Shdr {
     Elf_Xword  sh_entsize;
 };
 
-
 // Segment header
-struct Elf32_Phdr {
+struct Elf32_Phdr
+{
     Elf_Word   p_type;
     Elf32_Off  p_offset;
     Elf32_Addr p_vaddr;
@@ -762,7 +770,8 @@ struct Elf32_Phdr {
     Elf_Word   p_align;
 };
 
-struct Elf64_Phdr {
+struct Elf64_Phdr
+{
     Elf_Word   p_type;
     Elf_Word   p_flags;
     Elf64_Off  p_offset;
@@ -773,9 +782,9 @@ struct Elf64_Phdr {
     Elf_Xword  p_align;
 };
 
-
 // Symbol table entry
-struct Elf32_Sym {
+struct Elf32_Sym
+{
     Elf_Word      st_name;
     Elf32_Addr    st_value;
     Elf_Word      st_size;
@@ -784,7 +793,8 @@ struct Elf32_Sym {
     Elf_Half      st_shndx;
 };
 
-struct Elf64_Sym {
+struct Elf64_Sym
+{
     Elf_Word      st_name;
     unsigned char st_info;
     unsigned char st_other;
@@ -793,48 +803,51 @@ struct Elf64_Sym {
     Elf_Xword     st_size;
 };
 
+#define ELF_ST_BIND( i )    ( ( i ) >> 4 )
+#define ELF_ST_TYPE( i )    ( (i)&0xf )
+#define ELF_ST_INFO( b, t ) ( ( ( b ) << 4 ) + ( (t)&0xf ) )
 
-#define ELF_ST_BIND(i)   ((i)>>4)
-#define ELF_ST_TYPE(i)   ((i)&0xf)
-#define ELF_ST_INFO(b,t) (((b)<<4)+((t)&0xf))
-
-#define ELF_ST_VISIBILITY(o) ((o)&0x3)
-
+#define ELF_ST_VISIBILITY( o ) ( (o)&0x3 )
 
 // Relocation entries
-struct Elf32_Rel {
+struct Elf32_Rel
+{
     Elf32_Addr r_offset;
     Elf_Word   r_info;
 };
 
-struct Elf32_Rela {
+struct Elf32_Rela
+{
     Elf32_Addr r_offset;
     Elf_Word   r_info;
     Elf_Sword  r_addend;
 };
 
-struct Elf64_Rel {
+struct Elf64_Rel
+{
     Elf64_Addr r_offset;
     Elf_Xword  r_info;
 };
 
-struct Elf64_Rela {
+struct Elf64_Rela
+{
     Elf64_Addr r_offset;
     Elf_Xword  r_info;
     Elf_Sxword r_addend;
 };
 
+#define ELF32_R_SYM( i )     ( ( i ) >> 8 )
+#define ELF32_R_TYPE( i )    ( (unsigned char)( i ) )
+#define ELF32_R_INFO( s, t ) ( ( ( s ) << 8 ) + (unsigned char)( t ) )
 
-#define ELF32_R_SYM(i)    ((i)>>8)
-#define ELF32_R_TYPE(i)   ((unsigned char)(i))
-#define ELF32_R_INFO(s,t) (((s)<<8 )+(unsigned char)(t))
-
-#define ELF64_R_SYM(i)    ((i)>>32)
-#define ELF64_R_TYPE(i)   ((i)&0xffffffffL)
-#define ELF64_R_INFO(s,t) ((((int64_t)(s))<<32)+((t)&0xffffffffL))
+#define ELF64_R_SYM( i )  ( ( i ) >> 32 )
+#define ELF64_R_TYPE( i ) ( (i)&0xffffffffL )
+#define ELF64_R_INFO( s, t ) \
+    ( ( ( ( int64_t )( s ) ) << 32 ) + ( (t)&0xffffffffL ) )
 
 // Dynamic structure
-struct Elf32_Dyn {
+struct Elf32_Dyn
+{
     Elf_Sword d_tag;
     union {
         Elf_Word   d_val;
@@ -842,7 +855,8 @@ struct Elf32_Dyn {
     } d_un;
 };
 
-struct Elf64_Dyn {
+struct Elf64_Dyn
+{
     Elf_Sxword d_tag;
     union {
         Elf_Xword  d_val;

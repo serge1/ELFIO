@@ -31,21 +31,22 @@ namespace ELFIO {
 class section
 {
     friend class elfio;
-  public:
-    virtual ~section() {};
 
-    ELFIO_GET_ACCESS_DECL    ( Elf_Half,    index              );
-    ELFIO_GET_SET_ACCESS_DECL( std::string, name               );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    type               );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   flags              );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    info               );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    link               );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   addr_align         );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   entry_size         );
-    ELFIO_GET_SET_ACCESS_DECL( Elf64_Addr,  address            );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword,   size               );
-    ELFIO_GET_SET_ACCESS_DECL( Elf_Word,    name_string_offset );
-    ELFIO_GET_ACCESS_DECL    ( Elf64_Off,   offset             );
+  public:
+    virtual ~section(){};
+
+    ELFIO_GET_ACCESS_DECL( Elf_Half, index );
+    ELFIO_GET_SET_ACCESS_DECL( std::string, name );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word, type );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword, flags );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word, info );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word, link );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword, addr_align );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword, entry_size );
+    ELFIO_GET_SET_ACCESS_DECL( Elf64_Addr, address );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Xword, size );
+    ELFIO_GET_SET_ACCESS_DECL( Elf_Word, name_string_offset );
+    ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
     virtual const char* get_data() const                                = 0;
     virtual void        set_data( const char* pData, Elf_Word size )    = 0;
@@ -55,27 +56,26 @@ class section
     virtual size_t      get_stream_size() const                         = 0;
     virtual void        set_stream_size( size_t value )                 = 0;
 
-protected:
+  protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
-    ELFIO_SET_ACCESS_DECL( Elf_Half,  index  );
-    
-    virtual void load( std::istream&  stream,
-                       std::streampos header_offset ) = 0;
+    ELFIO_SET_ACCESS_DECL( Elf_Half, index );
+
+    virtual void load( std::istream& stream, std::streampos header_offset ) = 0;
     virtual void save( std::ostream&  stream,
                        std::streampos header_offset,
-                       std::streampos data_offset )   = 0;
-    virtual bool is_address_initialized() const       = 0;
+                       std::streampos data_offset )                         = 0;
+    virtual bool is_address_initialized() const                             = 0;
 };
 
-
-template< class T >
-class section_impl : public section
+template <class T> class section_impl : public section
 {
   public:
-//------------------------------------------------------------------------------
-    section_impl( const endianess_convertor* convertor_ ) : convertor( convertor_ )
+    //------------------------------------------------------------------------------
+    section_impl( const endianess_convertor* convertor_ )
+        : convertor( convertor_ )
     {
-        std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ), '\0' );
+        std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
+                     '\0' );
         is_address_set = false;
         data           = 0;
         data_size      = 0;
@@ -83,78 +83,53 @@ class section_impl : public section
         stream_size    = 0;
     }
 
-//------------------------------------------------------------------------------
-    ~section_impl()
-    {
-        delete [] data;
-    }
+    //------------------------------------------------------------------------------
+    ~section_impl() { delete[] data; }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
     // Section info functions
-    ELFIO_GET_SET_ACCESS( Elf_Word,   type,               header.sh_type      );
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  flags,              header.sh_flags     );
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  size,               header.sh_size      );
-    ELFIO_GET_SET_ACCESS( Elf_Word,   link,               header.sh_link      );
-    ELFIO_GET_SET_ACCESS( Elf_Word,   info,               header.sh_info      );
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  addr_align,         header.sh_addralign );
-    ELFIO_GET_SET_ACCESS( Elf_Xword,  entry_size,         header.sh_entsize   );
-    ELFIO_GET_SET_ACCESS( Elf_Word,   name_string_offset, header.sh_name      );
-    ELFIO_GET_ACCESS    ( Elf64_Addr, address,            header.sh_addr      );
+    ELFIO_GET_SET_ACCESS( Elf_Word, type, header.sh_type );
+    ELFIO_GET_SET_ACCESS( Elf_Xword, flags, header.sh_flags );
+    ELFIO_GET_SET_ACCESS( Elf_Xword, size, header.sh_size );
+    ELFIO_GET_SET_ACCESS( Elf_Word, link, header.sh_link );
+    ELFIO_GET_SET_ACCESS( Elf_Word, info, header.sh_info );
+    ELFIO_GET_SET_ACCESS( Elf_Xword, addr_align, header.sh_addralign );
+    ELFIO_GET_SET_ACCESS( Elf_Xword, entry_size, header.sh_entsize );
+    ELFIO_GET_SET_ACCESS( Elf_Word, name_string_offset, header.sh_name );
+    ELFIO_GET_ACCESS( Elf64_Addr, address, header.sh_addr );
 
-//------------------------------------------------------------------------------
-    Elf_Half
-    get_index() const
-    {
-        return index;
-    }
+    //------------------------------------------------------------------------------
+    Elf_Half get_index() const { return index; }
 
+    //------------------------------------------------------------------------------
+    std::string get_name() const { return name; }
 
-//------------------------------------------------------------------------------
-    std::string
-    get_name() const
-    {
-        return name;
-    }
+    //------------------------------------------------------------------------------
+    void set_name( std::string name_ ) { name = name_; }
 
-//------------------------------------------------------------------------------
-    void
-    set_name( std::string name_ )
-    {
-        name = name_;
-    }
-
-//------------------------------------------------------------------------------
-    void
-    set_address( Elf64_Addr value )
+    //------------------------------------------------------------------------------
+    void set_address( Elf64_Addr value )
     {
         header.sh_addr = value;
-        header.sh_addr = (*convertor)( header.sh_addr );
+        header.sh_addr = ( *convertor )( header.sh_addr );
         is_address_set = true;
     }
 
-//------------------------------------------------------------------------------
-    bool
-    is_address_initialized() const
-    {
-        return is_address_set;
-    }
+    //------------------------------------------------------------------------------
+    bool is_address_initialized() const { return is_address_set; }
 
-//------------------------------------------------------------------------------
-    const char*
-    get_data() const
-    {
-        return data;
-    }
+    //------------------------------------------------------------------------------
+    const char* get_data() const { return data; }
 
-//------------------------------------------------------------------------------
-    void
-    set_data( const char* raw_data, Elf_Word size )
+    //------------------------------------------------------------------------------
+    void set_data( const char* raw_data, Elf_Word size )
     {
         if ( get_type() != SHT_NOBITS ) {
-            delete [] data;
+            delete[] data;
             try {
                 data = new char[size];
-            } catch (const std::bad_alloc&) {
+            }
+            catch ( const std::bad_alloc& ) {
                 data      = 0;
                 data_size = 0;
                 size      = 0;
@@ -168,34 +143,34 @@ class section_impl : public section
         set_size( size );
     }
 
-//------------------------------------------------------------------------------
-    void
-    set_data( const std::string& str_data )
+    //------------------------------------------------------------------------------
+    void set_data( const std::string& str_data )
     {
         return set_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
-//------------------------------------------------------------------------------
-    void
-    append_data( const char* raw_data, Elf_Word size )
+    //------------------------------------------------------------------------------
+    void append_data( const char* raw_data, Elf_Word size )
     {
         if ( get_type() != SHT_NOBITS ) {
             if ( get_size() + size < data_size ) {
                 std::copy( raw_data, raw_data + size, data + get_size() );
             }
             else {
-                data_size = 2*( data_size + size);
+                data_size = 2 * ( data_size + size );
                 char* new_data;
                 try {
                     new_data = new char[data_size];
-                } catch (const std::bad_alloc&) {
+                }
+                catch ( const std::bad_alloc& ) {
                     new_data = 0;
                     size     = 0;
                 }
                 if ( 0 != new_data ) {
                     std::copy( data, data + get_size(), new_data );
-                    std::copy( raw_data, raw_data + size, new_data + get_size() );
-                    delete [] data;
+                    std::copy( raw_data, raw_data + size,
+                               new_data + get_size() );
+                    delete[] data;
                     data = new_data;
                 }
             }
@@ -203,66 +178,60 @@ class section_impl : public section
         }
     }
 
-//------------------------------------------------------------------------------
-    void
-    append_data( const std::string& str_data )
+    //------------------------------------------------------------------------------
+    void append_data( const std::string& str_data )
     {
         return append_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
   protected:
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
     ELFIO_GET_SET_ACCESS( Elf64_Off, offset, header.sh_offset );
 
-//------------------------------------------------------------------------------
-    void
-    set_index( Elf_Half value )
-    {
-        index = value;
-    }
+    //------------------------------------------------------------------------------
+    void set_index( Elf_Half value ) { index = value; }
 
-//------------------------------------------------------------------------------
-    void
-    load( std::istream&  stream,
-          std::streampos header_offset )
+    //------------------------------------------------------------------------------
+    void load( std::istream& stream, std::streampos header_offset )
     {
-        std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ), '\0' );
+        std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
+                     '\0' );
 
-        stream.seekg ( 0, stream.end );
-        set_stream_size ( stream.tellg() );
+        stream.seekg( 0, stream.end );
+        set_stream_size( stream.tellg() );
 
         stream.seekg( header_offset );
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
-
         Elf_Xword size = get_size();
-        if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() && size < get_stream_size()) {
+        if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() &&
+             size < get_stream_size() ) {
             try {
                 data = new char[size + 1];
-            } catch (const std::bad_alloc&) {
+            }
+            catch ( const std::bad_alloc& ) {
                 data      = 0;
                 data_size = 0;
             }
 
             if ( ( 0 != size ) && ( 0 != data ) ) {
-                stream.seekg( (*convertor)( header.sh_offset ) );
+                stream.seekg( ( *convertor )( header.sh_offset ) );
                 stream.read( data, size );
                 data[size] = 0; // Ensure data is ended with 0 to avoid oob read
-                data_size = size;
+                data_size  = size;
             }
         }
     }
 
-//------------------------------------------------------------------------------
-    void
-    save( std::ostream&  stream,
-          std::streampos header_offset,
-          std::streampos data_offset )
+    //------------------------------------------------------------------------------
+    void save( std::ostream&  stream,
+               std::streampos header_offset,
+               std::streampos data_offset )
     {
         if ( 0 != get_index() ) {
             header.sh_offset = data_offset;
-            header.sh_offset = (*convertor)( header.sh_offset );
+            header.sh_offset = ( *convertor )( header.sh_offset );
         }
 
         save_header( stream, header_offset );
@@ -272,39 +241,30 @@ class section_impl : public section
         }
     }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
   private:
-//------------------------------------------------------------------------------
-    void
-    save_header( std::ostream&  stream,
-                 std::streampos header_offset ) const
+    //------------------------------------------------------------------------------
+    void save_header( std::ostream& stream, std::streampos header_offset ) const
     {
         stream.seekp( header_offset );
-        stream.write( reinterpret_cast<const char*>( &header ), sizeof( header ) );
+        stream.write( reinterpret_cast<const char*>( &header ),
+                      sizeof( header ) );
     }
 
-//------------------------------------------------------------------------------
-    void
-    save_data( std::ostream&  stream,
-               std::streampos data_offset ) const
+    //------------------------------------------------------------------------------
+    void save_data( std::ostream& stream, std::streampos data_offset ) const
     {
         stream.seekp( data_offset );
         stream.write( get_data(), get_size() );
     }
 
     //------------------------------------------------------------------------------
-    size_t get_stream_size() const
-    {
-        return stream_size;
-    }
+    size_t get_stream_size() const { return stream_size; }
 
     //------------------------------------------------------------------------------
-    void set_stream_size(size_t value)
-    {
-        stream_size = value;
-    }
+    void set_stream_size( size_t value ) { stream_size = value; }
 
-//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
   private:
     T                          header;
     Elf_Half                   index;
