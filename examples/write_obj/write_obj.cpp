@@ -104,6 +104,12 @@ int main( void )
     char descr[6] = { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36 };
     note_writer.add_note( 0x01, "Never easier!", descr, sizeof( descr ) );
 
+    // We don't use local symbols here. There is no need to rearrange them.
+    // But, for the completeness, we do this just prior 'save'
+    syma.arrange_local_symbols( [&]( Elf_Xword first, Elf_Xword second ) {
+        rela.swap_symbols( first, second );
+    } );
+
     // Create ELF object file
     writer.save( "hello.o" );
 
