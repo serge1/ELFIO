@@ -139,11 +139,11 @@ class symbol_section_accessor_template
         Elf64_Addr v     = 0;
 
         if ( elf_file.get_class() == ELFCLASS32 ) {
-            match = generic_search_symbols<Elf32_Sym>([&convertor, &value](const Elf32_Sym* sym) {
+            match = generic_search_symbols<Elf32_Sym>([&](const Elf32_Sym* sym) {
                     return convertor(sym->st_value) == value;
                 }, idx);
         } else {
-            match = generic_search_symbols<Elf64_Sym>([&convertor, &value](const Elf64_Sym* sym) {
+            match = generic_search_symbols<Elf64_Sym>([&](const Elf64_Sym* sym) {
                     return convertor(sym->st_value) == value;
                 }, idx);
         }
