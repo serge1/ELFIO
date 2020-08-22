@@ -101,7 +101,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_ELFIOTest_OBJECTS = ELFIOTest.$(OBJEXT) ELFIOTest1.$(OBJEXT)
+am_ELFIOTest_OBJECTS = ELFIOTest.$(OBJEXT) ELFIOTest1.$(OBJEXT) \
+	ELFIOTest2.$(OBJEXT)
 ELFIOTest_OBJECTS = $(am_ELFIOTest_OBJECTS)
 ELFIOTest_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -120,7 +121,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/ELFIOTest.Po \
-	./$(DEPDIR)/ELFIOTest1.Po
+	./$(DEPDIR)/ELFIOTest1.Po ./$(DEPDIR)/ELFIOTest2.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -472,7 +473,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/..
-ELFIOTest_SOURCES = ELFIOTest.cpp ELFIOTest1.cpp
+ELFIOTest_SOURCES = ELFIOTest.cpp ELFIOTest1.cpp ELFIOTest2.cpp
 TESTS = runELFtests
 all: all-am
 
@@ -566,6 +567,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ELFIOTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ELFIOTest1.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ELFIOTest2.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -1024,6 +1026,7 @@ distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/ELFIOTest.Po
 	-rm -f ./$(DEPDIR)/ELFIOTest1.Po
+	-rm -f ./$(DEPDIR)/ELFIOTest2.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1073,6 +1076,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/ELFIOTest.Po
 	-rm -f ./$(DEPDIR)/ELFIOTest1.Po
+	-rm -f ./$(DEPDIR)/ELFIOTest2.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

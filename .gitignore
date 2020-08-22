@@ -45,6 +45,8 @@ tests/elf_examples/ppc-32bit-testcopy*.elf
 tests/elf_examples/null_section_inside_segment*
 tests/elf_examples/segment_containing_no_section*
 tests/elf_examples/test_symbols_order.elf
+tests/elf_examples/zavl_gen.ko
+
 examples/writer/hello_x86_64
 examples/write_obj/hello
 

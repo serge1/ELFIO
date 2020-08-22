@@ -946,6 +946,7 @@ class elfio
 #include <elfio/elfio_note.hpp>
 #include <elfio/elfio_relocation.hpp>
 #include <elfio/elfio_dynamic.hpp>
+#include <elfio/elfio_modinfo.hpp>
 
 #ifdef _MSC_VER
 #pragma warning( pop )
