@@ -1,4 +1,4 @@
-AC_INIT([ELFIOTest],[3.7])
+AC_INIT([ELFIOTest],[3.8])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CXX
 AC_CONFIG_FILES([
