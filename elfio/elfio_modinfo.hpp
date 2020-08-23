@@ -40,7 +40,7 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    Elf_Word get_attribute_num() const { return content.size(); }
+    Elf_Word get_attribute_num() const { return (Elf_Word)content.size(); }
 
     //------------------------------------------------------------------------------
     bool
