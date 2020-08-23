@@ -672,6 +672,31 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    static void modinfo( std::ostream& out, const elfio& reader )
+    {
+        Elf_Half no = reader.sections.size();
+        for ( Elf_Half i = 0; i < no; ++i ) { // For all sections
+            section* sec = reader.sections[i];
+            if ( ".modinfo" == sec->get_name() ) { // Look for the section
+                out << "Section .modinfo" << std::endl;
+
+                const_modinfo_section_accessor modinfo( sec );
+                for ( auto i = 0; i < modinfo.get_attribute_num(); i++ ) {
+                    std::string field;
+                    std::string value;
+                    if ( modinfo.get_attribute( i, field, value ) ) {
+                        out << "  " << std::setw( 20 ) << field
+                            << std::setw( 0 ) <<  " = " << value << std::endl;
+                    }
+                }
+
+                out << std::endl;
+                break;
+            }
+        }
+    }
+
+    //------------------------------------------------------------------------------
     static void
     note( std::ostream& out, int no, Elf_Word type, const std::string& name )
     {

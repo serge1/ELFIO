@@ -51,6 +51,7 @@ int main( int argc, char** argv )
     dump::segment_headers( std::cout, reader );
     dump::symbol_tables( std::cout, reader );
     dump::notes( std::cout, reader );
+    dump::modinfo( std::cout, reader );
     dump::dynamic_tags( std::cout, reader );
     dump::section_datas( std::cout, reader );
     dump::segment_datas( std::cout, reader );
