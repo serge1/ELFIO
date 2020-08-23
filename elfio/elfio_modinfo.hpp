@@ -69,7 +69,7 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    Elf_Word add_attribute( std::string field_name, std::string value )
+    Elf_Word add_attribute( std::string field, std::string value )
     {
         Elf_Word current_position = 0;
 
@@ -77,11 +77,11 @@ template <class S> class modinfo_section_accessor_template
             // Strings are addeded to the end of the current section data
             current_position = (Elf_Word)modinfo_section->get_size();
 
-            std::string attribute = field_name + "=" + value;
+            std::string attribute = field + "=" + value;
 
             modinfo_section->append_data( attribute + '\0' );
             content.push_back(
-                std::pair<std::string, std::string>( field_name, value ) );
+                std::pair<std::string, std::string>( field, value ) );
         }
 
         return current_position;

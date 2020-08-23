@@ -21,6 +21,9 @@
     <ClCompile Include="ELFIOTest1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ELFIOTest2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\elfio\elf_types.hpp">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\elfio\elfio_dynamic.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\elfio\elfio_modinfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

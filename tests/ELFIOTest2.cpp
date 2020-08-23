@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE( modinfo_read )
     BOOST_REQUIRE_NE( modinfo_sec, nullptr );
 
     const_modinfo_section_accessor modinfo( modinfo_sec );
-    BOOST_REQUIRE_EQUAL( modinfo.get_attribute_num(), 9 );
+    BOOST_REQUIRE_EQUAL( modinfo.get_attribute_num(), (Elf_Word)9 );
 
     struct
     {
@@ -67,12 +67,12 @@ BOOST_AUTO_TEST_CASE( modinfo_write )
     BOOST_REQUIRE_NE( modinfo_sec, nullptr );
 
     modinfo_section_accessor modinfo( modinfo_sec );
-    BOOST_REQUIRE_EQUAL( modinfo.get_attribute_num(), 9 );
+    BOOST_REQUIRE_EQUAL( modinfo.get_attribute_num(), (Elf_Word)9 );
 
     modinfo.add_attribute( "test1", "value1" );
     modinfo.add_attribute( "test2", "value2" );
 
-    BOOST_REQUIRE_EQUAL( modinfo.get_attribute_num(), 11 );
+    BOOST_REQUIRE_EQUAL( modinfo.get_attribute_num(), (Elf_Word)11 );
 
     BOOST_REQUIRE_EQUAL( writer.save( "elf_examples/zavl_gen.ko" ), true );
 
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( modinfo_write )
     BOOST_REQUIRE_NE( modinfo_sec, nullptr );
 
     const_modinfo_section_accessor modinfo1( modinfo_sec );
-    BOOST_REQUIRE_EQUAL( modinfo1.get_attribute_num(), 11 );
+    BOOST_REQUIRE_EQUAL( modinfo1.get_attribute_num(), (Elf_Word)11 );
 
     struct
     {

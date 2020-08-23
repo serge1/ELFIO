@@ -681,7 +681,7 @@ class dump
                 out << "Section .modinfo" << std::endl;
 
                 const_modinfo_section_accessor modinfo( sec );
-                for ( auto i = 0; i < modinfo.get_attribute_num(); i++ ) {
+                for ( Elf_Word i = 0; i < modinfo.get_attribute_num(); i++ ) {
                     std::string field;
                     std::string value;
                     if ( modinfo.get_attribute( i, field, value ) ) {

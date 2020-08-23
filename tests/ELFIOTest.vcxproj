@@ -105,11 +105,13 @@
       </PreprocessToFile>
     </ClCompile>
     <ClCompile Include="ELFIOTest1.cpp" />
+    <ClCompile Include="ELFIOTest2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\elfio\elfio.hpp" />
     <ClInclude Include="..\elfio\elfio_dynamic.hpp" />
     <ClInclude Include="..\elfio\elfio_header.hpp" />
+    <ClInclude Include="..\elfio\elfio_modinfo.hpp" />
     <ClInclude Include="..\elfio\elfio_note.hpp" />
     <ClInclude Include="..\elfio\elfio_relocation.hpp" />
     <ClInclude Include="..\elfio\elfio_section.hpp" />
