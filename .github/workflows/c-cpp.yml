@@ -19,13 +19,17 @@ jobs:
       run: ./configure
     - name: make
       run: make
+    - name: cd tests
+      run: cd tests
+    - name: autoreconf tests
+      run: autoreconf -i -f
+    - name: configure tests
+      run: ./cofigure
     - name: make tests
-      run:
-        cd tests
-        autoreconf -i -f
-        ./cofigure
-        make
-        make check
-        cd ..
+      run: make
+    - name: make check for tests
+      run: make check
+    - name: return to root dir
+      run: cd ..
     - name: make distcheck
       run: make distcheck
