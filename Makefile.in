@@ -320,9 +320,10 @@ nobase_include_HEADERS = elfio/elf_types.hpp     elfio/elfio_dynamic.hpp    \
                          elfio/elfio_note.hpp    elfio/elfio_relocation.hpp \
                          elfio/elfio_section.hpp elfio/elfio_segment.hpp    \
                          elfio/elfio_strings.hpp elfio/elfio_symbols.hpp    \
-                         elfio/elfio_utils.hpp   elfio/elfio_dump.hpp
+                         elfio/elfio_utils.hpp   elfio/elfio_dump.hpp       \
+                         elfio/elfio_version.hpp elfio/elfio_modinfo.hpp
 
-EXTRA_DIST = doc/site/elfio.pdf
+EXTRA_DIST = doc/elfio.pdf
 all: all-recursive
 
 .SUFFIXES:
@@ -550,9 +551,6 @@ distdir-am: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -796,8 +794,8 @@ uninstall-am: uninstall-nobase_includeHEADERS
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
 	am--refresh check check-am clean clean-cscope clean-generic \
 	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
-	dist-gzip dist-hook dist-lzip dist-shar dist-tarZ dist-xz \
-	dist-zip distcheck distclean distclean-generic distclean-tags \
+	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
+	distcheck distclean distclean-generic distclean-tags \
 	distcleancheck distdir distuninstallcheck dvi dvi-am html \
 	html-am info info-am install install-am install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
@@ -811,9 +809,6 @@ uninstall-am: uninstall-nobase_includeHEADERS
 
 .PRECIOUS: Makefile
 
-dist-hook:
-	mv $(distdir)/doc/site/elfio.pdf $(distdir)/doc
-	rm -Rf $(distdir)/doc/site
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
