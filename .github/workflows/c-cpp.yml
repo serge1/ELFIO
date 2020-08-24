@@ -24,7 +24,7 @@ jobs:
     - name: autoreconf tests
       run: autoreconf -i -f
     - name: configure tests
-      run: ./cofigure
+      run: ./configure
     - name: make tests
       run: make
     - name: make check for tests
