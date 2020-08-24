@@ -14,12 +14,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: configure
-      run: ./configure
+      run:
+        autoreconf -i -f
+        ./configure
     - name: make
       run: make
     - name: make tests
       run:
         cd tests
+        autoreconf -i -f
         ./cofigure
         make
         make check
