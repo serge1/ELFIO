@@ -13,10 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: autoreconf
+      run: autoreconf -i -f
     - name: configure
-      run:
-        autoreconf -i -f
-        ./configure
+      run: ./configure
     - name: make
       run: make
     - name: make tests
