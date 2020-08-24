@@ -88,7 +88,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/elfio/elfio_version.hpp \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -313,7 +314,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = examples
+SUBDIRS = examples/elfdump examples/tutorial examples/writer examples/write_obj examples/anonymizer
 nobase_include_HEADERS = elfio/elf_types.hpp     elfio/elfio_dynamic.hpp    \
                          elfio/elfio.hpp         elfio/elfio_header.hpp     \
                          elfio/elfio_note.hpp    elfio/elfio_relocation.hpp \

@@ -40,6 +40,7 @@ THE SOFTWARE.
 #include <iterator>
 
 #include <elfio/elf_types.hpp>
+#include <elfio/elfio_version.hpp>
 #include <elfio/elfio_utils.hpp>
 #include <elfio/elfio_header.hpp>
 #include <elfio/elfio_section.hpp>
