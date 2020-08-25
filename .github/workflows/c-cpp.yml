@@ -13,23 +13,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: autoreconf
-      run: autoreconf -i -f
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: cd tests
-      run: cd tests
-    - name: autoreconf tests
-      run: autoreconf -i -f
-    - name: configure tests
-      run: ./configure
-    - name: make tests
-      run: make
-    - name: make check for tests
-      run: make check
-    - name: return to root dir
-      run: cd ..
+    - name: compile and run examples
+      run: |
+        autoreconf -i -f
+        ./configure
+        make
+    - name: compile and run tests
+      run: |
+        cd tests
+        autoreconf -i -f
+        ./configure
+        make
+        make check
     - name: make distcheck
       run: make distcheck
