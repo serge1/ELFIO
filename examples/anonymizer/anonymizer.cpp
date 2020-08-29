@@ -77,37 +77,28 @@ void process_string_table( const section* s, const std::string& filename )
 
 int main( int argc, char** argv )
 {
-    try {
-        if ( argc != 2 ) {
-            std::cout << "Usage: anonymizer <file_name>\n";
-            return 1;
-        }
-
-        std::string filename = argv[1];
-
-        elfio reader;
-
-        if ( !reader.load( filename ) ) {
-            std::cerr << "File " << filename
-                      << " is not found or it is not an ELF file\n";
-            return 1;
-        }
-
-        for ( auto section = reader.sections.begin();
-              section != reader.sections.end(); ++section ) {
-            if ( ( *section )->get_type() == SHT_STRTAB &&
-                 std::string( ( *section )->get_name() ) ==
-                     std::string( ".strtab" ) ) {
-                process_string_table( *section, filename );
-            }
-        }
-        return 0;
+    if ( argc != 2 ) {
+        std::cout << "Usage: anonymizer <file_name>\n";
+        return 1;
     }
-    catch ( const std::string& s ) {
-        std::cerr << s << std::endl;
+
+    std::string filename = argv[1];
+
+    elfio reader;
+
+    if ( !reader.load( filename ) ) {
+        std::cerr << "File " << filename
+                  << " is not found or it is not an ELF file\n";
+        return 1;
     }
-    catch ( const char* s ) {
-        std::cerr << s << std::endl;
+
+    for ( auto section = reader.sections.begin();
+          section != reader.sections.end(); ++section ) {
+        if ( ( *section )->get_type() == SHT_STRTAB &&
+             std::string( ( *section )->get_name() ) ==
+                 std::string( ".strtab" ) ) {
+            process_string_table( *section, filename );
+        }
     }
-    return 1;
+    return 0;
 }

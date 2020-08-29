@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include <iostream>
 #include <vector>
+#include <new>
 
 namespace ELFIO {
 
@@ -167,12 +168,7 @@ template <class T> class segment_impl : public segment
                 data = 0;
             }
             else {
-                try {
-                    data = new char[size + 1];
-                }
-                catch ( const std::bad_alloc& ) {
-                    data = 0;
-                }
+                data = new (std::nothrow) char[size + 1];
 
                 if ( 0 != data ) {
                     stream.read( data, size );
