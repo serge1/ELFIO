@@ -1,8 +1,8 @@
 Source: elfio
 Priority: optional
 Maintainer: Serge Lamikhov-Center <to_serge@hotmail.com>
-Build-Depends: debhelper-compat (= 12), autotools-dev
-Standards-Version: 4.4.1
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.5.0
 Section: libs
 Homepage: http://serge1.github.io/ELFIO
 Vcs-Browser: https://github.com/serge1/ELFIO
@@ -14,6 +14,8 @@ Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}
 Description: C++ library for reading and generating ELF files
- ELFIO - ELF (Executable and Linkable Format) reader and producer
- implemented as a header-only C++ library
-
+ ELFIO is a header-only C++ library intended for reading and generating
+ files in the ELF binary format. It is used as a standalone library - it is not
+ dependent on any other product or project. Adhering to ISO C++, it compiles on
+ a wide variety of architectures and compilers.
+ 

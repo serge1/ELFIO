@@ -1,0 +1,7 @@
+# Compulsory line, this is a version 4 file
+version=4
+
+# HTTP site (basic)
+https://github.com/serge1/ELFIO/releases \
+  elfio-([\d\.]+)\.tar\.gz debian uupdate
+
