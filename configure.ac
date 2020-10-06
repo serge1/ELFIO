@@ -8,5 +8,6 @@ AC_CONFIG_FILES([
            examples/writer/Makefile
            examples/anonymizer/Makefile
            examples/write_obj/Makefile
+           examples/add_section/Makefile
 ])
 AC_OUTPUT
