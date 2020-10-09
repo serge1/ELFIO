@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #define ELFIO_GET_ACCESS( TYPE, NAME, FIELD ) \
     TYPE get_##NAME() const { return ( *convertor )( FIELD ); }
+    
 #define ELFIO_SET_ACCESS( TYPE, NAME, FIELD ) \
     void set_##NAME( TYPE value )             \
     {                                         \

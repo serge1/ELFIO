@@ -45,7 +45,9 @@ typedef signed long long   int64_t;
 #endif // ELFIO_NO_CSTDINT
 #endif // ELFIO_NO_OWN_TYPES
 
+#ifdef __cplusplus
 namespace ELFIO {
+#endif
 
 // Attention! Platform depended definitions.
 typedef uint16_t Elf_Half;
@@ -864,6 +866,8 @@ struct Elf64_Dyn
     } d_un;
 };
 
+#ifdef __cplusplus
 } // namespace ELFIO
+#endif
 
 #endif // ELFTYPES_H
