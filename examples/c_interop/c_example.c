@@ -17,6 +17,9 @@ int main( int argc, char* argv[] )
     printf( "Section Entry : %d\n", elfio_get_section_entry_size( pelfio ) );
     printf( "Segment Entry : %d\n", elfio_get_segment_entry_size( pelfio ) );
 
+    /* Uncomment a block of the interest */
+
+    /*
     int secno = elfio_get_sections_num( pelfio );
     printf( "\nSections No   : %d\n", secno );
 
@@ -29,7 +32,9 @@ int main( int argc, char* argv[] )
                 elfio_section_get_address( psection ),
                 elfio_section_get_size( psection ) );
     }
-/*
+    */
+
+    /*
     int segno = elfio_get_segments_num( pelfio );
     printf( "\nSegments No   : %d\n", segno );
 
@@ -40,9 +45,26 @@ int main( int argc, char* argv[] )
                 elfio_segment_get_memory_size( psegment ),
                 elfio_segment_get_file_size( psegment ) );
     }
-*/
+    */
 
-
+    /*
+    psection_t psection = elfio_get_section_by_name( pelfio, ".symtab" );
+    psymbol_t  psymbols = elfio_symbol_section_accessor_new( pelfio, psection );
+    int        symno    = elfio_symbol_get_symbols_num( psymbols );
+    for ( int i = 0; i < symno; i++ ) {
+        char          name[128];
+        Elf64_Addr    value;
+        Elf_Xword     size;
+        unsigned char bind;
+        unsigned char type;
+        Elf_Half      section_index;
+        unsigned char other;
+        elfio_symbol_get_symbol( psymbols, i, name, 128, &value, &size,
+                                 &bind, &type, &section_index, &other );
+        printf( "[%4d] %10lu, %4lu %s\n", i, value, size, name );
+    }
+    elfio_symbol_section_accessor_delete( psymbols );
+    */
 
     elfio_delete( pelfio );
 

@@ -207,16 +207,16 @@ Elf_Xword elfio_symbol_get_symbols_num( psymbol_t psymbol )
     return psymbol->get_symbols_num();
 }
 
-bool get_symbol( psymbol_t      psymbol,
-                 Elf_Xword      index,
-                 char*          name,
-                 int            name_len,
-                 Elf64_Addr*    value,
-                 Elf_Xword*     size,
-                 unsigned char* bind,
-                 unsigned char* type,
-                 Elf_Half*      section_index,
-                 unsigned char* other )
+bool elfio_symbol_get_symbol( psymbol_t      psymbol,
+                              Elf_Xword      index,
+                              char*          name,
+                              int            name_len,
+                              Elf64_Addr*    value,
+                              Elf_Xword*     size,
+                              unsigned char* bind,
+                              unsigned char* type,
+                              Elf_Half*      section_index,
+                              unsigned char* other )
 {
     std::string name_param;
     bool ret = psymbol->get_symbol( index, name_param, *value, *size, *bind,
