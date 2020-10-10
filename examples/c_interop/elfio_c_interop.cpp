@@ -178,8 +178,7 @@ Elf_Half elfio_segment_get_sections_num( psegment_t psegment )
     return psegment->get_sections_num();
 }
 
-Elf_Half elfio_segment_get_section_index_at( psegment_t psegment,
-                                             Elf_Half   num )
+Elf_Half elfio_segment_get_section_index_at( psegment_t psegment, Elf_Half num )
 {
     return psegment->get_section_index_at( num );
 }
@@ -187,4 +186,59 @@ Elf_Half elfio_segment_get_section_index_at( psegment_t psegment,
 bool elfio_segment_is_offset_initialized( psegment_t psegment )
 {
     return psegment->is_offset_initialized();
+}
+
+//-----------------------------------------------------------------------------
+// symbol
+//-----------------------------------------------------------------------------
+psymbol_t elfio_symbol_section_accessor_new( pelfio_t   pelfio,
+                                             psection_t psection )
+{
+    return new symbol_section_accessor( *pelfio, psection );
+}
+
+void elfio_symbol_section_accessor_delete( psymbol_t psymbol )
+{
+    delete psymbol;
+}
+
+Elf_Xword elfio_symbol_get_symbols_num( psymbol_t psymbol )
+{
+    return psymbol->get_symbols_num();
+}
+
+bool get_symbol( psymbol_t      psymbol,
+                 Elf_Xword      index,
+                 char*          name,
+                 int            name_len,
+                 Elf64_Addr*    value,
+                 Elf_Xword*     size,
+                 unsigned char* bind,
+                 unsigned char* type,
+                 Elf_Half*      section_index,
+                 unsigned char* other )
+{
+    std::string name_param;
+    bool ret = psymbol->get_symbol( index, name_param, *value, *size, *bind,
+                                    *type, *section_index, *other );
+    strncpy( name, name_param.c_str(), name_len - 1 );
+
+    return ret;
+}
+
+Elf_Word elfio_symbol_add_symbol( psymbol_t     psymbol,
+                                  Elf_Word      name,
+                                  Elf64_Addr    value,
+                                  Elf_Xword     size,
+                                  unsigned char info,
+                                  unsigned char other,
+                                  Elf_Half      shndx )
+{
+    return psymbol->add_symbol( name, value, size, info, other, shndx );
+}
+
+Elf_Xword elfio_symbol_arrange_local_symbols(
+    psymbol_t psymbol, void ( *func )( Elf_Xword first, Elf_Xword second ) )
+{
+    return psymbol->arrange_local_symbols( func );
 }

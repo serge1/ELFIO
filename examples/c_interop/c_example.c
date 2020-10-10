@@ -29,7 +29,7 @@ int main( int argc, char* argv[] )
                 elfio_section_get_address( psection ),
                 elfio_section_get_size( psection ) );
     }
-
+/*
     int segno = elfio_get_segments_num( pelfio );
     printf( "\nSegments No   : %d\n", segno );
 
@@ -40,6 +40,9 @@ int main( int argc, char* argv[] )
                 elfio_segment_get_memory_size( psegment ),
                 elfio_segment_get_file_size( psegment ) );
     }
+*/
+
+
 
     elfio_delete( pelfio );
 

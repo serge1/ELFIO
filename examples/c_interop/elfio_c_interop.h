@@ -76,9 +76,10 @@ THE SOFTWARE.
     void elfio_##CLASS##_set_##NAME( p##CLASS##_t p##CLASS, TYPE value )
 
 #ifdef __cplusplus
-typedef ELFIO::elfio*   pelfio_t;
-typedef ELFIO::section* psection_t;
-typedef ELFIO::segment* psegment_t;
+typedef ELFIO::elfio*                   pelfio_t;
+typedef ELFIO::section*                 psection_t;
+typedef ELFIO::segment*                 psegment_t;
+typedef ELFIO::symbol_section_accessor* psymbol_t;
 
 extern "C"
 {
@@ -86,6 +87,7 @@ extern "C"
 typedef void* pelfio_t;
 typedef void* psection_t;
 typedef void* psegment_t;
+typedef void* psymbol_t;
 typedef int bool;
 #endif
 
@@ -161,11 +163,39 @@ typedef int bool;
     ELFIO_C_GET_ACCESS( segment, Elf64_Off, offset );
     char*    elfio_segment_get_data( psegment_t psegment );
     Elf_Half elfio_segment_add_section_index( psegment_t psegment,
-                                Elf_Half   index,
-                                Elf_Xword  addr_align );
+                                              Elf_Half   index,
+                                              Elf_Xword  addr_align );
     Elf_Half elfio_segment_get_sections_num( psegment_t psegment );
-    Elf_Half elfio_segment_get_section_index_at( psegment_t psegment, Elf_Half num );
+    Elf_Half elfio_segment_get_section_index_at( psegment_t psegment,
+                                                 Elf_Half   num );
     bool     elfio_segment_is_offset_initialized( psegment_t psegment );
+
+    //-----------------------------------------------------------------------------
+    // symbol
+    //-----------------------------------------------------------------------------
+    psymbol_t elfio_symbol_section_accessor_new( pelfio_t   pelfio,
+                                                 psection_t psection );
+    void      elfio_symbol_section_accessor_delete( psymbol_t psymbol );
+    Elf_Xword elfio_symbol_get_symbols_num( psymbol_t psymbol );
+    bool      elfio_symbol_get_symbol( psymbol_t      psymbol,
+                                       Elf_Xword      index,
+                                       char*          name,
+                                       int            name_len,
+                                       Elf64_Addr*    value,
+                                       Elf_Xword*     size,
+                                       unsigned char* bind,
+                                       unsigned char* type,
+                                       Elf_Half*      section_index,
+                                       unsigned char* other );
+    Elf_Word  elfio_symbol_add_symbol( psymbol_t     psymbol,
+                                       Elf_Word      name,
+                                       Elf64_Addr    value,
+                                       Elf_Xword     size,
+                                       unsigned char info,
+                                       unsigned char other,
+                                       Elf_Half      shndx );
+    Elf_Xword elfio_symbol_arrange_local_symbols(
+        psymbol_t psymbol, void (*func)( Elf_Xword first, Elf_Xword second ) );
 
 #ifdef __cplusplus
 }
