@@ -50,6 +50,7 @@ tests/elf_examples/zavl_gen.ko
 examples/writer/hello_x86_64
 examples/write_obj/hello
 examples/c_interop/c_example
+examples/add_section/add_section
 
 # various unwanted files (backups, objects, cmake artifacts)
 *~
