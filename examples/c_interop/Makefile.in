@@ -264,7 +264,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)
 c_example_SOURCES = c_example.c elfio_c_interop.cpp
-EXTRA_DIST = CMakeLists.txt
+EXTRA_DIST = elfio_c_interop.h CMakeLists.txt
 all: all-am
 
 .SUFFIXES:
