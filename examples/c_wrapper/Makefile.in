@@ -87,7 +87,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = c_example$(EXEEXT)
-subdir = examples/c_interop
+subdir = examples/c_wrapper
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/elfio/elfio_version.hpp \
 	$(top_srcdir)/configure.ac
@@ -99,7 +99,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_c_example_OBJECTS = c_example.$(OBJEXT) elfio_c_interop.$(OBJEXT)
+am_c_example_OBJECTS = c_example.$(OBJEXT) elfio_c_wrapper.$(OBJEXT)
 c_example_OBJECTS = $(am_c_example_OBJECTS)
 c_example_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -118,7 +118,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/c_example.Po \
-	./$(DEPDIR)/elfio_c_interop.Po
+	./$(DEPDIR)/elfio_c_wrapper.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -263,8 +263,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)
-c_example_SOURCES = c_example.c elfio_c_interop.cpp
-EXTRA_DIST = elfio_c_interop.h CMakeLists.txt
+c_example_SOURCES = c_example.c elfio_c_wrapper.cpp
+EXTRA_DIST = elfio_c_wrapper.h CMakeLists.txt
 all: all-am
 
 .SUFFIXES:
@@ -278,9 +278,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign examples/c_interop/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign examples/c_wrapper/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign examples/c_interop/Makefile
+	  $(AUTOMAKE) --foreign examples/c_wrapper/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -352,7 +352,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/c_example.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elfio_c_interop.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elfio_c_wrapper.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -516,7 +516,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/c_example.Po
-	-rm -f ./$(DEPDIR)/elfio_c_interop.Po
+	-rm -f ./$(DEPDIR)/elfio_c_wrapper.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -563,7 +563,7 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/c_example.Po
-	-rm -f ./$(DEPDIR)/elfio_c_interop.Po
+	-rm -f ./$(DEPDIR)/elfio_c_wrapper.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

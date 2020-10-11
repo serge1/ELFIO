@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef ELFIO_C_INTEROP_H
-#define ELFIO_C_INTEROP_H
+#ifndef ELFIO_C_WRAPPER_H
+#define ELFIO_C_WRAPPER_H
 
 #define ELFIO_C_HEADER_ACCESS_GET( TYPE, FNAME ) \
     TYPE elfio_get_##FNAME( pelfio_t pelfio );
@@ -201,4 +201,4 @@ typedef int bool;
 }
 #endif
 
-#endif // ELFIO_C_INTEROP_H
+#endif // ELFIO_C_WRAPPER_H

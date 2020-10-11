@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include <elfio/elf_types.hpp>
-#include "elfio_c_interop.h"
+#include "elfio_c_wrapper.h"
 
 int main( int argc, char* argv[] )
 {

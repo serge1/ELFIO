@@ -10,6 +10,6 @@ AC_CONFIG_FILES([
            examples/anonymizer/Makefile
            examples/write_obj/Makefile
            examples/add_section/Makefile
-           examples/c_interop/Makefile
+           examples/c_wrapper/Makefile
 ])
 AC_OUTPUT

@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 using namespace ELFIO;
 
-#include "elfio_c_interop.h"
+#include "elfio_c_wrapper.h"
 
 //-----------------------------------------------------------------------------
 // elfio

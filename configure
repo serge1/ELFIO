@@ -3873,7 +3873,7 @@ else
 fi
 
 
-ac_config_files="$ac_config_files Makefile examples/elfdump/Makefile examples/tutorial/Makefile examples/writer/Makefile examples/anonymizer/Makefile examples/write_obj/Makefile examples/add_section/Makefile examples/c_interop/Makefile"
+ac_config_files="$ac_config_files Makefile examples/elfdump/Makefile examples/tutorial/Makefile examples/writer/Makefile examples/anonymizer/Makefile examples/write_obj/Makefile examples/add_section/Makefile examples/c_wrapper/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4628,7 +4628,7 @@ do
     "examples/anonymizer/Makefile") CONFIG_FILES="$CONFIG_FILES examples/anonymizer/Makefile" ;;
     "examples/write_obj/Makefile") CONFIG_FILES="$CONFIG_FILES examples/write_obj/Makefile" ;;
     "examples/add_section/Makefile") CONFIG_FILES="$CONFIG_FILES examples/add_section/Makefile" ;;
-    "examples/c_interop/Makefile") CONFIG_FILES="$CONFIG_FILES examples/c_interop/Makefile" ;;
+    "examples/c_wrapper/Makefile") CONFIG_FILES="$CONFIG_FILES examples/c_wrapper/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
