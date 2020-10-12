@@ -76,10 +76,11 @@ THE SOFTWARE.
     void elfio_##CLASS##_set_##NAME( p##CLASS##_t p##CLASS, TYPE value )
 
 #ifdef __cplusplus
-typedef ELFIO::elfio*                   pelfio_t;
-typedef ELFIO::section*                 psection_t;
-typedef ELFIO::segment*                 psegment_t;
-typedef ELFIO::symbol_section_accessor* psymbol_t;
+typedef ELFIO::elfio*                       pelfio_t;
+typedef ELFIO::section*                     psection_t;
+typedef ELFIO::segment*                     psegment_t;
+typedef ELFIO::symbol_section_accessor*     psymbol_t;
+typedef ELFIO::relocation_section_accessor* prelocation_t;
 
 extern "C"
 {
@@ -88,6 +89,7 @@ typedef void* pelfio_t;
 typedef void* psection_t;
 typedef void* psegment_t;
 typedef void* psymbol_t;
+typedef void* prelocation_t;
 typedef int bool;
 #endif
 
@@ -195,7 +197,36 @@ typedef int bool;
                                        unsigned char other,
                                        Elf_Half      shndx );
     Elf_Xword elfio_symbol_arrange_local_symbols(
-        psymbol_t psymbol, void (*func)( Elf_Xword first, Elf_Xword second ) );
+        psymbol_t psymbol,
+        void ( *func )( Elf_Xword first, Elf_Xword second ) );
+
+    //-----------------------------------------------------------------------------
+    // relocation
+    //-----------------------------------------------------------------------------
+    prelocation_t elfio_relocation_section_accessor_new( pelfio_t   pelfio,
+                                                         psection_t psection );
+    void elfio_relocation_section_accessor_delete( prelocation_t prelocation );
+    Elf_Xword elfio_relocation_get_entries_num( prelocation_t prelocation );
+    bool      elfio_relocation_get_entry( prelocation_t prelocation,
+                                          Elf_Xword     index,
+                                          Elf64_Addr*   offset,
+                                          Elf_Word*     symbol,
+                                          Elf_Word*     type,
+                                          Elf_Sxword*   addend );
+    bool      elfio_relocation_set_entry( prelocation_t prelocation,
+                                          Elf_Xword     index,
+                                          Elf64_Addr    offset,
+                                          Elf_Word      symbol,
+                                          Elf_Word      type,
+                                          Elf_Sxword    addend );
+    void      elfio_relocation_add_entry( prelocation_t prelocation,
+                                          Elf64_Addr    offset,
+                                          Elf_Word      symbol,
+                                          unsigned char type,
+                                          Elf_Sxword    addend );
+    void      elfio_relocation_swap_symbols( prelocation_t prelocation,
+                                             Elf_Xword     first,
+                                             Elf_Xword     second );
 
 #ifdef __cplusplus
 }
