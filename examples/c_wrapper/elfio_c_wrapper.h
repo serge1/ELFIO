@@ -81,6 +81,7 @@ typedef ELFIO::section*                     psection_t;
 typedef ELFIO::segment*                     psegment_t;
 typedef ELFIO::symbol_section_accessor*     psymbol_t;
 typedef ELFIO::relocation_section_accessor* prelocation_t;
+typedef ELFIO::string_section_accessor*     pstring_t;
 
 extern "C"
 {
@@ -90,6 +91,7 @@ typedef void* psection_t;
 typedef void* psegment_t;
 typedef void* psymbol_t;
 typedef void* prelocation_t;
+typedef void* pstring_t;
 typedef int bool;
 #endif
 
@@ -227,6 +229,14 @@ typedef int bool;
     void      elfio_relocation_swap_symbols( prelocation_t prelocation,
                                              Elf_Xword     first,
                                              Elf_Xword     second );
+
+    //-----------------------------------------------------------------------------
+    // string
+    //-----------------------------------------------------------------------------
+    pstring_t   elfio_string_section_accessor_new( psection_t psection );
+    void        elfio_string_section_accessor_delete( pstring_t pstring );
+    const char* elfio_string_get_string( pstring_t pstring, Elf_Word index );
+    Elf_Word    elfio_string_add_string( pstring_t pstring, char* str );
 
 #ifdef __cplusplus
 }

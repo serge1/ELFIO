@@ -297,3 +297,26 @@ void elfio_relocation_swap_symbols( prelocation_t prelocation,
 {
     prelocation->swap_symbols( first, second );
 }
+
+//-----------------------------------------------------------------------------
+// string
+//-----------------------------------------------------------------------------
+pstring_t elfio_string_section_accessor_new( psection_t psection )
+{
+    return new string_section_accessor( psection );
+}
+
+void elfio_string_section_accessor_delete( pstring_t pstring )
+{
+    delete pstring;
+}
+
+const char* elfio_string_get_string( pstring_t pstring, Elf_Word index )
+{
+    return pstring->get_string( index );
+}
+
+Elf_Word elfio_string_add_string( pstring_t pstring, char* str )
+{
+    return pstring->add_string( str );
+}
