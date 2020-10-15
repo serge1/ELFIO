@@ -23,6 +23,8 @@ THE SOFTWARE.
 #ifndef ELFIO_DYNAMIC_HPP
 #define ELFIO_DYNAMIC_HPP
 
+#include <algorithm>
+
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
@@ -31,21 +33,30 @@ template <class S> class dynamic_section_accessor_template
   public:
     //------------------------------------------------------------------------------
     dynamic_section_accessor_template( const elfio& elf_file_, S* section_ )
-        : elf_file( elf_file_ ), dynamic_section( section_ )
+        : elf_file( elf_file_ ), dynamic_section( section_ ), entries_num( 0 )
     {
     }
 
     //------------------------------------------------------------------------------
     Elf_Xword get_entries_num() const
     {
-        Elf_Xword nRet = 0;
-
-        if ( 0 != dynamic_section->get_entry_size() ) {
-            nRet =
+        if ( ( 0 == entries_num ) &&
+             ( 0 != dynamic_section->get_entry_size() ) ) {
+            entries_num =
                 dynamic_section->get_size() / dynamic_section->get_entry_size();
+            Elf_Xword   i;
+            Elf_Xword   tag;
+            Elf_Xword   value;
+            std::string str;
+            for ( i = 0; i < entries_num; i++ ) {
+                get_entry( i, tag, value, str );
+                if ( tag == DT_NULL )
+                    break;
+            }
+            entries_num = std::min( entries_num, i + 1 );
         }
 
-        return nRet;
+        return entries_num;
     }
 
     //------------------------------------------------------------------------------
@@ -234,8 +245,9 @@ template <class S> class dynamic_section_accessor_template
 
     //------------------------------------------------------------------------------
   private:
-    const elfio& elf_file;
-    S*           dynamic_section;
+    const elfio&      elf_file;
+    S*                dynamic_section;
+    mutable Elf_Xword entries_num;
 };
 
 using dynamic_section_accessor = dynamic_section_accessor_template<section>;

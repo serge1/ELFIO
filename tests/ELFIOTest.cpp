@@ -892,7 +892,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_1 )
 
     dynamic_section_accessor da( reader, dynsec );
 
-    BOOST_CHECK_EQUAL( da.get_entries_num(), 26 );
+    BOOST_CHECK_EQUAL( da.get_entries_num(), 21 );
 
     Elf_Xword   tag;
     Elf_Xword   value;
@@ -926,7 +926,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_2 )
 
     dynamic_section_accessor da( reader, dynsec );
 
-    BOOST_CHECK_EQUAL( da.get_entries_num(), 24 );
+    BOOST_CHECK_EQUAL( da.get_entries_num(), 20 );
 
     Elf_Xword   tag;
     Elf_Xword   value;
@@ -956,7 +956,7 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
     BOOST_REQUIRE( dynsec != NULL );
 
     dynamic_section_accessor da( reader, dynsec );
-    BOOST_CHECK_EQUAL( da.get_entries_num(), 26 );
+    BOOST_CHECK_EQUAL( da.get_entries_num(), 21 );
 
     section* strsec1 = reader.sections.add( ".dynstr" );
     strsec1->set_type( SHT_STRTAB );
