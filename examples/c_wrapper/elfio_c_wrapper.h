@@ -82,6 +82,9 @@ typedef ELFIO::segment*                     psegment_t;
 typedef ELFIO::symbol_section_accessor*     psymbol_t;
 typedef ELFIO::relocation_section_accessor* prelocation_t;
 typedef ELFIO::string_section_accessor*     pstring_t;
+typedef ELFIO::note_section_accessor*       pnote_t;
+typedef ELFIO::modinfo_section_accessor*    pmodinfo_t;
+typedef ELFIO::dynamic_section_accessor*    pdynamic_t;
 
 extern "C"
 {
@@ -92,6 +95,9 @@ typedef void* psegment_t;
 typedef void* psymbol_t;
 typedef void* prelocation_t;
 typedef void* pstring_t;
+typedef void* pnote_t;
+typedef void* pmodinfo_t;
+typedef void* pdynamic_t;
 typedef int bool;
 #endif
 
@@ -237,6 +243,63 @@ typedef int bool;
     void        elfio_string_section_accessor_delete( pstring_t pstring );
     const char* elfio_string_get_string( pstring_t pstring, Elf_Word index );
     Elf_Word    elfio_string_add_string( pstring_t pstring, char* str );
+
+    //-----------------------------------------------------------------------------
+    // note
+    //-----------------------------------------------------------------------------
+    pnote_t  elfio_note_section_accessor_new( pelfio_t   pelfio,
+                                              psection_t psection );
+    void     elfio_note_section_accessor_delete( pnote_t pstring );
+    Elf_Word elfio_note_get_notes_num( pnote_t pnote );
+    bool     elfio_note_get_note( pnote_t   pnote,
+                                  Elf_Word  index,
+                                  Elf_Word* type,
+                                  char*     name,
+                                  int       name_len,
+                                  void**    desc,
+                                  Elf_Word* descSize );
+    void     elfio_note_add_note( pnote_t     pnote,
+                                  Elf_Word    type,
+                                  const char* name,
+                                  const void* desc,
+                                  Elf_Word    descSize );
+
+    //-----------------------------------------------------------------------------
+    // modinfo
+    //-----------------------------------------------------------------------------
+    pmodinfo_t elfio_modinfo_section_accessor_new( psection_t psection );
+    void       elfio_modinfo_section_accessor_delete( pmodinfo_t pmodinfo );
+    Elf_Word   elfio_modinfo_get_attribute_num( pmodinfo_t pmodinfo );
+    bool       elfio_modinfo_get_attribute( pmodinfo_t pmodinfo,
+                                            Elf_Word   no,
+                                            char*      field,
+                                            int        field_len,
+                                            char*      value,
+                                            int        value_len );
+    bool       elfio_modinfo_get_attribute_by_name( pmodinfo_t pmodinfo,
+                                                    char*      field_name,
+                                                    char*      value,
+                                                    int        value_len );
+    Elf_Word   elfio_modinfo_add_attribute( pmodinfo_t pmodinfo,
+                                            char*      field,
+                                            char*      value );
+
+    //-----------------------------------------------------------------------------
+    // dynamic
+    //-----------------------------------------------------------------------------
+    pdynamic_t elfio_dynamic_section_accessor_new( pelfio_t   pelfio,
+                                                   psection_t psection );
+    void       elfio_dynamic_section_accessor_delete( pdynamic_t pdynamic );
+    Elf_Xword  elfio_dynamic_get_entries_num( pdynamic_t pdynamic );
+    bool       elfio_dynamic_get_entry( pdynamic_t pdynamic,
+                                        Elf_Xword  index,
+                                        Elf_Xword* tag,
+                                        Elf_Xword* value,
+                                        char*      str,
+                                        int        str_len );
+    void       elfio_dynamic_add_entry( pdynamic_t pdynamic,
+                                        Elf_Xword  tag,
+                                        Elf_Xword  value );
 
 #ifdef __cplusplus
 }

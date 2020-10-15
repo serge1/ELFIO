@@ -320,3 +320,134 @@ Elf_Word elfio_string_add_string( pstring_t pstring, char* str )
 {
     return pstring->add_string( str );
 }
+
+//-----------------------------------------------------------------------------
+// note
+//-----------------------------------------------------------------------------
+pnote_t elfio_note_section_accessor_new( pelfio_t pelfio, psection_t psection )
+{
+    return new note_section_accessor( *pelfio, psection );
+}
+
+void elfio_note_section_accessor_delete( pnote_t pnote ) { delete pnote; }
+
+Elf_Word elfio_note_get_notes_num( pnote_t pnote )
+{
+    return pnote->get_notes_num();
+}
+
+bool elfio_note_get_note( pnote_t   pnote,
+                          Elf_Word  index,
+                          Elf_Word* type,
+                          char*     name,
+                          int       name_len,
+                          void**    desc,
+                          Elf_Word* descSize )
+{
+    std::string name_str;
+    bool ret = pnote->get_note( index, *type, name_str, *desc, *descSize );
+    strncpy( name, name_str.c_str(), name_len - 1 );
+
+    return ret;
+}
+
+void elfio_note_add_note( pnote_t     pnote,
+                          Elf_Word    type,
+                          const char* name,
+                          const void* desc,
+                          Elf_Word    descSize )
+{
+    pnote->add_note( type, name, desc, descSize );
+}
+
+//-----------------------------------------------------------------------------
+// modinfo
+//-----------------------------------------------------------------------------
+pmodinfo_t elfio_modinfo_section_accessor_new( psection_t psection )
+{
+    return new modinfo_section_accessor( psection );
+}
+
+void elfio_modinfo_section_accessor_delete( pmodinfo_t pmodinfo )
+{
+    delete pmodinfo;
+}
+
+Elf_Word elfio_modinfo_get_attribute_num( pmodinfo_t pmodinfo )
+{
+    return pmodinfo->get_attribute_num();
+}
+
+bool elfio_modinfo_get_attribute( pmodinfo_t pmodinfo,
+                                  Elf_Word   no,
+                                  char*      field,
+                                  int        field_len,
+                                  char*      value,
+                                  int        value_len )
+{
+    std::string field_str;
+    std::string value_str;
+    bool        ret = pmodinfo->get_attribute( no, field_str, value_str );
+    strncpy( field, field_str.c_str(), field_len - 1 );
+    strncpy( value, value_str.c_str(), value_len - 1 );
+
+    return ret;
+}
+
+bool elfio_modinfo_get_attribute_by_name( pmodinfo_t pmodinfo,
+                                          char*      field_name,
+                                          char*      value,
+                                          int        value_len )
+{
+    std::string value_str;
+    bool        ret = pmodinfo->get_attribute( value_str, value_str );
+    strncpy( value, value_str.c_str(), value_len - 1 );
+
+    return ret;
+}
+
+Elf_Word
+elfio_modinfo_add_attribute( pmodinfo_t pmodinfo, char* field, char* value )
+{
+    return pmodinfo->add_attribute( field, value );
+}
+
+//-----------------------------------------------------------------------------
+// dynamic
+//-----------------------------------------------------------------------------
+pdynamic_t elfio_dynamic_section_accessor_new( pelfio_t   pelfio,
+                                               psection_t psection )
+{
+    return new dynamic_section_accessor( *pelfio, psection );
+}
+
+void elfio_dynamic_section_accessor_delete( pdynamic_t pdynamic )
+{
+    delete pdynamic;
+}
+
+Elf_Xword elfio_dynamic_get_entries_num( pdynamic_t pdynamic )
+{
+    return pdynamic->get_entries_num();
+}
+
+bool elfio_dynamic_get_entry( pdynamic_t pdynamic,
+                              Elf_Xword  index,
+                              Elf_Xword* tag,
+                              Elf_Xword* value,
+                              char*      str,
+                              int        str_len )
+{
+    std::string str_str;
+    bool        ret = pdynamic->get_entry( index, *tag, *value, str_str );
+    strncpy( str, str_str.c_str(), str_len - 1 );
+
+    return ret;
+}
+
+void elfio_dynamic_add_entry( pdynamic_t pdynamic,
+                              Elf_Xword  tag,
+                              Elf_Xword  value )
+{
+    pdynamic->add_entry( tag, value );
+}
