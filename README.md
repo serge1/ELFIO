@@ -2,6 +2,7 @@
 
 [![Build](https://travis-ci.com/serge1/ELFIO.svg?branch=master)](https://travis-ci.com/serge1/ELFIO)
 ![C/C++ CI](https://github.com/serge1/ELFIO/workflows/C/C++%20CI/badge.svg)
+![CodeQL](https://github.com/serge1/ELFIO/workflows/CodeQL/badge.svg)
 [![Documentation](https://img.shields.io/badge/doc-download-brightgreen)](http://elfio.sourceforge.net/elfio.pdf)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/serge1/ELFIO/blob/master/COPYING)
 
