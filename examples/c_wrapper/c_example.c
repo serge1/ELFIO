@@ -157,7 +157,7 @@ int main( int argc, char* argv[] )
         Elf_Xword value;
         char      str[128];
         elfio_dynamic_get_entry( pdynamic, i, &tag, &value, str, 128 );
-        printf( "[%4d] %16lx %16lx %s\n", i, tag, value, str );
+        // printf( "[%4d] %16lx %16lx %s\n", i, tag, value, str );
     }
     elfio_dynamic_section_accessor_delete( pdynamic );
 
