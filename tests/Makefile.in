@@ -475,6 +475,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/..
 ELFIOTest_SOURCES = ELFIOTest.cpp ELFIOTest1.cpp ELFIOTest2.cpp
+EXTRA_DIST = CMakeLists.txt
 TESTS = runELFtests
 all: all-am
 
