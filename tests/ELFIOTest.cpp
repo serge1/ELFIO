@@ -22,6 +22,9 @@ THE SOFTWARE.
 
 #ifdef _MSC_VER
 #define _SCL_SECURE_NO_WARNINGS
+
+// Prevent usage of min() macro when compiled with VS
+#define NOMINMAX
 #endif
 
 #define BOOST_TEST_MODULE ELFIO_Test
