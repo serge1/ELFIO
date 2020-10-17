@@ -53,7 +53,7 @@ template <class S> class dynamic_section_accessor_template
                 if ( tag == DT_NULL )
                     break;
             }
-            entries_num = std::min( entries_num, i + 1 );
+            entries_num = (std::min)( entries_num, i + 1 );
         }
 
         return entries_num;
