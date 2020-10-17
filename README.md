@@ -11,4 +11,6 @@ files in the ELF binary format. It is used as a standalone library - it is not
 dependent on any other product or project. Adhering to ISO C++, it compiles on
 a wide variety of architectures and compilers.
 
+While written in C++, the library provides a C-language interface wrapper.
+
 The full library documentation can be found in *[ELFIO - Tutorial and User Manual](http://elfio.sourceforge.net/elfio.pdf)*.
