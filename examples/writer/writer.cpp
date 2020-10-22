@@ -98,7 +98,11 @@ int main( void )
     char descr[6] = { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36 };
     note_writer.add_note( 0x01, "Never easier!", descr, sizeof( descr ) );
 
-    // Setup entry point
+    // Setup entry point. Usually, a linker sets this address on base of
+    // ‘_start’ label.
+    // In this example, the code starts at the first address of the
+    // 'text_seg' segment. Therefore, the start address is set
+    // to be equal to the segment location
     writer.set_entry( 0x08048000 );
 
     // Create ELF file
