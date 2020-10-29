@@ -1,3 +1,3 @@
 
 add_executable(tutorial tutorial.cpp)
-include_directories(SYSTEM ${CMAKE_SOURCE_DIR})
+target_link_libraries(tutorial PRIVATE elfio::elfio)
