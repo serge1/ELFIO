@@ -1,3 +1,3 @@
 
 add_executable(elfdump elfdump.cpp)
-include_directories(SYSTEM ${CMAKE_SOURCE_DIR})
+target_link_libraries(elfdump PRIVATE elfio::elfio)

@@ -1,3 +1,3 @@
 
 add_executable(add_section add_section.cpp)
-include_directories(SYSTEM ${CMAKE_SOURCE_DIR})
+target_link_libraries(add_section PRIVATE elfio::elfio)
