@@ -43,4 +43,4 @@ add_test(
     WORKING_DIRECTORY
         ${CMAKE_CURRENT_BINARY_DIR})
 
-add_custom_target(check DEPENDS test)
+add_dependencies(check ELFIOTest)
