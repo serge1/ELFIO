@@ -1,17 +1,12 @@
 autom4te.cache
 Debug
 Release
-ELFIO.sdf
-ELFIO.v11.suo
-ELFIO.opensdf
-ELFIO.v12.suo
 .vs
 tmp/
 docs
 
 tests/Debug
 tests/Release
-tests/ELFIOTest.vcxproj.user
 tests/ELFIOTest
 tests/ELFIOTest.exe
 tests/runELFtests.trs
@@ -51,6 +46,7 @@ examples/writer/hello_x86_64
 examples/write_obj/hello
 examples/c_wrapper/c_example
 examples/add_section/add_section
+examples/elfdump/elfdump.trs
 
 # various unwanted files (backups, objects, cmake artifacts)
 *~
@@ -99,5 +95,4 @@ _*/
 *.bbl
 *.toc
 *.blg
-/examples/elfdump/ELFDump.vcxproj.user
 
