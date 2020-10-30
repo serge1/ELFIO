@@ -60,9 +60,11 @@ examples/add_section/add_section
 .#*
 \#*#
 CMakeCache.txt
+CMakeSettings.json
 Makefile
 CMakeFiles
 /build*/
+out
 *.res
 
 # autotools artifacts
@@ -98,4 +100,4 @@ _*/
 *.toc
 *.blg
 /examples/elfdump/ELFDump.vcxproj.user
-/CMakeSettings.json
+
