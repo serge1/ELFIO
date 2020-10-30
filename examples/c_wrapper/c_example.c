@@ -80,7 +80,7 @@ int main( int argc, char* argv[] )
     //-----------------------------------------------------------------------------
     psection_t psection = elfio_get_section_by_name( pelfio, ".symtab" );
     psymbol_t  psymbols = elfio_symbol_section_accessor_new( pelfio, psection );
-    int        symno    = elfio_symbol_get_symbols_num( psymbols );
+    Elf_Xword  symno    = elfio_symbol_get_symbols_num( psymbols );
     for ( int i = 0; i < symno; i++ ) {
         char          name[128];
         Elf64_Addr    value;
@@ -101,7 +101,7 @@ int main( int argc, char* argv[] )
     psection = elfio_get_section_by_name( pelfio, ".rela.dyn" );
     prelocation_t preloc =
         elfio_relocation_section_accessor_new( pelfio, psection );
-    int relno = elfio_relocation_get_entries_num( preloc );
+    Elf_Xword relno = elfio_relocation_get_entries_num( preloc );
     for ( int i = 0; i < relno; i++ ) {
         Elf64_Addr offset;
         Elf_Word   symbol;
@@ -118,10 +118,10 @@ int main( int argc, char* argv[] )
     //-----------------------------------------------------------------------------
     psection            = elfio_get_section_by_name( pelfio, ".strtab" );
     pstring_t   pstring = elfio_string_section_accessor_new( psection );
-    int         pos     = 0;
+    Elf_Word    pos     = 0;
     const char* str     = elfio_string_get_string( pstring, pos );
     while ( str ) {
-        pos += strlen( str ) + 1;
+        pos += (Elf_Word)strlen( str ) + 1;
         str = elfio_string_get_string( pstring, pos );
         // printf( "%s\n", str );
     }
@@ -151,7 +151,7 @@ int main( int argc, char* argv[] )
     psection = elfio_get_section_by_name( pelfio, ".dynamic" );
     pdynamic_t pdynamic =
         elfio_dynamic_section_accessor_new( pelfio, psection );
-    int dynno = elfio_dynamic_get_entries_num( pdynamic );
+    Elf_Xword dynno = elfio_dynamic_get_entries_num( pdynamic );
     for ( int i = 0; i < dynno; i++ ) {
         Elf_Xword tag;
         Elf_Xword value;

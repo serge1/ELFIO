@@ -119,7 +119,7 @@ template <class S> class note_section_accessor_template
         if ( desc != 0 && descSize != 0 ) {
             buffer.append( reinterpret_cast<const char*>( desc ), descSize );
             if ( descSize % align != 0 ) {
-                buffer.append( pad, align - descSize % align );
+                buffer.append( pad, (size_t)( align - descSize % align ) );
             }
         }
 

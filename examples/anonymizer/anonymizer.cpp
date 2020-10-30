@@ -50,7 +50,7 @@ diff before.txt after.txt
 using namespace ELFIO;
 
 void overwrite_data( const std::string& filename,
-                     long               offset,
+                     Elf64_Off          offset,
                      std::string&       str )
 {
     std::ofstream file( filename,
@@ -58,14 +58,14 @@ void overwrite_data( const std::string& filename,
     if ( !file )
         throw "Error opening file" + filename;
     std::string data( str.length(), '-' );
-    file.seekp( offset );
+    file.seekp( (std::streampos)offset );
     file.write( data.c_str(), data.length() + 1 );
 }
 
 void process_string_table( const section* s, const std::string& filename )
 {
     std::cout << "Info: processing string table section" << std::endl;
-    int index = 1;
+    size_t index = 1;
     while ( index < s->get_size() ) {
         auto str = std::string( s->get_data() + index );
         // For the example purpose, we rename main function name only

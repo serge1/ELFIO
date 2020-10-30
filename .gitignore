@@ -98,3 +98,4 @@ _*/
 *.toc
 *.blg
 /examples/elfdump/ELFDump.vcxproj.user
+/CMakeSettings.json
