@@ -70,7 +70,7 @@ template <class S> class note_section_accessor_template
         int align = sizeof( Elf_Word );
 
         const endianess_convertor& convertor = elf_file.get_convertor();
-        type            = convertor( *(const Elf_Word*)( pData + 2 * align ) );
+        type = convertor( *(const Elf_Word*)( pData + 2 * (size_t)align ) );
         Elf_Word namesz = convertor( *(const Elf_Word*)( pData ) );
         descSize = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
 
@@ -80,14 +80,14 @@ template <class S> class note_section_accessor_template
              (Elf_Xword)namesz + descSize > max_name_size ) {
             return false;
         }
-        name.assign( pData + 3 * align, namesz - 1 );
+        name.assign( pData + 3 * (size_t)align, namesz - 1 );
         if ( 0 == descSize ) {
             desc = 0;
         }
         else {
-            desc =
-                const_cast<char*>( pData + 3 * align +
-                                   ( ( namesz + align - 1 ) / align ) * align );
+            desc = const_cast<char*>( pData + 3 * (size_t)align +
+                                      ( ( namesz + align - 1 ) / align ) *
+                                          (size_t)align );
         }
 
         return true;
@@ -106,7 +106,7 @@ template <class S> class note_section_accessor_template
         Elf_Word    nameLenConv = convertor( nameLen );
         std::string buffer( reinterpret_cast<char*>( &nameLenConv ), align );
         Elf_Word    descSizeConv = convertor( descSize );
-        
+
         buffer.append( reinterpret_cast<char*>( &descSizeConv ), align );
         type = convertor( type );
         buffer.append( reinterpret_cast<char*>( &type ), align );
@@ -114,12 +114,12 @@ template <class S> class note_section_accessor_template
         buffer.append( 1, '\x00' );
         const char pad[] = { '\0', '\0', '\0', '\0' };
         if ( nameLen % align != 0 ) {
-            buffer.append( pad, align - nameLen % align );
+            buffer.append( pad, (size_t)align - nameLen % align );
         }
         if ( desc != 0 && descSize != 0 ) {
             buffer.append( reinterpret_cast<const char*>( desc ), descSize );
             if ( descSize % align != 0 ) {
-                buffer.append( pad, (size_t)( align - descSize % align ) );
+                buffer.append( pad, (size_t)align - descSize % align );
             }
         }
 

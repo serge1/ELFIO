@@ -125,7 +125,7 @@ ELFIO_C_GET_ACCESS_IMPL( section, Elf64_Off, offset );
 
 void elfio_section_get_name( psection_t psection, char* buffer, int len )
 {
-    strncpy( buffer, psection->get_name().c_str(), len - 1 );
+    strncpy( buffer, psection->get_name().c_str(), (size_t)len - 1 );
 }
 
 void elfio_section_set_name( psection_t psection, char* buffer )
@@ -225,7 +225,7 @@ bool elfio_symbol_get_symbol( psymbol_t      psymbol,
     std::string name_param;
     bool ret = psymbol->get_symbol( index, name_param, *value, *size, *bind,
                                     *type, *section_index, *other );
-    strncpy( name, name_param.c_str(), name_len - 1 );
+    strncpy( name, name_param.c_str(), (size_t)name_len - 1 );
 
     return ret;
 }
@@ -350,7 +350,7 @@ bool elfio_note_get_note( pnote_t   pnote,
 {
     std::string name_str;
     bool ret = pnote->get_note( index, *type, name_str, *desc, *descSize );
-    strncpy( name, name_str.c_str(), name_len - 1 );
+    strncpy( name, name_str.c_str(), (size_t)name_len - 1 );
 
     return ret;
 }
@@ -392,8 +392,8 @@ bool elfio_modinfo_get_attribute( pmodinfo_t pmodinfo,
     std::string field_str;
     std::string value_str;
     bool        ret = pmodinfo->get_attribute( no, field_str, value_str );
-    strncpy( field, field_str.c_str(), field_len - 1 );
-    strncpy( value, value_str.c_str(), value_len - 1 );
+    strncpy( field, field_str.c_str(), (size_t)field_len - 1 );
+    strncpy( value, value_str.c_str(), (size_t)value_len - 1 );
 
     return ret;
 }
@@ -405,7 +405,7 @@ bool elfio_modinfo_get_attribute_by_name( pmodinfo_t pmodinfo,
 {
     std::string value_str;
     bool        ret = pmodinfo->get_attribute( value_str, value_str );
-    strncpy( value, value_str.c_str(), value_len - 1 );
+    strncpy( value, value_str.c_str(), (size_t)value_len - 1 );
 
     return ret;
 }
@@ -444,7 +444,7 @@ bool elfio_dynamic_get_entry( pdynamic_t pdynamic,
 {
     std::string str_str;
     bool        ret = pdynamic->get_entry( index, *tag, *value, str_str );
-    strncpy( str, str_str.c_str(), str_len - 1 );
+    strncpy( str, str_str.c_str(), (size_t)str_len - 1 );
 
     return ret;
 }
