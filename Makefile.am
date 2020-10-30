@@ -7,4 +7,4 @@ nobase_include_HEADERS = elfio/elf_types.hpp     elfio/elfio_dynamic.hpp    \
                          elfio/elfio_strings.hpp elfio/elfio_symbols.hpp    \
                          elfio/elfio_utils.hpp   elfio/elfio_dump.hpp       \
                          elfio/elfio_version.hpp elfio/elfio_modinfo.hpp
-EXTRA_DIST = doc/elfio.pdf CMakeLists.txt
+EXTRA_DIST = doc/elfio.pdf CMakeLists.txt examples/CMakeLists.txt cmake/elfioConfig.cmake.in
