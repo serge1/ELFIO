@@ -7,7 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build_autoconf:
+    name: autoconf build & test
 
     runs-on: ubuntu-latest
 
@@ -28,3 +29,30 @@ jobs:
         make check
     - name: make distcheck
       run: make distcheck
+
+  build_cmake:
+    name: cmake build & test
+
+    env:
+      BUILD_TYPE: Release
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create Build Directory
+      run: cmake -E make_directory ${{ runner.workspace }}/build
+    - name: Configure CMake
+      working-directory: ${{ runner.workspace }}/build
+      run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
+    - name: Build
+      working-directory: ${{ runner.workspace }}/build
+      run: cmake --build . --config ${{ matrix.build_type }}
+    - name: Test
+      working-directory: ${{ runner.workspace }}/build
+      run: ctest -C ${{ matrix.build_type }}
