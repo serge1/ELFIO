@@ -49,10 +49,7 @@ jobs:
       run: cmake -E make_directory ${{ runner.workspace }}/build
     - name: Configure CMake
       working-directory: ${{ runner.workspace }}/build
-      run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
+      run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES
     - name: Build
       working-directory: ${{ runner.workspace }}/build
       run: cmake --build . --config ${{ matrix.build_type }}
-    - name: Test
-      working-directory: ${{ runner.workspace }}/build
-      run: ctest -C ${{ matrix.build_type }}
