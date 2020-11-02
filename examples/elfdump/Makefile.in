@@ -251,7 +251,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)
 elfdump_SOURCES = elfdump.cpp
-EXTRA_DIST = ELFDump.vcxproj CMakeLists.txt
+EXTRA_DIST = CMakeLists.txt
 all: all-am
 
 .SUFFIXES:
