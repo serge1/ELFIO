@@ -26,6 +26,9 @@ configure_file(${version_header} ${CMAKE_CURRENT_BINARY_DIR}/elfio_version.hpp.c
 
 project(elfio VERSION ${version} LANGUAGES C CXX)
 
+# Enable C++11
+set(CMAKE_CXX_STANDARD 11)
+
 include(GNUInstallDirs)
 
 # Create a header only CMake target for elfio
