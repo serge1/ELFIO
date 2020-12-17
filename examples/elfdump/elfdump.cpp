@@ -35,7 +35,7 @@ using namespace ELFIO;
 int main( int argc, char** argv )
 {
     if ( argc != 2 ) {
-        printf( "Usage: ELFDump <file_name>\n" );
+        printf( "Usage: elfdump <file_name>\n" );
         return 1;
     }
 
