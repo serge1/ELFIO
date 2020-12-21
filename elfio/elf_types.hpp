@@ -256,73 +256,93 @@ typedef uint64_t Elf64_Off;
 #define EM_STXP7X        166 // STMicroelectronics STxP7x family
 #define EM_NDS32 \
     167 // Andes Technology compact code size embedded RISC processor family
-#define EM_ECOG1         168 // Cyan Technology eCOG1X family
-#define EM_ECOG1X        168 // Cyan Technology eCOG1X family
-#define EM_MAXQ30        169 // Dallas Semiconductor MAXQ30 Core Micro-controllers
-#define EM_XIMO16        170 // New Japan Radio (NJR) 16-bit DSP Processor
-#define EM_MANIK         171 // M2000 Reconfigurable RISC Microprocessor
-#define EM_CRAYNV2       172 // Cray Inc. NV2 vector architecture
-#define EM_RX            173 // Renesas RX family
-#define EM_METAG         174 // Imagination Technologies META processor architecture
-#define EM_MCST_ELBRUS   175 // MCST Elbrus general purpose hardware architecture
-#define EM_ECOG16        176 // Cyan Technology eCOG16 family
-#define EM_CR16          177 // National Semiconductor CompactRISC 16-bit processor
-#define EM_ETPU          178 // Freescale Extended Time Processing Unit
-#define EM_SLE9X         179 // Infineon Technologies SLE9X core
-#define EM_L1OM          180 // Intel L1OM
-#define EM_INTEL181      181 // Reserved by Intel
-#define EM_INTEL182      182 // Reserved by Intel
-#define EM_res183        183 // Reserved by ARM
-#define EM_res184        184 // Reserved by ARM
-#define EM_AVR32         185 // Atmel Corporation 32-bit microprocessor family
-#define EM_STM8          186 // STMicroeletronics STM8 8-bit microcontroller
-#define EM_TILE64        187 // Tilera TILE64 multicore architecture family
-#define EM_TILEPRO       188 // Tilera TILEPro multicore architecture family
-#define EM_MICROBLAZE    189 // Xilinx MicroBlaze 32-bit RISC soft processor core
-#define EM_CUDA          190 // NVIDIA CUDA architecture
-#define EM_TILEGX        191 // Tilera TILE-Gx multicore architecture family
-#define EM_CLOUDSHIELD   192 // CloudShield architecture family
-#define EM_COREA_1ST     193 // KIPO-KAIST Core-A 1st generation processor family
-#define EM_COREA_2ND     194 // KIPO-KAIST Core-A 2nd generation processor family
-#define EM_ARC_COMPACT2  195 // Synopsys ARCompact V2
-#define EM_OPEN8         196 // Open8 8-bit RISC soft processor core
-#define EM_RL78          197 // Renesas RL78 family
-#define EM_VIDEOCORE5    198 // Broadcom VideoCore V processor
-#define EM_78KOR         199 // Renesas 78KOR family
-#define EM_56800EX       200 // Freescale 56800EX Digital Signal Controller (DSC)
-#define EM_BA1           201 // Beyond BA1 CPU architecture
-#define EM_BA2           202 // Beyond BA2 CPU architecture
-#define EM_XCORE         203 // XMOS xCORE processor family
-#define EM_MCHP_PIC      204 // Microchip 8-bit PIC(r) family
-#define EM_INTEL205      205 // Reserved by Intel
-#define EM_INTEL206      206 // Reserved by Intel
-#define EM_INTEL207      207 // Reserved by Intel
-#define EM_INTEL208      208 // Reserved by Intel
-#define EM_INTEL209      209 // Reserved by Intel
-#define EM_KM32          210 // KM211 KM32 32-bit processor
-#define EM_KMX32         211 // KM211 KMX32 32-bit processor
-#define EM_KMX16         212 // KM211 KMX16 16-bit processor
-#define EM_KMX8          213 // KM211 KMX8 8-bit processor
-#define EM_KVARC         214 // KM211 KVARC processor
-#define EM_CDP           215 // Paneve CDP architecture family
-#define EM_COGE          216 // Cognitive Smart Memory Processor
-#define EM_COOL          217 // iCelero CoolEngine
-#define EM_NORC          218 // Nanoradio Optimized RISC
-#define EM_CSR_KALIMBA   219 // CSR Kalimba architecture family
-#define EM_Z80           220 // Zilog Z80
-#define EM_VISIUM        221 // Controls and Data Services VISIUMcore processor
-#define EM_FT32          222 // FTDI Chip FT32 high performance 32-bit RISC architecture
-#define EM_MOXIE         223 // Moxie processor family
-#define EM_AMDGPU        224 // AMD GPU architecture
-#define EM_RISCV         243 // RISC-V
-#define EM_LANAI         244 // Lanai processor
-#define EM_CEVA          245 // CEVA Processor Architecture Family
-#define EM_CEVA_X2       246 // CEVA X2 Processor Family
-#define EM_BPF           247 // Linux BPF – in-kernel virtual machine
-#define EM_GRAPHCORE_IPU 248 // Graphcore Intelligent Processing Unit
-#define EM_IMG1          249 // Imagination Technologies
-#define EM_NFP           250 // Netronome Flow Processor (P)
-#define EM_CSKY          252 // C-SKY processor family
+#define EM_ECOG1           168 // Cyan Technology eCOG1X family
+#define EM_ECOG1X          168 // Cyan Technology eCOG1X family
+#define EM_MAXQ30          169 // Dallas Semiconductor MAXQ30 Core Micro-controllers
+#define EM_XIMO16          170 // New Japan Radio (NJR) 16-bit DSP Processor
+#define EM_MANIK           171 // M2000 Reconfigurable RISC Microprocessor
+#define EM_CRAYNV2         172 // Cray Inc. NV2 vector architecture
+#define EM_RX              173 // Renesas RX family
+#define EM_METAG           174 // Imagination Technologies META processor architecture
+#define EM_MCST_ELBRUS     175 // MCST Elbrus general purpose hardware architecture
+#define EM_ECOG16          176 // Cyan Technology eCOG16 family
+#define EM_CR16            177 // National Semiconductor CompactRISC 16-bit processor
+#define EM_ETPU            178 // Freescale Extended Time Processing Unit
+#define EM_SLE9X           179 // Infineon Technologies SLE9X core
+#define EM_L1OM            180 // Intel L1OM
+#define EM_INTEL181        181 // Reserved by Intel
+#define EM_INTEL182        182 // Reserved by Intel
+#define EM_res183          183 // Reserved by ARM
+#define EM_res184          184 // Reserved by ARM
+#define EM_AVR32           185 // Atmel Corporation 32-bit microprocessor family
+#define EM_STM8            186 // STMicroeletronics STM8 8-bit microcontroller
+#define EM_TILE64          187 // Tilera TILE64 multicore architecture family
+#define EM_TILEPRO         188 // Tilera TILEPro multicore architecture family
+#define EM_MICROBLAZE      189 // Xilinx MicroBlaze 32-bit RISC soft processor core
+#define EM_CUDA            190 // NVIDIA CUDA architecture
+#define EM_TILEGX          191 // Tilera TILE-Gx multicore architecture family
+#define EM_CLOUDSHIELD     192 // CloudShield architecture family
+#define EM_COREA_1ST       193 // KIPO-KAIST Core-A 1st generation processor family
+#define EM_COREA_2ND       194 // KIPO-KAIST Core-A 2nd generation processor family
+#define EM_ARC_COMPACT2    195 // Synopsys ARCompact V2
+#define EM_OPEN8           196 // Open8 8-bit RISC soft processor core
+#define EM_RL78            197 // Renesas RL78 family
+#define EM_VIDEOCORE5      198 // Broadcom VideoCore V processor
+#define EM_78KOR           199 // Renesas 78KOR family
+#define EM_56800EX         200 // Freescale 56800EX Digital Signal Controller (DSC)
+#define EM_BA1             201 // Beyond BA1 CPU architecture
+#define EM_BA2             202 // Beyond BA2 CPU architecture
+#define EM_XCORE           203 // XMOS xCORE processor family
+#define EM_MCHP_PIC        204 // Microchip 8-bit PIC(r) family
+#define EM_INTEL205        205 // Reserved by Intel
+#define EM_INTEL206        206 // Reserved by Intel
+#define EM_INTEL207        207 // Reserved by Intel
+#define EM_INTEL208        208 // Reserved by Intel
+#define EM_INTEL209        209 // Reserved by Intel
+#define EM_KM32            210 // KM211 KM32 32-bit processor
+#define EM_KMX32           211 // KM211 KMX32 32-bit processor
+#define EM_KMX16           212 // KM211 KMX16 16-bit processor
+#define EM_KMX8            213 // KM211 KMX8 8-bit processor
+#define EM_KVARC           214 // KM211 KVARC processor
+#define EM_CDP             215 // Paneve CDP architecture family
+#define EM_COGE            216 // Cognitive Smart Memory Processor
+#define EM_COOL            217 // iCelero CoolEngine
+#define EM_NORC            218 // Nanoradio Optimized RISC
+#define EM_CSR_KALIMBA     219 // CSR Kalimba architecture family
+#define EM_Z80             220 // Zilog Z80
+#define EM_VISIUM          221 // Controls and Data Services VISIUMcore processor
+#define EM_FT32            222 // FTDI Chip FT32 high performance 32-bit RISC architecture
+#define EM_MOXIE           223 // Moxie processor family
+#define EM_AMDGPU          224 // AMD GPU architecture
+#define EM_RISCV           243 // RISC-V
+#define EM_LANAI           244 // Lanai processor
+#define EM_CEVA            245 // CEVA Processor Architecture Family
+#define EM_CEVA_X2         246 // CEVA X2 Processor Family
+#define EM_BPF             247 // Linux BPF – in-kernel virtual machine
+#define EM_GRAPHCORE_IPU   248 // Graphcore Intelligent Processing Unit
+#define EM_IMG1            249 // Imagination Technologies
+#define EM_NFP             250 // Netronome Flow Processor (P)
+#define EM_CSKY            252 // C-SKY processor family
+#define EM_ARC_COMPACT3_64 253 // "Synopsys ARCv2.3 64-bit";
+#define EM_MCS6502         254 // "MOS Technology MCS 6502 processor";
+#define EM_ARC_COMPACT3    255 // "Synopsys ARCv2.3 32-bit";
+#define EM_KVX             256 // "Kalray VLIW core of the MPPA processor family";
+#define EM_65816           257 // "WDC 65816/65C816";
+#define EM_LOONGARCH       258 // "Loongson Loongarch";
+#define EM_KF32            259 // "ChipON KungFu32";
+
+#define EM_MT                0x2530 // "Morpho Techologies MT processor";
+#define EM_ALPHA             0x9026 // "Alpha";
+#define EM_WEBASSEMBLY       0x4157 // "Web Assembly";
+#define EM_DLX               0x5aa5 // "OpenDLX";
+#define EM_XSTORMY16         0xad45 // "Sanyo XStormy16 CPU core";
+#define EM_IQ2000            0xFEBA // "Vitesse IQ2000";
+#define EM_M32C_OLD          0xFEB0
+#define EM_NIOS32            0xFEBB // "Altera Nios";
+#define EM_CYGNUS_MEP        0xF00D // "Toshiba MeP Media Engine";
+#define EM_ADAPTEVA_EPIPHANY 0x1223 // "Adapteva EPIPHANY";
+#define EM_CYGNUS_FRV        0x5441 // "Fujitsu FR-V";
+#define EM_S12Z              0x4DEF // "Freescale S12Z";
 
 // File version
 #define EV_NONE    0
