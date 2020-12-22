@@ -1,1 +1,1 @@
-#define ELFIO_VERSION "3.8"
+#define ELFIO_VERSION "3.9"
