@@ -85,6 +85,7 @@ typedef ELFIO::string_section_accessor*     pstring_t;
 typedef ELFIO::note_section_accessor*       pnote_t;
 typedef ELFIO::modinfo_section_accessor*    pmodinfo_t;
 typedef ELFIO::dynamic_section_accessor*    pdynamic_t;
+typedef ELFIO::array_section_accessor*      parray_t;
 
 extern "C"
 {
@@ -98,6 +99,7 @@ typedef void* pstring_t;
 typedef void* pnote_t;
 typedef void* pmodinfo_t;
 typedef void* pdynamic_t;
+typedef void* parray_t;
 typedef int bool;
 #endif
 
@@ -300,6 +302,18 @@ typedef int bool;
     void       elfio_dynamic_add_entry( pdynamic_t pdynamic,
                                         Elf_Xword  tag,
                                         Elf_Xword  value );
+
+    //-----------------------------------------------------------------------------
+    // array
+    //-----------------------------------------------------------------------------
+    parray_t  elfio_array_section_accessor_new( pelfio_t   pelfio,
+                                                psection_t psection );
+    void      elfio_array_section_accessor_delete( parray_t parray );
+    Elf_Xword elfio_array_get_entries_num( parray_t parray );
+    bool      elfio_array_get_entry( parray_t    parray,
+                                     Elf_Xword   index,
+                                     Elf64_Addr* paddress );
+    void      elfio_array_add_entry( parray_t parray, Elf64_Addr address );
 
 #ifdef __cplusplus
 }

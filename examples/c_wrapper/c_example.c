@@ -161,6 +161,21 @@ int main( int argc, char* argv[] )
     }
     elfio_dynamic_section_accessor_delete( pdynamic );
 
+    //-----------------------------------------------------------------------------
+    // array
+    //-----------------------------------------------------------------------------
+    psection = elfio_get_section_by_name( pelfio, ".init_array" );
+    if ( psection != 0 ) {
+        parray_t  parray = elfio_array_section_accessor_new( pelfio, psection );
+        Elf_Xword arrno  = elfio_array_get_entries_num( parray );
+        for ( int i = 0; i < arrno; i++ ) {
+            Elf64_Addr addr;
+            elfio_array_get_entry( parray, i, &addr );
+            // printf( "[%4d] %16lx\n", i, addr );
+        }
+        elfio_array_section_accessor_delete( parray );
+    }
+
     elfio_delete( pelfio );
 
     return 0;

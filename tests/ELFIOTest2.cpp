@@ -142,3 +142,93 @@ BOOST_AUTO_TEST_CASE( modinfo_write )
         BOOST_CHECK_EQUAL( value, attributes[i].value );
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( array_read_32 )
+{
+    elfio reader;
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_32" ), true );
+
+    section* array_sec = reader.sections[".ctors"];
+    BOOST_REQUIRE_NE( array_sec, nullptr );
+
+    const_array_section_accessor array( reader, array_sec );
+    BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
+    Elf64_Addr addr;
+    BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0xFFFFFFFF );
+    BOOST_CHECK_EQUAL( array.get_entry( 1, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x00000000 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( array_read_64 )
+{
+    elfio reader;
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_64" ), true );
+
+    section* array_sec = reader.sections[".ctors"];
+    BOOST_REQUIRE_NE( array_sec, nullptr );
+
+    const_array_section_accessor array( reader, array_sec );
+    BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
+    Elf64_Addr addr;
+    BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0xFFFFFFFFFFFFFFFF );
+    BOOST_CHECK_EQUAL( array.get_entry( 1, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x0000000000000000 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( init_array_read_64 )
+{
+    elfio      reader;
+    Elf64_Addr addr;
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/ctors" ), true );
+
+    section* array_sec = reader.sections[".init_array"];
+    BOOST_REQUIRE_NE( array_sec, nullptr );
+
+    const_array_section_accessor array( reader, array_sec );
+    BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
+    BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x12C0 );
+    BOOST_CHECK_EQUAL( array.get_entry( 1, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x149F );
+
+    array_sec = reader.sections[".fini_array"];
+    BOOST_REQUIRE_NE( array_sec, nullptr );
+
+    array_section_accessor arrayf( reader, array_sec );
+    BOOST_REQUIRE_EQUAL( arrayf.get_entries_num(), (Elf_Xword)1 );
+    BOOST_CHECK_EQUAL( arrayf.get_entry( 0, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x1280 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( init_array_write_64 )
+{
+    elfio      reader;
+    Elf64_Addr addr;
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/ctors" ), true );
+
+    section* array_sec = reader.sections[".init_array"];
+    BOOST_REQUIRE_NE( array_sec, nullptr );
+
+    array_section_accessor array( reader, array_sec );
+    BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
+    BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x12C0 );
+    BOOST_CHECK_EQUAL( array.get_entry( 1, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x149F );
+
+    array.add_entry( 0x12345678 );
+
+    BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)3 );
+    BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x12C0 );
+    BOOST_CHECK_EQUAL( array.get_entry( 1, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x149F );
+    BOOST_CHECK_EQUAL( array.get_entry( 2, addr ), true );
+    BOOST_CHECK_EQUAL( addr, 0x12345678 );
+}

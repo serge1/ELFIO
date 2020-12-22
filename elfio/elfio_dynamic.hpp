@@ -99,10 +99,10 @@ template <class S> class dynamic_section_accessor_template
     void add_entry( Elf_Xword tag, Elf_Xword value )
     {
         if ( elf_file.get_class() == ELFCLASS32 ) {
-            generic_add_entry<Elf32_Dyn>( tag, value );
+            generic_add_entry_dyn<Elf32_Dyn>( tag, value );
         }
         else {
-            generic_add_entry<Elf64_Dyn>( tag, value );
+            generic_add_entry_dyn<Elf64_Dyn>( tag, value );
         }
     }
 
@@ -189,7 +189,7 @@ template <class S> class dynamic_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    template <class T> void generic_add_entry( Elf_Xword tag, Elf_Xword value )
+    template <class T> void generic_add_entry_dyn( Elf_Xword tag, Elf_Xword value )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 

@@ -455,3 +455,32 @@ void elfio_dynamic_add_entry( pdynamic_t pdynamic,
 {
     pdynamic->add_entry( tag, value );
 }
+
+//-----------------------------------------------------------------------------
+// array
+//-----------------------------------------------------------------------------
+parray_t elfio_array_section_accessor_new( pelfio_t   pelfio,
+                                           psection_t psection )
+{
+    return new array_section_accessor( *pelfio, psection );
+}
+
+void elfio_array_section_accessor_delete( parray_t parray ) { delete parray; }
+
+Elf_Xword elfio_array_get_entries_num( parray_t parray )
+{
+    return parray->get_entries_num();
+}
+
+bool elfio_array_get_entry( parray_t    parray,
+                            Elf_Xword   index,
+                            Elf64_Addr* paddress )
+{
+    bool ret = parray->get_entry( index, *paddress);
+
+    return ret;
+}
+
+void elfio_array_add_entry( parray_t parray, Elf64_Addr address ) {
+    parray->add_entry( address );
+}
