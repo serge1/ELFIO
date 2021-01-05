@@ -251,30 +251,72 @@ class elfio
                ( offset < ( sec->get_offset() + sec->get_size() ) );
     }
 
+    Elf64_Addr get_virtual_addr( Elf64_Off offset, const section* sec ) const
+    {
+        return sec->get_address() + offset - sec->get_offset();
+    }
+
+    const section* find_prog_section_for_offset( Elf64_Off offset ) const
+    {
+        for ( int i = 0; i < sections.size(); ++i ) {
+            const section* sec = sections[i];
+            if ( sec->get_type() == SHT_PROGBITS )
+                if ( is_offset_in_section( offset, sec ) )
+                    return sec;
+        }
+        return NULL;
+    }
+
     //------------------------------------------------------------------------------
   public:
     //! returns an empty string if no problems are detected,
-    //! or a string containing an error message if problems are found
+    //! or a string containing an error message if problems are found,
+    //! with one error per line.
     std::string validate() const
     {
+        // clang-format off
 
-        // check for overlapping sections in the file
-        for ( int i = 0; i < sections.size(); ++i ) {
-            for ( int j = i + 1; j < sections.size(); ++j ) {
+        std::string errors;
+        // Check for overlapping sections in the file
+        // This is explicitly forbidden by ELF specification
+        for ( int i = 0; i < sections.size(); ++i) {
+            for ( int j = i+1; j < sections.size(); ++j ) {
                 const section* a = sections[i];
                 const section* b = sections[j];
-                if ( !( a->get_type() & SHT_NOBITS ) &&
-                     !( b->get_type() & SHT_NOBITS ) && ( a->get_size() > 0 ) &&
-                     ( b->get_size() > 0 ) && ( a->get_offset() > 0 ) &&
-                     ( b->get_offset() > 0 ) ) {
-                    if ( is_offset_in_section( a->get_offset(), b ) ||
-                         is_offset_in_section(
-                             a->get_offset() + a->get_size() - 1, b ) ||
-                         is_offset_in_section( b->get_offset(), a ) ||
-                         is_offset_in_section(
-                             b->get_offset() + b->get_size() - 1, a ) ) {
-                        return "Sections " + a->get_name() + " and " +
-                               b->get_name() + " overlap in file";
+                if (   !(a->get_type() & SHT_NOBITS)
+                    && !(b->get_type() & SHT_NOBITS)
+                    &&  (a->get_size() > 0)
+                    &&  (b->get_size() > 0)
+                    &&  (a->get_offset() > 0)
+                    &&  (b->get_offset() > 0)) {
+                    if (   is_offset_in_section( a->get_offset(), b )
+                        || is_offset_in_section( a->get_offset()+a->get_size()-1, b )
+                        || is_offset_in_section( b->get_offset(), a )
+                        || is_offset_in_section( b->get_offset()+b->get_size()-1, a )) {
+                        errors += "Sections " + a->get_name() + " and " + b->get_name() + " overlap in file\n";
+                    }
+                }
+            }
+        }
+
+        // Check for conflicting section / program header tables, where
+        // the same offset has different vaddresses in section table and
+        // program header table.
+        // This doesn't seem to be  explicitly forbidden by ELF specification,
+        // but:
+        // - it doesn't make any sense
+        // - ELFIO relies on this being consistent when writing ELF files,
+        //   since offsets are re-calculated from vaddress
+        for ( int h = 0; h < segments.size(); ++h ) {
+            const segment* seg = segments[h];
+            if ( seg->get_type() == PT_LOAD && seg->get_file_size() > 0 ) {
+                auto sec = find_prog_section_for_offset( seg->get_offset() );
+                if ( sec ) {
+                    auto sec_addr = get_virtual_addr( seg->get_offset(), sec );
+                    if ( sec_addr != seg->get_virtual_address() ) {
+                        errors += "Virtual address of segment " + std::to_string( h ) + " (" + to_hex_string( seg->get_virtual_address() ) + ")"
+                               +  " conflicts with address of section " + sec->get_name() + " (" + to_hex_string( sec_addr ) + ")"
+                               +  " at offset " + to_hex_string( seg->get_offset() ) + "\n";
                     }
                 }
             }
@@ -282,7 +324,8 @@ class elfio
 
         // more checks to be added here...
 
-        return "";
+        return errors;
+        // clang-format on
     }
 
     //------------------------------------------------------------------------------

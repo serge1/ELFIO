@@ -232,3 +232,13 @@ BOOST_AUTO_TEST_CASE( init_array_write_64 )
     BOOST_CHECK_EQUAL( array.get_entry( 2, addr ), true );
     BOOST_CHECK_EQUAL( addr, 0x12345678 );
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( test_hex )
+{
+    BOOST_CHECK_EQUAL( to_hex_string( 1 ), "0x1");
+    BOOST_CHECK_EQUAL( to_hex_string( 10 ), "0xA");
+    BOOST_CHECK_EQUAL( to_hex_string( 0x12345678 ), "0x12345678");
+    BOOST_CHECK_EQUAL( to_hex_string( 0xFFFFFFFF ), "0xFFFFFFFF");
+    BOOST_CHECK_EQUAL( to_hex_string( 0xFFFFFFFFFFFFFFFF ), "0xFFFFFFFFFFFFFFFF");
+}
