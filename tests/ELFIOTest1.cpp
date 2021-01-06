@@ -890,3 +890,16 @@ BOOST_AUTO_TEST_CASE( rearrange_local_symbols_with_reallocation )
     BOOST_CHECK_EQUAL_COLLECTIONS( before.begin(), before.end(), after.begin(),
                                    after.end() );
 }
+
+BOOST_AUTO_TEST_CASE( detect_mismatched_section_segment_tables )
+{
+    /*  This file is a hacked copy of hello_32
+     *  The error introduced is:
+     *     Virtual address of segment 3 (0x804948c) conflicts
+     *     with address of section .ctors (0x804948e) at offset 0x48e
+     */
+    std::string in = "elf_examples/mismatched_segments.elf";
+    elfio elf;
+    BOOST_REQUIRE_EQUAL( elf.load( in ), true );
+    BOOST_REQUIRE( elf.validate().length() > 0);
+}
