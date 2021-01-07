@@ -29,10 +29,25 @@ THE SOFTWARE.
 int main( int argc, char* argv[] )
 {
     pelfio_t pelfio = elfio_new();
-    bool     ret    = elfio_load( pelfio, argv[0] );
+    bool     ret;
+
+    if ( argc == 1 )
+        ret = elfio_load( pelfio, argv[0] );
+    else
+        ret = elfio_load( pelfio, argv[1] );
 
     if ( !ret ) {
         printf( "Can't load ELF file\n" );
+        return 1;
+    }
+
+    char msg[128];
+    ret = elfio_validate( pelfio, msg, 128 );
+
+    if ( !ret ) {
+        printf( "Validation errors:\n" );
+        printf( "%s\n", msg );
+        return 2;
     }
 
     //-----------------------------------------------------------------------------

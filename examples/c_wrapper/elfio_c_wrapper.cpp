@@ -108,6 +108,17 @@ psegment_t elfio_add_segment( pelfio_t pelfio )
     return pelfio->segments.add();
 }
 
+bool elfio_validate( pelfio_t pelfio, char* msg, int msg_len )
+{
+    std::string error = pelfio->validate();
+
+    if ( msg != nullptr && msg_len > 0 ) {
+        strncpy( msg, error.c_str(), (size_t)msg_len - 1 );
+    }
+
+    return error.empty();
+}
+
 //-----------------------------------------------------------------------------
 // section
 //-----------------------------------------------------------------------------
@@ -476,11 +487,12 @@ bool elfio_array_get_entry( parray_t    parray,
                             Elf_Xword   index,
                             Elf64_Addr* paddress )
 {
-    bool ret = parray->get_entry( index, *paddress);
+    bool ret = parray->get_entry( index, *paddress );
 
     return ret;
 }
 
-void elfio_array_add_entry( parray_t parray, Elf64_Addr address ) {
+void elfio_array_add_entry( parray_t parray, Elf64_Addr address )
+{
     parray->add_entry( address );
 }

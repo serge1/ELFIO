@@ -136,6 +136,7 @@ typedef int bool;
     Elf_Half   elfio_get_segments_num( pelfio_t pelfio );
     psegment_t elfio_get_segment_by_index( pelfio_t pelfio, int index );
     psegment_t elfio_add_segment( pelfio_t pelfio );
+    bool       elfio_validate( pelfio_t pelfio, char* msg, int msg_len );
 
     //-----------------------------------------------------------------------------
     // section

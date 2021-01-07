@@ -899,7 +899,7 @@ BOOST_AUTO_TEST_CASE( detect_mismatched_section_segment_tables )
      *     with address of section .ctors (0x804948e) at offset 0x48e
      */
     std::string in = "elf_examples/mismatched_segments.elf";
-    elfio elf;
+    elfio       elf;
     BOOST_REQUIRE_EQUAL( elf.load( in ), true );
-    BOOST_REQUIRE( elf.validate().length() > 0);
+    BOOST_REQUIRE( elf.validate().length() > 0 );
 }

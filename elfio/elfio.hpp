@@ -244,31 +244,6 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-  private:
-    bool is_offset_in_section( Elf64_Off offset, const section* sec ) const
-    {
-        return ( offset >= sec->get_offset() ) &&
-               ( offset < ( sec->get_offset() + sec->get_size() ) );
-    }
-
-    Elf64_Addr get_virtual_addr( Elf64_Off offset, const section* sec ) const
-    {
-        return sec->get_address() + offset - sec->get_offset();
-    }
-
-    const section* find_prog_section_for_offset( Elf64_Off offset ) const
-    {
-        for ( int i = 0; i < sections.size(); ++i ) {
-            const section* sec = sections[i];
-            if ( sec->get_type() == SHT_PROGBITS )
-                if ( is_offset_in_section( offset, sec ) )
-                    return sec;
-        }
-        return NULL;
-    }
-
-    //------------------------------------------------------------------------------
-  public:
     //! returns an empty string if no problems are detected,
     //! or a string containing an error message if problems are found,
     //! with one error per line.
@@ -328,8 +303,32 @@ class elfio
         // clang-format on
     }
 
-    //------------------------------------------------------------------------------
   private:
+    //------------------------------------------------------------------------------
+    bool is_offset_in_section( Elf64_Off offset, const section* sec ) const
+    {
+        return ( offset >= sec->get_offset() ) &&
+               ( offset < ( sec->get_offset() + sec->get_size() ) );
+    }
+
+    //------------------------------------------------------------------------------
+    Elf64_Addr get_virtual_addr( Elf64_Off offset, const section* sec ) const
+    {
+        return sec->get_address() + offset - sec->get_offset();
+    }
+
+    //------------------------------------------------------------------------------
+    const section* find_prog_section_for_offset( Elf64_Off offset ) const
+    {
+        for ( int i = 0; i < sections.size(); ++i ) {
+            const section* sec = sections[i];
+            if ( sec->get_type() == SHT_PROGBITS )
+                if ( is_offset_in_section( offset, sec ) )
+                    return sec;
+        }
+        return NULL;
+    }
+
     //------------------------------------------------------------------------------
     void clean()
     {
