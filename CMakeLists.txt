@@ -38,9 +38,9 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# Enable C++11 for examples and tests
+# Enable C++14 for examples and tests
 if (ELFIO_BUILD_EXAMPLES OR ELFIO_BUILD_TESTS)
-    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD 14)
 endif()
 
 if (ELFIO_BUILD_EXAMPLES)

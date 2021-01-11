@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <boost/test/included/unit_test.hpp>
 
 #include <elfio/elfio.hpp>
+#include <elfio/elfio_dump.hpp>
 
 using namespace ELFIO;
 
@@ -1018,4 +1019,93 @@ BOOST_AUTO_TEST_CASE( test_dynamic_64_3 )
             BOOST_CHECK_EQUAL( value, value1 );
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( test_range_cut_front )
+{
+    range r = { 4, 10 };
+    r.subtract( { 4, 5 } );
+    BOOST_CHECK_EQUAL( r, range( 5, 10 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_cut_front2 )
+{
+    range r = { 4, 10 };
+    r.subtract( { 3, 5 } );
+    BOOST_CHECK_EQUAL( r, range( 5, 10 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_cut_front3 )
+{
+    range r = { 4, 10 };
+    r.subtract( { 3, 4 } );
+    BOOST_CHECK_EQUAL( r, range( 4, 10 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_cut_front4 )
+{
+    range r = { 4, 10 };
+    r.subtract( { 4, 4 } );
+    BOOST_CHECK_EQUAL( r, range( 4, 10 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_cut_mid1 )
+{
+    range r = { 1, 10 };
+    r.subtract( { 3, 4 } );
+    BOOST_CHECK_EQUAL( r.element_count(), 2 );
+    BOOST_CHECK_EQUAL( r[0], range( 1, 3 ) );
+    BOOST_CHECK_EQUAL( r[1], range( 4, 10 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_cut_mid2 )
+{
+    range r = { 1, 10 };
+    r.subtract( { 3, 3 } );
+    BOOST_CHECK_EQUAL( r, range( 1, 10 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_cut_mid_splice )
+{
+    range r = { 1, 10 };
+    r.subtract( { 3, 5 } );
+    r.subtract( { 7, 12 } );
+    r.subtract( { 5, 8 } );
+    BOOST_CHECK_EQUAL( r, range( 1, 3 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_cut_all )
+{
+    range r = { 4, 10 };
+    r.subtract( { 3, 44 } );
+    BOOST_CHECK_EQUAL( r.element_count(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_end1 )
+{
+    range r = { 4, 10 };
+    r.subtract( { 7, 555 } );
+    BOOST_CHECK_EQUAL( r, range( 4, 7 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_end2 )
+{
+    range r = { 4, 10 };
+    r.subtract( { 9, 555 } );
+    BOOST_CHECK_EQUAL( r, range( 4, 9 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_end3 )
+{
+    range r = { 4, 10 };
+    r.subtract( { 9, 10 } );
+    BOOST_CHECK_EQUAL( r, range( 4, 9 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_range_end4 )
+{
+    range r = { 4, 10 };
+    r.subtract( { 10, 555 } );
+    BOOST_CHECK_EQUAL( r, range( 4, 10 ) );
 }

@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <sstream>
 #include <iomanip>
 #include <elfio/elfio.hpp>
+#include <elfio/elfio_range.hpp>
 
 namespace ELFIO {
 
@@ -1001,6 +1002,17 @@ class dump
 #undef DUMP_HEX_FORMAT
 #undef DUMP_STR_FORMAT
 }; // class dump
+
+inline std::ostream& operator<<( std::ostream& stream, const range& range )
+{
+    stream << " { ";
+    std::for_each( range.ranges.begin(), range.ranges.end(),
+                   [&]( range::single_range const& r ) {
+                       stream << r.get_start() << "-" << r.get_last() << ";";
+                   } );
+    stream << " } ";
+    return stream;
+}
 
 }; // namespace ELFIO
 

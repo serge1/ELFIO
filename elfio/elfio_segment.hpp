@@ -26,6 +26,9 @@ THE SOFTWARE.
 #include <iostream>
 #include <vector>
 #include <new>
+#include <cstring>
+
+#include <elfio/elfio_range.hpp>
 
 namespace ELFIO {
 
@@ -53,6 +56,19 @@ class segment
     virtual Elf_Half get_sections_num() const                   = 0;
     virtual Elf_Half get_section_index_at( Elf_Half num ) const = 0;
     virtual bool     is_offset_initialized() const              = 0;
+    enum class removal_result
+    {
+        noncontinuous, // this is an error condition!
+        empty,
+        unmodified,
+        modified
+    };
+
+    virtual removal_result
+    remove_sections( const std::vector<section*>& sections,
+                     const std::vector<section*>& allSections,
+                     bool                         dry_run,
+                     bool                         ignore_phys ) = 0;
 
   protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
@@ -129,6 +145,122 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
+    removal_result
+    remove_sections( const std::vector<section*>& sectionsForRemoval,
+                     const std::vector<section*>& allSections,
+                     bool                         dry_run,
+                     bool                         ignore_phys )
+    {
+
+        range disk{ get_offset(), get_offset() + get_file_size() };
+        range phys_mem{ get_physical_address(),
+                        get_physical_address() + get_memory_size() };
+        range virt_mem{ get_virtual_address(),
+                        get_virtual_address() + get_memory_size() };
+
+        std::for_each(
+            sectionsForRemoval.begin(), sectionsForRemoval.end(),
+            [&]( auto s ) {
+                if ( s->get_type() != SHT_NOBITS ) {
+                    disk.subtract(
+                        { s->get_offset(), s->get_offset() + s->get_size() } );
+                }
+                if ( s->get_address() != 0 ) {
+                    if ( !ignore_phys )
+                        phys_mem.subtract(
+                            { s->get_address(),
+                              s->get_address() + s->get_size() } );
+
+                    virt_mem.subtract( { s->get_address(),
+                                         s->get_address() + s->get_size() } );
+                }
+            } );
+
+        if ( disk.element_count() == 0 &&
+             ( phys_mem.element_count() == 0 || ignore_phys ) &&
+             virt_mem.element_count() == 0 ) {
+            return removal_result::empty;
+        }
+
+        if ( disk.element_count() > 1 || phys_mem.element_count() > 1 ||
+             virt_mem.element_count() > 1 ) {
+            return removal_result::noncontinuous;
+        }
+
+        if ( !dry_run ) {
+            for ( auto sec = sections.begin(); sec != sections.end(); ) {
+                if ( std::find( sectionsForRemoval.begin(),
+                                sectionsForRemoval.end(), allSections[*sec] ) !=
+                     sectionsForRemoval.end() )
+                    sec = sections.erase( sec );
+                else {
+                    *sec -= std::count_if(
+                        allSections.begin(), allSections.begin() + *sec,
+                        [&]( auto it ) {
+                            return std::find( sectionsForRemoval.begin(),
+                                              sectionsForRemoval.end(),
+                                              it ) != sectionsForRemoval.end();
+                        } );
+                    ++sec;
+                }
+            }
+        }
+
+        removal_result result = removal_result::unmodified;
+
+        if ( disk.get_start() != get_offset() ||
+             disk.get_length() != get_file_size() ) {
+            result = removal_result::modified;
+            if ( dry_run )
+                return result;
+
+            if ( data != 0 ) {
+                auto newdata = new ( std::nothrow ) char[disk.get_length() + 1];
+                std::memcpy( newdata, data + disk.get_start() - get_offset(),
+                             disk.get_length() );
+                newdata[disk.get_length()] = 0;
+                delete[] data;
+                data = newdata;
+            }
+
+            set_offset( disk.get_start() );
+            set_file_size( disk.get_length() );
+        }
+
+        if ( phys_mem.get_start() != get_physical_address() ) {
+            result = removal_result::modified;
+            if ( dry_run )
+                return result;
+
+            set_physical_address( phys_mem.get_start() );
+        }
+        if ( phys_mem.get_length() != get_memory_size() ) {
+            result = removal_result::modified;
+            if ( dry_run )
+                return result;
+
+            set_memory_size( phys_mem.get_length() );
+        }
+
+        if ( virt_mem.get_start() != get_virtual_address() ) {
+            result = removal_result::modified;
+            if ( dry_run )
+                return result;
+
+            set_virtual_address( virt_mem.get_start() );
+        }
+        if ( virt_mem.get_length() != get_memory_size() ) {
+            result = removal_result::modified;
+            if ( dry_run )
+                return result;
+
+            set_memory_size( virt_mem.get_length() );
+        }
+
+        return result;
+    };
+
+    //------------------------------------------------------------------------------
   protected:
     //------------------------------------------------------------------------------
 
@@ -168,7 +300,7 @@ template <class T> class segment_impl : public segment
                 data = 0;
             }
             else {
-                data = new (std::nothrow) char[size + 1];
+                data = new ( std::nothrow ) char[size + 1];
 
                 if ( 0 != data ) {
                     stream.read( data, size );

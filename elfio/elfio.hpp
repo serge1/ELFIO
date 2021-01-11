@@ -38,6 +38,7 @@ THE SOFTWARE.
 #include <vector>
 #include <deque>
 #include <iterator>
+#include <map>
 
 #include <elfio/elf_types.hpp>
 #include <elfio/elfio_version.hpp>
@@ -330,6 +331,13 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
+    bool static is_symbol_or_rel_section( section* sec )
+    {
+        return sec->get_type() == SHT_SYMTAB || sec->get_type() == SHT_REL ||
+               sec->get_type() == SHT_RELA || sec->get_type() == SHT_DYNAMIC;
+    }
+
+    //------------------------------------------------------------------------------
     void clean()
     {
         delete header;
@@ -531,6 +539,131 @@ class elfio
         }
 
         return true;
+    }
+
+    //------------------------------------------------------------------------------
+    //!
+    //! Removes one of more sections from the ELF file.
+    //!
+    //! This only works when a number of preconditions are met.
+    //! If they are violated, the method will throw a const char* with an error
+    //! message.
+    //!
+    //! Returns a tuple that shows the number of modified and deleted segments
+    //!
+    std::tuple<int, int>
+    remove_sections( const std::vector<section*> sectionsToRemove )
+    {
+        std::vector<section*> remaining_sections( sections_.size() );
+        auto                  end = std::remove_copy_if(
+            sections_.begin(), sections_.end(), remaining_sections.begin(),
+            [&sectionsToRemove]( auto sec ) {
+                return find( sectionsToRemove.begin(), sectionsToRemove.end(),
+                             sec ) != sectionsToRemove.end();
+            } );
+        remaining_sections.erase( end, remaining_sections.end() );
+
+        if ( std::find_if( remaining_sections.begin(), remaining_sections.end(),
+                           &elfio::is_symbol_or_rel_section ) !=
+             remaining_sections.end() )
+            throw "ELF files with symbol table are not supported";
+
+        if ( std::find_if( remaining_sections.begin(), remaining_sections.end(),
+                           []( auto sec ) {
+                               return sec->get_link() != SHN_UNDEF;
+                           } ) != remaining_sections.end() )
+            throw "This ELF file contains section with a link attribute - this "
+                  "is not supported";
+
+        // if there are multiple segments starting at phyiscal address 0, we assume
+        // physical addressing is not used
+        const bool ignore_physical_addresses =
+            1 <
+            std::count_if( segments_.begin(), segments_.end(), []( auto seg ) {
+                return seg->get_physical_address() == 0;
+            } );
+
+        int counter = 0;
+        for ( auto s = segments_.begin(); s != segments_.end(); ++s ) {
+            auto result = ( *s )->remove_sections(
+                sectionsToRemove, sections_, true, ignore_physical_addresses );
+            if ( result == segment::removal_result::noncontinuous ) {
+                throw "segment " + std::to_string( s - segments_.begin() ) +
+                    " cut in middle";
+            }
+
+            /* Ensure that the segment index attributes equals the index in the array
+             * To avoid any inconsistencies, we abort if it doesn't match,
+             * because later we are updating the index attribute to be the new
+             * position in the array
+             */
+            if ( ( *s )->get_index() != counter )
+                throw std::string(
+                    "Non-continuity in segment indices at position " ) +
+                    std::to_string( counter );
+            ++counter;
+        }
+
+        int modified = 0;
+        int deleted  = 0;
+
+        int segment_counter = 0;
+        for ( auto s = segments_.begin(); s != segments_.end(); ) {
+            auto result = ( *s )->remove_sections(
+                sectionsToRemove, sections_, false, ignore_physical_addresses );
+            if ( result == segment::removal_result::noncontinuous )
+                throw "segment " + std::to_string( segment_counter ) +
+                    "cut in middle";
+            else if ( result == segment::removal_result::empty ) {
+                s = segments_.erase( s );
+                deleted++;
+            }
+            else {
+                if ( result == segment::removal_result::modified )
+                    modified++;
+
+                ( *s )->set_index( segment_counter++ );
+                s++;
+            }
+        }
+
+        std::map<int, int> section_mapping;
+
+        int old_section_index = 0;
+        int new_section_index = 0;
+        for ( auto s = sections_.begin(); s != sections_.end(); ) {
+            if ( std::find( sectionsToRemove.begin(), sectionsToRemove.end(),
+                            *s ) != sectionsToRemove.end() ) {
+                s                                  = sections_.erase( s );
+                section_mapping[old_section_index] = SHN_UNDEF;
+            }
+            else {
+                if ( ( *s )->get_type() == SHT_STRTAB )
+                    set_section_name_str_index( new_section_index );
+
+                section_mapping[old_section_index] = new_section_index;
+                ( *s )->set_index( new_section_index );
+                ++s;
+                ++new_section_index;
+            }
+
+            ++old_section_index;
+        }
+
+        return std::make_tuple( modified, deleted );
+    }
+
+    //------------------------------------------------------------------------------
+    std::tuple<int, int>
+    remove_sections( const std::vector<std::string> sectionsNames )
+    {
+        std::vector<section*> sects;
+        for ( auto s = sectionsNames.begin(); s != sectionsNames.end(); ++s ) {
+            if ( sections[*s] != NULL ) {
+                sects.push_back( sections[*s] );
+            }
+        }
+        return remove_sections( sects );
     }
 
     //------------------------------------------------------------------------------

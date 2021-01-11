@@ -23,12 +23,12 @@ install:
 
 script:
 - autoreconf -f -i
-- ./configure CXXFLAGS=--std=c++11
+- ./configure CXXFLAGS=--std=c++14
 - make
 
 - cd tests
 - autoreconf -f -i
-- ./configure CXXFLAGS=--std=c++11
+- ./configure CXXFLAGS=--std=c++14
 - make check
 
 - cd ..
