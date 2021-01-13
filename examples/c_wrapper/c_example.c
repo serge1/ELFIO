@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2001-2020 by Serge Lamikhov-Center
+Copyright (C) 2001-2021 by Serge Lamikhov-Center
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,6 +84,7 @@ int main( int argc, char* argv[] )
 
     for ( int i = 0; i < segno; i++ ) {
         psegment_t psegment = elfio_get_segment_by_index( pelfio, i );
+        elfio_segment_get_file_size( psegment );
         // printf( "    [%02d] %08lx : %08lx : %08lx\n", i,
         //         elfio_segment_get_virtual_address( psegment ),
         //         elfio_segment_get_memory_size( psegment ),
