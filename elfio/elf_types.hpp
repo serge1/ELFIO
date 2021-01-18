@@ -395,19 +395,19 @@ typedef uint64_t Elf64_Off;
 #define ELFOSABI_FENIXOS 16 // The FenixOS highly scalable multi-core OS
 //                             64-255 Architecture-specific value range
 #define ELFOSABI_AMDGPU_HSA \
-    64 // AMDGPU OS for HSA compatible compute \
+    64 // AMDGPU OS for HSA compatible compute
         // kernels.
 #define ELFOSABI_AMDGPU_PAL \
-    65 // AMDGPU OS for AMD PAL compatible graphics \
+    65 // AMDGPU OS for AMD PAL compatible graphics
         // shaders and compute kernels.
 #define ELFOSABI_AMDGPU_MESA3D \
-    66 // AMDGPU OS for Mesa3D compatible graphics \
+    66 // AMDGPU OS for Mesa3D compatible graphics
         // shaders and compute kernels.
 
 // AMDGPU specific e_flags
 #define EF_AMDGPU_MACH 0x0ff // AMDGPU processor selection mask.
 #define EF_AMDGPU_XNACK \
-    0x100 // Indicates if the XNACK target feature is \
+    0x100 // Indicates if the XNACK target feature is
           // enabled for all code contained in the ELF.
 // AMDGPU processors
 #define EF_AMDGPU_MACH_NONE                0x000 // Unspecified processor.
