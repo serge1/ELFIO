@@ -34,7 +34,7 @@ template <class S> class string_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    string_section_accessor_template( S* section_ ) : string_section( section_ )
+    string_section_accessor_template( S* section ) : string_section( section )
     {
     }
 

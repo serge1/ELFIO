@@ -845,7 +845,7 @@ class elfio
     {
       public:
         //------------------------------------------------------------------------------
-        Sections( elfio* parent_ ) : parent( parent_ ) {}
+        Sections( elfio* parent ) : parent( parent ) {}
 
         //------------------------------------------------------------------------------
         Elf_Half size() const { return (Elf_Half)parent->sections_.size(); }
@@ -930,7 +930,7 @@ class elfio
     {
       public:
         //------------------------------------------------------------------------------
-        Segments( elfio* parent_ ) : parent( parent_ ) {}
+        Segments( elfio* parent ) : parent( parent ) {}
 
         //------------------------------------------------------------------------------
         Elf_Half size() const { return (Elf_Half)parent->segments_.size(); }

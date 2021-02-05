@@ -72,8 +72,8 @@ template <class T> class section_impl : public section
 {
   public:
     //------------------------------------------------------------------------------
-    section_impl( const endianess_convertor* convertor_ )
-        : convertor( convertor_ )
+    section_impl( const endianess_convertor* convertor )
+        : convertor( convertor )
     {
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
                      '\0' );
@@ -106,7 +106,7 @@ template <class T> class section_impl : public section
     std::string get_name() const { return name; }
 
     //------------------------------------------------------------------------------
-    void set_name( std::string name_ ) { name = name_; }
+    void set_name( std::string name ) { this->name = name; }
 
     //------------------------------------------------------------------------------
     void set_address( Elf64_Addr value )

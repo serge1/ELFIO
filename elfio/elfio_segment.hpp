@@ -70,8 +70,8 @@ template <class T> class segment_impl : public segment
 {
   public:
     //------------------------------------------------------------------------------
-    segment_impl( endianess_convertor* convertor_ )
-        : stream_size( 0 ), index( 0 ), data( 0 ), convertor( convertor_ )
+    segment_impl( endianess_convertor* convertor )
+        : stream_size( 0 ), index( 0 ), data( 0 ), convertor( convertor )
     {
         is_offset_set = false;
         std::fill_n( reinterpret_cast<char*>( &ph ), sizeof( ph ), '\0' );

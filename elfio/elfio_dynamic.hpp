@@ -32,8 +32,8 @@ template <class S> class dynamic_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    dynamic_section_accessor_template( const elfio& elf_file_, S* section_ )
-        : elf_file( elf_file_ ), dynamic_section( section_ ), entries_num( 0 )
+    dynamic_section_accessor_template( const elfio& elf_file, S* section )
+        : elf_file( elf_file ), dynamic_section( section ), entries_num( 0 )
     {
     }
 
