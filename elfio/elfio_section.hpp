@@ -237,7 +237,7 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
     void save_header( std::ostream& stream, std::streampos header_offset ) const
     {
-        stream.seekp( header_offset );
+        adjust_stream_size( stream, header_offset );
         stream.write( reinterpret_cast<const char*>( &header ),
                       sizeof( header ) );
     }
@@ -245,7 +245,7 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
     void save_data( std::ostream& stream, std::streampos data_offset ) const
     {
-        stream.seekp( data_offset );
+        adjust_stream_size( stream, data_offset );
         stream.write( get_data(), get_size() );
     }
 

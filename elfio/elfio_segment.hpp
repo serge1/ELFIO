@@ -168,7 +168,7 @@ template <class T> class segment_impl : public segment
                 data = 0;
             }
             else {
-                data = new (std::nothrow) char[size + 1];
+                data = new ( std::nothrow ) char[size + 1];
 
                 if ( 0 != data ) {
                     stream.read( data, size );
@@ -185,7 +185,7 @@ template <class T> class segment_impl : public segment
     {
         ph.p_offset = data_offset;
         ph.p_offset = ( *convertor )( ph.p_offset );
-        stream.seekp( header_offset );
+        adjust_stream_size( stream, header_offset );
         stream.write( reinterpret_cast<const char*>( &ph ), sizeof( ph ) );
     }
 
