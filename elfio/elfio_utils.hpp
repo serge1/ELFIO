@@ -174,18 +174,20 @@ inline uint32_t elf_hash( const unsigned char* name )
     return h;
 }
 
-inline std::string to_hex_string( Elf64_Addr t )
+inline std::string to_hex_string( Elf64_Addr value )
 {
-    std::string s;
-    while ( t ) {
-        auto d = t & 0xf;
-        if ( d < 0xa )
-            s = char( '0' + d ) + s;
+    std::string str;
+    
+    while ( value ) {
+        auto digit = value & 0xF;
+        if ( digit < 0xA )
+            str = char( '0' + digit ) + str;
         else
-            s = char( 'A' + d - 0xA ) + s;
-        t >>= 4;
+            str = char( 'A' + digit - 0xA ) + str;
+        value >>= 4;
     }
-    return "0x" + s;
+
+    return "0x" + str;
 }
 
 inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
