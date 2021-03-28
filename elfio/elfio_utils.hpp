@@ -23,7 +23,8 @@ THE SOFTWARE.
 #ifndef ELFIO_UTILS_HPP
 #define ELFIO_UTILS_HPP
 
-#include <iostream>
+#include <cstdint>
+#include <ostream>
 
 #define ELFIO_GET_ACCESS( TYPE, NAME, FIELD ) \
     TYPE get_##NAME() const { return ( *convertor )( FIELD ); }
@@ -174,10 +175,10 @@ inline uint32_t elf_hash( const unsigned char* name )
     return h;
 }
 
-inline std::string to_hex_string( Elf64_Addr value )
+inline std::string to_hex_string( uint64_t value )
 {
     std::string str;
-    
+
     while ( value ) {
         auto digit = value & 0xF;
         if ( digit < 0xA )

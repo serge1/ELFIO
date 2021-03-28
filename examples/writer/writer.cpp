@@ -45,7 +45,7 @@ int main( void )
     char text[] = {
         '\xB8', '\x04', '\x00', '\x00', '\x00', // mov eax, 4
         '\xBB', '\x01', '\x00', '\x00', '\x00', // mov ebx, 1
-        '\xB9', '\x20', '\x80', '\x04', '\x08', // mov ecx, msg
+        '\xB9', '\x00', '\x20', '\x40', '\x00', // mov ecx, msg
         '\xBA', '\x0E', '\x00', '\x00', '\x00', // mov edx, 14
         '\xCD', '\x80',                         // int 0x80
         '\xB8', '\x01', '\x00', '\x00', '\x00', // mov eax, 1
@@ -56,8 +56,8 @@ int main( void )
     // Create a loadable segment
     segment* text_seg = writer.segments.add();
     text_seg->set_type( PT_LOAD );
-    text_seg->set_virtual_address( 0x08048000 );
-    text_seg->set_physical_address( 0x08048000 );
+    text_seg->set_virtual_address( 0x00401000 );
+    text_seg->set_physical_address( 0x00401000 );
     text_seg->set_flags( PF_X | PF_R );
     text_seg->set_align( 0x1000 );
 
@@ -80,10 +80,10 @@ int main( void )
     // Create a read/write segment
     segment* data_seg = writer.segments.add();
     data_seg->set_type( PT_LOAD );
-    data_seg->set_virtual_address( 0x08048020 );
-    data_seg->set_physical_address( 0x08048020 );
+    data_seg->set_virtual_address( 0x00402000 );
+    data_seg->set_physical_address( 0x00402000 );
     data_seg->set_flags( PF_W | PF_R );
-    data_seg->set_align( 0x10 );
+    data_seg->set_align( 0x1000 );
 
     // Add code section into program segment
     data_seg->add_section_index( data_sec->get_index(),
@@ -103,7 +103,7 @@ int main( void )
     // In this example, the code starts at the first address of the
     // 'text_seg' segment. Therefore, the start address is set
     // to be equal to the segment location
-    writer.set_entry( 0x08048000 );
+    writer.set_entry( 0x00401000 );
 
     // Create ELF file
     writer.save( "hello_x86_64" );
