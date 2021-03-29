@@ -20,9 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/*
+ * This example shows how to create ELF object file for Linux on x86
+ *
+ * Instructions:
+ * 1. Compile and link this file with ELFIO library
+ *    g++ writer.cpp -o writer
+ * 2. Execute result file write_obj
+ *    ./writer
+ * 3. Add executable flag to the output file
+ *    chmod +x hello_x86_64
+ * 4. Run the result file:
+ *    ./hello_x86_64
+ */
+
 #include <elfio/elfio.hpp>
 
 using namespace ELFIO;
+
+const Elf64_Addr CODE_ADDR = 0x00401000;
+const Elf_Xword  PAGE_SIZE = 0x1000;
+const Elf64_Addr DATA_ADDR = CODE_ADDR + PAGE_SIZE;
 
 int main( void )
 {
@@ -45,21 +63,24 @@ int main( void )
     char text[] = {
         '\xB8', '\x04', '\x00', '\x00', '\x00', // mov eax, 4
         '\xBB', '\x01', '\x00', '\x00', '\x00', // mov ebx, 1
-        '\xB9', '\x00', '\x20', '\x40', '\x00', // mov ecx, msg
+        '\xB9', '\x00', '\x00', '\x00', '\x00', // mov ecx, msg
         '\xBA', '\x0E', '\x00', '\x00', '\x00', // mov edx, 14
         '\xCD', '\x80',                         // int 0x80
         '\xB8', '\x01', '\x00', '\x00', '\x00', // mov eax, 1
         '\xCD', '\x80'                          // int 0x80
     };
+    // Adjust data address for 'msg'
+    *(uint32_t*)( text + 11 ) = DATA_ADDR;
+
     text_sec->set_data( text, sizeof( text ) );
 
     // Create a loadable segment
     segment* text_seg = writer.segments.add();
     text_seg->set_type( PT_LOAD );
-    text_seg->set_virtual_address( 0x00401000 );
-    text_seg->set_physical_address( 0x00401000 );
+    text_seg->set_virtual_address( CODE_ADDR );
+    text_seg->set_physical_address( CODE_ADDR );
     text_seg->set_flags( PF_X | PF_R );
-    text_seg->set_align( 0x1000 );
+    text_seg->set_align( PAGE_SIZE );
 
     // Add code section into program segment
     text_seg->add_section_index( text_sec->get_index(),
@@ -80,10 +101,10 @@ int main( void )
     // Create a read/write segment
     segment* data_seg = writer.segments.add();
     data_seg->set_type( PT_LOAD );
-    data_seg->set_virtual_address( 0x00402000 );
-    data_seg->set_physical_address( 0x00402000 );
+    data_seg->set_virtual_address( DATA_ADDR );
+    data_seg->set_physical_address( DATA_ADDR );
     data_seg->set_flags( PF_W | PF_R );
-    data_seg->set_align( 0x1000 );
+    data_seg->set_align( PAGE_SIZE );
 
     // Add code section into program segment
     data_seg->add_section_index( data_sec->get_index(),
@@ -93,6 +114,7 @@ int main( void )
     section* note_sec = writer.sections.add( ".note" );
     note_sec->set_type( SHT_NOTE );
     note_sec->set_addr_align( 1 );
+
     note_section_accessor note_writer( writer, note_sec );
     note_writer.add_note( 0x01, "Created by ELFIO", 0, 0 );
     char descr[6] = { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36 };
@@ -103,7 +125,7 @@ int main( void )
     // In this example, the code starts at the first address of the
     // 'text_seg' segment. Therefore, the start address is set
     // to be equal to the segment location
-    writer.set_entry( 0x00401000 );
+    writer.set_entry( CODE_ADDR );
 
     // Create ELF file
     writer.save( "hello_x86_64" );
