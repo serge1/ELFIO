@@ -77,8 +77,12 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    elfio( const elfio& ) = delete;
+    // clang-format off
+    elfio( const elfio& )            = delete;
     elfio& operator=( const elfio& ) = delete;
+    elfio( elfio&& )                 = default;
+    elfio& operator=( elfio&& )      = default;
+    // clang-format on
 
     //------------------------------------------------------------------------------
     ~elfio() { clean(); }
