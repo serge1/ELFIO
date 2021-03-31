@@ -21,14 +21,14 @@ THE SOFTWARE.
 */
 
 /*
- * This example shows how to create ELF object file for Linux on x86
+ * This example shows how to create ELF executable file for Linux on x86-64
  *
  * Instructions:
  * 1. Compile and link this file with ELFIO library
  *    g++ writer.cpp -o writer
- * 2. Execute result file write_obj
+ * 2. Execute result file writer
  *    ./writer
- * 3. Add executable flag to the output file
+ * 3. Add executable flag for the output file
  *    chmod +x hello_x86_64
  * 4. Run the result file:
  *    ./hello_x86_64
@@ -125,7 +125,7 @@ int main( void )
     // In this example, the code starts at the first address of the
     // 'text_seg' segment. Therefore, the start address is set
     // to be equal to the segment location
-    writer.set_entry( CODE_ADDR );
+    writer.set_entry( text_seg->get_virtual_address() );
 
     // Create ELF file
     writer.save( "hello_x86_64" );
