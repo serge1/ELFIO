@@ -83,8 +83,7 @@ int main( void )
     text_seg->set_align( PAGE_SIZE );
 
     // Add code section into program segment
-    text_seg->add_section_index( text_sec->get_index(),
-                                 text_sec->get_addr_align() );
+    text_seg->add_section( text_sec, text_sec->get_addr_align() );
 
     // Create data section
     section* data_sec = writer.sections.add( ".data" );
@@ -107,8 +106,7 @@ int main( void )
     data_seg->set_align( PAGE_SIZE );
 
     // Add code section into program segment
-    data_seg->add_section_index( data_sec->get_index(),
-                                 data_sec->get_addr_align() );
+    data_seg->add_section( data_sec, data_sec->get_addr_align() );
 
     // Add optional signature for the file producer
     section* note_sec = writer.sections.add( ".note" );

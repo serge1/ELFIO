@@ -174,8 +174,7 @@ bool write_exe_i386( const std::string& filename,
     text_seg->set_physical_address( 0x08048000 );
     text_seg->set_flags( PF_X | PF_R );
     text_seg->set_align( 0x1000 );
-    text_seg->add_section_index( text_sec->get_index(),
-                                 text_sec->get_addr_align() );
+    text_seg->add_section( text_sec, text_sec->get_addr_align() );
 
     // Create data section*
     section* data_sec = writer.sections.add( ".data" );

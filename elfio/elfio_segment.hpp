@@ -48,11 +48,12 @@ class segment
 
     virtual const char* get_data() const = 0;
 
+    virtual Elf_Half add_section( section* psec, Elf_Xword addr_align ) = 0;
     virtual Elf_Half add_section_index( Elf_Half  index,
-                                        Elf_Xword addr_align )  = 0;
-    virtual Elf_Half get_sections_num() const                   = 0;
-    virtual Elf_Half get_section_index_at( Elf_Half num ) const = 0;
-    virtual bool     is_offset_initialized() const              = 0;
+                                        Elf_Xword addr_align )          = 0;
+    virtual Elf_Half get_sections_num() const                           = 0;
+    virtual Elf_Half get_section_index_at( Elf_Half num ) const         = 0;
+    virtual bool     is_offset_initialized() const                      = 0;
 
   protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
@@ -113,6 +114,12 @@ template <class T> class segment_impl : public segment
         }
 
         return (Elf_Half)sections.size();
+    }
+
+    //------------------------------------------------------------------------------
+    Elf_Half add_section( section* psec, Elf_Xword addr_align )
+    {
+        return add_section_index( psec->get_index(), addr_align );
     }
 
     //------------------------------------------------------------------------------
