@@ -129,6 +129,11 @@ class elfio
             return false;
         }
 
+        if ( ( e_ident[EI_DATA] != ELFDATA2LSB ) &&
+             ( e_ident[EI_DATA] != ELFDATA2MSB ) ) {
+            return false;
+        }
+
         convertor.setup( e_ident[EI_DATA] );
         header = create_header( e_ident[EI_CLASS], e_ident[EI_DATA] );
         if ( 0 == header ) {
