@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 
 # Detect if we are the top level CMakeLists.txt or are we included in some
 # other project
