@@ -30,10 +30,11 @@ template <class S> class symbol_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    symbol_section_accessor_template( const elfio& elf_file,
-                                      S*           symbol_section )
+    symbol_section_accessor_template( const elfio& elf_file, S* symbol_section )
         : elf_file( elf_file ), symbol_section( symbol_section )
     {
+        hash_section       = 0;
+        hash_section_index = 0;
         find_hash_section();
     }
 
@@ -85,24 +86,27 @@ template <class S> class symbol_section_accessor_template
         bool ret = false;
 
         if ( 0 != get_hash_table_index() ) {
-            Elf_Word    nbucket = *(const Elf_Word*)hash_section->get_data();
-            Elf_Word    nchain  = *(const Elf_Word*)( hash_section->get_data() +
-                                                  sizeof( Elf_Word ) );
-            Elf_Word    val = elf_hash( (const unsigned char*)name.c_str() );
-            Elf_Word    y   = *(const Elf_Word*)( hash_section->get_data() +
-                                             ( 2 + val % nbucket ) *
-                                                 sizeof( Elf_Word ) );
-            std::string str;
-            get_symbol( y, str, value, size, bind, type, section_index, other );
-            while ( str != name && STN_UNDEF != y && y < nchain ) {
-                y = *(const Elf_Word*)( hash_section->get_data() +
-                                        ( 2 + nbucket + y ) *
-                                            sizeof( Elf_Word ) );
+            if ( hash_section->get_type() == SHT_HASH ) {
+                Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
+                Elf_Word nchain = *(const Elf_Word*)( hash_section->get_data() +
+                                                      sizeof( Elf_Word ) );
+                Elf_Word val = elf_hash( (const unsigned char*)name.c_str() );
+                Elf_Word y   = *(const Elf_Word*)( hash_section->get_data() +
+                                                 ( 2 + val % nbucket ) *
+                                                     sizeof( Elf_Word ) );
+                std::string str;
                 get_symbol( y, str, value, size, bind, type, section_index,
                             other );
-            }
-            if ( str == name ) {
-                ret = true;
+                while ( str != name && STN_UNDEF != y && y < nchain ) {
+                    y = *(const Elf_Word*)( hash_section->get_data() +
+                                            ( 2 + nbucket + y ) *
+                                                sizeof( Elf_Word ) );
+                    get_symbol( y, str, value, size, bind, type, section_index,
+                                other );
+                }
+                if ( str == name ) {
+                    ret = true;
+                }
             }
         }
         else {
@@ -252,14 +256,16 @@ template <class S> class symbol_section_accessor_template
     //------------------------------------------------------------------------------
     void find_hash_section()
     {
-        hash_section       = 0;
-        hash_section_index = 0;
-        Elf_Half nSecNo    = elf_file.sections.size();
-        for ( Elf_Half i = 0; i < nSecNo && 0 == hash_section_index; ++i ) {
+        Elf_Half nSecNo = elf_file.sections.size();
+        for ( Elf_Half i = 0; i < nSecNo; ++i ) {
             const section* sec = elf_file.sections[i];
-            if ( sec->get_link() == symbol_section->get_index() ) {
+            if ( sec->get_link() == symbol_section->get_index() &&
+                 ( sec->get_type() == SHT_HASH ||
+                   sec->get_type() == SHT_GNU_HASH ||
+                   sec->get_type() == DT_GNU_HASH ) ) {
                 hash_section       = sec;
                 hash_section_index = i;
+                break;
             }
         }
     }

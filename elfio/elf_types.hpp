@@ -521,6 +521,7 @@ typedef uint64_t Elf64_Off;
 #define SHT_PREINIT_ARRAY 16
 #define SHT_GROUP         17
 #define SHT_SYMTAB_SHNDX  18
+#define SHT_GNU_HASH      0x6FFFFFF6
 #define SHT_LOOS          0x60000000
 #define SHT_HIOS          0x6fffffff
 #define SHT_LOPROC        0x70000000
@@ -738,6 +739,7 @@ typedef uint64_t Elf64_Off;
 #define DT_PREINIT_ARRAY   32
 #define DT_PREINIT_ARRAYSZ 33
 #define DT_MAXPOSTAGS      34
+#define DT_GNU_HASH        0x6ffffef5
 #define DT_LOOS            0x6000000D
 #define DT_HIOS            0x6ffff000
 #define DT_LOPROC          0x70000000
