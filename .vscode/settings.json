@@ -72,5 +72,6 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "svn.ignoreMissingSvnWarning": true
 }
