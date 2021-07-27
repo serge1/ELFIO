@@ -91,7 +91,7 @@ class endianess_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return ( int64_t )( *this )( (uint64_t)value );
+        return (int64_t)(*this)( (uint64_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ class endianess_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return ( int32_t )( *this )( (uint32_t)value );
+        return (int32_t)(*this)( (uint32_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ class endianess_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return ( int16_t )( *this )( (uint16_t)value );
+        return (int16_t)(*this)( (uint16_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -175,6 +175,16 @@ inline uint32_t elf_hash( const unsigned char* name )
     return h;
 }
 
+//------------------------------------------------------------------------------
+inline uint32_t elf_gnu_hash( const unsigned char* s )
+{
+    uint32_t h = 0x1505;
+    for ( unsigned char c = *s; c != '\0'; c = *++s )
+        h = ( h << 5 ) + h + c;
+    return h;
+}
+
+//------------------------------------------------------------------------------
 inline std::string to_hex_string( uint64_t value )
 {
     std::string str;
@@ -191,6 +201,7 @@ inline std::string to_hex_string( uint64_t value )
     return "0x" + str;
 }
 
+//------------------------------------------------------------------------------
 inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 {
     stream.seekp( 0, stream.end );

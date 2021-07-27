@@ -87,30 +87,24 @@ template <class S> class symbol_section_accessor_template
 
         if ( 0 != get_hash_table_index() ) {
             if ( hash_section->get_type() == SHT_HASH ) {
-                Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
-                Elf_Word nchain = *(const Elf_Word*)( hash_section->get_data() +
-                                                      sizeof( Elf_Word ) );
-                Elf_Word val = elf_hash( (const unsigned char*)name.c_str() );
-                Elf_Word y   = *(const Elf_Word*)( hash_section->get_data() +
-                                                 ( 2 + val % nbucket ) *
-                                                     sizeof( Elf_Word ) );
-                std::string str;
-                get_symbol( y, str, value, size, bind, type, section_index,
-                            other );
-                while ( str != name && STN_UNDEF != y && y < nchain ) {
-                    y = *(const Elf_Word*)( hash_section->get_data() +
-                                            ( 2 + nbucket + y ) *
-                                                sizeof( Elf_Word ) );
-                    get_symbol( y, str, value, size, bind, type, section_index,
-                                other );
+                ret = hash_lookup( name, value, size, bind, type, section_index,
+                                   other );
+            }
+            if ( hash_section->get_type() == SHT_GNU_HASH ||
+                 hash_section->get_type() == DT_GNU_HASH ) {
+                if ( elf_file.get_class() == ELFCLASS32 ) {
+                    ret = gnu_hash_lookup<uint32_t>(
+                        name, value, size, bind, type, section_index, other );
                 }
-                if ( str == name ) {
-                    ret = true;
+                else {
+                    ret = gnu_hash_lookup<uint64_t>(
+                        name, value, size, bind, type, section_index, other );
                 }
             }
         }
-        else {
-            for ( Elf_Xword i = 0; i < get_symbols_num() && !ret; i++ ) {
+
+        if ( !ret ) {
+            for ( Elf_Xword i = 0; !ret && i < get_symbols_num(); i++ ) {
                 std::string symbol_name;
                 if ( get_symbol( i, symbol_name, value, size, bind, type,
                                  section_index, other ) ) {
@@ -278,6 +272,109 @@ template <class S> class symbol_section_accessor_template
 
     //------------------------------------------------------------------------------
     Elf_Half get_hash_table_index() const { return hash_section_index; }
+
+    //------------------------------------------------------------------------------
+    bool hash_lookup( const std::string& name,
+                      Elf64_Addr&        value,
+                      Elf_Xword&         size,
+                      unsigned char&     bind,
+                      unsigned char&     type,
+                      Elf_Half&          section_index,
+                      unsigned char&     other ) const
+    {
+        bool                       ret       = false;
+        const endianess_convertor& convertor = elf_file.get_convertor();
+
+        Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
+        nbucket          = convertor( nbucket );
+        Elf_Word nchain =
+            *(const Elf_Word*)( hash_section->get_data() + sizeof( Elf_Word ) );
+        nchain       = convertor( nchain );
+        Elf_Word val = elf_hash( (const unsigned char*)name.c_str() );
+        Elf_Word y =
+            *(const Elf_Word*)( hash_section->get_data() +
+                                ( 2 + val % nbucket ) * sizeof( Elf_Word ) );
+        y = convertor( y );
+        std::string str;
+        get_symbol( y, str, value, size, bind, type, section_index, other );
+        while ( str != name && STN_UNDEF != y && y < nchain ) {
+            y = *(const Elf_Word*)( hash_section->get_data() +
+                                    ( 2 + nbucket + y ) * sizeof( Elf_Word ) );
+            y = convertor( y );
+            get_symbol( y, str, value, size, bind, type, section_index, other );
+        }
+
+        if ( str == name ) {
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    //------------------------------------------------------------------------------
+    template <class T>
+    bool gnu_hash_lookup( const std::string& name,
+                          Elf64_Addr&        value,
+                          Elf_Xword&         size,
+                          unsigned char&     bind,
+                          unsigned char&     type,
+                          Elf_Half&          section_index,
+                          unsigned char&     other ) const
+    {
+        bool                       ret       = false;
+        const endianess_convertor& convertor = elf_file.get_convertor();
+
+        uint32_t nbuckets    = *( (uint32_t*)hash_section->get_data() + 0 );
+        uint32_t symoffset   = *( (uint32_t*)hash_section->get_data() + 1 );
+        uint32_t bloom_size  = *( (uint32_t*)hash_section->get_data() + 2 );
+        uint32_t bloom_shift = *( (uint32_t*)hash_section->get_data() + 3 );
+        nbuckets             = convertor( nbuckets );
+        symoffset            = convertor( symoffset );
+        bloom_size           = convertor( bloom_size );
+        bloom_shift          = convertor( bloom_shift );
+
+        T* bloom_filter =
+            (T*)( hash_section->get_data() + 4 * sizeof( uint32_t ) );
+
+        uint32_t hash = elf_gnu_hash( (const unsigned char*)name.c_str() );
+        uint32_t bloom_index = ( hash / ( 8 * sizeof( T ) ) ) % bloom_size;
+        T        bloom_bits =
+            ( (T)1 << ( hash % ( 8 * sizeof( T ) ) ) ) |
+            ( (T)1 << ( ( hash >> bloom_shift ) % ( 8 * sizeof( T ) ) ) );
+
+        if ( ( convertor( bloom_filter[bloom_index] ) & bloom_bits ) ==
+             bloom_bits ) {
+            uint32_t  bucket = hash % nbuckets;
+            uint32_t* buckets =
+                (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
+                             bloom_size * sizeof( T ) );
+            uint32_t* chains =
+                (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
+                             bloom_size * sizeof( T ) +
+                             nbuckets * sizeof( uint32_t ) );
+
+            if ( convertor( buckets[bucket] ) >= symoffset ) {
+                uint32_t chain_index = convertor( buckets[bucket] ) - symoffset;
+                uint32_t chain_hash  = convertor( chains[chain_index] );
+                std::string symname;
+                while ( true ) {
+                    if ( ( chain_hash >> 1 ) == ( hash >> 1 ) &&
+                         get_symbol( chain_index + symoffset, symname, value,
+                                     size, bind, type, section_index, other ) &&
+                         name == symname ) {
+                        ret = true;
+                        break;
+                    }
+
+                    if ( chain_hash & 1 )
+                        break;
+                    chain_hash = convertor( chains[++chain_index] );
+                }
+            }
+        }
+
+        return ret;
+    }
 
     //------------------------------------------------------------------------------
     template <class T> const T* generic_get_symbol_ptr( Elf_Xword index ) const

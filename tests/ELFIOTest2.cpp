@@ -243,3 +243,115 @@ BOOST_AUTO_TEST_CASE( test_hex )
     BOOST_CHECK_EQUAL( to_hex_string( 0xFFFFFFFFFFFFFFFF ),
                        "0xFFFFFFFFFFFFFFFF" );
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( hash32_le )
+{
+    elfio reader;
+    // Load ELF data
+
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/ARMSCII-8.so" ), true );
+
+    std::string             name;
+    Elf64_Addr              value;
+    Elf_Xword               size;
+    unsigned char           bind;
+    unsigned char           type;
+    Elf_Half                section_index;
+    unsigned char           other;
+    section*                symsec = reader.sections[".dynsym"];
+    symbol_section_accessor syms( reader, symsec );
+
+    for ( int i = 0; i < syms.get_symbols_num(); i++ ) {
+        BOOST_REQUIRE_EQUAL( syms.get_symbol( i, name, value, size, bind, type,
+                                              section_index, other ),
+                             true );
+        BOOST_CHECK_EQUAL( syms.get_symbol( name, value, size, bind, type,
+                                            section_index, other ),
+                           true );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( hash32_be )
+{
+    elfio reader;
+    // Load ELF data
+
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/test_ppc" ), true );
+
+    std::string             name;
+    Elf64_Addr              value;
+    Elf_Xword               size;
+    unsigned char           bind;
+    unsigned char           type;
+    Elf_Half                section_index;
+    unsigned char           other;
+    section*                symsec = reader.sections[".dynsym"];
+    symbol_section_accessor syms( reader, symsec );
+
+    for ( int i = 0; i < syms.get_symbols_num(); i++ ) {
+        BOOST_REQUIRE_EQUAL( syms.get_symbol( i, name, value, size, bind, type,
+                                              section_index, other ),
+                             true );
+        BOOST_CHECK_EQUAL( syms.get_symbol( name, value, size, bind, type,
+                                            section_index, other ),
+                           true );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( gnu_hash32_le )
+{
+    elfio reader;
+    // Load ELF data
+
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_32" ), true );
+
+    std::string             name;
+    Elf64_Addr              value;
+    Elf_Xword               size;
+    unsigned char           bind;
+    unsigned char           type;
+    Elf_Half                section_index;
+    unsigned char           other;
+    section*                symsec = reader.sections[".dynsym"];
+    symbol_section_accessor syms( reader, symsec );
+
+    for ( int i = 0; i < syms.get_symbols_num(); i++ ) {
+        BOOST_REQUIRE_EQUAL( syms.get_symbol( i, name, value, size, bind, type,
+                                              section_index, other ),
+                             true );
+        BOOST_CHECK_EQUAL( syms.get_symbol( name, value, size, bind, type,
+                                            section_index, other ),
+                           true );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( gnu_hash64_le )
+{
+    elfio reader;
+    // Load ELF data
+
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/main" ), true );
+
+    std::string             name;
+    Elf64_Addr              value;
+    Elf_Xword               size;
+    unsigned char           bind;
+    unsigned char           type;
+    Elf_Half                section_index;
+    unsigned char           other;
+    section*                symsec = reader.sections[".dynsym"];
+    symbol_section_accessor syms( reader, symsec );
+
+    for ( int i = 0; i < syms.get_symbols_num(); i++ ) {
+        BOOST_REQUIRE_EQUAL( syms.get_symbol( i, name, value, size, bind, type,
+                                              section_index, other ),
+                             true );
+        BOOST_CHECK_EQUAL( syms.get_symbol( name, value, size, bind, type,
+                                            section_index, other ),
+                           true );
+    }
+}
