@@ -28,7 +28,7 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
-template <class S> class array_section_accessor_template
+template <class S, typename T> class array_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
@@ -40,9 +40,7 @@ template <class S> class array_section_accessor_template
     //------------------------------------------------------------------------------
     Elf_Xword get_entries_num() const
     {
-        Elf_Xword entry_size = elf_file.get_class() == ELFCLASS32
-                                   ? sizeof( Elf32_Addr )
-                                   : sizeof( Elf64_Addr );
+        Elf_Xword entry_size = sizeof( T );
         return array_section->get_size() / entry_size;
     }
 
@@ -53,41 +51,17 @@ template <class S> class array_section_accessor_template
             return false;
         }
 
-        if ( elf_file.get_class() == ELFCLASS32 ) {
-            generic_get_entry_arr<Elf32_Addr>( index, address );
-        }
-        else {
-            generic_get_entry_arr<Elf64_Addr>( index, address );
-        }
+        const endianess_convertor& convertor = elf_file.get_convertor();
+
+        const T temp = *reinterpret_cast<const T*>( array_section->get_data() +
+                                                    index * sizeof( T ) );
+        address      = convertor( temp );
 
         return true;
     }
 
     //------------------------------------------------------------------------------
     void add_entry( Elf64_Addr address )
-    {
-        if ( elf_file.get_class() == ELFCLASS32 ) {
-            generic_add_entry_arr<Elf32_Addr>( address );
-        }
-        else {
-            generic_add_entry_arr<Elf64_Addr>( address );
-        }
-    }
-
-  private:
-    //------------------------------------------------------------------------------
-    template <class T>
-    void generic_get_entry_arr( Elf_Xword index, Elf64_Addr& address ) const
-    {
-        const endianess_convertor& convertor = elf_file.get_convertor();
-
-        const T temp = *reinterpret_cast<const T*>( array_section->get_data() +
-                                                    index * sizeof( T ) );
-        address      = convertor( temp );
-    }
-
-    //------------------------------------------------------------------------------
-    template <class T> void generic_add_entry_arr( Elf64_Addr address )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
@@ -96,15 +70,18 @@ template <class S> class array_section_accessor_template
                                     sizeof( temp ) );
     }
 
+  private:
     //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
     S*           array_section;
 };
 
-using array_section_accessor = array_section_accessor_template<section>;
+template <typename T>
+using array_section_accessor = array_section_accessor_template<section, T>;
+template <typename T>
 using const_array_section_accessor =
-    array_section_accessor_template<const section>;
+    array_section_accessor_template<const section, T>;
 
 } // namespace ELFIO
 

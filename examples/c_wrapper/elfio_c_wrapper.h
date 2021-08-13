@@ -85,7 +85,7 @@ typedef ELFIO::string_section_accessor*     pstring_t;
 typedef ELFIO::note_section_accessor*       pnote_t;
 typedef ELFIO::modinfo_section_accessor*    pmodinfo_t;
 typedef ELFIO::dynamic_section_accessor*    pdynamic_t;
-typedef ELFIO::array_section_accessor*      parray_t;
+typedef ELFIO::array_section_accessor<Elf64_Word>* parray_t;
 
 extern "C"
 {

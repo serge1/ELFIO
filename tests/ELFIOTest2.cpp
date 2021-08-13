@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE( array_read_32 )
     section* array_sec = reader.sections[".ctors"];
     BOOST_REQUIRE_NE( array_sec, nullptr );
 
-    const_array_section_accessor array( reader, array_sec );
+    const_array_section_accessor<Elf32_Addr> array( reader, array_sec );
     BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
     Elf64_Addr addr;
     BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE( array_read_64 )
     section* array_sec = reader.sections[".ctors"];
     BOOST_REQUIRE_NE( array_sec, nullptr );
 
-    const_array_section_accessor array( reader, array_sec );
+    const_array_section_accessor<Elf64_Addr> array( reader, array_sec );
     BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
     Elf64_Addr addr;
     BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE( init_array_read_64 )
     section* array_sec = reader.sections[".init_array"];
     BOOST_REQUIRE_NE( array_sec, nullptr );
 
-    const_array_section_accessor array( reader, array_sec );
+    const_array_section_accessor<Elf64_Addr> array( reader, array_sec );
     BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
     BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
     BOOST_CHECK_EQUAL( addr, 0x12C0 );
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE( init_array_read_64 )
     array_sec = reader.sections[".fini_array"];
     BOOST_REQUIRE_NE( array_sec, nullptr );
 
-    array_section_accessor arrayf( reader, array_sec );
+    array_section_accessor<Elf64_Addr> arrayf( reader, array_sec );
     BOOST_REQUIRE_EQUAL( arrayf.get_entries_num(), (Elf_Xword)1 );
     BOOST_CHECK_EQUAL( arrayf.get_entry( 0, addr ), true );
     BOOST_CHECK_EQUAL( addr, 0x1280 );
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE( init_array_write_64 )
     section* array_sec = reader.sections[".init_array"];
     BOOST_REQUIRE_NE( array_sec, nullptr );
 
-    array_section_accessor array( reader, array_sec );
+    array_section_accessor<Elf64_Addr> array( reader, array_sec );
     BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
     BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );
     BOOST_CHECK_EQUAL( addr, 0x12C0 );
@@ -353,5 +353,53 @@ BOOST_AUTO_TEST_CASE( gnu_hash64_le )
         BOOST_CHECK_EQUAL( syms.get_symbol( name, value, size, bind, type,
                                             section_index, other ),
                            true );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( gnu_version_64_le )
+{
+    elfio reader;
+    // Load ELF data
+
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_64" ), true );
+
+    std::string                   name;
+    Elf64_Addr                    value;
+    Elf_Xword                     size;
+    unsigned char                 bind;
+    unsigned char                 type;
+    Elf_Half                      section_index;
+    unsigned char                 other;
+    section*                      symsec = reader.sections[".dynsym"];
+    const_symbol_section_accessor dynsym( reader, symsec );
+
+    section* versec = reader.sections[".gnu.version"];
+    const_array_section_accessor<Elf64_Half> vers( reader, versec );
+
+    section* verneed = reader.sections[".gnu.version_r"];
+    const_array_section_accessor<Elf64_Half> vern( reader, verneed );
+
+    section* dynstr = reader.sections[".dynstr"];
+
+    BOOST_CHECK_EQUAL( versec->get_link(), symsec->get_index() );
+    BOOST_CHECK_EQUAL( verneed->get_link(), dynstr->get_index() );
+
+    for ( int i = 0; i < dynsym.get_symbols_num(); i++ ) {
+        BOOST_REQUIRE_EQUAL( dynsym.get_symbol( i, name, value, size, bind, type,
+                                              section_index, other ),
+                             true );
+
+        Elf64_Addr verindex = 0;
+
+        vers.get_entry( i, verindex );
+        BOOST_CHECK_EQUAL( verindex, ( i / 2 ) * 2 );
+
+        const char* ptr = verneed->get_data();
+        if ( verindex > 1 ) {
+            Elf64_Addr value = 0;
+            vern.get_entry( verindex * 8, value );
+            std::cout << value << std::endl;
+        }
     }
 }

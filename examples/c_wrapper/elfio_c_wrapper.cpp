@@ -473,7 +473,7 @@ void elfio_dynamic_add_entry( pdynamic_t pdynamic,
 parray_t elfio_array_section_accessor_new( pelfio_t   pelfio,
                                            psection_t psection )
 {
-    return new array_section_accessor( *pelfio, psection );
+    return new array_section_accessor<Elf64_Word>( *pelfio, psection );
 }
 
 void elfio_array_section_accessor_delete( parray_t parray ) { delete parray; }
