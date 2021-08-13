@@ -189,7 +189,8 @@ template <class S> class dynamic_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    template <class T> void generic_add_entry_dyn( Elf_Xword tag, Elf_Xword value )
+    template <class T>
+    void generic_add_entry_dyn( Elf_Xword tag, Elf_Xword value )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 

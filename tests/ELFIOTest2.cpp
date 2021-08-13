@@ -386,8 +386,8 @@ BOOST_AUTO_TEST_CASE( gnu_version_64_le )
     BOOST_CHECK_EQUAL( verneed->get_link(), dynstr->get_index() );
 
     for ( int i = 0; i < dynsym.get_symbols_num(); i++ ) {
-        BOOST_REQUIRE_EQUAL( dynsym.get_symbol( i, name, value, size, bind, type,
-                                              section_index, other ),
+        BOOST_REQUIRE_EQUAL( dynsym.get_symbol( i, name, value, size, bind,
+                                                type, section_index, other ),
                              true );
 
         Elf64_Addr verindex = 0;

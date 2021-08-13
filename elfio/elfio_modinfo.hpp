@@ -33,8 +33,7 @@ template <class S> class modinfo_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    modinfo_section_accessor_template( S* section )
-        : modinfo_section( section )
+    modinfo_section_accessor_template( S* section ) : modinfo_section( section )
     {
         process_section();
     }
