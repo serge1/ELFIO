@@ -410,20 +410,20 @@ typedef uint64_t Elf64_Off;
 // enabled for all code contained in the ELF.
 #define EF_AMDGPU_XNACK 0x100
 
-#define EF_AMDGPU_FEATURE_XNACK_V2         0x01
-#define EF_AMDGPU_FEATURE_TRAP_HANDLER_V2  0x02
-#define EF_AMDGPU_FEATURE_XNACK_V3         0x100
-#define EF_AMDGPU_FEATURE_SRAMECC_V3       0x200
-#define EF_AMDGPU_FEATURE_XNACK_V4         0x300
-#define EF_AMDGPU_FEATURE_XNACK_UNSUPPORTED_V4 0x000
-#define EF_AMDGPU_FEATURE_XNACK_ANY_V4     0x100
-#define EF_AMDGPU_FEATURE_XNACK_OFF_V4     0x200
-#define EF_AMDGPU_FEATURE_XNACK_ON_V4      0x300
-#define EF_AMDGPU_FEATURE_SRAMECC_V4       0xc00
+#define EF_AMDGPU_FEATURE_XNACK_V2               0x01
+#define EF_AMDGPU_FEATURE_TRAP_HANDLER_V2        0x02
+#define EF_AMDGPU_FEATURE_XNACK_V3               0x100
+#define EF_AMDGPU_FEATURE_SRAMECC_V3             0x200
+#define EF_AMDGPU_FEATURE_XNACK_V4               0x300
+#define EF_AMDGPU_FEATURE_XNACK_UNSUPPORTED_V4   0x000
+#define EF_AMDGPU_FEATURE_XNACK_ANY_V4           0x100
+#define EF_AMDGPU_FEATURE_XNACK_OFF_V4           0x200
+#define EF_AMDGPU_FEATURE_XNACK_ON_V4            0x300
+#define EF_AMDGPU_FEATURE_SRAMECC_V4             0xc00
 #define EF_AMDGPU_FEATURE_SRAMECC_UNSUPPORTED_V4 0x000
-#define EF_AMDGPU_FEATURE_SRAMECC_ANY_V4   0x400
-#define EF_AMDGPU_FEATURE_SRAMECC_OFF_V4   0x800
-#define EF_AMDGPU_FEATURE_SRAMECC_ON_V4    0xc00
+#define EF_AMDGPU_FEATURE_SRAMECC_ANY_V4         0x400
+#define EF_AMDGPU_FEATURE_SRAMECC_OFF_V4         0x800
+#define EF_AMDGPU_FEATURE_SRAMECC_ON_V4          0xc00
 
 // AMDGPU processors
 #define EF_AMDGPU_MACH_NONE                0x000 // Unspecified processor.
@@ -448,45 +448,45 @@ typedef uint64_t Elf64_Off;
 #define EF_AMDGPU_MACH_R600_FIRST          EF_AMDGPU_MACH_R600_R600
 #define EF_AMDGPU_MACH_R600_LAST           EF_AMDGPU_MACH_R600_TURKS
 
-  // AMDGCN-based processors.
-#define  EF_AMDGPU_MACH_AMDGCN_GFX600        0x020
-#define  EF_AMDGPU_MACH_AMDGCN_GFX601        0x021
-#define  EF_AMDGPU_MACH_AMDGCN_GFX700        0x022
-#define  EF_AMDGPU_MACH_AMDGCN_GFX701        0x023
-#define  EF_AMDGPU_MACH_AMDGCN_GFX702        0x024
-#define  EF_AMDGPU_MACH_AMDGCN_GFX703        0x025
-#define  EF_AMDGPU_MACH_AMDGCN_GFX704        0x026
-#define  EF_AMDGPU_MACH_AMDGCN_RESERVED_0X27 0x027
-#define  EF_AMDGPU_MACH_AMDGCN_GFX801        0x028
-#define  EF_AMDGPU_MACH_AMDGCN_GFX802        0x029
-#define  EF_AMDGPU_MACH_AMDGCN_GFX803        0x02a
-#define  EF_AMDGPU_MACH_AMDGCN_GFX810        0x02b
-#define  EF_AMDGPU_MACH_AMDGCN_GFX900        0x02c
-#define  EF_AMDGPU_MACH_AMDGCN_GFX902        0x02d
-#define  EF_AMDGPU_MACH_AMDGCN_GFX904        0x02e
-#define  EF_AMDGPU_MACH_AMDGCN_GFX906        0x02f
-#define  EF_AMDGPU_MACH_AMDGCN_GFX908        0x030
-#define  EF_AMDGPU_MACH_AMDGCN_GFX909        0x031
-#define  EF_AMDGPU_MACH_AMDGCN_GFX90C        0x032
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1010       0x033
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1011       0x034
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1012       0x035
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1030       0x036
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1031       0x037
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1032       0x038
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1033       0x039
-#define  EF_AMDGPU_MACH_AMDGCN_GFX602        0x03a
-#define  EF_AMDGPU_MACH_AMDGCN_GFX705        0x03b
-#define  EF_AMDGPU_MACH_AMDGCN_GFX805        0x03c
-#define  EF_AMDGPU_MACH_AMDGCN_RESERVED_0X3D 0x03d
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1034       0x03e
-#define  EF_AMDGPU_MACH_AMDGCN_GFX90A        0x03f
-#define  EF_AMDGPU_MACH_AMDGCN_RESERVED_0X40 0x040
-#define  EF_AMDGPU_MACH_AMDGCN_RESERVED_0X41 0x041
-#define  EF_AMDGPU_MACH_AMDGCN_GFX1013       0x042
+// AMDGCN-based processors.
+#define EF_AMDGPU_MACH_AMDGCN_GFX600        0x020
+#define EF_AMDGPU_MACH_AMDGCN_GFX601        0x021
+#define EF_AMDGPU_MACH_AMDGCN_GFX700        0x022
+#define EF_AMDGPU_MACH_AMDGCN_GFX701        0x023
+#define EF_AMDGPU_MACH_AMDGCN_GFX702        0x024
+#define EF_AMDGPU_MACH_AMDGCN_GFX703        0x025
+#define EF_AMDGPU_MACH_AMDGCN_GFX704        0x026
+#define EF_AMDGPU_MACH_AMDGCN_RESERVED_0X27 0x027
+#define EF_AMDGPU_MACH_AMDGCN_GFX801        0x028
+#define EF_AMDGPU_MACH_AMDGCN_GFX802        0x029
+#define EF_AMDGPU_MACH_AMDGCN_GFX803        0x02a
+#define EF_AMDGPU_MACH_AMDGCN_GFX810        0x02b
+#define EF_AMDGPU_MACH_AMDGCN_GFX900        0x02c
+#define EF_AMDGPU_MACH_AMDGCN_GFX902        0x02d
+#define EF_AMDGPU_MACH_AMDGCN_GFX904        0x02e
+#define EF_AMDGPU_MACH_AMDGCN_GFX906        0x02f
+#define EF_AMDGPU_MACH_AMDGCN_GFX908        0x030
+#define EF_AMDGPU_MACH_AMDGCN_GFX909        0x031
+#define EF_AMDGPU_MACH_AMDGCN_GFX90C        0x032
+#define EF_AMDGPU_MACH_AMDGCN_GFX1010       0x033
+#define EF_AMDGPU_MACH_AMDGCN_GFX1011       0x034
+#define EF_AMDGPU_MACH_AMDGCN_GFX1012       0x035
+#define EF_AMDGPU_MACH_AMDGCN_GFX1030       0x036
+#define EF_AMDGPU_MACH_AMDGCN_GFX1031       0x037
+#define EF_AMDGPU_MACH_AMDGCN_GFX1032       0x038
+#define EF_AMDGPU_MACH_AMDGCN_GFX1033       0x039
+#define EF_AMDGPU_MACH_AMDGCN_GFX602        0x03a
+#define EF_AMDGPU_MACH_AMDGCN_GFX705        0x03b
+#define EF_AMDGPU_MACH_AMDGCN_GFX805        0x03c
+#define EF_AMDGPU_MACH_AMDGCN_RESERVED_0X3D 0x03d
+#define EF_AMDGPU_MACH_AMDGCN_GFX1034       0x03e
+#define EF_AMDGPU_MACH_AMDGCN_GFX90A        0x03f
+#define EF_AMDGPU_MACH_AMDGCN_RESERVED_0X40 0x040
+#define EF_AMDGPU_MACH_AMDGCN_RESERVED_0X41 0x041
+#define EF_AMDGPU_MACH_AMDGCN_GFX1013       0x042
 // First/last AMDGCN-based processors.
-#define  EF_AMDGPU_MACH_AMDGCN_FIRST         EF_AMDGPU_MACH_AMDGCN_GFX600
-#define  EF_AMDGPU_MACH_AMDGCN_LAST          EF_AMDGPU_MACH_AMDGCN_GFX1013
+#define EF_AMDGPU_MACH_AMDGCN_FIRST EF_AMDGPU_MACH_AMDGCN_GFX600
+#define EF_AMDGPU_MACH_AMDGCN_LAST  EF_AMDGPU_MACH_AMDGCN_GFX1013
 
 /////////////////////
 // Sections constants
@@ -504,30 +504,40 @@ typedef uint64_t Elf64_Off;
 #define SHN_HIRESERVE 0xFFFF
 
 // Section types
-#define SHT_NULL          0
-#define SHT_PROGBITS      1
-#define SHT_SYMTAB        2
-#define SHT_STRTAB        3
-#define SHT_RELA          4
-#define SHT_HASH          5
-#define SHT_DYNAMIC       6
-#define SHT_NOTE          7
-#define SHT_NOBITS        8
-#define SHT_REL           9
-#define SHT_SHLIB         10
-#define SHT_DYNSYM        11
-#define SHT_INIT_ARRAY    14
-#define SHT_FINI_ARRAY    15
-#define SHT_PREINIT_ARRAY 16
-#define SHT_GROUP         17
-#define SHT_SYMTAB_SHNDX  18
-#define SHT_GNU_HASH      0x6FFFFFF6
-#define SHT_LOOS          0x60000000
-#define SHT_HIOS          0x6fffffff
-#define SHT_LOPROC        0x70000000
-#define SHT_HIPROC        0x7FFFFFFF
-#define SHT_LOUSER        0x80000000
-#define SHT_HIUSER        0xFFFFFFFF
+#define SHT_NULL           0
+#define SHT_PROGBITS       1
+#define SHT_SYMTAB         2
+#define SHT_STRTAB         3
+#define SHT_RELA           4
+#define SHT_HASH           5
+#define SHT_DYNAMIC        6
+#define SHT_NOTE           7
+#define SHT_NOBITS         8
+#define SHT_REL            9
+#define SHT_SHLIB          10
+#define SHT_DYNSYM         11
+#define SHT_INIT_ARRAY     14
+#define SHT_FINI_ARRAY     15
+#define SHT_PREINIT_ARRAY  16
+#define SHT_GROUP          17
+#define SHT_SYMTAB_SHNDX   18
+#define SHT_GNU_ATTRIBUTES 0x6ffffff5
+#define SHT_GNU_HASH       0x6ffffff6
+#define SHT_GNU_LIBLIST    0x6ffffff7
+#define SHT_CHECKSUM       0x6ffffff8
+#define SHT_LOSUNW         0x6ffffffa
+#define SHT_SUNW_move      0x6ffffffa
+#define SHT_SUNW_COMDAT    0x6ffffffb
+#define SHT_SUNW_syminfo   0x6ffffffc
+#define SHT_GNU_verdef     0x6ffffffd
+#define SHT_GNU_verneed    0x6ffffffe
+#define SHT_GNU_versym     0x6fffffff
+#define SHT_LOOS           0x60000000
+#define SHT_HIOS           0x6fffffff
+#define SHT_LOPROC         0x70000000
+#define SHT_HIPROC         0x7FFFFFFF
+#define SHT_LOUSER         0x80000000
+#define SHT_HIUSER         0xFFFFFFFF
 
 // Section attribute flags
 #define SHF_WRITE            0x1
@@ -683,18 +693,20 @@ typedef uint64_t Elf64_Off;
 #define R_X86_64_GNU_VTENTRY     251
 
 // Segment types
-#define PT_NULL    0
-#define PT_LOAD    1
-#define PT_DYNAMIC 2
-#define PT_INTERP  3
-#define PT_NOTE    4
-#define PT_SHLIB   5
-#define PT_PHDR    6
-#define PT_TLS     7
-#define PT_LOOS    0x60000000
-#define PT_HIOS    0x6fffffff
-#define PT_LOPROC  0x70000000
-#define PT_HIPROC  0x7FFFFFFF
+#define PT_NULL         0
+#define PT_LOAD         1
+#define PT_DYNAMIC      2
+#define PT_INTERP       3
+#define PT_NOTE         4
+#define PT_SHLIB        5
+#define PT_PHDR         6
+#define PT_TLS          7
+#define PT_GNU_EH_FRAME 0x6474e550
+#define PT_GNU_STACK    0x6474e551
+#define PT_LOOS         0x60000000
+#define PT_HIOS         0x6fffffff
+#define PT_LOPROC       0x70000000
+#define PT_HIPROC       0x7FFFFFFF
 
 // Segment flags
 #define PF_X        1          // Execute
@@ -740,6 +752,10 @@ typedef uint64_t Elf64_Off;
 #define DT_PREINIT_ARRAYSZ 33
 #define DT_MAXPOSTAGS      34
 #define DT_GNU_HASH        0x6ffffef5
+#define DT_VERSYM          0x6ffffff0
+#define DT_FLAGS_1         0x6ffffffb
+#define DT_VERNEED         0x6ffffffe
+#define DT_VERNEEDNUM      0x6fffffff
 #define DT_LOOS            0x6000000D
 #define DT_HIOS            0x6ffff000
 #define DT_LOPROC          0x70000000
@@ -904,7 +920,7 @@ struct Elf64_Rela
 #define ELF64_R_SYM( i )  ( ( i ) >> 32 )
 #define ELF64_R_TYPE( i ) ( (i)&0xffffffffL )
 #define ELF64_R_INFO( s, t ) \
-    ( ( ( ( int64_t )( s ) ) << 32 ) + ( (t)&0xffffffffL ) )
+    ( ( ( (int64_t)( s ) ) << 32 ) + ( (t)&0xffffffffL ) )
 
 // Dynamic structure
 struct Elf32_Dyn

@@ -338,7 +338,7 @@ static struct machine_table_t
 
 static struct section_type_table_t
 {
-    const Elf64_Half key;
+    const Elf64_Word key;
     const char*      str;
 } section_type_table[] = {
     { SHT_NULL, "NULL" },
@@ -357,7 +357,19 @@ static struct section_type_table_t
     { SHT_FINI_ARRAY, "FINI_ARRAY" },
     { SHT_PREINIT_ARRAY, "PREINIT_ARRAY" },
     { SHT_GROUP, "GROUP" },
-    { SHT_SYMTAB_SHNDX, "SYMTAB_SHNDX " },
+    { SHT_SYMTAB_SHNDX, "SYMTAB_SHNDX" },
+    { SHT_GNU_ATTRIBUTES, "GNU_ATTRIBUTES" },
+    { SHT_GNU_HASH, "GNU_HASH" },
+    { SHT_GNU_LIBLIST, "GNU_LIBLIST" },
+    { SHT_CHECKSUM, "CHECKSUM" },
+    { SHT_LOSUNW, "LOSUNW" },
+    { SHT_SUNW_move, "SUNW_move" },
+    { SHT_SUNW_COMDAT, "SUNW_COMDAT" },
+    { SHT_SUNW_syminfo, "SUNW_syminfo" },
+    { SHT_GNU_verdef, "GNU_verdef" },
+    { SHT_GNU_verneed, "GNU_verneed" },
+    { SHT_GNU_versym, "GNU_versym" },
+
 };
 
 static struct segment_type_table_t
@@ -365,9 +377,16 @@ static struct segment_type_table_t
     const Elf_Word key;
     const char*    str;
 } segment_type_table[] = {
-    { PT_NULL, "NULL" },     { PT_LOAD, "LOAD" }, { PT_DYNAMIC, "DYNAMIC" },
-    { PT_INTERP, "INTERP" }, { PT_NOTE, "NOTE" }, { PT_SHLIB, "SHLIB" },
-    { PT_PHDR, "PHDR" },     { PT_TLS, "TLS" },
+    { PT_NULL, "NULL" },
+    { PT_LOAD, "LOAD" },
+    { PT_DYNAMIC, "DYNAMIC" },
+    { PT_INTERP, "INTERP" },
+    { PT_NOTE, "NOTE" },
+    { PT_SHLIB, "SHLIB" },
+    { PT_PHDR, "PHDR" },
+    { PT_TLS, "TLS" },
+    { PT_GNU_EH_FRAME, "GNU_EH_FRAME" },
+    { PT_GNU_STACK, "GNU_STACK" },
 };
 
 static struct segment_flag_table_t
@@ -443,6 +462,12 @@ static struct dynamic_tag_t
     { DT_PREINIT_ARRAY, "PREINIT_ARRAY" },
     { DT_PREINIT_ARRAYSZ, "PREINIT_ARRAYSZ" },
     { DT_MAXPOSTAGS, "MAXPOSTAGS" },
+    { DT_GNU_HASH, "GNU_HASH" },
+    { DT_VERSYM, "VERSYM" },
+    { DT_FLAGS_1, "FLAGS_1" },
+    { DT_VERNEED, "VERNEED" },
+    { DT_VERNEEDNUM, "VERNEEDNUM" },
+
 };
 
 static const ELFIO::Elf_Xword MAX_DATA_ENTRIES = 64;
