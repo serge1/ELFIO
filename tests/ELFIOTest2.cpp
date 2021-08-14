@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE( array_read_32 )
     section* array_sec = reader.sections[".ctors"];
     BOOST_REQUIRE_NE( array_sec, nullptr );
 
-    const_array_section_accessor<Elf32_Addr> array( reader, array_sec );
+    const_array_section_accessor<> array( reader, array_sec );
     BOOST_REQUIRE_EQUAL( array.get_entries_num(), (Elf_Xword)2 );
     Elf64_Addr addr;
     BOOST_CHECK_EQUAL( array.get_entry( 0, addr ), true );

@@ -77,9 +77,9 @@ template <class S, typename T> class array_section_accessor_template
     S*           array_section;
 };
 
-template <typename T>
+template <typename T = Elf32_Word>
 using array_section_accessor = array_section_accessor_template<section, T>;
-template <typename T>
+template <typename T = Elf32_Word>
 using const_array_section_accessor =
     array_section_accessor_template<const section, T>;
 
