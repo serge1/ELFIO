@@ -108,7 +108,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     Elf_Half add_section_index( Elf_Half sec_index, Elf_Xword addr_align )
     {
-        sections.push_back( sec_index );
+        sections.emplace_back( sec_index );
         if ( addr_align > get_align() ) {
             set_align( addr_align );
         }

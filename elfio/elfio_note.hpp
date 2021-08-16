@@ -123,7 +123,7 @@ template <class S> class note_section_accessor_template
             }
         }
 
-        note_start_positions.push_back( note_section->get_size() );
+        note_start_positions.emplace_back( note_section->get_size() );
         note_section->append_data( buffer );
     }
 
@@ -145,7 +145,7 @@ template <class S> class note_section_accessor_template
 
         Elf_Word align = sizeof( Elf_Word );
         while ( current + (Elf_Xword)3 * align <= size ) {
-            note_start_positions.push_back( current );
+            note_start_positions.emplace_back( current );
             Elf_Word namesz = convertor( *(const Elf_Word*)( data + current ) );
             Elf_Word descsz = convertor(
                 *(const Elf_Word*)( data + current + sizeof( namesz ) ) );

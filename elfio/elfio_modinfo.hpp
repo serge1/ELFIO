@@ -57,9 +57,9 @@ template <class S> class modinfo_section_accessor_template
     //------------------------------------------------------------------------------
     bool get_attribute( const std::string field_name, std::string& value ) const
     {
-        for ( auto i = content.begin(); i != content.end(); i++ ) {
-            if ( field_name == i->first ) {
-                value = i->second;
+        for ( auto i : content ) {
+            if ( field_name == i.first ) {
+                value = i.second;
                 return true;
             }
         }
@@ -79,8 +79,7 @@ template <class S> class modinfo_section_accessor_template
             std::string attribute = field + "=" + value;
 
             modinfo_section->append_data( attribute + '\0' );
-            content.push_back(
-                std::pair<std::string, std::string>( field, value ) );
+            content.emplace_back( field, value );
         }
 
         return current_position;
@@ -97,12 +96,10 @@ template <class S> class modinfo_section_accessor_template
                 while ( i < modinfo_section->get_size() && !pdata[i] )
                     i++;
                 if ( i < modinfo_section->get_size() ) {
-                    std::string                         info = pdata + i;
-                    size_t                              loc  = info.find( '=' );
-                    std::pair<std::string, std::string> attribute(
-                        info.substr( 0, loc ), info.substr( loc + 1 ) );
-
-                    content.push_back( attribute );
+                    std::string info = pdata + i;
+                    size_t      loc  = info.find( '=' );
+                    content.emplace_back( info.substr( 0, loc ),
+                                          info.substr( loc + 1 ) );
 
                     i += info.length();
                 }
