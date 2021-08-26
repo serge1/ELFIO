@@ -72,7 +72,7 @@ template <class T> class segment_impl : public segment
   public:
     //------------------------------------------------------------------------------
     segment_impl( endianess_convertor* convertor )
-        : stream_size( 0 ), index( 0 ), data( 0 ), convertor( convertor )
+        : stream_size( 0 ), index( 0 ), data( nullptr ), convertor( convertor )
     {
         is_offset_set = false;
         std::fill_n( reinterpret_cast<char*>( &ph ), sizeof( ph ), '\0' );
@@ -172,12 +172,12 @@ template <class T> class segment_impl : public segment
             Elf_Xword size = get_file_size();
 
             if ( size > get_stream_size() ) {
-                data = 0;
+                data = nullptr;
             }
             else {
                 data = new ( std::nothrow ) char[size + 1];
 
-                if ( 0 != data ) {
+                if ( nullptr != data ) {
                     stream.read( data, size );
                     data[size] = 0;
                 }

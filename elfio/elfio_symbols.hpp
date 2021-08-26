@@ -33,7 +33,7 @@ template <class S> class symbol_section_accessor_template
     symbol_section_accessor_template( const elfio& elf_file, S* symbol_section )
         : elf_file( elf_file ), symbol_section( symbol_section )
     {
-        hash_section       = 0;
+        hash_section       = nullptr;
         hash_section_index = 0;
         find_hash_section();
     }
@@ -423,7 +423,8 @@ template <class S> class symbol_section_accessor_template
     {
         bool ret = false;
 
-        if ( 0 != symbol_section->get_data() && index < get_symbols_num() ) {
+        if ( nullptr != symbol_section->get_data() &&
+             index < get_symbols_num() ) {
             const T* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
                 index * symbol_section->get_entry_size() );
@@ -435,7 +436,7 @@ template <class S> class symbol_section_accessor_template
             string_section_accessor str_reader( string_section );
             const char*             pStr =
                 str_reader.get_string( convertor( pSym->st_name ) );
-            if ( 0 != pStr ) {
+            if ( nullptr != pStr ) {
                 name = pStr;
             }
             value         = convertor( pSym->st_value );

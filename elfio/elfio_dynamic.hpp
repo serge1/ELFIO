@@ -82,7 +82,7 @@ template <class S> class dynamic_section_accessor_template
             string_section_accessor strsec =
                 elf_file.sections[get_string_table_index()];
             const char* result = strsec.get_string( value );
-            if ( 0 == result ) {
+            if ( nullptr == result ) {
                 str.clear();
                 return false;
             }

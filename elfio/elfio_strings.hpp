@@ -44,13 +44,13 @@ template <class S> class string_section_accessor_template
         if ( string_section ) {
             if ( index < string_section->get_size() ) {
                 const char* data = string_section->get_data();
-                if ( 0 != data ) {
+                if ( nullptr != data ) {
                     return data + index;
                 }
             }
         }
 
-        return 0;
+        return nullptr;
     }
 
     //------------------------------------------------------------------------------

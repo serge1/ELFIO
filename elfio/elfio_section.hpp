@@ -78,7 +78,7 @@ template <class T> class section_impl : public section
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
                      '\0' );
         is_address_set = false;
-        data           = 0;
+        data           = nullptr;
         data_size      = 0;
         index          = 0;
         stream_size    = 0;
@@ -128,7 +128,7 @@ template <class T> class section_impl : public section
         if ( get_type() != SHT_NOBITS ) {
             delete[] data;
             data = new ( std::nothrow ) char[size];
-            if ( 0 != data && 0 != raw_data ) {
+            if ( nullptr != data && nullptr != raw_data ) {
                 data_size = size;
                 std::copy( raw_data, raw_data + size, data );
             }
@@ -157,7 +157,7 @@ template <class T> class section_impl : public section
                 data_size      = 2 * ( data_size + size );
                 char* new_data = new ( std::nothrow ) char[data_size];
 
-                if ( 0 != new_data ) {
+                if ( nullptr != new_data ) {
                     std::copy( data, data + get_size(), new_data );
                     std::copy( raw_data, raw_data + size,
                                new_data + get_size() );
@@ -199,11 +199,11 @@ template <class T> class section_impl : public section
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
         Elf_Xword size = get_size();
-        if ( 0 == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() &&
-             size < get_stream_size() ) {
+        if ( nullptr == data && SHT_NULL != get_type() &&
+             SHT_NOBITS != get_type() && size < get_stream_size() ) {
             data = new ( std::nothrow ) char[size + 1];
 
-            if ( ( 0 != size ) && ( 0 != data ) ) {
+            if ( ( 0 != size ) && ( nullptr != data ) ) {
                 stream.seekg( ( *convertor )( header.sh_offset ) );
                 stream.read( data, size );
                 data[size] = 0; // Ensure data is ended with 0 to avoid oob read
@@ -227,7 +227,7 @@ template <class T> class section_impl : public section
 
         save_header( stream, header_offset );
         if ( get_type() != SHT_NOBITS && get_type() != SHT_NULL &&
-             get_size() != 0 && data != 0 ) {
+             get_size() != 0 && data != nullptr ) {
             save_data( stream, data_offset );
         }
     }

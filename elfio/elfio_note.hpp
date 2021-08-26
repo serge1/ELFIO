@@ -82,7 +82,7 @@ template <class S> class note_section_accessor_template
         }
         name.assign( pData + 3 * (size_t)align, namesz - 1 );
         if ( 0 == descSize ) {
-            desc = 0;
+            desc = nullptr;
         }
         else {
             desc = const_cast<char*>( pData + 3 * (size_t)align +
@@ -116,7 +116,7 @@ template <class S> class note_section_accessor_template
         if ( nameLen % align != 0 ) {
             buffer.append( pad, (size_t)align - nameLen % align );
         }
-        if ( desc != 0 && descSize != 0 ) {
+        if ( desc != nullptr && descSize != 0 ) {
             buffer.append( reinterpret_cast<const char*>( desc ), descSize );
             if ( descSize % align != 0 ) {
                 buffer.append( pad, (size_t)align - descSize % align );
@@ -139,7 +139,7 @@ template <class S> class note_section_accessor_template
         note_start_positions.clear();
 
         // Is it empty?
-        if ( 0 == data || 0 == size ) {
+        if ( nullptr == data || 0 == size ) {
             return;
         }
 
