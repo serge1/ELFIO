@@ -36,10 +36,10 @@ THE SOFTWARE.
     virtual void set_##NAME( TYPE value ) = 0
 
 #define ELFIO_GET_ACCESS( TYPE, NAME, FIELD ) \
-    TYPE get_##NAME() const { return ( *convertor )( FIELD ); }
+    TYPE get_##NAME() const override { return ( *convertor )( FIELD ); }
 
 #define ELFIO_SET_ACCESS( TYPE, NAME, FIELD ) \
-    void set_##NAME( TYPE value )             \
+    void set_##NAME( TYPE value ) override    \
     {                                         \
         FIELD = value;                        \
         FIELD = ( *convertor )( FIELD );      \
