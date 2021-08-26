@@ -30,7 +30,8 @@ namespace ELFIO {
 class elf_header
 {
   public:
-    virtual ~elf_header(){};
+    virtual ~elf_header() = default;
+
     virtual bool load( std::istream& stream )       = 0;
     virtual bool save( std::ostream& stream ) const = 0;
 

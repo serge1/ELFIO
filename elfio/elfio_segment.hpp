@@ -34,7 +34,7 @@ class segment
     friend class elfio;
 
   public:
-    virtual ~segment(){};
+    virtual ~segment() = default;
 
     ELFIO_GET_ACCESS_DECL( Elf_Half, index );
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word, type );
@@ -106,7 +106,8 @@ template <class T> class segment_impl : public segment
     const char* get_data() const override { return data; }
 
     //------------------------------------------------------------------------------
-    Elf_Half add_section_index( Elf_Half sec_index, Elf_Xword addr_align ) override
+    Elf_Half add_section_index( Elf_Half  sec_index,
+                                Elf_Xword addr_align ) override
     {
         sections.emplace_back( sec_index );
         if ( addr_align > get_align() ) {
@@ -123,7 +124,10 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    Elf_Half get_sections_num() const override { return (Elf_Half)sections.size(); }
+    Elf_Half get_sections_num() const override
+    {
+        return (Elf_Half)sections.size();
+    }
 
     //------------------------------------------------------------------------------
     Elf_Half get_section_index_at( Elf_Half num ) const override
@@ -151,7 +155,10 @@ template <class T> class segment_impl : public segment
     bool is_offset_initialized() const override { return is_offset_set; }
 
     //------------------------------------------------------------------------------
-    const std::vector<Elf_Half>& get_sections() const override { return sections; }
+    const std::vector<Elf_Half>& get_sections() const override
+    {
+        return sections;
+    }
 
     //------------------------------------------------------------------------------
     void set_index( Elf_Half value ) override { index = value; }
