@@ -26,6 +26,15 @@ THE SOFTWARE.
 #include <cstdint>
 #include <ostream>
 
+#define ELFIO_GET_ACCESS_DECL( TYPE, NAME ) virtual TYPE get_##NAME() const = 0
+
+#define ELFIO_SET_ACCESS_DECL( TYPE, NAME ) \
+    virtual void set_##NAME( TYPE value ) = 0
+
+#define ELFIO_GET_SET_ACCESS_DECL( TYPE, NAME ) \
+    virtual TYPE get_##NAME() const       = 0;  \
+    virtual void set_##NAME( TYPE value ) = 0
+
 #define ELFIO_GET_ACCESS( TYPE, NAME, FIELD ) \
     TYPE get_##NAME() const { return ( *convertor )( FIELD ); }
 
@@ -35,22 +44,13 @@ THE SOFTWARE.
         FIELD = value;                        \
         FIELD = ( *convertor )( FIELD );      \
     }
-#define ELFIO_GET_SET_ACCESS( TYPE, NAME, FIELD )               \
-    TYPE get_##NAME() const { return ( *convertor )( FIELD ); } \
-    void set_##NAME( TYPE value )                               \
-    {                                                           \
-        FIELD = value;                                          \
-        FIELD = ( *convertor )( FIELD );                        \
+#define ELFIO_GET_SET_ACCESS( TYPE, NAME, FIELD )                        \
+    TYPE get_##NAME() const override { return ( *convertor )( FIELD ); } \
+    void set_##NAME( TYPE value ) override                               \
+    {                                                                    \
+        FIELD = value;                                                   \
+        FIELD = ( *convertor )( FIELD );                                 \
     }
-
-#define ELFIO_GET_ACCESS_DECL( TYPE, NAME ) virtual TYPE get_##NAME() const = 0
-
-#define ELFIO_SET_ACCESS_DECL( TYPE, NAME ) \
-    virtual void set_##NAME( TYPE value ) = 0
-
-#define ELFIO_GET_SET_ACCESS_DECL( TYPE, NAME ) \
-    virtual TYPE get_##NAME() const       = 0;  \
-    virtual void set_##NAME( TYPE value ) = 0
 
 namespace ELFIO {
 

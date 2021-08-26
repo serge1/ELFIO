@@ -79,7 +79,7 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    virtual ~segment_impl() { delete[] data; }
+    ~segment_impl() override { delete[] data; }
 
     //------------------------------------------------------------------------------
     // Section info functions
@@ -100,13 +100,13 @@ template <class T> class segment_impl : public segment
     void set_stream_size( size_t value ) { stream_size = value; }
 
     //------------------------------------------------------------------------------
-    Elf_Half get_index() const { return index; }
+    Elf_Half get_index() const override { return index; }
 
     //------------------------------------------------------------------------------
-    const char* get_data() const { return data; }
+    const char* get_data() const override { return data; }
 
     //------------------------------------------------------------------------------
-    Elf_Half add_section_index( Elf_Half sec_index, Elf_Xword addr_align )
+    Elf_Half add_section_index( Elf_Half sec_index, Elf_Xword addr_align ) override
     {
         sections.emplace_back( sec_index );
         if ( addr_align > get_align() ) {
@@ -117,16 +117,16 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    Elf_Half add_section( section* psec, Elf_Xword addr_align )
+    Elf_Half add_section( section* psec, Elf_Xword addr_align ) override
     {
         return add_section_index( psec->get_index(), addr_align );
     }
 
     //------------------------------------------------------------------------------
-    Elf_Half get_sections_num() const { return (Elf_Half)sections.size(); }
+    Elf_Half get_sections_num() const override { return (Elf_Half)sections.size(); }
 
     //------------------------------------------------------------------------------
-    Elf_Half get_section_index_at( Elf_Half num ) const
+    Elf_Half get_section_index_at( Elf_Half num ) const override
     {
         if ( num < sections.size() ) {
             return sections[num];
@@ -140,7 +140,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
 
     //------------------------------------------------------------------------------
-    void set_offset( Elf64_Off value )
+    void set_offset( Elf64_Off value ) override
     {
         ph.p_offset   = value;
         ph.p_offset   = ( *convertor )( ph.p_offset );
@@ -148,16 +148,16 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    bool is_offset_initialized() const { return is_offset_set; }
+    bool is_offset_initialized() const override { return is_offset_set; }
 
     //------------------------------------------------------------------------------
-    const std::vector<Elf_Half>& get_sections() const { return sections; }
+    const std::vector<Elf_Half>& get_sections() const override { return sections; }
 
     //------------------------------------------------------------------------------
-    void set_index( Elf_Half value ) { index = value; }
+    void set_index( Elf_Half value ) override { index = value; }
 
     //------------------------------------------------------------------------------
-    void load( std::istream& stream, std::streampos header_offset )
+    void load( std::istream& stream, std::streampos header_offset ) override
     {
 
         stream.seekg( 0, stream.end );
@@ -188,7 +188,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     void save( std::ostream&  stream,
                std::streampos header_offset,
-               std::streampos data_offset )
+               std::streampos data_offset ) override
     {
         ph.p_offset = data_offset;
         ph.p_offset = ( *convertor )( ph.p_offset );

@@ -85,7 +85,7 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    ~section_impl() { delete[] data; }
+    ~section_impl() override { delete[] data; }
 
     //------------------------------------------------------------------------------
     // Section info functions
@@ -100,16 +100,16 @@ template <class T> class section_impl : public section
     ELFIO_GET_ACCESS( Elf64_Addr, address, header.sh_addr );
 
     //------------------------------------------------------------------------------
-    Elf_Half get_index() const { return index; }
+    Elf_Half get_index() const override { return index; }
 
     //------------------------------------------------------------------------------
-    std::string get_name() const { return name; }
+    std::string get_name() const override { return name; }
 
     //------------------------------------------------------------------------------
-    void set_name( std::string name ) { this->name = name; }
+    void set_name( std::string name ) override { this->name = name; }
 
     //------------------------------------------------------------------------------
-    void set_address( Elf64_Addr value )
+    void set_address( Elf64_Addr value ) override
     {
         header.sh_addr = value;
         header.sh_addr = ( *convertor )( header.sh_addr );
@@ -117,13 +117,13 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    bool is_address_initialized() const { return is_address_set; }
+    bool is_address_initialized() const override { return is_address_set; }
 
     //------------------------------------------------------------------------------
-    const char* get_data() const { return data; }
+    const char* get_data() const override { return data; }
 
     //------------------------------------------------------------------------------
-    void set_data( const char* raw_data, Elf_Word size )
+    void set_data( const char* raw_data, Elf_Word size ) override
     {
         if ( get_type() != SHT_NOBITS ) {
             delete[] data;
@@ -141,13 +141,13 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    void set_data( const std::string& str_data )
+    void set_data( const std::string& str_data ) override
     {
         return set_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
     //------------------------------------------------------------------------------
-    void append_data( const char* raw_data, Elf_Word size )
+    void append_data( const char* raw_data, Elf_Word size ) override
     {
         if ( get_type() != SHT_NOBITS ) {
             if ( get_size() + size < data_size ) {
@@ -173,7 +173,7 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    void append_data( const std::string& str_data )
+    void append_data( const std::string& str_data ) override
     {
         return append_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
@@ -184,10 +184,10 @@ template <class T> class section_impl : public section
     ELFIO_GET_SET_ACCESS( Elf64_Off, offset, header.sh_offset );
 
     //------------------------------------------------------------------------------
-    void set_index( Elf_Half value ) { index = value; }
+    void set_index( Elf_Half value ) override { index = value; }
 
     //------------------------------------------------------------------------------
-    void load( std::istream& stream, std::streampos header_offset )
+    void load( std::istream& stream, std::streampos header_offset ) override
     {
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
                      '\0' );
@@ -218,7 +218,7 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
     void save( std::ostream&  stream,
                std::streampos header_offset,
-               std::streampos data_offset )
+               std::streampos data_offset ) override
     {
         if ( 0 != get_index() ) {
             header.sh_offset = data_offset;
@@ -250,10 +250,10 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    size_t get_stream_size() const { return stream_size; }
+    size_t get_stream_size() const override { return stream_size; }
 
     //------------------------------------------------------------------------------
-    void set_stream_size( size_t value ) { stream_size = value; }
+    void set_stream_size( size_t value ) override { stream_size = value; }
 
     //------------------------------------------------------------------------------
   private:
