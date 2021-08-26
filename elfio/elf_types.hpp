@@ -693,20 +693,29 @@ typedef uint64_t Elf64_Off;
 #define R_X86_64_GNU_VTENTRY     251
 
 // Segment types
-#define PT_NULL         0
-#define PT_LOAD         1
-#define PT_DYNAMIC      2
-#define PT_INTERP       3
-#define PT_NOTE         4
-#define PT_SHLIB        5
-#define PT_PHDR         6
-#define PT_TLS          7
-#define PT_GNU_EH_FRAME 0x6474e550
-#define PT_GNU_STACK    0x6474e551
-#define PT_LOOS         0x60000000
-#define PT_HIOS         0x6fffffff
-#define PT_LOPROC       0x70000000
-#define PT_HIPROC       0x7FFFFFFF
+#define PT_NULL              0
+#define PT_LOAD              1
+#define PT_DYNAMIC           2
+#define PT_INTERP            3
+#define PT_NOTE              4
+#define PT_SHLIB             5
+#define PT_PHDR              6
+#define PT_TLS               7
+#define PT_LOOS              0X60000000
+#define PT_GNU_EH_FRAME      0X6474E550 // Frame unwind information
+#define PT_GNU_STACK         0X6474E551 // Stack flags
+#define PT_GNU_RELRO         0X6474E552 // Read only after relocs
+#define PT_GNU_PROPERTY      0X6474E553 // GNU property
+#define PT_GNU_MBIND_LO      0X6474E555 // Mbind segments start
+#define PT_GNU_MBIND_HI      0X6474F554 // Mbind segments finish
+#define PT_PAX_FLAGS         0X65041580
+#define PT_OPENBSD_RANDOMIZE 0X65A3DBE6
+#define PT_OPENBSD_WXNEEDED  0X65A3DBE7
+#define PT_OPENBSD_BOOTDATA  0X65A41BE6
+#define PT_SUNWSTACK         0X6FFFFFFB
+#define PT_HIOS              0X6FFFFFFF
+#define PT_LOPROC            0X70000000
+#define PT_HIPROC            0X7FFFFFFF
 
 // Segment flags
 #define PF_X        1          // Execute

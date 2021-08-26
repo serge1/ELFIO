@@ -387,6 +387,15 @@ static struct segment_type_table_t
     { PT_TLS, "TLS" },
     { PT_GNU_EH_FRAME, "GNU_EH_FRAME" },
     { PT_GNU_STACK, "GNU_STACK" },
+    { PT_GNU_RELRO, "GNU_RELRO" },
+    { PT_GNU_PROPERTY, "GNU_PROPERTY" },
+    { PT_GNU_MBIND_LO, "GNU_MBIND_LO" },
+    { PT_GNU_MBIND_HI, "GNU_MBIND_HI" },
+    { PT_PAX_FLAGS, "PAX_FLAGS" },
+    { PT_OPENBSD_RANDOMIZE, "OPENBSD_RANDOMIZE" },
+    { PT_OPENBSD_WXNEEDED, "OPENBSD_WXNEEDED " },
+    { PT_OPENBSD_BOOTDATA, "OPENBSD_BOOTDATA " },
+    { PT_SUNWSTACK, "SUNWSTACK" },
 };
 
 static struct segment_flag_table_t
