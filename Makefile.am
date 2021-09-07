@@ -1,5 +1,5 @@
 SUBDIRS = examples/elfdump examples/tutorial examples/writer examples/write_obj \
-          examples/anonymizer examples/add_section examples/c_wrapper
+          examples/anonymizer examples/add_section
 
 nobase_include_HEADERS = elfio/elf_types.hpp     elfio/elfio_dynamic.hpp    \
                          elfio/elfio.hpp         elfio/elfio_header.hpp     \
