@@ -83,11 +83,11 @@ template <class S> class relocation_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    bool get_entry( Elf_Xword   index,
-                    Elf64_Addr& offset,
-                    Elf_Word&   symbol,
-                    Elf_Word&   type,
-                    Elf_Sxword& addend ) const
+    bool get_entry( Elf_Xword      index,
+                    Elf64_Addr&    offset,
+                    Elf_Word&      symbol,
+                    unsigned char& type,
+                    Elf_Sxword&    addend ) const
     {
         if ( index >= get_entries_num() ) { // Is index valid
             return false;
@@ -118,13 +118,13 @@ template <class S> class relocation_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    bool get_entry( Elf_Xword    index,
-                    Elf64_Addr&  offset,
-                    Elf64_Addr&  symbolValue,
-                    std::string& symbolName,
-                    Elf_Word&    type,
-                    Elf_Sxword&  addend,
-                    Elf_Sxword&  calcValue ) const
+    bool get_entry( Elf_Xword      index,
+                    Elf64_Addr&    offset,
+                    Elf64_Addr&    symbolValue,
+                    std::string&   symbolName,
+                    unsigned char& type,
+                    Elf_Sxword&    addend,
+                    Elf_Sxword&    calcValue ) const
     {
         // Do regular job
         Elf_Word symbol;
@@ -185,11 +185,11 @@ template <class S> class relocation_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    bool set_entry( Elf_Xword  index,
-                    Elf64_Addr offset,
-                    Elf_Word   symbol,
-                    Elf_Word   type,
-                    Elf_Sxword addend )
+    bool set_entry( Elf_Xword     index,
+                    Elf64_Addr    offset,
+                    Elf_Word      symbol,
+                    unsigned char type,
+                    Elf_Sxword    addend )
     {
         if ( index >= get_entries_num() ) { // Is index valid
             return false;
@@ -293,10 +293,10 @@ template <class S> class relocation_section_accessor_template
     //------------------------------------------------------------------------------
     void swap_symbols( Elf_Xword first, Elf_Xword second )
     {
-        Elf64_Addr offset;
-        Elf_Word   symbol;
-        Elf_Word   rtype;
-        Elf_Sxword addend;
+        Elf64_Addr    offset;
+        Elf_Word      symbol;
+        unsigned char rtype;
+        Elf_Sxword    addend;
         for ( Elf_Word i = 0; i < get_entries_num(); i++ ) {
             get_entry( i, offset, symbol, rtype, addend );
             if ( symbol == first ) {
@@ -318,11 +318,11 @@ template <class S> class relocation_section_accessor_template
 
     //------------------------------------------------------------------------------
     template <class T>
-    void generic_get_entry_rel( Elf_Xword   index,
-                                Elf64_Addr& offset,
-                                Elf_Word&   symbol,
-                                Elf_Word&   type,
-                                Elf_Sxword& addend ) const
+    void generic_get_entry_rel( Elf_Xword      index,
+                                Elf64_Addr&    offset,
+                                Elf_Word&      symbol,
+                                unsigned char& type,
+                                Elf_Sxword&    addend ) const
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
@@ -338,11 +338,11 @@ template <class S> class relocation_section_accessor_template
 
     //------------------------------------------------------------------------------
     template <class T>
-    void generic_get_entry_rela( Elf_Xword   index,
-                                 Elf64_Addr& offset,
-                                 Elf_Word&   symbol,
-                                 Elf_Word&   type,
-                                 Elf_Sxword& addend ) const
+    void generic_get_entry_rela( Elf_Xword      index,
+                                 Elf64_Addr&    offset,
+                                 Elf_Word&      symbol,
+                                 unsigned char& type,
+                                 Elf_Sxword&    addend ) const
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
@@ -358,10 +358,10 @@ template <class S> class relocation_section_accessor_template
 
     //------------------------------------------------------------------------------
     template <class T>
-    void generic_set_entry_rel( Elf_Xword  index,
-                                Elf64_Addr offset,
-                                Elf_Word   symbol,
-                                Elf_Word   type,
+    void generic_set_entry_rel( Elf_Xword     index,
+                                Elf64_Addr    offset,
+                                Elf_Word      symbol,
+                                unsigned char type,
                                 Elf_Sxword )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
@@ -383,11 +383,11 @@ template <class S> class relocation_section_accessor_template
 
     //------------------------------------------------------------------------------
     template <class T>
-    void generic_set_entry_rela( Elf_Xword  index,
-                                 Elf64_Addr offset,
-                                 Elf_Word   symbol,
-                                 Elf_Word   type,
-                                 Elf_Sxword addend )
+    void generic_set_entry_rela( Elf_Xword     index,
+                                 Elf64_Addr    offset,
+                                 Elf_Word      symbol,
+                                 unsigned char type,
+                                 Elf_Sxword    addend )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
