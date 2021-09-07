@@ -926,31 +926,14 @@ struct Elf64_Rela
     Elf_Sxword r_addend;
 };
 
-template <typename T> constexpr auto ELF32_R_SYM( T i )
-{
-    return ( ( i ) >> 8 );
-}
-template <typename T> constexpr auto ELF32_R_TYPE( T i )
-{
-    return ( (unsigned char)( i ) );
-}
-template <typename T1, typename T2> constexpr auto ELF32_R_INFO( T1 s, T2 t )
-{
-    return ( ( ( s ) << 8 ) + (unsigned char)( t ) );
-}
+#define ELF32_R_SYM( i )     ( ( i ) >> 8 )
+#define ELF32_R_TYPE( i )    ( (unsigned char)( i ) )
+#define ELF32_R_INFO( s, t ) ( ( ( s ) << 8 ) + (unsigned char)( t ) )
 
-template <typename T> constexpr auto ELF64_R_SYM( T i )
-{
-    return ( ( i ) >> 32 );
-}
-template <typename T> constexpr auto ELF64_R_TYPE( T i )
-{
-    return ( (i)&0xffffffffL );
-}
-template <typename T1, typename T2> constexpr auto ELF64_R_INFO( T1 s, T2 t )
-{
-    return ( ( ( (int64_t)( s ) ) << 32 ) + ( (t)&0xffffffffL ) );
-}
+#define ELF64_R_SYM( i )  ( ( i ) >> 32 )
+#define ELF64_R_TYPE( i ) ( (i)&0xffffffffL )
+#define ELF64_R_INFO( s, t ) \
+    ( ( ( (int64_t)( s ) ) << 32 ) + ( (t)&0xffffffffL ) )
 
 // Dynamic structure
 struct Elf32_Dyn

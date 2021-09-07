@@ -841,10 +841,10 @@ BOOST_AUTO_TEST_CASE( rearrange_local_symbols_with_reallocation )
     std::vector<std::string> before;
 
     for ( Elf_Word i = 0; i < rela.get_entries_num(); i++ ) {
-        Elf64_Addr offset;
-        Elf_Word   symbol;
-        Elf_Word   rtype;
-        Elf_Sxword addend;
+        Elf64_Addr    offset;
+        Elf_Word      symbol;
+        unsigned char rtype;
+        Elf_Sxword    addend;
 
         rela.get_entry( i, offset, symbol, rtype, addend );
         symbols.get_symbol( symbol, name, value, size, bind, type,
@@ -875,10 +875,10 @@ BOOST_AUTO_TEST_CASE( rearrange_local_symbols_with_reallocation )
     std::vector<std::string> after;
 
     for ( Elf_Word i = 0; i < rel.get_entries_num(); i++ ) {
-        Elf64_Addr offset;
-        Elf_Word   symbol;
-        Elf_Word   rtype;
-        Elf_Sxword addend;
+        Elf64_Addr    offset;
+        Elf_Word      symbol;
+        unsigned char rtype;
+        Elf_Sxword    addend;
 
         rel.get_entry( i, offset, symbol, rtype, addend );
         syms.get_symbol( symbol, name, value, size, bind, type, section_index,

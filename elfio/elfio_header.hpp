@@ -60,14 +60,14 @@ class elf_header
 template <class T> struct elf_header_impl_types;
 template <> struct elf_header_impl_types<Elf32_Ehdr>
 {
-    typedef Elf32_Phdr         Phdr_type;
-    typedef Elf32_Shdr         Shdr_type;
+    using Phdr_type                       = Elf32_Phdr;
+    using Shdr_type                       = Elf32_Shdr;
     static const unsigned char file_class = ELFCLASS32;
 };
 template <> struct elf_header_impl_types<Elf64_Ehdr>
 {
-    typedef Elf64_Phdr         Phdr_type;
-    typedef Elf64_Shdr         Shdr_type;
+    using Phdr_type                       = Elf64_Phdr;
+    using Shdr_type                       = Elf64_Shdr;
     static const unsigned char file_class = ELFCLASS64;
 };
 
