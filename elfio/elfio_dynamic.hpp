@@ -132,7 +132,7 @@ template <class S> class dynamic_section_accessor_template
         const endianess_convertor& convertor = elf_file.get_convertor();
 
         // Check unusual case when dynamic section has no data
-        if ( dynamic_section->get_data() == 0 ||
+        if ( dynamic_section->get_data() == nullptr ||
              ( index + 1 ) * dynamic_section->get_entry_size() >
                  dynamic_section->get_size() ) {
             tag   = DT_NULL;

@@ -23,28 +23,6 @@ THE SOFTWARE.
 #ifndef ELFTYPES_H
 #define ELFTYPES_H
 
-#ifndef ELFIO_NO_OWN_TYPES
-#if !defined( ELFIO_NO_CSTDINT ) && !defined( ELFIO_NO_INTTYPES )
-#include <stdint.h>
-#else
-typedef unsigned char    uint8_t;
-typedef signed char      int8_t;
-typedef unsigned short   uint16_t;
-typedef signed short     int16_t;
-#ifdef _MSC_VER
-typedef unsigned __int32 uint32_t;
-typedef signed __int32   int32_t;
-typedef unsigned __int64 uint64_t;
-typedef signed __int64   int64_t;
-#else
-typedef unsigned int       uint32_t;
-typedef signed int         int32_t;
-typedef unsigned long long uint64_t;
-typedef signed long long   int64_t;
-#endif // _MSC_VER
-#endif // ELFIO_NO_CSTDINT
-#endif // ELFIO_NO_OWN_TYPES
-
 #ifdef __cplusplus
 namespace ELFIO {
 #endif
