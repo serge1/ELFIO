@@ -34,6 +34,28 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "shell",
+            "label": "clang-tidy",
+            "command": "clang-tidy",
+            "args": [
+                "--checks=*,-modernize-use-trailing-return-type,-modernize-avoid-c-arrays,-llvm*,-fuchsia-*",
+                "-header-filter=./*",
+                "examples/elfdump/elfdump.cpp",
+                "--",
+                "-I.",
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ],
     "version": "2.0.0"

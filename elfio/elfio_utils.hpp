@@ -148,7 +148,7 @@ class endianess_convertor
     unsigned char get_host_encoding() const
     {
         static const int tmp = 1;
-        if ( 1 == *(const char*)&tmp ) {
+        if ( 1 == *reinterpret_cast<const char*>( &tmp ) ) {
             return ELFDATA2LSB;
         }
         else {
@@ -157,15 +157,14 @@ class endianess_convertor
     }
 
     //------------------------------------------------------------------------------
-  private:
     bool need_conversion;
 };
 
 //------------------------------------------------------------------------------
 inline uint32_t elf_hash( const unsigned char* name )
 {
-    uint32_t h = 0, g;
-    while ( *name ) {
+    uint32_t h = 0, g = 0;
+    while ( *name != '\0' ) {
         h = ( h << 4 ) + *name++;
         g = h & 0xf0000000;
         if ( g != 0 )
@@ -191,10 +190,12 @@ inline std::string to_hex_string( uint64_t value )
 
     while ( value ) {
         auto digit = value & 0xF;
-        if ( digit < 0xA )
+        if ( digit < 0xA ) {
             str = char( '0' + digit ) + str;
-        else
+        }
+        else {
             str = char( 'A' + digit - 0xA ) + str;
+        }
         value >>= 4;
     }
 
@@ -204,7 +205,7 @@ inline std::string to_hex_string( uint64_t value )
 //------------------------------------------------------------------------------
 inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 {
-    stream.seekp( 0, stream.end );
+    stream.seekp( 0, std::ios_base::end );
     if ( stream.tellp() < offset ) {
         std::streamsize size = offset - stream.tellp();
         stream.write( std::string( size, '\0' ).c_str(), size );

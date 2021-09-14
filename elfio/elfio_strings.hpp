@@ -34,7 +34,8 @@ template <class S> class string_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    string_section_accessor_template( S* section ) : string_section( section )
+    explicit string_section_accessor_template( S* section )
+        : string_section( section )
     {
     }
 
@@ -60,15 +61,16 @@ template <class S> class string_section_accessor_template
 
         if ( string_section ) {
             // Strings are addeded to the end of the current section data
-            current_position = (Elf_Word)string_section->get_size();
+            current_position =
+                static_cast<Elf_Word>( string_section->get_size() );
 
             if ( current_position == 0 ) {
                 char empty_string = '\0';
                 string_section->append_data( &empty_string, 1 );
                 current_position++;
             }
-            string_section->append_data( str,
-                                         (Elf_Word)std::strlen( str ) + 1 );
+            string_section->append_data(
+                str, static_cast<Elf_Word>( std::strlen( str ) + 1 ) );
         }
 
         return current_position;

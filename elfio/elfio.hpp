@@ -162,7 +162,7 @@ class elfio
     //------------------------------------------------------------------------------
     bool save( std::ostream& stream )
     {
-        if ( !stream || !header ) {
+        if ( !stream || header == nullptr ) {
             return false;
         }
 
@@ -171,15 +171,16 @@ class elfio
         // The position of the section table is variable and needs to be fixed
         // before saving.
         header->set_segments_num( segments.size() );
-        header->set_segments_offset( segments.size() ? header->get_header_size()
-                                                     : 0 );
+        header->set_segments_offset(
+            segments.size() > 0 ? header->get_header_size() : 0 );
         header->set_sections_num( sections.size() );
         header->set_sections_offset( 0 );
 
         // Layout the first section right after the segment table
-        current_file_pos = header->get_header_size() +
-                           header->get_segment_entry_size() *
-                               (Elf_Xword)header->get_segments_num();
+        current_file_pos =
+            header->get_header_size() +
+            header->get_segment_entry_size() *
+                static_cast<Elf_Xword>( header->get_segments_num() );
 
         calc_segment_alignment();
 
@@ -269,8 +270,8 @@ class elfio
             for ( int j = i+1; j < sections.size(); ++j ) {
                 const section* a = sections[i];
                 const section* b = sections[j];
-                if (   !(a->get_type() & SHT_NOBITS)
-                    && !(b->get_type() & SHT_NOBITS)
+                if (   ((a->get_type() & SHT_NOBITS) == 0)
+                    && ((b->get_type() & SHT_NOBITS) == 0)
                     &&  (a->get_size() > 0)
                     &&  (b->get_size() > 0)
                     &&  (a->get_offset() > 0)
@@ -297,7 +298,7 @@ class elfio
             const segment* seg = segments[h];
             if ( seg->get_type() == PT_LOAD && seg->get_file_size() > 0 ) {
                 const section* sec = find_prog_section_for_offset( seg->get_offset() );
-                if ( sec ) {
+                if ( sec != nullptr ) {
                     Elf64_Addr sec_addr = get_virtual_addr( seg->get_offset(), sec );
                     if ( sec_addr != seg->get_virtual_address() ) {
                         errors += "Virtual address of segment " + std::to_string( h ) + " (" + to_hex_string( seg->get_virtual_address() ) + ")"
@@ -316,14 +317,14 @@ class elfio
 
   private:
     //------------------------------------------------------------------------------
-    bool is_offset_in_section( Elf64_Off offset, const section* sec ) const
+    static bool is_offset_in_section( Elf64_Off offset, const section* sec )
     {
         return ( offset >= sec->get_offset() ) &&
                ( offset < ( sec->get_offset() + sec->get_size() ) );
     }
 
     //------------------------------------------------------------------------------
-    Elf64_Addr get_virtual_addr( Elf64_Off offset, const section* sec ) const
+    static Elf64_Addr get_virtual_addr( Elf64_Off offset, const section* sec )
     {
         return sec->get_address() + offset - sec->get_offset();
     }
@@ -331,10 +332,11 @@ class elfio
     //------------------------------------------------------------------------------
     const section* find_prog_section_for_offset( Elf64_Off offset ) const
     {
-        for ( auto sec : sections ) {
+        for ( auto* sec : sections ) {
             if ( sec->get_type() == SHT_PROGBITS &&
-                 is_offset_in_section( offset, sec ) )
+                 is_offset_in_section( offset, sec ) ) {
                 return sec;
+            }
         }
         return nullptr;
     }
@@ -345,12 +347,12 @@ class elfio
         delete header;
         header = nullptr;
 
-        for ( auto it : sections_ ) {
+        for ( auto* it : sections_ ) {
             delete it;
         }
         sections_.clear();
 
-        for ( auto it : segments_ ) {
+        for ( auto* it : segments_ ) {
             delete it;
         }
         segments_.clear();
@@ -380,8 +382,8 @@ class elfio
     //------------------------------------------------------------------------------
     section* create_section()
     {
-        section*      new_section;
-        unsigned char file_class = get_class();
+        section*      new_section = nullptr;
+        unsigned char file_class  = get_class();
 
         if ( file_class == ELFCLASS64 ) {
             new_section = new section_impl<Elf64_Shdr>( &convertor );
@@ -393,7 +395,7 @@ class elfio
             return nullptr;
         }
 
-        new_section->set_index( (Elf_Half)sections_.size() );
+        new_section->set_index( static_cast<Elf_Half>( sections_.size() ) );
         sections_.emplace_back( new_section );
 
         return new_section;
@@ -402,8 +404,8 @@ class elfio
     //------------------------------------------------------------------------------
     segment* create_segment()
     {
-        segment*      new_segment;
-        unsigned char file_class = header->get_class();
+        segment*      new_segment = nullptr;
+        unsigned char file_class  = header->get_class();
 
         if ( file_class == ELFCLASS64 ) {
             new_segment = new segment_impl<Elf64_Phdr>( &convertor );
@@ -415,7 +417,7 @@ class elfio
             return nullptr;
         }
 
-        new_segment->set_index( (Elf_Half)segments_.size() );
+        new_segment->set_index( static_cast<Elf_Half>( segments_.size() ) );
         segments_.emplace_back( new_segment );
 
         return new_segment;
@@ -446,8 +448,9 @@ class elfio
 
         for ( Elf_Half i = 0; i < num; ++i ) {
             section* sec = create_section();
-            sec->load( stream, (std::streamoff)offset +
-                                   (std::streampos)i * entry_size );
+            sec->load( stream,
+                       static_cast<std::streamoff>( offset ) +
+                           static_cast<std::streampos>( i ) * entry_size );
             sec->set_index( i );
             // To mark that the section is not permitted to reassign address
             // during layout calculation
@@ -474,10 +477,10 @@ class elfio
     //! Checks whether the addresses of the section entirely fall within the given segment.
     //! It doesn't matter if the addresses are memory addresses, or file offsets,
     //!  they just need to be in the same address space
-    bool is_sect_in_seg( Elf64_Off sect_begin,
-                         Elf_Xword sect_size,
-                         Elf64_Off seg_begin,
-                         Elf64_Off seg_end )
+    static bool is_sect_in_seg( Elf64_Off sect_begin,
+                                Elf_Xword sect_size,
+                                Elf64_Off seg_begin,
+                                Elf64_Off seg_end )
     {
         return ( seg_begin <= sect_begin ) &&
                ( sect_begin + sect_size <= seg_end ) &&
@@ -495,7 +498,7 @@ class elfio
         Elf64_Off offset     = header->get_segments_offset();
 
         for ( Elf_Half i = 0; i < num; ++i ) {
-            segment*      seg;
+            segment*      seg        = nullptr;
             unsigned char file_class = header->get_class();
 
             if ( file_class == ELFCLASS64 ) {
@@ -508,8 +511,9 @@ class elfio
                 return false;
             }
 
-            seg->load( stream, (std::streamoff)offset +
-                                   (std::streampos)i * entry_size );
+            seg->load( stream,
+                       static_cast<std::streamoff>( offset ) +
+                           static_cast<std::streampos>( i ) * entry_size );
             seg->set_index( i );
 
             // Add sections to the segments (similar to readelfs algorithm)
@@ -517,10 +521,10 @@ class elfio
             Elf64_Off segEndOffset  = segBaseOffset + seg->get_file_size();
             Elf64_Off segVBaseAddr  = seg->get_virtual_address();
             Elf64_Off segVEndAddr   = segVBaseAddr + seg->get_memory_size();
-            for ( auto psec : sections ) {
+            for ( auto* psec : sections ) {
                 // SHF_ALLOC sections are matched based on the virtual address
                 // otherwise the file offset is matched
-                if ( ( psec->get_flags() & SHF_ALLOC )
+                if ( ( ( psec->get_flags() & SHF_ALLOC ) == SHF_ALLOC )
                          ? is_sect_in_seg( psec->get_address(),
                                            psec->get_size(), segVBaseAddr,
                                            segVEndAddr )
@@ -545,10 +549,11 @@ class elfio
     //------------------------------------------------------------------------------
     bool save_sections( std::ostream& stream )
     {
-        for ( auto sec : sections_ ) {
+        for ( auto* sec : sections_ ) {
             std::streampos headerPosition =
-                (std::streamoff)header->get_sections_offset() +
-                (std::streampos)header->get_section_entry_size() *
+                static_cast<std::streamoff>( header->get_sections_offset() ) +
+                static_cast<std::streampos>(
+                    header->get_section_entry_size() ) *
                     sec->get_index();
 
             sec->save( stream, headerPosition, sec->get_offset() );
@@ -559,10 +564,11 @@ class elfio
     //------------------------------------------------------------------------------
     bool save_segments( std::ostream& stream )
     {
-        for ( auto seg : segments_ ) {
+        for ( auto* seg : segments_ ) {
             std::streampos headerPosition =
-                header->get_segments_offset() +
-                (std::streampos)header->get_segment_entry_size() *
+                static_cast<std::streamoff>( header->get_segments_offset() ) +
+                static_cast<std::streampos>(
+                    header->get_segment_entry_size() ) *
                     seg->get_index();
 
             seg->save( stream, headerPosition, seg->get_offset() );
@@ -571,7 +577,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool is_section_without_segment( unsigned int section_index )
+    bool is_section_without_segment( unsigned int section_index ) const
     {
         bool found = false;
 
@@ -586,7 +592,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool is_subsequence_of( segment* seg1, segment* seg2 )
+    static bool is_subsequence_of( segment* seg1, segment* seg2 )
     {
         // Return 'true' if sections of seg1 are a subset of sections in seg2
         const std::vector<Elf_Half>& sections1 = seg1->get_sections();
@@ -635,10 +641,12 @@ class elfio
                 }
             }
 
-            if ( i < worklist.size() )
+            if ( i < worklist.size() ) {
                 worklist.emplace_back( seg );
-            else
+            }
+            else {
                 res.emplace_back( seg );
+            }
         }
 
         return res;
@@ -658,8 +666,9 @@ class elfio
                         section_align - current_file_pos % section_align;
                 }
 
-                if ( 0 != sec->get_index() )
+                if ( 0 != sec->get_index() ) {
                     sec->set_offset( current_file_pos );
+                }
 
                 if ( SHT_NOBITS != sec->get_type() &&
                      SHT_NULL != sec->get_type() ) {
@@ -674,7 +683,7 @@ class elfio
     //------------------------------------------------------------------------------
     void calc_segment_alignment()
     {
-        for ( auto seg : segments_ ) {
+        for ( auto* seg : segments_ ) {
             for ( int i = 0; i < seg->get_sections_num(); ++i ) {
                 section* sect = sections_[seg->get_section_index_at( i )];
                 if ( sect->get_addr_align() > seg->get_align() ) {
@@ -694,7 +703,7 @@ class elfio
         // sub sequence of other segments are located at the end
         worklist = get_ordered_segments();
 
-        for ( auto seg : worklist ) {
+        for ( auto* seg : worklist ) {
             Elf_Xword segment_memory   = 0;
             Elf_Xword segment_filesize = 0;
             Elf_Xword seg_start_pos    = current_file_pos;
@@ -704,18 +713,18 @@ class elfio
                 seg_start_pos  = header->get_segments_offset();
                 segment_memory = segment_filesize =
                     header->get_segment_entry_size() *
-                    (Elf_Xword)header->get_segments_num();
+                    static_cast<Elf_Xword>( header->get_segments_num() );
             }
             // Special case:
             else if ( seg->is_offset_initialized() && seg->get_offset() == 0 ) {
                 seg_start_pos = 0;
-                if ( seg->get_sections_num() ) {
+                if ( seg->get_sections_num() > 0 ) {
                     segment_memory = segment_filesize = current_file_pos;
                 }
             }
             // New segments with not generated sections
             // have to be aligned
-            else if ( seg->get_sections_num() &&
+            else if ( seg->get_sections_num() > 0 &&
                       !section_generated[seg->get_section_index_at( 0 )] ) {
                 Elf_Xword align = seg->get_align() > 0 ? seg->get_align() : 1;
                 Elf64_Off cur_page_alignment = current_file_pos % align;
@@ -726,7 +735,7 @@ class elfio
                 current_file_pos += ( seg->get_align() + error ) % align;
                 seg_start_pos = current_file_pos;
             }
-            else if ( seg->get_sections_num() ) {
+            else if ( seg->get_sections_num() > 0 ) {
                 seg_start_pos =
                     sections[seg->get_section_index_at( 0 )]->get_offset();
             }
@@ -780,14 +789,16 @@ class elfio
 
                 // Determine the segment file and memory sizes
                 // Special case .tbss section (NOBITS) in non TLS segment
-                if ( ( sec->get_flags() & SHF_ALLOC ) &&
-                     !( ( sec->get_flags() & SHF_TLS ) &&
+                if ( ( ( sec->get_flags() & SHF_ALLOC ) == SHF_ALLOC ) &&
+                     !( ( ( sec->get_flags() & SHF_TLS ) == SHF_TLS ) &&
                         ( seg->get_type() != PT_TLS ) &&
-                        ( SHT_NOBITS == sec->get_type() ) ) )
+                        ( SHT_NOBITS == sec->get_type() ) ) ) {
                     segment_memory += sec->get_size() + secAlign;
+                }
 
-                if ( SHT_NOBITS != sec->get_type() )
+                if ( SHT_NOBITS != sec->get_type() ) {
                     segment_filesize += sec->get_size() + secAlign;
+                }
 
                 // Nothing to be done when generating nested segments
                 if ( section_generated[index] ) {
@@ -797,15 +808,18 @@ class elfio
                 current_file_pos += secAlign;
 
                 // Set the section addresses when missing
-                if ( !sec->is_address_initialized() )
+                if ( !sec->is_address_initialized() ) {
                     sec->set_address( seg->get_virtual_address() +
                                       current_file_pos - seg_start_pos );
+                }
 
-                if ( 0 != sec->get_index() )
+                if ( 0 != sec->get_index() ) {
                     sec->set_offset( current_file_pos );
+                }
 
-                if ( SHT_NOBITS != sec->get_type() )
+                if ( SHT_NOBITS != sec->get_type() ) {
                     current_file_pos += sec->get_size();
+                }
 
                 section_generated[index] = true;
             }
@@ -843,10 +857,13 @@ class elfio
     {
       public:
         //------------------------------------------------------------------------------
-        Sections( elfio* parent ) : parent( parent ) {}
+        explicit Sections( elfio* parent ) : parent( parent ) {}
 
         //------------------------------------------------------------------------------
-        Elf_Half size() const { return (Elf_Half)parent->sections_.size(); }
+        Elf_Half size() const
+        {
+            return static_cast<Elf_Half>( parent->sections_.size() );
+        }
 
         //------------------------------------------------------------------------------
         section* operator[]( unsigned int index ) const
@@ -865,7 +882,7 @@ class elfio
         {
             section* sec = nullptr;
 
-            for ( auto it : parent->sections_ ) {
+            for ( auto* it : parent->sections_ ) {
                 if ( it->get_name() == name ) {
                     sec = it;
                     break;
@@ -920,16 +937,18 @@ class elfio
     } sections;
 
     //------------------------------------------------------------------------------
-  public:
     friend class Segments;
     class Segments
     {
       public:
         //------------------------------------------------------------------------------
-        Segments( elfio* parent ) : parent( parent ) {}
+        explicit Segments( elfio* parent ) : parent( parent ) {}
 
         //------------------------------------------------------------------------------
-        Elf_Half size() const { return (Elf_Half)parent->segments_.size(); }
+        Elf_Half size() const
+        {
+            return static_cast<Elf_Half>( parent->segments_.size() );
+        }
 
         //------------------------------------------------------------------------------
         segment* operator[]( unsigned int index ) const

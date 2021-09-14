@@ -79,8 +79,8 @@ template <class S> class dynamic_section_accessor_template
         // If the tag may have a string table reference, prepare the string
         if ( tag == DT_NEEDED || tag == DT_SONAME || tag == DT_RPATH ||
              tag == DT_RUNPATH ) {
-            string_section_accessor strsec =
-                elf_file.sections[get_string_table_index()];
+            string_section_accessor strsec(
+                elf_file.sections[get_string_table_index()] );
             const char* result = strsec.get_string( value );
             if ( nullptr == result ) {
                 str.clear();
@@ -109,8 +109,8 @@ template <class S> class dynamic_section_accessor_template
     //------------------------------------------------------------------------------
     void add_entry( Elf_Xword tag, const std::string& str )
     {
-        string_section_accessor strsec =
-            elf_file.sections[get_string_table_index()];
+        string_section_accessor strsec(
+            elf_file.sections[get_string_table_index()] );
         Elf_Xword value = strsec.add_string( str );
         add_entry( tag, value );
     }

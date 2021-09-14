@@ -72,7 +72,6 @@ template <class S, typename T> class array_section_accessor_template
 
   private:
     //------------------------------------------------------------------------------
-  private:
     const elfio& elf_file;
     S*           array_section;
 };
