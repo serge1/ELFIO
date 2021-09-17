@@ -752,7 +752,7 @@ class elfio
                     continue;
                 }
 
-                Elf_Xword secAlign = 0;
+                Elf_Xword section_align = 0;
                 // Fix up the alignment
                 if ( !section_generated[index] &&
                      sec->is_address_initialized() &&
@@ -765,10 +765,10 @@ class elfio
                     Elf64_Off cur_offset = current_file_pos - seg_start_pos;
                     if ( req_offset < cur_offset ) {
                         // something has gone awfully wrong, abort!
-                        // secAlign would turn out negative, seeking backwards and overwriting previous data
+                        // section_align would turn out negative, seeking backwards and overwriting previous data
                         return false;
                     }
-                    secAlign = req_offset - cur_offset;
+                    section_align = req_offset - cur_offset;
                 }
                 else if ( !section_generated[index] &&
                           !sec->is_address_initialized() ) {
@@ -779,11 +779,11 @@ class elfio
                         align = 1;
                     }
                     Elf64_Off error = current_file_pos % align;
-                    secAlign        = ( align - error ) % align;
+                    section_align        = ( align - error ) % align;
                 }
                 else if ( section_generated[index] ) {
                     // Alignment for already generated sections
-                    secAlign =
+                    section_align =
                         sec->get_offset() - seg_start_pos - segment_filesize;
                 }
 
@@ -793,11 +793,11 @@ class elfio
                      !( ( ( sec->get_flags() & SHF_TLS ) == SHF_TLS ) &&
                         ( seg->get_type() != PT_TLS ) &&
                         ( SHT_NOBITS == sec->get_type() ) ) ) {
-                    segment_memory += sec->get_size() + secAlign;
+                    segment_memory += sec->get_size() + section_align;
                 }
 
                 if ( SHT_NOBITS != sec->get_type() ) {
-                    segment_filesize += sec->get_size() + secAlign;
+                    segment_filesize += sec->get_size() + section_align;
                 }
 
                 // Nothing to be done when generating nested segments
@@ -805,7 +805,7 @@ class elfio
                     continue;
                 }
 
-                current_file_pos += secAlign;
+                current_file_pos += section_align;
 
                 // Set the section addresses when missing
                 if ( !sec->is_address_initialized() ) {
