@@ -124,6 +124,11 @@ class elfio
         create_mandatory_sections();
     }
 
+    void set_address_translation( std::vector<address_translation>& addr_trans )
+    {
+        addr_translator.set_address_translation( addr_trans );
+    }
+
     //------------------------------------------------------------------------------
     bool load( const std::string& file_name )
     {
@@ -143,6 +148,7 @@ class elfio
 
         unsigned char e_ident[EI_NIDENT];
         // Read ELF file signature
+        stream.seekg( addr_translator( 0 ) );
         stream.read( reinterpret_cast<char*>( &e_ident ), sizeof( e_ident ) );
 
         // Is it ELF file?
@@ -394,12 +400,12 @@ class elfio
         elf_header* new_header = nullptr;
 
         if ( file_class == ELFCLASS64 ) {
-            new_header =
-                new elf_header_impl<Elf64_Ehdr>( &convertor, encoding );
+            new_header = new elf_header_impl<Elf64_Ehdr>( &convertor, encoding,
+                                                          &addr_translator );
         }
         else if ( file_class == ELFCLASS32 ) {
-            new_header =
-                new elf_header_impl<Elf32_Ehdr>( &convertor, encoding );
+            new_header = new elf_header_impl<Elf32_Ehdr>( &convertor, encoding,
+                                                          &addr_translator );
         }
         else {
             return nullptr;
@@ -1023,6 +1029,7 @@ class elfio
     std::vector<section*> sections_;
     std::vector<segment*> segments_;
     endianess_convertor   convertor;
+    address_translator    addr_translator;
 
     Elf_Xword current_file_pos;
 };

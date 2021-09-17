@@ -75,9 +75,12 @@ template <class T> class elf_header_impl : public elf_header
 {
   public:
     //------------------------------------------------------------------------------
-    elf_header_impl( endianess_convertor* convertor, unsigned char encoding )
+    elf_header_impl( endianess_convertor*      convertor,
+                     unsigned char             encoding,
+                     const address_translator* translator )
     {
-        this->convertor = convertor;
+        this->convertor  = convertor;
+        this->translator = translator;
 
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
                      '\0' );
@@ -104,7 +107,7 @@ template <class T> class elf_header_impl : public elf_header
     //------------------------------------------------------------------------------
     bool load( std::istream& stream ) override
     {
-        stream.seekg( 0 );
+        stream.seekg( ( *translator )( 0 ) );
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
         return ( stream.gcount() == sizeof( header ) );
@@ -113,7 +116,7 @@ template <class T> class elf_header_impl : public elf_header
     //------------------------------------------------------------------------------
     bool save( std::ostream& stream ) const override
     {
-        stream.seekp( 0 );
+        stream.seekp( ( *translator )( 0 ) );
         stream.write( reinterpret_cast<const char*>( &header ),
                       sizeof( header ) );
 
@@ -145,8 +148,9 @@ template <class T> class elf_header_impl : public elf_header
     ELFIO_GET_SET_ACCESS( Elf64_Off, segments_offset, header.e_phoff );
 
   private:
-    T                    header;
-    endianess_convertor* convertor;
+    T                         header;
+    endianess_convertor*      convertor;
+    const address_translator* translator;
 };
 
 } // namespace ELFIO

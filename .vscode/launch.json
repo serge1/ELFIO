@@ -48,6 +48,29 @@
             ],
             "preLaunchTask": "ELF Dump Build",
             "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Run proc_mem",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/examples/proc_mem/proc_mem",
+            "args": [
+                "2919",
+                "/usr/bin/bash"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }
