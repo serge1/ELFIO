@@ -421,10 +421,12 @@ class elfio
         unsigned char file_class  = get_class();
 
         if ( file_class == ELFCLASS64 ) {
-            new_section = new section_impl<Elf64_Shdr>( &convertor );
+            new_section =
+                new section_impl<Elf64_Shdr>( &convertor, &addr_translator );
         }
         else if ( file_class == ELFCLASS32 ) {
-            new_section = new section_impl<Elf32_Shdr>( &convertor );
+            new_section =
+                new section_impl<Elf32_Shdr>( &convertor, &addr_translator );
         }
         else {
             return nullptr;

@@ -190,7 +190,8 @@ class address_translator
         for ( auto& t : translation ) {
             if ( t.map_to <= value &&
                  ( ( value - t.map_to ) < ( t.end - t.start ) ) ) {
-                std::cout << std::hex << t.start - t.map_to + value << std::endl;
+                std::cout << std::hex << t.start - t.map_to + value << " "
+                          << value << std::endl;
                 return t.start - t.map_to + value;
             }
         }

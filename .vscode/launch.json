@@ -58,6 +58,7 @@
                 "2919",
                 "/usr/bin/bash"
             ],
+            "sudo" : true,
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -70,7 +71,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "miDebuggerPath": "/usr/bin/gdb"
+            "miDebuggerPath": "/home/user/ELFIO/mygdb.sh"
         }
     ]
 }

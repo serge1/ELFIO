@@ -72,8 +72,9 @@ template <class T> class section_impl : public section
 {
   public:
     //------------------------------------------------------------------------------
-    section_impl( const endianess_convertor* convertor )
-        : convertor( convertor )
+    section_impl( const endianess_convertor* convertor,
+                  const address_translator*  translator )
+        : convertor( convertor ), translator( translator )
     {
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
                      '\0' );
@@ -192,10 +193,10 @@ template <class T> class section_impl : public section
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
                      '\0' );
 
-        stream.seekg( 0, stream.end );
-        set_stream_size( stream.tellg() );
+        // stream.seekg( 0, stream.end );
+        set_stream_size( 0xFFFFFFFF /*stream.tellg()*/ );
 
-        stream.seekg( header_offset );
+        stream.seekg( ( *translator )( header_offset ) );
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
         Elf_Xword size = get_size();
@@ -204,7 +205,8 @@ template <class T> class section_impl : public section
             data = new ( std::nothrow ) char[size + 1];
 
             if ( ( 0 != size ) && ( nullptr != data ) ) {
-                stream.seekg( ( *convertor )( header.sh_offset ) );
+                stream.seekg(
+                    ( *translator )( ( *convertor )( header.sh_offset ) ) );
                 stream.read( data, size );
                 data[size] = 0; // Ensure data is ended with 0 to avoid oob read
                 data_size  = size;
@@ -263,6 +265,7 @@ template <class T> class section_impl : public section
     char*                      data;
     Elf_Word                   data_size;
     const endianess_convertor* convertor;
+    const address_translator*  translator;
     bool                       is_address_set;
     size_t                     stream_size;
 };
