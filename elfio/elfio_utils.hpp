@@ -199,6 +199,8 @@ class address_translator
         return value;
     }
 
+    bool empty() const { return translation.empty(); }
+
   private:
     std::vector<address_translation> translation;
 };

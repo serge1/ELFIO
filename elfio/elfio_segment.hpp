@@ -71,8 +71,10 @@ template <class T> class segment_impl : public segment
 {
   public:
     //------------------------------------------------------------------------------
-    segment_impl( endianess_convertor* convertor )
-        : stream_size( 0 ), index( 0 ), data( nullptr ), convertor( convertor )
+    segment_impl( const endianess_convertor* convertor,
+                  const address_translator*  translator )
+        : convertor( convertor ), translator( translator ), stream_size( 0 ),
+          index( 0 ), data( nullptr )
     {
         is_offset_set = false;
         std::fill_n( reinterpret_cast<char*>( &ph ), sizeof( ph ), '\0' );
@@ -166,16 +168,20 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     void load( std::istream& stream, std::streampos header_offset ) override
     {
+        if ( translator->empty() ) {
+            stream.seekg( 0, stream.end );
+            set_stream_size( stream.tellg() );
+        }
+        else {
+            set_stream_size( 0xFFFFFFFFFFFFFFFF );
+        }
 
-        stream.seekg( 0, stream.end );
-        set_stream_size( stream.tellg() );
-
-        stream.seekg( header_offset );
+        stream.seekg( ( *translator )( header_offset ) );
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
         is_offset_set = true;
 
         if ( PT_NULL != get_type() && 0 != get_file_size() ) {
-            stream.seekg( ( *convertor )( ph.p_offset ) );
+            stream.seekg( ( *translator )( ( *convertor )( ph.p_offset ) ) );
             Elf_Xword size = get_file_size();
 
             if ( size > get_stream_size() ) {
@@ -205,12 +211,13 @@ template <class T> class segment_impl : public segment
 
     //------------------------------------------------------------------------------
   private:
-    T                     ph;
-    Elf_Half              index;
-    char*                 data;
-    std::vector<Elf_Half> sections;
-    endianess_convertor*  convertor;
-    bool                  is_offset_set;
+    T                          ph;
+    Elf_Half                   index;
+    char*                      data;
+    std::vector<Elf_Half>      sections;
+    const endianess_convertor* convertor;
+    const address_translator*  translator;
+    bool                       is_offset_set;
 };
 
 } // namespace ELFIO

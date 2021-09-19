@@ -193,8 +193,13 @@ template <class T> class section_impl : public section
         std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
                      '\0' );
 
-        // stream.seekg( 0, stream.end );
-        set_stream_size( 0xFFFFFFFF /*stream.tellg()*/ );
+        if ( translator->empty() ) {
+            stream.seekg( 0, stream.end );
+            set_stream_size( stream.tellg() );
+        }
+        else {
+            set_stream_size( 0xFFFFFFFFFFFFFFFF );
+        }
 
         stream.seekg( ( *translator )( header_offset ) );
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );

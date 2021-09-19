@@ -88,9 +88,8 @@ int main( int argc, char** argv )
 
     if ( elffile.load( std::string( "/proc/" ) + argv[1] + "/mem" ) ) {
         dump::header( std::cout, elffile );
-        dump::section_headers( std::cout, elffile );
         dump::segment_headers( std::cout, elffile );
-        dump::symbol_tables( std::cout, elffile );
+        dump::segment_datas( std::cout, elffile );
     }
     else {
         std::cout << "Can't open " << std::string( "/proc/" ) + argv[1] + "/mem"
