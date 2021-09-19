@@ -399,7 +399,32 @@ BOOST_AUTO_TEST_CASE( gnu_version_64_le )
         if ( verindex > 1 ) {
             Elf64_Addr value = 0;
             vern.get_entry( verindex * 8, value );
-            std::cout << value << std::endl;
+            // std::cout << value << std::endl;
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( move_constructor_and_assignment )
+{
+    elfio r1;
+
+    // Load ELF data
+    BOOST_REQUIRE_EQUAL( r1.load( "elf_examples/hello_64" ), true );
+    Elf64_Addr  entry    = r1.get_entry();
+    std::string sec_name = r1.sections[".text"]->get_name();
+    Elf_Xword   seg_size = r1.segments[1]->get_memory_size();
+
+    // Move to a vector element
+    std::vector<elfio> v;
+    v.emplace_back( std::move( r1 ) );
+    BOOST_CHECK_EQUAL( v[0].get_entry(), entry );
+    BOOST_CHECK_EQUAL( v[0].sections[".text"]->get_name(), sec_name );
+    BOOST_CHECK_EQUAL( v[0].segments[1]->get_memory_size(), seg_size );
+
+    elfio r2;
+    r2 = std::move( v[0] );
+    BOOST_CHECK_EQUAL( r2.get_entry(), entry );
+    BOOST_CHECK_EQUAL( r2.sections[".text"]->get_name(), sec_name );
+    BOOST_CHECK_EQUAL( r2.segments[1]->get_memory_size(), seg_size );
 }
