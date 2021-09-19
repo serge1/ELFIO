@@ -176,12 +176,12 @@ template <class T> class segment_impl : public segment
             set_stream_size( 0xFFFFFFFFFFFFFFFF );
         }
 
-        stream.seekg( ( *translator )( header_offset ) );
+        stream.seekg( ( *translator )[header_offset] );
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
         is_offset_set = true;
 
         if ( PT_NULL != get_type() && 0 != get_file_size() ) {
-            stream.seekg( ( *translator )( ( *convertor )( ph.p_offset ) ) );
+            stream.seekg( ( *translator )[( *convertor )( ph.p_offset )] );
             Elf_Xword size = get_file_size();
 
             if ( size > get_stream_size() ) {

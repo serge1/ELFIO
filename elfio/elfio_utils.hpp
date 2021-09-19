@@ -181,7 +181,7 @@ class address_translator
     }
 
     //------------------------------------------------------------------------------
-    std::streampos operator()( std::streampos value ) const
+    std::streampos operator[]( std::streampos value ) const
     {
         if ( translation.empty() ) {
             return value;

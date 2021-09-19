@@ -440,18 +440,18 @@ BOOST_AUTO_TEST_CASE( address_translation_test )
     address_translator tr;
     tr.set_address_translation( ranges );
 
-    BOOST_CHECK_EQUAL( tr( 0 ), 500 );
-    BOOST_CHECK_EQUAL( tr( 510 ), 1010 );
-    BOOST_CHECK_EQUAL( tr( 1710 ), 1710 );
-    BOOST_CHECK_EQUAL( tr( 2710 ), 3710 );
-    BOOST_CHECK_EQUAL( tr( 3710 ), 3710 );
+    BOOST_CHECK_EQUAL( tr[0], 500 );
+    BOOST_CHECK_EQUAL( tr[510], 1010 );
+    BOOST_CHECK_EQUAL( tr[1710], 1710 );
+    BOOST_CHECK_EQUAL( tr[2710], 3710 );
+    BOOST_CHECK_EQUAL( tr[3710], 3710 );
 
     ranges.clear();
     tr.set_address_translation( ranges );
 
-    BOOST_CHECK_EQUAL( tr( 0 ), 0 );
-    BOOST_CHECK_EQUAL( tr( 510 ), 510 );
-    BOOST_CHECK_EQUAL( tr( 1710 ), 1710 );
-    BOOST_CHECK_EQUAL( tr( 2710 ), 2710 );
-    BOOST_CHECK_EQUAL( tr( 3710 ), 3710 );
+    BOOST_CHECK_EQUAL( tr[0], 0 );
+    BOOST_CHECK_EQUAL( tr[510], 510 );
+    BOOST_CHECK_EQUAL( tr[1710], 1710 );
+    BOOST_CHECK_EQUAL( tr[2710], 2710 );
+    BOOST_CHECK_EQUAL( tr[3710], 3710 );
 }

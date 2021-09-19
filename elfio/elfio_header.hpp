@@ -107,7 +107,7 @@ template <class T> class elf_header_impl : public elf_header
     //------------------------------------------------------------------------------
     bool load( std::istream& stream ) override
     {
-        stream.seekg( ( *translator )( 0 ) );
+        stream.seekg( ( *translator )[0] );
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
         return ( stream.gcount() == sizeof( header ) );
@@ -116,7 +116,7 @@ template <class T> class elf_header_impl : public elf_header
     //------------------------------------------------------------------------------
     bool save( std::ostream& stream ) const override
     {
-        stream.seekp( ( *translator )( 0 ) );
+        stream.seekp( ( *translator )[0] );
         stream.write( reinterpret_cast<const char*>( &header ),
                       sizeof( header ) );
 
