@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <iostream>
 #include <vector>
 #include <new>
+#include <climits>
 
 namespace ELFIO {
 
@@ -173,7 +174,7 @@ template <class T> class segment_impl : public segment
             set_stream_size( stream.tellg() );
         }
         else {
-            set_stream_size( 0xFFFFFFFFFFFFFFFF );
+            set_stream_size( ULLONG_MAX );
         }
 
         stream.seekg( ( *translator )[header_offset] );

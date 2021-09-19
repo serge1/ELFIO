@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <string>
 #include <iostream>
 #include <new>
+#include <climits>
 
 namespace ELFIO {
 
@@ -198,10 +199,10 @@ template <class T> class section_impl : public section
             set_stream_size( stream.tellg() );
         }
         else {
-            set_stream_size( 0xFFFFFFFFFFFFFFFF );
+            set_stream_size( ULLONG_MAX );
         }
 
-        stream.seekg( ( *translator )[ header_offset ] );
+        stream.seekg( ( *translator )[header_offset] );
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
         Elf_Xword size = get_size();
@@ -211,7 +212,7 @@ template <class T> class section_impl : public section
 
             if ( ( 0 != size ) && ( nullptr != data ) ) {
                 stream.seekg(
-                    ( *translator )[ ( *convertor )( header.sh_offset ) ] );
+                    ( *translator )[( *convertor )( header.sh_offset )] );
                 stream.read( data, size );
                 data[size] = 0; // Ensure data is ended with 0 to avoid oob read
                 data_size  = size;
