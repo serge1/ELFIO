@@ -97,12 +97,6 @@ template <class T> class segment_impl : public segment
     size_t stream_size;
 
     //------------------------------------------------------------------------------
-    size_t get_stream_size() const { return stream_size; }
-
-    //------------------------------------------------------------------------------
-    void set_stream_size( size_t value ) { stream_size = value; }
-
-    //------------------------------------------------------------------------------
     Elf_Half get_index() const override { return index; }
 
     //------------------------------------------------------------------------------
@@ -209,6 +203,12 @@ template <class T> class segment_impl : public segment
         adjust_stream_size( stream, header_offset );
         stream.write( reinterpret_cast<const char*>( &ph ), sizeof( ph ) );
     }
+
+    //------------------------------------------------------------------------------
+    size_t get_stream_size() const { return stream_size; }
+
+    //------------------------------------------------------------------------------
+    void set_stream_size( size_t value ) { stream_size = value; }
 
     //------------------------------------------------------------------------------
   private:
