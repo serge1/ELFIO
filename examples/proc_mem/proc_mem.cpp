@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 using namespace ELFIO;
 
+//------------------------------------------------------------------------------
 void get_translation_ranges( std::ifstream&                    proc_maps,
                              const std::string&                file_name,
                              std::vector<address_translation>& result )
@@ -46,24 +47,20 @@ void get_translation_ranges( std::ifstream&                    proc_maps,
 
         if ( std::regex_match( line, match, rexpr ) ) {
             if ( match.size() == 9 && match[8].str() == file_name ) {
-                result.emplace_back( address_translation(
-                    std::stoul( match[1].str(), 0, 16 ),
-                    std::stoul( match[2].str(), 0, 16 ),
-                    std::stoul( match[4].str(), 0, 16 ) ) );
+                unsigned long start  = std::stoul( match[1].str(), 0, 16 );
+                unsigned long end    = std::stoul( match[2].str(), 0, 16 );
+                unsigned long mapped = std::stoul( match[4].str(), 0, 16 );
+                result.emplace_back( start, end - start, mapped );
             }
         }
     }
-
-    std::sort( result.begin(), result.end(),
-               []( address_translation& a, address_translation& b ) -> bool {
-                   return a.map_to < b.map_to;
-               } );
 }
 
+//------------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
     if ( argc != 3 ) {
-        std::cout << "Usage: proc_mem pid full_file_path" << std::endl;
+        std::cout << "Usage: proc_mem <pid> <full_file_path>" << std::endl;
         return 1;
     }
 
@@ -76,16 +73,15 @@ int main( int argc, char** argv )
         return 2;
     }
 
+    // Retrieve memory address translation ranges
     std::vector<address_translation> ranges;
     get_translation_ranges( proc_maps, argv[2], ranges );
-    // for ( auto& range : ranges ) {
-    //     std::cout << std::hex << range.start << " " << range.end << " "
-    //               << range.map_to << std::endl;
-    // }
 
+    // Set address translation ranges prior loading ELF file
     elfio elffile;
     elffile.set_address_translation( ranges );
 
+    // The 'load' will use the provided address translation now
     if ( elffile.load( std::string( "/proc/" ) + argv[1] + "/mem" ) ) {
         dump::header( std::cout, elffile );
         dump::segment_headers( std::cout, elffile );
