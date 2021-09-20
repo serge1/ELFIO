@@ -71,7 +71,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "miDebuggerPath": "/home/user/ELFIO/mygdb.sh"
+            "miDebuggerPath": "/home/user/ELFIO/examples/proc_mem/sudo_gdb.sh"
         }
     ]
 }

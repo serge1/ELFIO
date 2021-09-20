@@ -393,9 +393,6 @@ class elfio
             delete it;
         }
         segments_.clear();
-
-        std::vector<address_translation> empty_address_translation;
-        addr_translator.set_address_translation( empty_address_translation );
     }
 
     //------------------------------------------------------------------------------
