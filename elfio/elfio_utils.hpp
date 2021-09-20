@@ -163,11 +163,11 @@ class endianess_convertor
 //------------------------------------------------------------------------------
 struct address_translation
 {
-    address_translation( uint64_t start, uint64_t size, uint64_t map_to )
-        : start( start ), size( size ), map_to( map_to ){};
+    address_translation( uint64_t start, uint64_t size, uint64_t mapped_to )
+        : start( start ), size( size ), mapped_to( mapped_to ){};
     std::streampos start;
     std::streampos size;
-    std::streampos map_to;
+    std::streampos mapped_to;
 };
 
 //------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ class address_translator
         std::sort(
             addr_translations.begin(), addr_translations.end(),
             []( address_translation& a, address_translation& b ) -> bool {
-                return a.map_to < b.map_to;
+                return a.start < b.start;
             } );
     }
 
@@ -194,8 +194,8 @@ class address_translator
         }
 
         for ( auto& t : addr_translations ) {
-            if ( ( t.map_to <= value ) && ( ( value - t.map_to ) < t.size ) ) {
-                return t.start - t.map_to + value;
+            if ( ( t.start <= value ) && ( ( value - t.start ) < t.size ) ) {
+                return value - t.start + t.mapped_to;
             }
         }
 

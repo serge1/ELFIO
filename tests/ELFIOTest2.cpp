@@ -433,9 +433,9 @@ BOOST_AUTO_TEST_CASE( address_translation_test )
 {
     std::vector<address_translation> ranges;
 
-    ranges.emplace_back( 500, 100, 0 );
-    ranges.emplace_back( 1000, 1000, 500 );
-    ranges.emplace_back( 3000, 1000, 2000 );
+    ranges.emplace_back( 0, 100, 500 );
+    ranges.emplace_back( 500, 1000, 1000 );
+    ranges.emplace_back( 2000, 1000, 3000 );
 
     address_translator tr;
     tr.set_address_translation( ranges );

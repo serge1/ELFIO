@@ -49,8 +49,8 @@ void get_translation_ranges( std::ifstream&                    proc_maps,
             if ( match.size() == 9 && match[8].str() == file_name ) {
                 unsigned long start  = std::stoul( match[1].str(), 0, 16 );
                 unsigned long end    = std::stoul( match[2].str(), 0, 16 );
-                unsigned long mapped = std::stoul( match[4].str(), 0, 16 );
-                result.emplace_back( start, end - start, mapped );
+                unsigned long actual = std::stoul( match[4].str(), 0, 16 );
+                result.emplace_back( actual, end - start, start );
             }
         }
     }
