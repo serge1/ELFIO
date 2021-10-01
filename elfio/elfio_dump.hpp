@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 namespace ELFIO {
 
-static struct class_table_t
+static const struct class_table_t
 {
     const char  key;
     const char* str;
@@ -41,7 +41,7 @@ static struct class_table_t
     { ELFCLASS64, "ELF64" },
 };
 
-static struct endian_table_t
+static const struct endian_table_t
 {
     const char  key;
     const char* str;
@@ -51,7 +51,7 @@ static struct endian_table_t
     { ELFDATA2MSB, "Big endian" },
 };
 
-static struct version_table_t
+static const struct version_table_t
 {
     const Elf64_Word key;
     const char*      str;
@@ -60,7 +60,7 @@ static struct version_table_t
     { EV_CURRENT, "Current" },
 };
 
-static struct type_table_t
+static const struct type_table_t
 {
     const Elf32_Half key;
     const char*      str;
@@ -70,7 +70,7 @@ static struct type_table_t
     { ET_CORE, "Core file" },
 };
 
-static struct machine_table_t
+static const struct machine_table_t
 {
     const Elf64_Half key;
     const char*      str;
@@ -336,7 +336,7 @@ static struct machine_table_t
     { EM_S12Z, "Freescale S12Z" },
 };
 
-static struct section_type_table_t
+static const struct section_type_table_t
 {
     const Elf64_Word key;
     const char*      str;
@@ -372,7 +372,7 @@ static struct section_type_table_t
 
 };
 
-static struct segment_type_table_t
+static const struct segment_type_table_t
 {
     const Elf_Word key;
     const char*    str;
@@ -398,7 +398,7 @@ static struct segment_type_table_t
     { PT_SUNWSTACK, "SUNWSTACK" },
 };
 
-static struct segment_flag_table_t
+static const struct segment_flag_table_t
 {
     const Elf_Word key;
     const char*    str;
@@ -407,7 +407,7 @@ static struct segment_flag_table_t
     { 4, "R  " }, { 5, "R E" }, { 6, "RW " }, { 7, "RWE" },
 };
 
-static struct symbol_bind_t
+static const struct symbol_bind_t
 {
     const Elf_Word key;
     const char*    str;
@@ -418,7 +418,7 @@ static struct symbol_bind_t
     { STB_LOPROC, "LOPROC" }, { STB_HIPROC, "HIPROC" },
 };
 
-static struct symbol_type_t
+static const struct symbol_type_t
 {
     const Elf_Word key;
     const char*    str;
@@ -431,7 +431,7 @@ static struct symbol_type_t
     { STT_HIPROC, "HIPROC" },
 };
 
-static struct dynamic_tag_t
+static const struct dynamic_tag_t
 {
     const Elf_Word key;
     const char*    str;
@@ -965,6 +965,27 @@ class dump
         out << std::endl;
     }
 
+//------------------------------------------------------------------------------
+#define STR_FUNC_TABLE( name )                                         \
+    template <typename T> static std::string str_##name( const T key ) \
+    {                                                                  \
+        return format_assoc( name##_table, key );                      \
+    }
+
+    STR_FUNC_TABLE( class )
+    STR_FUNC_TABLE( endian )
+    STR_FUNC_TABLE( version )
+    STR_FUNC_TABLE( type )
+    STR_FUNC_TABLE( machine )
+    STR_FUNC_TABLE( section_type )
+    STR_FUNC_TABLE( segment_type )
+    STR_FUNC_TABLE( segment_flag )
+    STR_FUNC_TABLE( symbol_bind )
+    STR_FUNC_TABLE( symbol_type )
+    STR_FUNC_TABLE( dynamic_tag )
+
+#undef STR_FUNC_TABLE
+
   private:
     //------------------------------------------------------------------------------
     template <typename T, typename K>
@@ -1020,26 +1041,6 @@ class dump
         return ret;
     }
 
-//------------------------------------------------------------------------------
-#define STR_FUNC_TABLE( name )                                         \
-    template <typename T> static std::string str_##name( const T key ) \
-    {                                                                  \
-        return format_assoc( name##_table, key );                      \
-    }
-
-    STR_FUNC_TABLE( class )
-    STR_FUNC_TABLE( endian )
-    STR_FUNC_TABLE( version )
-    STR_FUNC_TABLE( type )
-    STR_FUNC_TABLE( machine )
-    STR_FUNC_TABLE( section_type )
-    STR_FUNC_TABLE( segment_type )
-    STR_FUNC_TABLE( segment_flag )
-    STR_FUNC_TABLE( symbol_bind )
-    STR_FUNC_TABLE( symbol_type )
-    STR_FUNC_TABLE( dynamic_tag )
-
-#undef STR_FUNC_TABLE
 #undef DUMP_DEC_FORMAT
 #undef DUMP_HEX_FORMAT
 #undef DUMP_STR_FORMAT
