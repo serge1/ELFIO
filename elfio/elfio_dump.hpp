@@ -528,14 +528,13 @@ class dump
 
         out << "Section Headers:" << std::endl;
         if ( reader.get_class() == ELFCLASS32 ) { // Output for 32-bit
-            out << "[  Nr ] Type              Addr     Size     ES Flg Lk Inf "
-                   "Al Name"
+            out << "[  Nr ] Type              Addr       Size       ES   Flg "
+                   "Lk   Inf   Al   Name"
                 << std::endl;
         }
         else { // Output for 64-bit
             out << "[  Nr ] Type              Addr               Size          "
-                   "    "
-                   " Offset     Flg"
+                   "     Offset     Flg"
                 << std::endl
                 << "        ES     Lk     Inf    Al       Name" << std::endl;
         }
@@ -603,19 +602,17 @@ class dump
 
         out << "Program Headers:" << std::endl;
         if ( reader.get_class() == ELFCLASS32 ) { // Output for 32-bit
-            out << "[  Nr ] Type           VirtAddr PhysAddr FileSize Mem.Size "
-                   "Flags    Align"
+            out << "[  Nr ] Type           VirtAddr   PhysAddr   FileSize   "
+                   "Mem.Size   Flags    Align"
                 << std::endl;
         }
         else { // Output for 64-bit
             out << "[  Nr ] Type           Offset             VirtAddr         "
-                   "  "
-                   "PhysAddr"
+                   "  PhysAddr"
 
                 << std::endl
                 << "                       FileSize           MemSize          "
-                   "  "
-                   " Flags  Align"
+                   "   Flags  Align"
                 << std::endl;
         }
 
@@ -681,14 +678,13 @@ class dump
                         << std::endl;
                     if ( reader.get_class() ==
                          ELFCLASS32 ) { // Output for 32-bit
-                        out << "[  Nr ] Value    Size     Type    Bind      "
-                               "Sect Name"
+                        out << "[  Nr ] Value      Size       Type    Bind     "
+                               " Sect Name"
                             << std::endl;
                     }
                     else { // Output for 64-bit
                         out << "[  Nr ] Value              Size               "
-                               "Type "
-                               "   Bind      Sect"
+                               "Type    Bind      Sect"
                             << std::endl
                             << "        Name" << std::endl;
                     }
