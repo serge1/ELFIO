@@ -479,6 +479,124 @@ static const struct dynamic_tag_t
 
 };
 
+// clang-format off
+static const struct note_tag_t
+{
+    struct note_values_t
+    {
+        Elf64_Word  type;
+        std::string type_str;
+        std::string description;
+    };
+    std::string                name;
+    std::vector<note_values_t> values;
+} note_tag_table[] = {
+    { "",
+      { { NT_PRSTATUS,     "NT_PRSTATUS",     "prstatus struct" },
+        { NT_FPREGSET,     "NT_FPREGSET",     "fpregset struct" },
+        { NT_PRPSINFO,     "NT_PRPSINFO",     "prpsinfo struct" },
+        { NT_TASKSTRUCT,   "NT_TASKSTRUCT",   "task struct" },
+        { NT_AUXV,         "NT_AUXV",         "Elfxx_auxv_t" }.
+        { NT_PSTATUS,      "NT_PSTATUS",      "pstatus struct" },
+        { NT_FPREGS,       "NT_FPREGS",       "fpregset struct" },
+        { NT_PSINFO,       "NT_PSINFO",       "psinfo struct" },
+        { NT_LWPSTATUS,    "NT_LWPSTATUS",    "lwpstatus_t struct" },
+        { NT_LWPSINFO,     "NT_LWPSINFO",     "lwpsinfo_t struct" },
+        { NT_WIN32PSTATUS, "NT_WIN32PSTATUS", "win32_pstatus struct" },
+      } },
+    { "LINUX",
+      { { NT_PRXFPREG,             "NT_PRXFPREG", "Contains a user_xfpregs_struct;" },
+        { NT_PPC_VMX,              "NT_PPC_VMX", "PowerPC Altivec/VMX registers" },
+        { NT_PPC_VSX,              "NT_PPC_VSX", "PowerPC VSX registers" },
+        { NT_PPC_TAR,              "NT_PPC_TAR", "PowerPC Target Address Register" },
+        { NT_PPC_PPR,              "NT_PPC_PPR", "PowerPC Program Priority Register" },
+        { NT_PPC_DSCR,             "NT_PPC_DSCR", "PowerPC Data Stream Control Register" },
+        { NT_PPC_EBB,              "NT_PPC_EBB", "PowerPC Event Based Branch Registers" },
+        { NT_PPC_PMU,              "NT_PPC_PMU", "PowerPC Performance Monitor Registers" },
+        { NT_PPC_TM_CGPR,          "NT_PPC_TM_CGPR", "PowerPC TM checkpointed GPR Registers" },
+        { NT_PPC_TM_CFPR,          "NT_PPC_TM_CFPR", "PowerPC TM checkpointed FPR Registers" },
+        { NT_PPC_TM_CVMX,          "NT_PPC_TM_CVMX", "PowerPC TM checkpointed VMX Registers" },
+        { NT_PPC_TM_CVSX,          "NT_PPC_TM_CVSX", "PowerPC TM checkpointed VSX Registers" },
+        { NT_PPC_TM_SPR,           "NT_PPC_TM_SPR",   "PowerPC TM Special Purpose Registers" },
+        { NT_PPC_TM_CTAR,          "NT_PPC_TM_CTAR", "PowerPC TM checkpointed TAR" },
+        { NT_PPC_TM_CPPR,          "NT_PPC_TM_CPPR", "PowerPC TM checkpointed PPR" },
+        { NT_PPC_TM_CDSCR,         "NT_PPC_TM_CDSCR", "PowerPC TM checkpointed Data SCR" },
+        { NT_386_TLS,              "NT_386_TLS", "x86 TLS information" },
+        { NT_386_IOPERM,           "NT_386_IOPERM", "x86 io permissions" },
+        { NT_X86_XSTATE,           "NT_X86_XSTATE", "x86 XSAVE extended state" },
+        { NT_X86_CET,              "NT_X86_CET", "x86 CET state" },
+        { NT_S390_HIGH_GPRS,       "NT_S390_HIGH_GPRS", "S/390 upper halves of GPRs " },
+        { NT_S390_TIMER,           "NT_S390_TIMER", "S390 timer" },
+        { NT_S390_TODCMP,          "NT_S390_TODCMP", "S390 TOD clock comparator" },
+        { NT_S390_TODPREG,         "NT_S390_TODPREG", "S390 TOD programmable register" },
+        { NT_S390_CTRS,            "NT_S390_CTRS", "S390 control registers" },
+        { NT_S390_PREFIX,          "NT_S390_PREFIX", "S390 prefix register" },
+        { NT_S390_LAST_BREAK,      "NT_S390_LAST_BREAK", "S390 breaking event address" },
+        { NT_S390_SYSTEM_CALL,     "NT_S390_SYSTEM_CALL", "S390 system call restart data" },
+        { NT_S390_TDB,             "NT_S390_TDB", "S390 transaction diagnostic block" },
+        { NT_S390_VXRS_LOW,        "NT_S390_VXRS_LOW", "S390 vector registers 0-15 upper half" },
+        { NT_S390_VXRS_HIGH,       "NT_S390_VXRS_HIGH", "S390 vector registers 16-31" },
+        { NT_S390_GS_CB,           "NT_S390_GS_CB", "s390 guarded storage registers" },
+        { NT_S390_GS_BC,           "NT_S390_GS_BC", "s390 guarded storage broadcast control block" },
+        { NT_ARM_VFP,              "NT_ARM_VFP", "ARM VFP registers" },
+        { NT_ARM_TLS,              "NT_ARM_TLS", "AArch TLS registers" },
+        { NT_ARM_HW_BREAK,         "NT_ARM_HW_BREAK", "AArch hardware breakpoint registers" },
+        { NT_ARM_HW_WATCH,         "NT_ARM_HW_WATCH", "AArch hardware watchpoint registers" },
+        { NT_ARM_SVE,              "NT_ARM_SVE", "AArch SVE registers. " },
+        { NT_ARM_PAC_MASK,         "NT_ARM_PAC_MASK", "AArch pointer authentication code masks" },
+        { NT_ARM_PACA_KEYS,        "NT_ARM_PACA_KEYS", "ARM pointer authentication address keys" },
+        { NT_ARM_PACG_KEYS,        "NT_ARM_PACG_KEYS", "ARM pointer authentication generic keys" },
+        { NT_ARM_TAGGED_ADDR_CTRL, "NT_ARM_TAGGED_ADDR_CTRL", "AArch64 tagged address control (prctl())" },
+        { NT_ARM_PAC_ENABLED_KEYS, "NT_ARM_PAC_ENABLED_KEYS", "AArch64 pointer authentication enabled keys (prctl())" },
+        { NT_ARC_V2,               "NT_ARC_V2", "ARC HS accumulator/extra registers. " },
+        { NT_LARCH_CPUCFG,         "NT_LARCH_CPUCFG", "LoongArch CPU config registers" },
+        { NT_LARCH_CSR,            "NT_LARCH_CSR", "LoongArch Control State Registers" },
+        { NT_LARCH_LSX,            "NT_LARCH_LSX", "LoongArch SIMD eXtension registers" },
+        { NT_LARCH_LASX,           "NT_LARCH_LASX", "LoongArch Advanced SIMD eXtension registers" },
+        { NT_RISCV_CSR,            "NT_RISCV_CSR", "RISC-V Control and Status Registers" },
+      } },
+    { "CORE", {NT_LARCH_LBT, "NT_LARCH_LBT", "LoongArch Binary Translation registers"}},
+    { "FreeBSD",
+      { { NT_FREEBSD_THRMISC,            "NT_FREEBSD_THRMISC",            "Thread miscellaneous info." },
+        { NT_FREEBSD_PROCSTAT_PROC,      "NT_FREEBSD_PROCSTAT_PROC",      "Procstat proc data." },
+        { NT_FREEBSD_PROCSTAT_FILES,     "NT_FREEBSD_PROCSTAT_FILES",     "Procstat files data." },
+        { NT_FREEBSD_PROCSTAT_VMMAP,     "NT_FREEBSD_PROCSTAT_VMMAP",     "Procstat vmmap data." },
+        { NT_FREEBSD_PROCSTAT_GROUPS,    "NT_FREEBSD_PROCSTAT_GROUPS",    "Procstat groups data." },
+        { NT_FREEBSD_PROCSTAT_UMASK,     "NT_FREEBSD_PROCSTAT_UMASK",     "Procstat umask data." },
+        { NT_FREEBSD_PROCSTAT_RLIMIT,    "NT_FREEBSD_PROCSTAT_RLIMIT",    "Procstat rlimit data." },
+        { NT_FREEBSD_PROCSTAT_OSREL,     "NT_FREEBSD_PROCSTAT_OSREL",     "Procstat osreldate data." },
+        { NT_FREEBSD_PROCSTAT_PSSTRINGS, "NT_FREEBSD_PROCSTAT_PSSTRINGS", "Procstat ps_strings data." },
+        { NT_FREEBSD_PROCSTAT_AUXV,      "NT_FREEBSD_PROCSTAT_AUXV",      "Procstat auxv data." },
+        { NT_FREEBSD_PTLWPINFO,          "NT_FREEBSD_PTLWPINFO",          "Thread ptrace miscellaneous info." },
+        } },
+    { "NetBSD-CORE",
+      { { NT_NETBSDCORE_PROCINFO,  "NT_NETBSDCORE_PROCINFO",  "Has a struct procinfo" },
+        { NT_NETBSDCORE_AUXV,      "NT_NETBSDCORE_AUXV",      "Has auxv data" },
+        { NT_NETBSDCORE_LWPSTATUS, "NT_NETBSDCORE_LWPSTATUS", "Has LWPSTATUS data" },
+        { NT_NETBSDCORE_FIRSTMACH, "NT_NETBSDCORE_FIRSTMACH", "start of machdep note types" },
+      } },
+    { "OpenBSD",
+      { { NT_OPENBSD_PROCINFO, "NT_OPENBSD_PROCINFO", "" },
+        { NT_OPENBSD_AUXV,     "NT_OPENBSD_AUXV",     "" },
+        { NT_OPENBSD_REGS,     "NT_OPENBSD_REGS",     "" },
+        { NT_OPENBSD_FPREGS,   "NT_OPENBSD_FPREGS",   "" },
+        { NT_OPENBSD_XFPREGS,  "NT_OPENBSD_XFPREGS",  "" },
+        { NT_OPENBSD_WCOOKIE,  "NT_OPENBSD_WCOOKIE",  "" },
+      } },
+    { "SPU",
+      { { NT_SPU, "NT_SPU", "" }
+      } },
+    { "GNU",
+      { 
+      
+      } },
+    }
+};
+// clang-format on
+
+#define NT_LARCH_LBT 0xa04 /* LoongArch Binary Translation registers */
+                           /*   note name must be "CORE".  */
+
 static const ELFIO::Elf_Xword MAX_DATA_ENTRIES = 64;
 
 //------------------------------------------------------------------------------
@@ -756,7 +874,7 @@ class dump
                 if ( no > 0 ) {
                     out << "Note section (" << sec->get_name() << ")"
                         << std::endl
-                        << "    No Type       Name" << std::endl;
+                        << "    No Type       Name    Description" << std::endl;
                     for ( Elf_Word j = 0; j < no_notes; ++j ) { // For all notes
                         Elf_Word    type;
                         std::string name;
@@ -764,7 +882,7 @@ class dump
                         Elf_Word    descsz;
 
                         if ( notes.get_note( j, type, name, desc, descsz ) ) {
-                            // 'name' usually contains \0 at the end. Try to fix it
+                            // 'name' usually contains \0 at the end. Remove it
                             name = name.c_str();
                             note( out, j, type, name );
                         }

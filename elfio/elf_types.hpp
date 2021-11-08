@@ -317,7 +317,7 @@ constexpr Elf_Half EM_NIOS32            = 0xFEBB; // "Altera Nios";
 constexpr Elf_Half EM_CYGNUS_MEP        = 0xF00D; // "Toshiba MeP Media Engine";
 constexpr Elf_Half EM_ADAPTEVA_EPIPHANY = 0x1223; // "Adapteva EPIPHANY";
 constexpr Elf_Half EM_CYGNUS_FRV        = 0x5441; // "Fujitsu FR-V";
-constexpr Elf_Half    EM_S12Z           = 0x4DEF; // "Freescale S12Z";
+constexpr Elf_Half EM_S12Z              = 0x4DEF; // "Freescale S12Z";
 // clang-format on
 
 // File version
@@ -550,11 +550,135 @@ constexpr unsigned char STB_MULTIDEF = 13;
 constexpr unsigned char STB_LOPROC   = 13;
 constexpr unsigned char STB_HIPROC   = 15;
 
-// Note types
-constexpr Elf_Word NT_AMDGPU_METADATA         = 1;
-constexpr Elf_Word NT_AMD_AMDGPU_HSA_METADATA = 10;
-constexpr Elf_Word NT_AMD_AMDGPU_ISA          = 11;
-constexpr Elf_Word NT_AMD_AMDGPU_PAL_METADATA = 12;
+
+// Values of note segment descriptor types for core files
+constexpr Elf_Word NT_PRSTATUS   = 1; // Contains copy of prstatus struct
+constexpr Elf_Word NT_FPREGSET   = 2; // Contains copy of fpregset struct
+constexpr Elf_Word NT_PRPSINFO   = 3; // Contains copy of prpsinfo struct
+constexpr Elf_Word NT_TASKSTRUCT = 4; // Contains copy of task struct
+constexpr Elf_Word NT_AUXV       = 6; // Contains copy of Elfxx_auxv_t
+constexpr Elf_Word NT_SIGINFO    = 0x53494749; // Fields of siginfo_t.
+constexpr Elf_Word NT_FILE       = 0x46494c45; // Description of mapped files.
+
+// Note segments for core files on dir-style procfs systems.
+constexpr Elf_Word NT_PSTATUS      = 10; // Has a struct pstatus
+constexpr Elf_Word NT_FPREGS       = 12; // Has a struct fpregset
+constexpr Elf_Word NT_PSINFO       = 13; // Has a struct psinfo
+constexpr Elf_Word NT_LWPSTATUS    = 16; // Has a struct lwpstatus_t
+constexpr Elf_Word NT_LWPSINFO     = 17; // Has a struct lwpsinfo_t
+constexpr Elf_Word NT_WIN32PSTATUS = 18; // Has a struct win32_pstatus
+
+// clang-format off    
+
+// Note name must be "LINUX"    
+constexpr Elf_Word NT_PRXFPREG             = 0x46e62b7f; // Contains a user_xfpregs_struct;
+constexpr Elf_Word NT_PPC_VMX              = 0x100;      // PowerPC Altivec/VMX registers
+constexpr Elf_Word NT_PPC_VSX              = 0x102;      // PowerPC VSX registers
+constexpr Elf_Word NT_PPC_TAR              = 0x103;      // PowerPC Target Address Register
+constexpr Elf_Word NT_PPC_PPR              = 0x104;      // PowerPC Program Priority Register
+constexpr Elf_Word NT_PPC_DSCR             = 0x105;      // PowerPC Data Stream Control Register
+constexpr Elf_Word NT_PPC_EBB              = 0x106;      // PowerPC Event Based Branch Registers
+constexpr Elf_Word NT_PPC_PMU              = 0x107;      // PowerPC Performance Monitor Registers
+constexpr Elf_Word NT_PPC_TM_CGPR          = 0x108;      // PowerPC TM checkpointed GPR Registers
+constexpr Elf_Word NT_PPC_TM_CFPR          = 0x109;      // PowerPC TM checkpointed FPR Registers
+constexpr Elf_Word NT_PPC_TM_CVMX          = 0x10a;      // PowerPC TM checkpointed VMX Registers
+constexpr Elf_Word NT_PPC_TM_CVSX          = 0x10b;      // PowerPC TM checkpointed VSX Registers
+constexpr Elf_Word NT_PPC_TM_SPR           = 0x10c;      // PowerPC TM Special Purpose Registers
+constexpr Elf_Word NT_PPC_TM_CTAR          = 0x10d;      // PowerPC TM checkpointed TAR
+constexpr Elf_Word NT_PPC_TM_CPPR          = 0x10e;      // PowerPC TM checkpointed PPR
+constexpr Elf_Word NT_PPC_TM_CDSCR         = 0x10f;      // PowerPC TM checkpointed Data SCR
+constexpr Elf_Word NT_386_TLS              = 0x200;      // x86 TLS information
+constexpr Elf_Word NT_386_IOPERM           = 0x201;      // x86 io permissions
+constexpr Elf_Word NT_X86_XSTATE           = 0x202;      // x86 XSAVE extended state
+constexpr Elf_Word NT_X86_CET              = 0x203;      // x86 CET state.
+constexpr Elf_Word NT_S390_HIGH_GPRS       = 0x300;      // S/390 upper halves of GPRs
+constexpr Elf_Word NT_S390_TIMER           = 0x301;      // S390 timer
+constexpr Elf_Word NT_S390_TODCMP          = 0x302;      // S390 TOD clock comparator
+constexpr Elf_Word NT_S390_TODPREG         = 0x303;      // S390 TOD programmable register
+constexpr Elf_Word NT_S390_CTRS            = 0x304;      // S390 control registers
+constexpr Elf_Word NT_S390_PREFIX          = 0x305;      // S390 prefix register
+constexpr Elf_Word NT_S390_LAST_BREAK      = 0x306;      // S390 breaking event address
+constexpr Elf_Word NT_S390_SYSTEM_CALL     = 0x307;      // S390 system call restart data
+constexpr Elf_Word NT_S390_TDB             = 0x308;      // S390 transaction diagnostic block
+constexpr Elf_Word NT_S390_VXRS_LOW        = 0x309;      // S390 vector registers 0-15 upper half
+constexpr Elf_Word NT_S390_VXRS_HIGH       = 0x30a;      // S390 vector registers 16-31
+constexpr Elf_Word NT_S390_GS_CB           = 0x30b;      // s390 guarded storage registers
+constexpr Elf_Word NT_S390_GS_BC           = 0x30c;      // s390 guarded storage broadcast control block
+constexpr Elf_Word NT_ARM_VFP              = 0x400;      // ARM VFP registers
+constexpr Elf_Word NT_ARM_TLS              = 0x401;      // AArch TLS registers
+constexpr Elf_Word NT_ARM_HW_BREAK         = 0x402;      // AArch hardware breakpoint registers
+constexpr Elf_Word NT_ARM_HW_WATCH         = 0x403;      // AArch hardware watchpoint registers
+constexpr Elf_Word NT_ARM_SVE              = 0x405;      // AArch SVE registers.
+constexpr Elf_Word NT_ARM_PAC_MASK         = 0x406;      // AArch pointer authentication code masks
+constexpr Elf_Word NT_ARM_PACA_KEYS        = 0x407;      // ARM pointer authentication address keys
+constexpr Elf_Word NT_ARM_PACG_KEYS        = 0x408;      // ARM pointer authentication generic keys
+constexpr Elf_Word NT_ARM_TAGGED_ADDR_CTRL = 0x409;      // AArch64 tagged address control (prctl())
+constexpr Elf_Word NT_ARM_PAC_ENABLED_KEYS = 0x40a;      // AArch64 pointer authentication enabled keys (prctl())
+constexpr Elf_Word NT_ARC_V2               = 0x600;      // ARC HS accumulator/extra registers.
+constexpr Elf_Word NT_LARCH_CPUCFG         = 0xa00;      // LoongArch CPU config registers
+constexpr Elf_Word NT_LARCH_CSR            = 0xa01;      // LoongArch Control State Registers
+constexpr Elf_Word NT_LARCH_LSX            = 0xa02;      // LoongArch SIMD eXtension registers
+constexpr Elf_Word NT_LARCH_LASX           = 0xa03;      // LoongArch Advanced SIMD eXtension registers
+constexpr Elf_Word NT_RISCV_CSR            = 0x900;      // RISC-V Control and Status Registers
+
+// Note name must be "CORE"
+constexpr Elf_Word NT_LARCH_LBT = 0xa04; // LoongArch Binary Translation registers
+
+/* The range 0xff000000 to 0xffffffff is set aside for notes that don't
+   originate from any particular operating system.  */
+constexpr Elf_Word NT_GDB_TDESC = 0xff000000; // Contains copy of GDB's target description XML.
+constexpr Elf_Word NT_MEMTAG    = 0xff000001; // Contains a copy of the memory tags.
+/* ARM-specific NT_MEMTAG types.  */
+constexpr Elf_Word NT_MEMTAG_TYPE_AARCH_MTE = 0x400; // MTE memory tags for AArch64.
+
+/* Note segment for SystemTap probes.  */
+#define NT_STAPSDT 3
+
+// Note name is "FreeBSD"
+constexpr Elf_Word NT_FREEBSD_THRMISC            = 7;  // Thread miscellaneous info.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_PROC      = 8;  // Procstat proc data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_FILES     = 9;  // Procstat files data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_VMMAP     = 10; // Procstat vmmap data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_GROUPS    = 11; // Procstat groups data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_UMASK     = 12; // Procstat umask data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_RLIMIT    = 13; // Procstat rlimit data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_OSREL     = 14; // Procstat osreldate data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_PSSTRINGS = 15; // Procstat ps_strings data.
+constexpr Elf_Word NT_FREEBSD_PROCSTAT_AUXV      = 16; // Procstat auxv data.
+constexpr Elf_Word NT_FREEBSD_PTLWPINFO          = 17; // Thread ptrace miscellaneous info.
+
+// Note name must start with  "NetBSD-CORE"
+constexpr Elf_Word NT_NETBSDCORE_PROCINFO  = 1;  // Has a struct procinfo
+constexpr Elf_Word NT_NETBSDCORE_AUXV      = 2;  // Has auxv data
+constexpr Elf_Word NT_NETBSDCORE_LWPSTATUS = 24; // Has LWPSTATUS data
+constexpr Elf_Word NT_NETBSDCORE_FIRSTMACH = 32; // start of machdep note types
+
+// Note name is "OpenBSD"
+constexpr Elf_Word NT_OPENBSD_PROCINFO = 10;
+constexpr Elf_Word NT_OPENBSD_AUXV     = 11;
+constexpr Elf_Word NT_OPENBSD_REGS     = 20;
+constexpr Elf_Word NT_OPENBSD_FPREGS   = 21;
+constexpr Elf_Word NT_OPENBSD_XFPREGS  = 22;
+constexpr Elf_Word NT_OPENBSD_WCOOKIE  = 23;
+
+// Note name must start with "SPU"
+constexpr Elf_Word NT_SPU = 1;
+
+// Values of note segment descriptor types for object files
+constexpr Elf_Word NT_VERSION    = 1; // Contains a version string.
+constexpr Elf_Word NT_ARCH       = 2; // Contains an architecture string.
+constexpr Elf_Word NT_GO_BUILDID = 4; // Contains GO buildid data.
+
+// Values for notes in non-core files using name "GNU"
+constexpr Elf_Word NT_GNU_ABI_TAG         = 1;
+constexpr Elf_Word NT_GNU_HWCAP           = 2; // Used by ld.so and kernel vDSO.
+constexpr Elf_Word NT_GNU_BUILD_ID        = 3; // Generated by ld --build-id.
+constexpr Elf_Word NT_GNU_GOLD_VERSION    = 4; // Generated by gold.
+constexpr Elf_Word NT_GNU_PROPERTY_TYPE_0 = 5; // Generated by gcc.
+// clang-format on
+
+constexpr Elf_Word NT_GNU_BUILD_ATTRIBUTE_OPEN = 0x100;
+constexpr Elf_Word NT_GNU_BUILD_ATTRIBUTE_FUNC = 0x101;
 
 // Symbol types
 constexpr Elf_Word STT_NOTYPE            = 0;

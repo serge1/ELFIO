@@ -28,7 +28,7 @@
                 "CXXFLAGS='-g -O0'"
             ],
             "options": {
-                "cwd": "${workspaceRoot}"
+                "cwd": "${workspaceRoot}/build"
             },
             "group": {
                 "kind": "build",
