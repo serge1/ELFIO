@@ -476,7 +476,6 @@ static const struct dynamic_tag_t
     { DT_FLAGS_1, "FLAGS_1" },
     { DT_VERNEED, "VERNEED" },
     { DT_VERNEEDNUM, "VERNEEDNUM" },
-
 };
 
 // clang-format off
@@ -496,7 +495,7 @@ static const struct note_tag_t
         { NT_FPREGSET,     "NT_FPREGSET",     "fpregset struct" },
         { NT_PRPSINFO,     "NT_PRPSINFO",     "prpsinfo struct" },
         { NT_TASKSTRUCT,   "NT_TASKSTRUCT",   "task struct" },
-        { NT_AUXV,         "NT_AUXV",         "Elfxx_auxv_t" }.
+        { NT_AUXV,         "NT_AUXV",         "Elfxx_auxv_t" },
         { NT_PSTATUS,      "NT_PSTATUS",      "pstatus struct" },
         { NT_FPREGS,       "NT_FPREGS",       "fpregset struct" },
         { NT_PSINFO,       "NT_PSINFO",       "psinfo struct" },
@@ -555,7 +554,9 @@ static const struct note_tag_t
         { NT_LARCH_LASX,           "NT_LARCH_LASX", "LoongArch Advanced SIMD eXtension registers" },
         { NT_RISCV_CSR,            "NT_RISCV_CSR", "RISC-V Control and Status Registers" },
       } },
-    { "CORE", {NT_LARCH_LBT, "NT_LARCH_LBT", "LoongArch Binary Translation registers"}},
+    { "CORE",
+      { { NT_LARCH_LBT, "NT_LARCH_LBT", "LoongArch Binary Translation registers" }
+      } },
     { "FreeBSD",
       { { NT_FREEBSD_THRMISC,            "NT_FREEBSD_THRMISC",            "Thread miscellaneous info." },
         { NT_FREEBSD_PROCSTAT_PROC,      "NT_FREEBSD_PROCSTAT_PROC",      "Procstat proc data." },
@@ -568,7 +569,7 @@ static const struct note_tag_t
         { NT_FREEBSD_PROCSTAT_PSSTRINGS, "NT_FREEBSD_PROCSTAT_PSSTRINGS", "Procstat ps_strings data." },
         { NT_FREEBSD_PROCSTAT_AUXV,      "NT_FREEBSD_PROCSTAT_AUXV",      "Procstat auxv data." },
         { NT_FREEBSD_PTLWPINFO,          "NT_FREEBSD_PTLWPINFO",          "Thread ptrace miscellaneous info." },
-        } },
+      } },
     { "NetBSD-CORE",
       { { NT_NETBSDCORE_PROCINFO,  "NT_NETBSDCORE_PROCINFO",  "Has a struct procinfo" },
         { NT_NETBSDCORE_AUXV,      "NT_NETBSDCORE_AUXV",      "Has auxv data" },
@@ -588,9 +589,35 @@ static const struct note_tag_t
       } },
     { "GNU",
       { 
-      
+        { NT_GNU_ABI_TAG,          "NT_GNU_ABI_TAG",         "GNU ABI tag" },
+        { NT_GNU_HWCAP,            "NT_GNU_HWCAP",           "Used by ld.so and kernel vDSO" },
+        { NT_GNU_BUILD_ID,         "NT_GNU_BUILD_ID",        "Build ID of the binary" },
+        { NT_GNU_GOLD_VERSION,     "NT_GNU_GOLD_VERSION",    "Version of GNU gold used to link the binary" },
+        { NT_GNU_PROPERTY_TYPE_0,  "NT_GNU_PROPERTY_TYPE_0", "Property type 0" },
+        // { NT_GNU_PROPERTY_TYPE_1,  "NT_GNU_PROPERTY_TYPE_1",  "Property type 1" },
+        // { NT_GNU_PROPERTY_TYPE_2,  "NT_GNU_PROPERTY_TYPE_2",  "Property type 2" },
+        // { NT_GNU_PROPERTY_TYPE_3,  "NT_GNU_PROPERTY_TYPE_3",  "Property type 3" },
+        // { NT_GNU_PROPERTY_TYPE_4,  "NT_GNU_PROPERTY_TYPE_4",  "Property type 4" },
+        // { NT_GNU_PROPERTY_TYPE_5,  "NT_GNU_PROPERTY_TYPE_5",  "Property type 5" },
+        // { NT_GNU_PROPERTY_TYPE_6,  "NT_GNU_PROPERTY_TYPE_6",  "Property type 6" },
+        // { NT_GNU_PROPERTY_TYPE_7,  "NT_GNU_PROPERTY_TYPE_7",  "Property type 7" },
+        // { NT_GNU_PROPERTY_TYPE_8,  "NT_GNU_PROPERTY_TYPE_8",  "Property type 8" },
+        // { NT_GNU_PROPERTY_TYPE_9,  "NT_GNU_PROPERTY_TYPE_9",  "Property type 9" },
+        // { NT_GNU_PROPERTY_TYPE_10, "NT_GNU_PROPERTY_TYPE_10", "Property type 10" },
+        // { NT_GNU_PROPERTY_TYPE_11, "NT_GNU_PROPERTY_TYPE_11", "Property type 11" },
+        // { NT_GNU_PROPERTY_TYPE_12, "NT_GNU_PROPERTY_TYPE_12", "Property type 12" },
+        // { NT_GNU_PROPERTY_TYPE_13, "NT_GNU_PROPERTY_TYPE_13", "Property type 13" },
+        // { NT_GNU_PROPERTY_TYPE_14, "NT_GNU_PROPERTY_TYPE_14", "Property type 14" },
       } },
-    }
+    // { "SOLARIS",
+    //   { { NT_SOLARIS_AUXV, "NT_SOLARIS_AUXV", "" }
+    //   } },
+    // { "AIX",
+    //   { { NT_AIX_AUXV, "NT_AIX_AUXV", "" }
+    //   } },
+    // { "IRIX",
+    //   { { NT_IRIX_FPREGS, "NT_IRIX_FPREGS", "" }
+    //   } },
 };
 // clang-format on
 
@@ -604,8 +631,10 @@ class dump
 {
 #define DUMP_DEC_FORMAT( width ) \
     std::setw( width ) << std::setfill( ' ' ) << std::dec << std::right
-#define DUMP_HEX_FORMAT( width ) \
+#define DUMP_HEX0x_FORMAT( width ) \
     "0x" << std::setw( width ) << std::setfill( '0' ) << std::hex << std::right
+#define DUMP_HEX_FORMAT( width ) \
+    std::setw( width ) << std::setfill( '0' ) << std::hex << std::right
 #define DUMP_STR_FORMAT( width ) \
     std::setw( width ) << std::setfill( ' ' ) << std::hex << std::left
 
@@ -678,28 +707,28 @@ class dump
         if ( elf_class == ELFCLASS32 ) { // Output for 32-bit
             out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
                 << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() )
-                << " " << DUMP_HEX_FORMAT( 8 ) << sec->get_address() << " "
-                << DUMP_HEX_FORMAT( 8 ) << sec->get_size() << " "
-                << DUMP_HEX_FORMAT( 2 ) << sec->get_entry_size() << " "
+                << " " << DUMP_HEX0x_FORMAT( 8 ) << sec->get_address() << " "
+                << DUMP_HEX0x_FORMAT( 8 ) << sec->get_size() << " "
+                << DUMP_HEX0x_FORMAT( 2 ) << sec->get_entry_size() << " "
                 << DUMP_STR_FORMAT( 3 ) << section_flags( sec->get_flags() )
-                << " " << DUMP_HEX_FORMAT( 2 ) << sec->get_link() << " "
-                << DUMP_HEX_FORMAT( 3 ) << sec->get_info() << " "
-                << DUMP_HEX_FORMAT( 2 ) << sec->get_addr_align() << " "
+                << " " << DUMP_HEX0x_FORMAT( 2 ) << sec->get_link() << " "
+                << DUMP_HEX0x_FORMAT( 3 ) << sec->get_info() << " "
+                << DUMP_HEX0x_FORMAT( 2 ) << sec->get_addr_align() << " "
                 << DUMP_STR_FORMAT( 17 ) << sec->get_name() << " " << std::endl;
         }
         else { // Output for 64-bit
             out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
                 << DUMP_STR_FORMAT( 17 ) << str_section_type( sec->get_type() ) << " "
-                << DUMP_HEX_FORMAT( 16 ) << sec->get_address()                  << " "
-                << DUMP_HEX_FORMAT( 16 ) << sec->get_size()                     << " "
-                << DUMP_HEX_FORMAT(  8 ) << sec->get_offset()                   << " "
+                << DUMP_HEX0x_FORMAT( 16 ) << sec->get_address()                  << " "
+                << DUMP_HEX0x_FORMAT( 16 ) << sec->get_size()                     << " "
+                << DUMP_HEX0x_FORMAT(  8 ) << sec->get_offset()                   << " "
                 << DUMP_STR_FORMAT(  3) << section_flags( sec->get_flags() )
                 << std::endl
                 << DUMP_STR_FORMAT( 8 ) << " "
-                << DUMP_HEX_FORMAT( 4 ) << sec->get_entry_size() << " "
-                << DUMP_HEX_FORMAT( 4 ) << sec->get_link()       << " "
-                << DUMP_HEX_FORMAT( 4 ) << sec->get_info()       << " "
-                << DUMP_HEX_FORMAT( 4 ) << sec->get_addr_align() << "   "
+                << DUMP_HEX0x_FORMAT( 4 ) << sec->get_entry_size() << " "
+                << DUMP_HEX0x_FORMAT( 4 ) << sec->get_link()       << " "
+                << DUMP_HEX0x_FORMAT( 4 ) << sec->get_info()       << " "
+                << DUMP_HEX0x_FORMAT( 4 ) << sec->get_addr_align() << "   "
                 << DUMP_STR_FORMAT( 17 ) << sec->get_name()
                 << std::endl;
         }
@@ -753,26 +782,26 @@ class dump
         if ( elf_class == ELFCLASS32 ) { // Output for 32-bit
             out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
                 << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() )
-                << " " << DUMP_HEX_FORMAT( 8 ) << seg->get_virtual_address()
-                << " " << DUMP_HEX_FORMAT( 8 ) << seg->get_physical_address()
-                << " " << DUMP_HEX_FORMAT( 8 ) << seg->get_file_size() << " "
-                << DUMP_HEX_FORMAT( 8 ) << seg->get_memory_size() << " "
+                << " " << DUMP_HEX0x_FORMAT( 8 ) << seg->get_virtual_address()
+                << " " << DUMP_HEX0x_FORMAT( 8 ) << seg->get_physical_address()
+                << " " << DUMP_HEX0x_FORMAT( 8 ) << seg->get_file_size() << " "
+                << DUMP_HEX0x_FORMAT( 8 ) << seg->get_memory_size() << " "
                 << DUMP_STR_FORMAT( 8 ) << str_segment_flag( seg->get_flags() )
-                << " " << DUMP_HEX_FORMAT( 8 ) << seg->get_align() << " "
+                << " " << DUMP_HEX0x_FORMAT( 8 ) << seg->get_align() << " "
                 << std::endl;
         }
         else { // Output for 64-bit
             out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
                 << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() ) << " " 
-                << DUMP_HEX_FORMAT( 16 ) << seg->get_offset()           << " "
-                << DUMP_HEX_FORMAT( 16 ) << seg->get_virtual_address()  << " "
-                << DUMP_HEX_FORMAT( 16 ) << seg->get_physical_address()
+                << DUMP_HEX0x_FORMAT( 16 ) << seg->get_offset()           << " "
+                << DUMP_HEX0x_FORMAT( 16 ) << seg->get_virtual_address()  << " "
+                << DUMP_HEX0x_FORMAT( 16 ) << seg->get_physical_address()
                 << std::endl
                 << DUMP_STR_FORMAT( 23 ) << " "
-                << DUMP_HEX_FORMAT( 16 ) << seg->get_file_size()         << " "
-                << DUMP_HEX_FORMAT( 16 ) << seg->get_memory_size()       << "  "
+                << DUMP_HEX0x_FORMAT( 16 ) << seg->get_file_size()         << " "
+                << DUMP_HEX0x_FORMAT( 16 ) << seg->get_memory_size()       << "  "
                 << DUMP_STR_FORMAT(  3 ) << str_segment_flag( seg->get_flags() ) << "    "
-                << DUMP_HEX_FORMAT(  1 ) << seg->get_align() 
+                << DUMP_HEX0x_FORMAT(  1 ) << seg->get_align() 
                 << std::endl;
         }
         // clang-format on
@@ -841,8 +870,8 @@ class dump
 
         if ( elf_class == ELFCLASS32 ) { // Output for 32-bit
             out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
-                << DUMP_HEX_FORMAT( 8 ) << value << " " << DUMP_HEX_FORMAT( 8 )
-                << size << " " << DUMP_STR_FORMAT( 7 )
+                << DUMP_HEX0x_FORMAT( 8 ) << value << " "
+                << DUMP_HEX0x_FORMAT( 8 ) << size << " " << DUMP_STR_FORMAT( 7 )
                 << str_symbol_type( type ) << " " << DUMP_STR_FORMAT( 8 )
                 << str_symbol_bind( bind ) << " " << DUMP_DEC_FORMAT( 5 )
                 << section << " " << DUMP_STR_FORMAT( 1 ) << name << " "
@@ -850,11 +879,11 @@ class dump
         }
         else { // Output for 64-bit
             out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
-                << DUMP_HEX_FORMAT( 16 ) << value << " "
-                << DUMP_HEX_FORMAT( 16 ) << size << " " << DUMP_STR_FORMAT( 7 )
-                << str_symbol_type( type ) << " " << DUMP_STR_FORMAT( 8 )
-                << str_symbol_bind( bind ) << " " << DUMP_DEC_FORMAT( 5 )
-                << section << " " << std::endl
+                << DUMP_HEX0x_FORMAT( 16 ) << value << " "
+                << DUMP_HEX0x_FORMAT( 16 ) << size << " "
+                << DUMP_STR_FORMAT( 7 ) << str_symbol_type( type ) << " "
+                << DUMP_STR_FORMAT( 8 ) << str_symbol_bind( bind ) << " "
+                << DUMP_DEC_FORMAT( 5 ) << section << " " << std::endl
                 << "        " << DUMP_STR_FORMAT( 1 ) << name << " "
                 << std::endl;
         }
@@ -874,7 +903,8 @@ class dump
                 if ( no > 0 ) {
                     out << "Note section (" << sec->get_name() << ")"
                         << std::endl
-                        << "    No Type       Name    Description" << std::endl;
+                        << "    No Name         Data size  Description"
+                        << std::endl;
                     for ( Elf_Word j = 0; j < no_notes; ++j ) { // For all notes
                         Elf_Word    type;
                         std::string name;
@@ -884,7 +914,7 @@ class dump
                         if ( notes.get_note( j, type, name, desc, descsz ) ) {
                             // 'name' usually contains \0 at the end. Remove it
                             name = name.c_str();
-                            note( out, j, type, name );
+                            note( out, j, type, name, desc, descsz );
                         }
                     }
 
@@ -895,12 +925,52 @@ class dump
     }
 
     //------------------------------------------------------------------------------
-    static void
-    note( std::ostream& out, int no, Elf_Word type, const std::string& name )
+    static void note( std::ostream&      out,
+                      int                no,
+                      Elf_Word           type,
+                      const std::string& name,
+                      void*              desc,
+                      Elf_Word           descsz )
     {
-        out << "  [" << DUMP_DEC_FORMAT( 2 ) << no << "] "
-            << DUMP_HEX_FORMAT( 8 ) << type << " " << DUMP_STR_FORMAT( 1 )
-            << name << std::endl;
+        out << "  [" << DUMP_DEC_FORMAT( 2 ) << no << "] ";
+
+        const note_tag_t*                                      name_group;
+        std::vector<note_tag_t::note_values_t>::const_iterator type_value;
+
+        name_group = std::find_if(
+            std::begin( note_tag_table ), std::end( note_tag_table ),
+            [&name]( const note_tag_t& entry ) { return entry.name == name; } );
+        if ( name_group != std::end( note_tag_table ) ) {
+            type_value = std::find_if(
+                name_group->values.begin(), name_group->values.end(),
+                [&type]( const note_tag_t::note_values_t& e ) {
+                    return e.type == type;
+                } );
+        }
+
+        if ( name_group != std::end( note_tag_table ) &&
+             type_value != name_group->values.end() ) {
+            out << DUMP_STR_FORMAT( 12 ) << name_group->name << " "
+                << DUMP_HEX0x_FORMAT( 8 ) << descsz << " "
+                << type_value->type_str << " (" << type_value->description
+                << ")";
+        }
+        else {
+            out << DUMP_STR_FORMAT( 12 ) << name << " "
+                << DUMP_HEX0x_FORMAT( 8 ) << descsz << " "
+                << DUMP_HEX0x_FORMAT( 8 ) << type;
+        }
+
+        if ( descsz != 0 ) {
+
+            for ( Elf_Word i = 0; i < descsz; ++i ) {
+                if ( i % 16 == 0 ) {
+                    out << std::endl << "         ";
+                }
+                out << DUMP_HEX_FORMAT( 2 )
+                    << (uint32_t)( (uint8_t*)( desc ) )[i];
+            }
+        }
     }
 
     //------------------------------------------------------------------------------
@@ -971,7 +1041,7 @@ class dump
         out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
             << DUMP_STR_FORMAT( 16 ) << str_dynamic_tag( tag ) << " ";
         if ( str.empty() ) {
-            out << DUMP_HEX_FORMAT( 16 ) << value << " ";
+            out << DUMP_HEX0x_FORMAT( 16 ) << value << " ";
         }
         else {
             out << DUMP_STR_FORMAT( 32 ) << str << " ";
@@ -991,10 +1061,11 @@ class dump
             for ( i = 0; i < std::min( sec->get_size(), MAX_DATA_ENTRIES );
                   ++i ) {
                 if ( i % 16 == 0 ) {
-                    out << "[" << DUMP_HEX_FORMAT( 8 ) << i << "]";
+                    out << "[" << DUMP_HEX0x_FORMAT( 8 ) << i << "]";
                 }
 
-                out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
+                out << " " << DUMP_HEX0x_FORMAT( 2 )
+                    << ( pdata[i] & 0x000000FF );
 
                 if ( i % 16 == 15 ) {
                     out << std::endl;
@@ -1045,10 +1116,11 @@ class dump
             for ( i = 0; i < std::min( seg->get_file_size(), MAX_DATA_ENTRIES );
                   ++i ) {
                 if ( i % 16 == 0 ) {
-                    out << "[" << DUMP_HEX_FORMAT( 8 ) << i << "]";
+                    out << "[" << DUMP_HEX0x_FORMAT( 8 ) << i << "]";
                 }
 
-                out << " " << DUMP_HEX_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
+                out << " " << DUMP_HEX0x_FORMAT( 2 )
+                    << ( pdata[i] & 0x000000FF );
 
                 if ( i % 16 == 15 ) {
                     out << std::endl;
@@ -1160,10 +1232,9 @@ class dump
     }
 
 #undef DUMP_DEC_FORMAT
-#undef DUMP_HEX_FORMAT
+#undef DUMP_HEX0x_FORMAT
 #undef DUMP_STR_FORMAT
 }; // class dump
-
 }; // namespace ELFIO
 
 #endif // ELFIO_DUMP_HPP
