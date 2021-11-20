@@ -934,7 +934,7 @@ class dump
     {
         out << "  [" << DUMP_DEC_FORMAT( 2 ) << no << "] ";
 
-        const note_tag_t*                                      name_group;
+        const note_tag_t* name_group = std::end( note_tag_table );
         std::vector<note_tag_t::note_values_t>::const_iterator type_value;
 
         name_group = std::find_if(
@@ -962,7 +962,6 @@ class dump
         }
 
         if ( descsz != 0 ) {
-
             for ( Elf_Word i = 0; i < descsz; ++i ) {
                 if ( i % 16 == 0 ) {
                     out << std::endl << "         ";
