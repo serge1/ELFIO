@@ -550,7 +550,6 @@ constexpr unsigned char STB_MULTIDEF = 13;
 constexpr unsigned char STB_LOPROC   = 13;
 constexpr unsigned char STB_HIPROC   = 15;
 
-
 // Values of note segment descriptor types for core files
 constexpr Elf_Word NT_PRSTATUS   = 1; // Contains copy of prstatus struct
 constexpr Elf_Word NT_FPREGSET   = 2; // Contains copy of fpregset struct
@@ -568,7 +567,7 @@ constexpr Elf_Word NT_LWPSTATUS    = 16; // Has a struct lwpstatus_t
 constexpr Elf_Word NT_LWPSINFO     = 17; // Has a struct lwpsinfo_t
 constexpr Elf_Word NT_WIN32PSTATUS = 18; // Has a struct win32_pstatus
 
-// clang-format off    
+// clang-format off
 
 // Note name must be "LINUX"    
 constexpr Elf_Word NT_PRXFPREG             = 0x46e62b7f; // Contains a user_xfpregs_struct;
@@ -1054,6 +1053,24 @@ struct Elf64_Dyn
         Elf_Xword  d_val;
         Elf64_Addr d_ptr;
     } d_un;
+};
+
+struct Elfxx_Verneed
+{
+    Elf_Half vn_version;
+    Elf_Half vn_cnt;
+    Elf_Word vn_file;
+    Elf_Word vn_aux;
+    Elf_Word vn_next;
+};
+
+struct Elfxx_Vernaux
+{
+    Elf_Word vna_hash;
+    Elf_Half vna_flags;
+    Elf_Half vna_other;
+    Elf_Word vna_name;
+    Elf_Word vna_next;
 };
 
 #ifdef __cplusplus

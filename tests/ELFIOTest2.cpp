@@ -364,45 +364,63 @@ BOOST_AUTO_TEST_CASE( gnu_version_64_le )
 
     BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_64" ), true );
 
-    std::string                   name;
-    Elf64_Addr                    value;
-    Elf_Xword                     size;
-    unsigned char                 bind;
-    unsigned char                 type;
-    Elf_Half                      section_index;
-    unsigned char                 other;
-    section*                      symsec = reader.sections[".dynsym"];
-    const_symbol_section_accessor dynsym( reader, symsec );
+    std::string   name;
+    Elf64_Addr    value;
+    Elf_Xword     size;
+    unsigned char bind;
+    unsigned char type;
+    Elf_Half      section_index;
+    unsigned char other;
 
-    section* versec = reader.sections[".gnu.version"];
-    const_array_section_accessor<Elf64_Half> vers( reader, versec );
+    section*                      dynsym = reader.sections[".dynsym"];
+    const_symbol_section_accessor dynsym_acc( reader, dynsym );
 
-    section* verneed = reader.sections[".gnu.version_r"];
-    const_array_section_accessor<Elf64_Half> vern( reader, verneed );
+    section*                      gnu_version = reader.sections[".gnu.version"];
+    const_versym_section_accessor gnu_version_arr( gnu_version );
+
+    section* gnu_version_r = reader.sections[".gnu.version_r"];
+    const_versym_r_section_accessor gnu_version_r_arr( reader, gnu_version_r );
 
     section* dynstr = reader.sections[".dynstr"];
 
-    BOOST_CHECK_EQUAL( versec->get_link(), symsec->get_index() );
-    BOOST_CHECK_EQUAL( verneed->get_link(), dynstr->get_index() );
+    BOOST_CHECK_EQUAL( gnu_version->get_link(), dynsym->get_index() );
+    BOOST_CHECK_EQUAL( gnu_version_r->get_link(), dynstr->get_index() );
 
-    for ( int i = 0; i < dynsym.get_symbols_num(); i++ ) {
-        BOOST_REQUIRE_EQUAL( dynsym.get_symbol( i, name, value, size, bind,
-                                                type, section_index, other ),
+    BOOST_CHECK_EQUAL( dynsym_acc.get_symbols_num(),
+                       gnu_version_arr.get_entries_num() );
+
+    for ( Elf64_Word i = 0; i < dynsym_acc.get_symbols_num(); i++ ) {
+        BOOST_REQUIRE_EQUAL( dynsym_acc.get_symbol( i, name, value, size, bind,
+                                                    type, section_index,
+                                                    other ),
                              true );
 
-        Elf64_Addr verindex = 0;
-
-        vers.get_entry( i, verindex );
-        BOOST_CHECK_EQUAL( verindex, ( i / 2 ) * 2 );
-
-        const char* ptr = verneed->get_data();
-        if ( verindex > 1 ) {
-            Elf64_Addr value = 0;
-            vern.get_entry( verindex * 8, value );
-            // std::cout << value << std::endl;
-        }
+        Elf64_Half verindex = 0;
+        gnu_version_arr.get_entry( i, verindex );
+        if ( i < 2 )
+            BOOST_CHECK_EQUAL( 0, verindex );
+        else
+            BOOST_CHECK_EQUAL( 2, verindex );
     }
+
+    BOOST_CHECK_EQUAL( gnu_version_r_arr.get_entries_num(), 1 );
+
+    Elf_Half    version;
+    std::string file_name;
+    Elf_Word    hash;
+    Elf_Half    flags;
+    Elf_Half    vna_other;
+    std::string dep_name;
+    gnu_version_r_arr.get_entry( 0, version, file_name, hash, flags, vna_other,
+                                 dep_name );
+    BOOST_CHECK_EQUAL( version, 1 );
+    BOOST_CHECK_EQUAL( file_name, "libc.so.6" );
+    BOOST_CHECK_EQUAL( hash, 0x09691a75 );
+    BOOST_CHECK_EQUAL( flags, 0 );
+    BOOST_CHECK_EQUAL( vna_other, 2 );
+    BOOST_CHECK_EQUAL( dep_name, "GLIBC_2.2.5" );
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( move_constructor_and_assignment )

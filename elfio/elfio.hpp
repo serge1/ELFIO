@@ -1050,6 +1050,7 @@ class elfio
 #include <elfio/elfio_dynamic.hpp>
 #include <elfio/elfio_array.hpp>
 #include <elfio/elfio_modinfo.hpp>
+#include <elfio/elfio_versym.hpp>
 
 #ifdef _MSC_VER
 #pragma warning( pop )
