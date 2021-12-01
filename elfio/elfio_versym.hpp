@@ -58,6 +58,30 @@ template <class S> class versym_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    bool modify_entry( Elf_Word no, Elf_Half value )
+    {
+        if ( versym_section && ( no < get_entries_num() ) ) {
+            ( (Elf_Half*)versym_section->get_data() )[no] = value;
+            return true;
+        }
+
+        return false;
+    }
+
+    //------------------------------------------------------------------------------
+    bool add_entry( Elf_Half value )
+    {
+        if ( !versym_section ) {
+            return false;
+        }
+
+        versym_section->append_data( (const char*)&value, sizeof( Elf_Half ) );
+        ++entries_num;
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------------
   private:
     S*       versym_section;
     Elf_Word entries_num;

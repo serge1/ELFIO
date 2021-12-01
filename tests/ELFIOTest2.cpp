@@ -421,6 +421,44 @@ BOOST_AUTO_TEST_CASE( gnu_version_64_le )
     BOOST_CHECK_EQUAL( dep_name, "GLIBC_2.2.5" );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( gnu_version_64_le_modify )
+{
+    elfio reader;
+    // Load ELF data
+
+    BOOST_REQUIRE_EQUAL( reader.load( "elf_examples/hello_64" ), true );
+
+    std::string   name;
+    Elf64_Addr    value;
+    Elf_Xword     size;
+    unsigned char bind;
+    unsigned char type;
+    Elf_Half      section_index;
+    unsigned char other;
+
+    section*                gnu_version = reader.sections[".gnu.version"];
+    versym_section_accessor gnu_version_arr( gnu_version );
+
+    section*                  gnu_version_r = reader.sections[".gnu.version_r"];
+    versym_r_section_accessor gnu_version_r_arr( reader, gnu_version_r );
+
+    auto       orig_entries_num = gnu_version_arr.get_entries_num();
+    Elf64_Word i                = 0;
+    for ( i = 0; i < orig_entries_num; i++ ) {
+        gnu_version_arr.modify_entry( i, i + 10 );
+    }
+    gnu_version_arr.add_entry( i + 10 );
+    gnu_version_arr.add_entry( i + 11 );
+    BOOST_CHECK_EQUAL( orig_entries_num + 2,
+                       gnu_version_arr.get_entries_num() );
+
+    for ( i = 0; i < gnu_version_arr.get_entries_num(); i++ ) {
+        Elf_Half value;
+        gnu_version_arr.get_entry( i, value );
+        BOOST_CHECK_EQUAL( i + 10, value );
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( move_constructor_and_assignment )
