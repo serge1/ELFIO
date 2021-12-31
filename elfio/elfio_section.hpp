@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <string>
 #include <iostream>
 #include <new>
-#include <climits>
+#include <limits>
 
 namespace ELFIO {
 
@@ -197,7 +197,7 @@ template <class T> class section_impl : public section
             set_stream_size( stream.tellg() );
         }
         else {
-            set_stream_size( ULLONG_MAX );
+            set_stream_size( std::numeric_limits<size_t>::max() );
         }
 
         stream.seekg( ( *translator )[header_offset] );
