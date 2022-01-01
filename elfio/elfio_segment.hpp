@@ -74,10 +74,9 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     segment_impl( const endianess_convertor* convertor,
                   const address_translator*  translator )
-        : convertor( convertor ), translator( translator ), stream_size( 0 ),
-          index( 0 ), data( nullptr )
+        : index( 0 ), data( nullptr ), convertor( convertor ),
+          translator( translator ), stream_size( 0 ), is_offset_set( false )
     {
-        is_offset_set = false;
         std::fill_n( reinterpret_cast<char*>( &ph ), sizeof( ph ), '\0' );
     }
 
@@ -94,7 +93,6 @@ template <class T> class segment_impl : public segment
     ELFIO_GET_SET_ACCESS( Elf_Xword, file_size, ph.p_filesz );
     ELFIO_GET_SET_ACCESS( Elf_Xword, memory_size, ph.p_memsz );
     ELFIO_GET_ACCESS( Elf64_Off, offset, ph.p_offset );
-    size_t stream_size;
 
     //------------------------------------------------------------------------------
     Elf_Half get_index() const override { return index; }
@@ -218,6 +216,7 @@ template <class T> class segment_impl : public segment
     std::vector<Elf_Half>      sections;
     const endianess_convertor* convertor;
     const address_translator*  translator;
+    size_t                     stream_size;
     bool                       is_offset_set;
 };
 

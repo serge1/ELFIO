@@ -44,10 +44,12 @@ if (ELFIO_BUILD_EXAMPLES OR ELFIO_BUILD_TESTS)
 endif()
 
 if (ELFIO_BUILD_EXAMPLES)
+    set (CMAKE_CXX_FLAGS "-Wall -Wextra")
     add_subdirectory(examples)
 endif()
 
 if (ELFIO_BUILD_TESTS AND IS_TOP_PROJECT)
+    set (CMAKE_CXX_FLAGS "-Wall -Wextra")
     enable_testing()
     add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} USES_TERMINAL)
     add_subdirectory(tests)

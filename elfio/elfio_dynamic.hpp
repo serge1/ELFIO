@@ -201,7 +201,8 @@ template <class S> class dynamic_section_accessor_template
         case DT_SYMBOLIC:
         case DT_TEXTREL:
         case DT_BIND_NOW:
-            value = 0;
+            entry.d_un.d_val = convertor( 0 );
+            break;
         case DT_NEEDED:
         case DT_PLTRELSZ:
         case DT_RELASZ:
