@@ -33,7 +33,9 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/examples/elfdump/elfdump",
-            "args": ["tests/elf_examples/hello_32"],
+            "args": [
+                "tests/elf_examples/hello_32"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -55,10 +57,10 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/examples/proc_mem/proc_mem",
             "args": [
-                "2919",
+                "11706",
                 "/usr/bin/bash"
             ],
-            "sudo" : true,
+            "sudo": true,
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -71,7 +73,30 @@
                     "ignoreFailures": true
                 }
             ],
-            "miDebuggerPath": "/home/user/ELFIO/examples/proc_mem/sudo_gdb.sh"
+            "miDebuggerPath": "/home/user/ELFIO/examples/sudo_gdb.sh"
+        },
+        {
+            "name": "Run dump for /proc/kcore",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/examples/elfdump/elfdump",
+            "args": [
+                "/proc/kcore"
+            ],
+            "sudo": true,
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/home/user/ELFIO/examples/sudo_gdb.sh"
         }
     ]
 }
