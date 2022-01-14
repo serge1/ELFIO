@@ -55,6 +55,8 @@ class section
     virtual void        set_data( const std::string& data )             = 0;
     virtual void        append_data( const char* pData, Elf_Word size ) = 0;
     virtual void        append_data( const std::string& data )          = 0;
+    virtual size_t      get_stream_size() const                         = 0;
+    virtual void        set_stream_size( size_t value )                 = 0;
 
   protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
@@ -179,6 +181,12 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
+    size_t get_stream_size() const override { return stream_size; }
+
+    //------------------------------------------------------------------------------
+    void set_stream_size( size_t value ) override { stream_size = value; }
+
+    //------------------------------------------------------------------------------
   protected:
     //------------------------------------------------------------------------------
     ELFIO_GET_SET_ACCESS( Elf64_Off, offset, header.sh_offset );
@@ -237,12 +245,6 @@ template <class T> class section_impl : public section
             save_data( stream, data_offset );
         }
     }
-
-    //------------------------------------------------------------------------------
-    size_t get_stream_size() const { return stream_size; }
-
-    //------------------------------------------------------------------------------
-    void set_stream_size( size_t value ) { stream_size = value; }
 
     //------------------------------------------------------------------------------
   private:
