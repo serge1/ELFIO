@@ -239,6 +239,12 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
+    size_t get_stream_size() const { return stream_size; }
+
+    //------------------------------------------------------------------------------
+    void set_stream_size( size_t value ) { stream_size = value; }
+
+    //------------------------------------------------------------------------------
   private:
     //------------------------------------------------------------------------------
     void save_header( std::ostream& stream, std::streampos header_offset ) const
@@ -254,12 +260,6 @@ template <class T> class section_impl : public section
         adjust_stream_size( stream, data_offset );
         stream.write( get_data(), get_size() );
     }
-
-    //------------------------------------------------------------------------------
-    size_t get_stream_size() const { return stream_size; }
-
-    //------------------------------------------------------------------------------
-    void set_stream_size( size_t value ) { stream_size = value; }
 
     //------------------------------------------------------------------------------
   private:
