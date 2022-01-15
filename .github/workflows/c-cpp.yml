@@ -45,11 +45,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Create Build Directory
-      run: cmake -E make_directory ${{ runner.workspace }}/build
     - name: Configure CMake
-      working-directory: ${{ runner.workspace }}/build
-      run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES
     - name: Build
-      working-directory: ${{ runner.workspace }}/build
-      run: cmake --build . --config ${{ matrix.build_type }}
+      run: cmake --build build --config ${{ matrix.build_type }}
