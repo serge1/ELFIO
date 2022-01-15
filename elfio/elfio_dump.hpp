@@ -1234,6 +1234,6 @@ class dump
 #undef DUMP_HEX0x_FORMAT
 #undef DUMP_STR_FORMAT
 }; // class dump
-}; // namespace ELFIO
+} // namespace ELFIO
 
 #endif // ELFIO_DUMP_HPP
