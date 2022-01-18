@@ -140,6 +140,9 @@ template <class T> class section_impl : public section
         }
 
         set_size( data_size );
+        if ( translator->empty() ) {
+            set_stream_size( data_size );
+        }
     }
 
     //------------------------------------------------------------------------------
@@ -171,6 +174,9 @@ template <class T> class section_impl : public section
                 }
             }
             set_size( get_size() + size );
+            if ( translator->empty() ) {
+                set_stream_size( get_stream_size() + size );
+            }
         }
     }
 
