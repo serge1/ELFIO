@@ -38,7 +38,8 @@ namespace ELFIO {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-template <class S> class note_section_accessor_template
+template <class S, Elf_Xword ( S::*F_get_size )() const>
+class note_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ template <class S> class note_section_accessor_template
                    void*&       desc,
                    Elf_Word&    descSize ) const
     {
-        if ( index >= note_section->get_size() ) {
+        if ( index >= ( note_section->*F_get_size )() ) {
             return false;
         }
 
@@ -75,7 +76,7 @@ template <class S> class note_section_accessor_template
         descSize = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
 
         Elf_Xword max_name_size =
-            note_section->get_size() - note_start_positions[index];
+            ( note_section->*F_get_size )() - note_start_positions[index];
         if ( namesz < 1 || namesz > max_name_size ||
              (Elf_Xword)namesz + descSize > max_name_size ) {
             return false;
@@ -133,7 +134,7 @@ template <class S> class note_section_accessor_template
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
         const char*                data      = note_section->get_data();
-        Elf_Xword                  size      = note_section->get_size();
+        Elf_Xword                  size      = ( note_section->*F_get_size )();
         Elf_Xword                  current   = 0;
 
         note_start_positions.clear();
@@ -163,9 +164,14 @@ template <class S> class note_section_accessor_template
     std::vector<Elf_Xword> note_start_positions;
 };
 
-using note_section_accessor = note_section_accessor_template<section>;
+using note_section_accessor =
+    note_section_accessor_template<section, &section::get_size>;
 using const_note_section_accessor =
-    note_section_accessor_template<const section>;
+    note_section_accessor_template<const section, &section::get_size>;
+using note_segment_accessor =
+    note_section_accessor_template<segment, &segment::get_file_size>;
+using const_note_segment_accessor =
+    note_section_accessor_template<const segment, &segment::get_file_size>;
 
 } // namespace ELFIO
 

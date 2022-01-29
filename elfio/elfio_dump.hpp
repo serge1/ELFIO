@@ -915,6 +915,37 @@ class dump
                             // 'name' usually contains \0 at the end. Remove it
                             name = name.c_str();
                             note( out, j, type, name, desc, descsz );
+                            out << std::endl;
+                        }
+                    }
+
+                    out << std::endl;
+                }
+            }
+        }
+
+        no = reader.segments.size();
+        for ( Elf_Half i = 0; i < no; ++i ) { // For all segments
+            segment* seg = reader.segments[i];
+            if ( PT_NOTE == seg->get_type() ) { // Look at notes
+                note_segment_accessor notes( reader, seg );
+                Elf_Word              no_notes = notes.get_notes_num();
+                if ( no > 0 ) {
+                    out << "Note segment (" << i << ")"
+                        << std::endl
+                        << "    No Name         Data size  Description"
+                        << std::endl;
+                    for ( Elf_Word j = 0; j < no_notes; ++j ) { // For all notes
+                        Elf_Word    type;
+                        std::string name;
+                        void*       desc;
+                        Elf_Word    descsz;
+
+                        if ( notes.get_note( j, type, name, desc, descsz ) ) {
+                            // 'name' usually contains \0 at the end. Remove it
+                            name = name.c_str();
+                            note( out, j, type, name, desc, descsz );
+                            out << std::endl;
                         }
                     }
 
