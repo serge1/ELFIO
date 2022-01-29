@@ -44,7 +44,7 @@ class note_section_accessor_template
   public:
     //------------------------------------------------------------------------------
     note_section_accessor_template( const elfio& elf_file, S* section )
-        : elf_file( elf_file ), note_section( section )
+        : elf_file( elf_file ), notes( section )
     {
         process_section();
     }
@@ -62,13 +62,12 @@ class note_section_accessor_template
                    void*&       desc,
                    Elf_Word&    descSize ) const
     {
-        if ( index >= ( note_section->*F_get_size )() ) {
+        if ( index >= ( notes->*F_get_size )() ) {
             return false;
         }
 
-        const char* pData =
-            note_section->get_data() + note_start_positions[index];
-        int align = sizeof( Elf_Word );
+        const char* pData = notes->get_data() + note_start_positions[index];
+        int         align = sizeof( Elf_Word );
 
         const endianess_convertor& convertor = elf_file.get_convertor();
         type = convertor( *(const Elf_Word*)( pData + 2 * (size_t)align ) );
@@ -76,7 +75,7 @@ class note_section_accessor_template
         descSize = convertor( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
 
         Elf_Xword max_name_size =
-            ( note_section->*F_get_size )() - note_start_positions[index];
+            ( notes->*F_get_size )() - note_start_positions[index];
         if ( namesz < 1 || namesz > max_name_size ||
              (Elf_Xword)namesz + descSize > max_name_size ) {
             return false;
@@ -124,8 +123,8 @@ class note_section_accessor_template
             }
         }
 
-        note_start_positions.emplace_back( note_section->get_size() );
-        note_section->append_data( buffer );
+        note_start_positions.emplace_back( ( notes->*F_get_size )() );
+        notes->append_data( buffer );
     }
 
   private:
@@ -133,8 +132,8 @@ class note_section_accessor_template
     void process_section()
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
-        const char*                data      = note_section->get_data();
-        Elf_Xword                  size      = ( note_section->*F_get_size )();
+        const char*                data      = notes->get_data();
+        Elf_Xword                  size      = ( notes->*F_get_size )();
         Elf_Xword                  current   = 0;
 
         note_start_positions.clear();
@@ -160,7 +159,7 @@ class note_section_accessor_template
     //------------------------------------------------------------------------------
   private:
     const elfio&           elf_file;
-    S*                     note_section;
+    S*                     notes;
     std::vector<Elf_Xword> note_start_positions;
 };
 
