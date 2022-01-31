@@ -111,4 +111,30 @@ if (IS_TOP_PROJECT)
             elfio
         EXPORT
             ${PROJECT_NAME}_Targets)
+
+    # cmake -B build; cmake --build build; cpack --config build/CPackSourceConfig.cmake
+    # cmake -B build -D ELFIO_BUILD_EXAMPLES=ON -DELFIO_BUILD_TESTS=ON -G Ninja; cmake --build build; cpack --config build/CPackSourceConfig.cmake
+    set(_fmt TGZ)
+    if(WIN32)
+    set(_fmt ZIP)
+    endif()
+    set(CPACK_GENERATOR ${_fmt})
+    set(CPACK_SOURCE_GENERATOR ${_fmt})
+    set(CPACK_PACKAGE_VENDOR "ELFIO")
+    set(CPACK_PACKAGE_CONTACT "Serge Lamikhov-Center")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+    set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/package")
+    set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    string(TOLOWER ${CMAKE_SYSTEM_NAME} _sys)
+    string(TOLOWER ${PROJECT_NAME} _project_lower)
+    set(CPACK_PACKAGE_FILE_NAME "${_project_lower}-${_sys}")
+    set(CPACK_SOURCE_PACKAGE_FILE_NAME "${_project_lower}-${PROJECT_VERSION}")
+
+    set(CPACK_SOURCE_IGNORE_FILES "/.git/;/.github/;/.vscode/;/build;/.clang-format;/.gitignore;/.travis.yml;/doc/images/;/doc/site;/doc/elfio.docx;/examples/sudo_gdb.sh;/tests")
+
+    install(FILES ${CPACK_RESOURCE_FILE_README} ${CPACK_RESOURCE_FILE_LICENSE}
+            DESTINATION share/docs/${PROJECT_NAME})
+
+    include(CPack)
 endif()
