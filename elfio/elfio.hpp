@@ -23,11 +23,6 @@ THE SOFTWARE.
 #ifndef ELFIO_HPP
 #define ELFIO_HPP
 
-#ifdef _MSC_VER
-#pragma warning( push )
-#pragma warning( disable : 4996 )
-#endif
-
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -1049,9 +1044,5 @@ class elfio
 #include <elfio/elfio_array.hpp>
 #include <elfio/elfio_modinfo.hpp>
 #include <elfio/elfio_versym.hpp>
-
-#ifdef _MSC_VER
-#pragma warning( pop )
-#endif
 
 #endif // ELFIO_HPP
