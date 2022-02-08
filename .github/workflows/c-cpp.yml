@@ -7,30 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build_autoconf:
-    name: autoconf build & test
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: compile and run examples
-      run: |
-        cmake -B build -D ELFIO_BUILD_EXAMPLES=ON
-        cmake --build build
-    - name: compile and run tests
-      run: |
-        sudo apt-get install libboost-test-dev
-        cd tests
-        autoreconf -i -f
-        ./configure
-        make
-        make check
-    - name: make distcheck
-      run: make distcheck
-
   build_cmake:
-    name: cmake build & test
+    name: CMake Build & Test
 
     env:
       BUILD_TYPE: Release
@@ -45,6 +23,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Configure CMake
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
     - name: Build
       run: cmake --build build --config ${{ matrix.build_type }}
+    - name: test
+      run: |
+        cd tests
+        ctest -VV
+        cd ..
