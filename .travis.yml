@@ -24,6 +24,6 @@ install:
 script:
 - cmake -B build -DCMAKE_BUILD_TYPE=Release -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
 - cmake --build build --config Release
-- cd build
+- cd $TRAVIS_BUILD_DIR/ELFIO/build
 - ctest -VV
 - cd ..
