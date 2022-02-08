@@ -22,17 +22,8 @@ install:
 - sudo apt-get install libboost-test-dev
 
 script:
-- autoreconf -f -i
-- ./configure CXXFLAGS=--std=c++11
-- make
-
-- cd tests
-- autoreconf -f -i
-- ./configure CXXFLAGS=--std=c++11
-- make check
-
-- cd ..
-- mkdir build
+- cmake -B build -DCMAKE_BUILD_TYPE=Release -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
+- cmake --build build --config Release
 - cd build
-- cmake ..
-- cmake --build  .
+- ctest -VV
+- cd ..

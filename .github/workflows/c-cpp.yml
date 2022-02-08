@@ -28,7 +28,7 @@ jobs:
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
     - name: Build
       run: cmake --build build --config ${{ matrix.build_type }}
-    - name: test
+    - name: Test
       run: |
         cd build
         ctest -VV
