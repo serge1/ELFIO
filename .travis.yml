@@ -23,8 +23,8 @@ install:
 
 script:
 - mkdir build
-- cmake -B build -DCMAKE_BUILD_TYPE=Release -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
-- cmake --build build --config Release
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
+- cmake --build . --config Release
 - cd build
 - ctest -VV
 - cd ..
