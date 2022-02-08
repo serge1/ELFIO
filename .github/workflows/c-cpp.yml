@@ -16,9 +16,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: compile and run examples
       run: |
-        autoreconf -i -f
-        ./configure
-        make
+        cmake -B build -D ELFIO_BUILD_EXAMPLES=ON
+        cmake --build build
     - name: compile and run tests
       run: |
         sudo apt-get install libboost-test-dev
