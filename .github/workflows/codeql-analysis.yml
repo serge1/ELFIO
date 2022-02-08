@@ -55,9 +55,8 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       autoreconf -i -f
-       ./configure
-       make
+       cmake -B build -D ELFIO_BUILD_EXAMPLES=ON
+       cmake --build build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
