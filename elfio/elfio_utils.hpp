@@ -41,14 +41,14 @@ THE SOFTWARE.
 #define ELFIO_SET_ACCESS( TYPE, NAME, FIELD ) \
     void set_##NAME( TYPE value ) override    \
     {                                         \
-        FIELD = value;                        \
+        FIELD = decltype( FIELD )( value );   \
         FIELD = ( *convertor )( FIELD );      \
     }
 #define ELFIO_GET_SET_ACCESS( TYPE, NAME, FIELD )                        \
     TYPE get_##NAME() const override { return ( *convertor )( FIELD ); } \
     void set_##NAME( TYPE value ) override                               \
     {                                                                    \
-        FIELD = value;                                                   \
+        FIELD = decltype( FIELD )( value );                              \
         FIELD = ( *convertor )( FIELD );                                 \
     }
 
@@ -256,7 +256,7 @@ inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
     stream.seekp( 0, std::ios_base::end );
     if ( stream.tellp() < offset ) {
         std::streamsize size = offset - stream.tellp();
-        stream.write( std::string( size, '\0' ).c_str(), size );
+        stream.write( std::string( size_t( size ), '\0' ).c_str(), size );
     }
     stream.seekp( offset );
 }

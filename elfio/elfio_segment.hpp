@@ -141,7 +141,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     void set_offset( Elf64_Off value ) override
     {
-        ph.p_offset   = value;
+        ph.p_offset   = decltype( ph.p_offset )( value );
         ph.p_offset   = ( *convertor )( ph.p_offset );
         is_offset_set = true;
     }
@@ -163,7 +163,7 @@ template <class T> class segment_impl : public segment
     {
         if ( translator->empty() ) {
             stream.seekg( 0, stream.end );
-            set_stream_size( stream.tellg() );
+            set_stream_size( size_t( stream.tellg() ) );
         }
         else {
             set_stream_size( std::numeric_limits<size_t>::max() );
@@ -181,7 +181,7 @@ template <class T> class segment_impl : public segment
                 data = nullptr;
             }
             else {
-                data = new ( std::nothrow ) char[size + 1];
+                data = new ( std::nothrow ) char[(size_t)size + 1];
 
                 if ( nullptr != data ) {
                     stream.read( data, size );
@@ -196,7 +196,7 @@ template <class T> class segment_impl : public segment
                std::streampos header_offset,
                std::streampos data_offset ) override
     {
-        ph.p_offset = data_offset;
+        ph.p_offset = decltype( ph.p_offset )( data_offset );
         ph.p_offset = ( *convertor )( ph.p_offset );
         adjust_stream_size( stream, header_offset );
         stream.write( reinterpret_cast<const char*>( &ph ), sizeof( ph ) );

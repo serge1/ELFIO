@@ -376,7 +376,7 @@ template <class S> class relocation_section_accessor_template
         else {
             pEntry->r_info = ELF64_R_INFO( (Elf_Xword)symbol, type );
         }
-        pEntry->r_offset = offset;
+        pEntry->r_offset = decltype( pEntry->r_offset )( offset );
         pEntry->r_offset = convertor( pEntry->r_offset );
         pEntry->r_info   = convertor( pEntry->r_info );
     }
@@ -401,8 +401,8 @@ template <class S> class relocation_section_accessor_template
         else {
             pEntry->r_info = ELF64_R_INFO( (Elf_Xword)symbol, type );
         }
-        pEntry->r_offset = offset;
-        pEntry->r_addend = addend;
+        pEntry->r_offset = decltype( pEntry->r_offset )( offset );
+        pEntry->r_addend = decltype( pEntry->r_addend )( addend );
         pEntry->r_offset = convertor( pEntry->r_offset );
         pEntry->r_info   = convertor( pEntry->r_info );
         pEntry->r_addend = convertor( pEntry->r_addend );
@@ -415,8 +415,8 @@ template <class S> class relocation_section_accessor_template
         const endianess_convertor& convertor = elf_file.get_convertor();
 
         T entry;
-        entry.r_offset = offset;
-        entry.r_info   = info;
+        entry.r_offset = decltype( entry.r_offset )( offset );
+        entry.r_info   = decltype( entry.r_info )( info );
         entry.r_offset = convertor( entry.r_offset );
         entry.r_info   = convertor( entry.r_info );
 

@@ -76,12 +76,12 @@ template <class S> class dynamic_section_accessor_template
             generic_get_entry_dyn<Elf64_Dyn>( index, tag, value );
         }
 
-        // If the tag may have a string table reference, prepare the string
+        // If the tag has a string table reference - prepare the string
         if ( tag == DT_NEEDED || tag == DT_SONAME || tag == DT_RPATH ||
              tag == DT_RUNPATH ) {
             string_section_accessor strsec(
                 elf_file.sections[get_string_table_index()] );
-            const char* result = strsec.get_string( value );
+            const char* result = strsec.get_string( (Elf_Word)value );
             if ( nullptr == result ) {
                 str.clear();
                 return false;

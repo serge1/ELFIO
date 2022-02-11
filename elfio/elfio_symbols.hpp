@@ -234,7 +234,7 @@ template <class S> class symbol_section_accessor_template
         std::function<void( Elf_Xword first, Elf_Xword second )> func =
             nullptr )
     {
-        int nRet = 0;
+        Elf_Xword nRet = 0;
 
         if ( elf_file.get_class() == ELFCLASS32 ) {
             nRet = generic_arrange_local_symbols<Elf32_Sym>( func );
@@ -466,9 +466,9 @@ template <class S> class symbol_section_accessor_template
 
         T entry;
         entry.st_name  = convertor( name );
-        entry.st_value = value;
+        entry.st_value = decltype( entry.st_value )( value );
         entry.st_value = convertor( entry.st_value );
-        entry.st_size  = size;
+        entry.st_size  = decltype( entry.st_size )( size );
         entry.st_size  = convertor( entry.st_size );
         entry.st_info  = convertor( info );
         entry.st_other = convertor( other );
@@ -477,7 +477,8 @@ template <class S> class symbol_section_accessor_template
         symbol_section->append_data( reinterpret_cast<char*>( &entry ),
                                      sizeof( entry ) );
 
-        Elf_Word nRet = symbol_section->get_size() / sizeof( entry ) - 1;
+        Elf_Word nRet =
+            Elf_Word( symbol_section->get_size() / sizeof( entry ) - 1 );
 
         return nRet;
     }
@@ -489,7 +490,7 @@ template <class S> class symbol_section_accessor_template
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
-        Elf_Xword first_not_local =
+        Elf_Word first_not_local =
             1; // Skip the first entry. It is always NOTYPE
         Elf_Xword current = 0;
         Elf_Xword count   = get_symbols_num();

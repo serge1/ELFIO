@@ -113,7 +113,7 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
     void set_address( Elf64_Addr value ) override
     {
-        header.sh_addr = value;
+        header.sh_addr = decltype( header.sh_addr )( value );
         header.sh_addr = ( *convertor )( header.sh_addr );
         is_address_set = true;
     }
@@ -208,7 +208,7 @@ template <class T> class section_impl : public section
 
         if ( translator->empty() ) {
             stream.seekg( 0, stream.end );
-            set_stream_size( stream.tellg() );
+            set_stream_size( size_t( stream.tellg() ) );
         }
         else {
             set_stream_size( std::numeric_limits<size_t>::max() );
@@ -220,14 +220,14 @@ template <class T> class section_impl : public section
         Elf_Xword size = get_size();
         if ( nullptr == data && SHT_NULL != get_type() &&
              SHT_NOBITS != get_type() && size < get_stream_size() ) {
-            data = new ( std::nothrow ) char[size + 1];
+            data = new ( std::nothrow ) char[size_t( size ) + 1];
 
             if ( ( 0 != size ) && ( nullptr != data ) ) {
                 stream.seekg(
                     ( *translator )[( *convertor )( header.sh_offset )] );
                 stream.read( data, size );
                 data[size] = 0; // Ensure data is ended with 0 to avoid oob read
-                data_size  = size;
+                data_size  = decltype( data_size )( size );
             }
             else {
                 data_size = 0;
@@ -241,7 +241,7 @@ template <class T> class section_impl : public section
                std::streampos data_offset ) override
     {
         if ( 0 != get_index() ) {
-            header.sh_offset = data_offset;
+            header.sh_offset = decltype( header.sh_offset )( data_offset );
             header.sh_offset = ( *convertor )( header.sh_offset );
         }
 
