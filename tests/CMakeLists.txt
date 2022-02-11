@@ -1,5 +1,16 @@
-# Unit tests are written using the Boost unit test framework
-find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+include(FetchContent)
+
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/9a32aee22d771387c494be2d8519fbdf46a713b2.zip
+)
+
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
 
 # Find all the binary files used for testing and copy them into the build
 # directory. This allows the test to be run from the build directory
@@ -33,7 +44,7 @@ target_link_libraries(
     ELFIOTest
     PRIVATE
         elfio::elfio
-        Boost::unit_test_framework)
+        gtest_main)
 
 add_test(
     NAME
@@ -44,3 +55,6 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR})
 
 add_dependencies(check ELFIOTest)
+
+include(GoogleTest)
+gtest_discover_tests(ELFIOTest)
