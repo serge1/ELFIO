@@ -125,7 +125,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool load( const std::string& file_name )
+    bool load( const std::string& file_name, bool is_lazy = false )
     {
         std::ifstream stream;
         stream.open( file_name.c_str(), std::ios::in | std::ios::binary );
@@ -133,11 +133,11 @@ class elfio
             return false;
         }
 
-        return load( stream );
+        return load( stream, is_lazy );
     }
 
     //------------------------------------------------------------------------------
-    bool load( std::istream& stream )
+    bool load( std::istream& stream, bool is_lazy = false )
     {
         clean();
 
@@ -172,8 +172,8 @@ class elfio
             return false;
         }
 
-        bool is_still_good = load_sections( stream );
-        is_still_good      = is_still_good && load_segments( stream );
+        load_sections( stream );
+        bool is_still_good = load_segments( stream, is_lazy );
         return is_still_good;
     }
 
@@ -532,7 +532,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool load_segments( std::istream& stream )
+    bool load_segments( std::istream& stream, bool is_lazy )
     {
         unsigned char file_class = header->get_class();
         Elf_Half      entry_size = header->get_segment_entry_size();
@@ -562,15 +562,9 @@ class elfio
                 return false;
             }
 
-            if ( !seg->load( stream, static_cast<std::streamoff>( offset ) +
-                                         static_cast<std::streampos>( i ) *
-                                             entry_size ) ||
-                 stream.fail() ) {
-                delete seg;
-                seg = nullptr;
-                return false;
-            }
-
+            seg->load( stream,
+                       static_cast<std::streamoff>( offset ) +
+                           static_cast<std::streampos>( i ) * entry_size, is_lazy );
             seg->set_index( i );
 
             // Add sections to the segments (similar to readelfs algorithm)

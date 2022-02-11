@@ -82,7 +82,7 @@ int main( int argc, char** argv )
     elffile.set_address_translation( ranges );
 
     // The 'load' will use the provided address translation now
-    if ( elffile.load( std::string( "/proc/" ) + argv[1] + "/mem" ) ) {
+    if ( elffile.load( std::string( "/proc/" ) + argv[1] + "/mem", true ) ) {
         dump::header( std::cout, elffile );
         dump::segment_headers( std::cout, elffile );
         dump::segment_datas( std::cout, elffile );

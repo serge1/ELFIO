@@ -835,7 +835,7 @@ class dump
                             << std::endl
                             << "        Name" << std::endl;
                     }
-                    for ( Elf_Xword i = 0; i < sym_no; ++i ) {
+                    for ( Elf_Xword j = 0; j < sym_no; ++j ) {
                         std::string   name;
                         Elf64_Addr    value   = 0;
                         Elf_Xword     size    = 0;
@@ -843,9 +843,9 @@ class dump
                         unsigned char type    = 0;
                         Elf_Half      section = 0;
                         unsigned char other   = 0;
-                        symbols.get_symbol( i, name, value, size, bind, type,
+                        symbols.get_symbol( j, name, value, size, bind, type,
                                             section, other );
-                        symbol_table( out, i, name, value, size, bind, type,
+                        symbol_table( out, j, name, value, size, bind, type,
                                       section, reader.get_class() );
                     }
 
@@ -931,8 +931,7 @@ class dump
                 note_segment_accessor notes( reader, seg );
                 Elf_Word              no_notes = notes.get_notes_num();
                 if ( no > 0 ) {
-                    out << "Note segment (" << i << ")"
-                        << std::endl
+                    out << "Note segment (" << i << ")" << std::endl
                         << "    No Name         Data size  Description"
                         << std::endl;
                     for ( Elf_Word j = 0; j < no_notes; ++j ) { // For all notes
@@ -993,7 +992,7 @@ class dump
 
         if ( descsz != 0 ) {
             for ( Elf_Word i = 0; i < descsz; ++i ) {
-                if ( i % 16 == 0 ) {
+                if ( i % 48 == 0 ) {
                     out << std::endl << "         ";
                 }
                 out << DUMP_HEX_FORMAT( 2 )
@@ -1012,10 +1011,10 @@ class dump
                 out << "Section .modinfo" << std::endl;
 
                 const_modinfo_section_accessor modinfo( sec );
-                for ( Elf_Word i = 0; i < modinfo.get_attribute_num(); i++ ) {
+                for ( Elf_Word j = 0; j < modinfo.get_attribute_num(); j++ ) {
                     std::string field;
                     std::string value;
-                    if ( modinfo.get_attribute( i, field, value ) ) {
+                    if ( modinfo.get_attribute( j, field, value ) ) {
                         out << "  " << std::setw( 20 ) << field
                             << std::setw( 0 ) << " = " << value << std::endl;
                     }
@@ -1041,12 +1040,12 @@ class dump
                     out << "Dynamic section (" << sec->get_name() << ")"
                         << std::endl;
                     out << "[  Nr ] Tag              Name/Value" << std::endl;
-                    for ( Elf_Xword i = 0; i < dyn_no; ++i ) {
+                    for ( Elf_Xword j = 0; j < dyn_no; ++j ) {
                         Elf_Xword   tag   = 0;
                         Elf_Xword   value = 0;
                         std::string str;
-                        dynamic.get_entry( i, tag, value, str );
-                        dynamic_tag( out, i, tag, value, str,
+                        dynamic.get_entry( j, tag, value, str );
+                        dynamic_tag( out, j, tag, value, str,
                                      reader.get_class() );
                         if ( DT_NULL == tag ) {
                             break;
