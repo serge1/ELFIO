@@ -9,7 +9,7 @@
                 "CXXFLAGS='-g -O0'"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tests"
+                "cwd": "${workspaceRoot}/build/tests"
             },
             "group": {
                 "kind": "build",
@@ -40,7 +40,7 @@
             "label": "clang-tidy",
             "command": "clang-tidy",
             "args": [
-                "--checks=*,-modernize-use-trailing-return-type,-modernize-avoid-c-arrays,-llvm*,-fuchsia-*",
+                "--checks=*,-modernize-use-trailing-return-type,-modernize-avoid-c-arrays,-llvm*,-fuchsia-*,-altera-*",
                 "-header-filter=./*",
                 "examples/elfdump/elfdump.cpp",
                 "--",
