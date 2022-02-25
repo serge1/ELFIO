@@ -22,8 +22,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install Boost Test
-      run: sudo apt-get install libboost-test-dev
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
     - name: Build
