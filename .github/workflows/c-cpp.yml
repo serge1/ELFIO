@@ -29,5 +29,5 @@ jobs:
     - name: Test
       run: |
         cd build
-        ctest -VV -C ${{ matrix.build_type }}
+        ctest -C ${{ matrix.build_type }}
         cd ..

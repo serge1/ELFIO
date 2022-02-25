@@ -33,7 +33,8 @@ template <class S> class versym_section_accessor_template
     versym_section_accessor_template( S* section ) : versym_section( section )
     {
         if ( section ) {
-            entries_num = section->get_size() / sizeof( Elf_Half );
+            entries_num = decltype( entries_num )( section->get_size() /
+                                                   sizeof( Elf_Half ) );
         }
     }
 
@@ -118,7 +119,7 @@ template <class S> class versym_r_section_accessor_template
 
             if ( dynamic_section_acc.get_entry( i, tag, value, str ) &&
                  tag == DT_VERNEEDNUM ) {
-                entries_num = value;
+                entries_num = (Elf_Word)value;
                 break;
             }
         }

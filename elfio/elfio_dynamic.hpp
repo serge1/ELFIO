@@ -201,7 +201,7 @@ template <class S> class dynamic_section_accessor_template
         case DT_SYMBOLIC:
         case DT_TEXTREL:
         case DT_BIND_NOW:
-            entry.d_un.d_val = convertor( 0 );
+            entry.d_un.d_val = convertor( decltype( entry.d_un.d_val )( 0 ) );
             break;
         case DT_NEEDED:
         case DT_PLTRELSZ:
@@ -219,7 +219,8 @@ template <class S> class dynamic_section_accessor_template
         case DT_RUNPATH:
         case DT_FLAGS:
         case DT_PREINIT_ARRAYSZ:
-            entry.d_un.d_val = convertor( value );
+            entry.d_un.d_val =
+                convertor( decltype( entry.d_un.d_val )( value ) );
             break;
         case DT_PLTGOT:
         case DT_HASH:
@@ -235,11 +236,12 @@ template <class S> class dynamic_section_accessor_template
         case DT_FINI_ARRAY:
         case DT_PREINIT_ARRAY:
         default:
-            entry.d_un.d_ptr = convertor( value );
+            entry.d_un.d_ptr =
+                convertor( decltype( entry.d_un.d_val )( value ) );
             break;
         }
 
-        entry.d_tag = convertor( tag );
+        entry.d_tag = convertor( decltype( entry.d_tag )( tag ) );
 
         dynamic_section->append_data( reinterpret_cast<char*>( &entry ),
                                       sizeof( entry ) );

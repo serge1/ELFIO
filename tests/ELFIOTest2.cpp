@@ -374,7 +374,7 @@ TEST( ELFIOTest, gnu_version_64_le )
     section*                      gnu_version = reader.sections[".gnu.version"];
     const_versym_section_accessor gnu_version_arr( gnu_version );
 
-    section* gnu_version_r = reader.sections[".gnu.version_r"];
+    const section* gnu_version_r = reader.sections[".gnu.version_r"];
     const_versym_r_section_accessor gnu_version_r_arr( reader, gnu_version_r );
 
     section* dynstr = reader.sections[".dynstr"];
