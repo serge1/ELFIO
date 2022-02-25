@@ -19,12 +19,32 @@ before_install:
 - sudo apt-get update -qq
 
 install:
-- sudo apt-get install libboost-test-dev
+- sudo apt list -a cmake
+- sudo apt-get install cmake
+  # first we create a directory for the CMake binaries
+- DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+- mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+# we use wget to fetch the cmake binaries
+- travis_retry wget --no-check-certificate https://cmake.org/files/v3.18/cmake-3.18.6-Linux-x86_64.tar.gz
+# this is optional, but useful:
+# do a quick md5 check to ensure that the archive we downloaded did not get compromised
+#- echo "4d9a9d3351161073a67e49366d701b6fa4b0343781982dc5eef08a02a750d403 *cmake-3.18.0-Linux-x86_64.tar.gz" > cmake_md5.txt
+#- md5sum -c cmake_md5.txt
+# extract the binaries; the output here is quite lengthy,
+# so we swallow it to not clutter up the travis console
+- tar -xvf cmake-3.18.6-Linux-x86_64.tar.gz > /dev/null
+- mv cmake-3.18.6-Linux-x86_64 cmake-install
+# add both the top-level directory and the bin directory from the archive
+# to the system PATH. By adding it to the front of the path we hide the
+# preinstalled CMake with our own.
+- PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
+# don't forget to switch back to the main build directory once you are done
+- cd ${TRAVIS_BUILD_DIR}
 
 script:
 - mkdir build
+- cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
+- cmake --build build --config Release
 - cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
-- cmake --build . --config Release
 - ctest -VV
 - cd ..
