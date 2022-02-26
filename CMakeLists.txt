@@ -38,25 +38,24 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# Enable C++11 for examples and tests
-if (ELFIO_BUILD_EXAMPLES OR ELFIO_BUILD_TESTS)
-    set(CMAKE_CXX_STANDARD 11)
-endif()
-
-if (ELFIO_BUILD_EXAMPLES)
-    # set (CMAKE_CXX_FLAGS "-Wall")
-    add_subdirectory(examples)
-endif()
-
-if (ELFIO_BUILD_TESTS AND IS_TOP_PROJECT)
-    # set (CMAKE_CXX_FLAGS "-Wall")
-    enable_testing()
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} USES_TERMINAL)
-    add_subdirectory(tests)
-endif()
-
 # If this is the top level project, add in logic to install elfio
 if (IS_TOP_PROJECT)
+    # Enable C++11 for examples and tests
+    if (ELFIO_BUILD_EXAMPLES OR ELFIO_BUILD_TESTS)
+        set(CMAKE_CXX_STANDARD 11)
+    endif()
+
+    if (ELFIO_BUILD_EXAMPLES)
+        # set (CMAKE_CXX_FLAGS "-Wall")
+        add_subdirectory(examples)
+    endif()
+
+    if (ELFIO_BUILD_TESTS AND IS_TOP_PROJECT)
+        # set (CMAKE_CXX_FLAGS "-Wall")
+        enable_testing()
+        add_subdirectory(tests)
+    endif()
+
     include(CMakePackageConfigHelpers)
 
     # Create a file that includes the current project version. This will be
