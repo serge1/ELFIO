@@ -53,6 +53,7 @@ if (IS_TOP_PROJECT)
     if (ELFIO_BUILD_TESTS AND IS_TOP_PROJECT)
         # set (CMAKE_CXX_FLAGS "-Wall")
         enable_testing()
+        add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} USES_TERMINAL)
         add_subdirectory(tests)
     endif()
 
