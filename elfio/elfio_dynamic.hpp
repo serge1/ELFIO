@@ -45,8 +45,8 @@ template <class S> class dynamic_section_accessor_template
             entries_num =
                 dynamic_section->get_size() / dynamic_section->get_entry_size();
             Elf_Xword   i;
-            Elf_Xword   tag;
-            Elf_Xword   value;
+            Elf_Xword   tag   = DT_NULL;
+            Elf_Xword   value = 0;
             std::string str;
             for ( i = 0; i < entries_num; i++ ) {
                 get_entry( i, tag, value, str );
