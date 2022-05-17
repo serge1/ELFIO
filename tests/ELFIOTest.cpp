@@ -160,12 +160,12 @@ void checkRelocation( const relocation_section_accessor* pRT,
                       Elf_Sxword                         addend_,
                       Elf_Sxword                         calcValue_ )
 {
-    Elf64_Addr    offset;
-    Elf64_Addr    symbolValue;
-    std::string   symbolName;
-    unsigned char type;
-    Elf_Sxword    addend;
-    Elf_Sxword    calcValue;
+    Elf64_Addr  offset;
+    Elf64_Addr  symbolValue;
+    std::string symbolName;
+    unsigned    type;
+    Elf_Sxword  addend;
+    Elf_Sxword  calcValue;
 
     ASSERT_EQ( pRT->get_entry( index, offset, symbolValue, symbolName, type,
                                addend, calcValue ),
