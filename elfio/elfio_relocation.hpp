@@ -127,8 +127,8 @@ template <class S> class relocation_section_accessor_template
                     Elf_Sxword&  calcValue ) const
     {
         // Do regular job
-        Elf_Word symbol;
-        bool     ret = get_entry( index, offset, symbol, type, addend );
+        Elf_Word symbol = 0;
+        bool     ret    = get_entry( index, offset, symbol, type, addend );
 
         // Find the symbol
         Elf_Xword     size;
