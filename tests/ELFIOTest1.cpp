@@ -91,7 +91,7 @@ bool write_obj_i386( bool is64bit )
 
     symbol_section_accessor symbol_writer( writer, sym_sec );
     Elf_Word                nSymIndex = symbol_writer.add_symbol(
-        nStrIndex, 0, 0, STB_LOCAL, STT_NOTYPE, 0, data_sec->get_index() );
+                       nStrIndex, 0, 0, STB_LOCAL, STT_NOTYPE, 0, data_sec->get_index() );
 
     // Another way to add symbol
     symbol_writer.add_symbol( str_writer, "_start", 0x00000000, 0, STB_WEAK,
@@ -803,30 +803,30 @@ TEST( ELFIOTest, rearrange_local_symbols_with_reallocation )
 
     relocation_section_accessor rela( writer, rel_sec );
     // Add relocation entry (adjust address at offset 11)
-    rela.add_entry( 1, sym1, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 8, sym8, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 6, sym6, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 2, sym2, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 3, sym3, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 8, sym8, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 7, sym7, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 2, sym2, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 11, sym1, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 18, sym8, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 16, sym6, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 12, sym2, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 13, sym3, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 17, sym7, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 14, sym4, (unsigned char)R_386_RELATIVE );
-    rela.add_entry( 15, sym5, (unsigned char)R_386_RELATIVE );
+    rela.add_entry( 1, sym1, R_386_RELATIVE );
+    rela.add_entry( 8, sym8, R_386_RELATIVE );
+    rela.add_entry( 6, sym6, R_386_RELATIVE );
+    rela.add_entry( 2, sym2, R_386_RELATIVE );
+    rela.add_entry( 3, sym3, R_386_RELATIVE );
+    rela.add_entry( 8, sym8, R_386_RELATIVE );
+    rela.add_entry( 7, sym7, R_386_RELATIVE );
+    rela.add_entry( 2, sym2, R_386_RELATIVE );
+    rela.add_entry( 11, sym1, R_386_RELATIVE );
+    rela.add_entry( 18, sym8, R_386_RELATIVE );
+    rela.add_entry( 16, sym6, R_386_RELATIVE );
+    rela.add_entry( 12, sym2, R_386_RELATIVE );
+    rela.add_entry( 13, sym3, R_386_RELATIVE );
+    rela.add_entry( 17, sym7, R_386_RELATIVE );
+    rela.add_entry( 14, sym4, R_386_RELATIVE );
+    rela.add_entry( 15, sym5, R_386_RELATIVE );
 
     std::vector<std::string> before;
 
     for ( Elf_Word i = 0; i < rela.get_entries_num(); i++ ) {
-        Elf64_Addr    offset;
-        Elf_Word      symbol;
-        unsigned char rtype;
-        Elf_Sxword    addend;
+        Elf64_Addr offset;
+        Elf_Word   symbol;
+        unsigned   rtype;
+        Elf_Sxword addend;
 
         rela.get_entry( i, offset, symbol, rtype, addend );
         symbols.get_symbol( symbol, name, value, size, bind, type,
@@ -857,10 +857,10 @@ TEST( ELFIOTest, rearrange_local_symbols_with_reallocation )
     std::vector<std::string> after;
 
     for ( Elf_Word i = 0; i < rel.get_entries_num(); i++ ) {
-        Elf64_Addr    offset;
-        Elf_Word      symbol;
-        unsigned char rtype;
-        Elf_Sxword    addend;
+        Elf64_Addr offset;
+        Elf_Word   symbol;
+        unsigned   rtype;
+        Elf_Sxword addend;
 
         rel.get_entry( i, offset, symbol, rtype, addend );
         syms.get_symbol( symbol, name, value, size, bind, type, section_index,
