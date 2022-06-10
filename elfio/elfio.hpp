@@ -550,6 +550,11 @@ class elfio
             seg->load( stream,
                        static_cast<std::streamoff>( offset ) +
                            static_cast<std::streampos>( i ) * entry_size );
+
+            if ( stream.fail() ) {
+                return false;
+            }
+
             seg->set_index( i );
 
             // Add sections to the segments (similar to readelfs algorithm)
