@@ -42,7 +42,19 @@ template <class S> class symbol_section_accessor_template
     Elf_Xword get_symbols_num() const
     {
         Elf_Xword nRet = 0;
-        if ( 0 != symbol_section->get_entry_size() &&
+        size_t minimum_symbol_size;
+        switch ( elf_file.get_class() ) {
+        case ELFCLASS32:
+            minimum_symbol_size = sizeof(Elf32_Sym);
+            break;
+        case ELFCLASS64:
+            minimum_symbol_size = sizeof(Elf64_Sym);
+            break;
+        default:
+            return 0;
+        }
+
+        if ( symbol_section->get_entry_size() >= minimum_symbol_size &&
              symbol_section->get_size() <= symbol_section->get_stream_size() ) {
             nRet =
                 symbol_section->get_size() / symbol_section->get_entry_size();
