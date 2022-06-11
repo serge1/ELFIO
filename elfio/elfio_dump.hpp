@@ -965,12 +965,11 @@ class dump
     {
         out << "  [" << DUMP_DEC_FORMAT( 2 ) << no << "] ";
 
-        const note_tag_t* name_group = std::end( note_tag_table );
-        std::vector<note_tag_t::note_values_t>::const_iterator type_value;
-
-        name_group = std::find_if(
+        const note_tag_t* name_group = std::find_if(
             std::begin( note_tag_table ), std::end( note_tag_table ),
             [&name]( const note_tag_t& entry ) { return entry.name == name; } );
+
+        std::vector<note_tag_t::note_values_t>::const_iterator type_value;
         if ( name_group != std::end( note_tag_table ) ) {
             type_value = std::find_if(
                 name_group->values.begin(), name_group->values.end(),
