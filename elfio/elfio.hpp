@@ -300,18 +300,17 @@ class elfio
             for ( int j = i+1; j < sections.size(); ++j ) {
                 const section* a = sections[i];
                 const section* b = sections[j];
-                if (   ((a->get_type() & SHT_NOBITS) == 0)
-                    && ((b->get_type() & SHT_NOBITS) == 0)
-                    &&  (a->get_size() > 0)
-                    &&  (b->get_size() > 0)
-                    &&  (a->get_offset() > 0)
-                    &&  (b->get_offset() > 0)) {
-                    if (   is_offset_in_section( a->get_offset(), b )
-                        || is_offset_in_section( a->get_offset()+a->get_size()-1, b )
-                        || is_offset_in_section( b->get_offset(), a )
-                        || is_offset_in_section( b->get_offset()+b->get_size()-1, a )) {
+                if (   ( ( a->get_type() & SHT_NOBITS) == 0 )
+                    && ( ( b->get_type() & SHT_NOBITS) == 0 )
+                    && ( a->get_size() > 0 )
+                    && ( b->get_size() > 0 )
+                    && ( a->get_offset() > 0 )
+                    && ( b->get_offset() > 0 )
+                    && ( is_offset_in_section( a->get_offset(), b )
+                      || is_offset_in_section( a->get_offset()+a->get_size()-1, b )
+                      || is_offset_in_section( b->get_offset(), a )
+                      || is_offset_in_section( b->get_offset()+b->get_size()-1, a ) ) ) {
                         errors += "Sections " + a->get_name() + " and " + b->get_name() + " overlap in file\n";
-                    }
                 }
             }
         }
