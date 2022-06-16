@@ -61,7 +61,7 @@ class segment
     ELFIO_SET_ACCESS_DECL( Elf_Half, index );
 
     virtual const std::vector<Elf_Half>& get_sections() const               = 0;
-    virtual void load( std::istream& stream, std::streampos header_offset ) = 0;
+    virtual bool load( std::istream& stream, std::streampos header_offset ) = 0;
     virtual void save( std::ostream&  stream,
                        std::streampos header_offset,
                        std::streampos data_offset )                         = 0;
@@ -159,7 +159,7 @@ template <class T> class segment_impl : public segment
     void set_index( Elf_Half value ) override { index = value; }
 
     //------------------------------------------------------------------------------
-    void load( std::istream& stream, std::streampos header_offset ) override
+    bool load( std::istream& stream, std::streampos header_offset ) override
     {
         if ( translator->empty() ) {
             stream.seekg( 0, stream.end );
@@ -185,10 +185,17 @@ template <class T> class segment_impl : public segment
 
                 if ( nullptr != data ) {
                     stream.read( data, size );
+                    if (stream.gcount() != size) {
+                        delete[] data;
+                        data = nullptr;
+                        return false;
+                    }
                     data[size] = 0;
                 }
             }
         }
+
+        return true;
     }
 
     //------------------------------------------------------------------------------

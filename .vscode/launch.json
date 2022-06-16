@@ -34,7 +34,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/examples/elfdump/elfdump",
             "args": [
-                "tests/elf_examples/hello_32"
+                "tests/slow-unit-98e0b3724bca5039b0c12d9e31f6afcbe4f3ce64"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -60,7 +60,6 @@
                 "11706",
                 "/usr/bin/bash"
             ],
-            "sudo": true,
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -83,7 +82,6 @@
             "args": [
                 "/proc/kcore"
             ],
-            "sudo": true,
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -97,6 +95,16 @@
                 }
             ],
             "miDebuggerPath": "/home/user/ELFIO/examples/sudo_gdb.sh"
+        },
+        {
+            "name": "Fuzzer",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/elfio_fuzzer",
+            "args": [
+                "crash-da39a3ee5e6b4b0d3255bfef95601890afd80709"
+            ],
+            "cwd": "${workspaceFolder}/tests",
         }
     ]
 }
