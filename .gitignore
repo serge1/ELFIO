@@ -42,6 +42,8 @@ tests/elf_examples/segment_containing_no_section*
 tests/elf_examples/test_symbols_order.elf
 tests/elf_examples/zavl_gen.ko
 
+tests/elfio_fuzzer
+
 examples/writer/hello_x86_64
 examples/write_obj/hello
 examples/c_wrapper/c_example
@@ -95,4 +97,3 @@ _*/
 *.bbl
 *.toc
 *.blg
-
