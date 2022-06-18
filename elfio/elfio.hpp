@@ -473,11 +473,19 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    Elf_Half load_sections( std::istream& stream )
+    bool load_sections( std::istream& stream )
     {
-        Elf_Half  entry_size = header->get_section_entry_size();
-        Elf_Half  num        = header->get_sections_num();
-        Elf64_Off offset     = header->get_sections_offset();
+        unsigned char file_class = header->get_class();
+        Elf_Half      entry_size = header->get_section_entry_size();
+        Elf_Half      num        = header->get_sections_num();
+        Elf64_Off     offset     = header->get_sections_offset();
+
+        if ( ( num != 0 && file_class == ELFCLASS64 &&
+               entry_size < sizeof( Elf64_Shdr ) ) ||
+             ( num != 0 && file_class == ELFCLASS32 &&
+               entry_size < sizeof( Elf32_Shdr ) ) ) {
+            return false;
+        }
 
         for ( Elf_Half i = 0; i < num; ++i ) {
             section* sec = create_section();
@@ -503,7 +511,7 @@ class elfio
             }
         }
 
-        return num;
+        return true;
     }
 
     //------------------------------------------------------------------------------
@@ -526,9 +534,17 @@ class elfio
     //------------------------------------------------------------------------------
     bool load_segments( std::istream& stream )
     {
-        Elf_Half  entry_size = header->get_segment_entry_size();
-        Elf_Half  num        = header->get_segments_num();
-        Elf64_Off offset     = header->get_segments_offset();
+        unsigned char file_class = header->get_class();
+        Elf_Half      entry_size = header->get_segment_entry_size();
+        Elf_Half      num        = header->get_segments_num();
+        Elf64_Off     offset     = header->get_segments_offset();
+
+        if ( ( num != 0 && file_class == ELFCLASS64 &&
+               entry_size < sizeof( Elf64_Phdr ) ) ||
+             ( num != 0 && file_class == ELFCLASS32 &&
+               entry_size < sizeof( Elf32_Phdr ) ) ) {
+            return false;
+        }
 
         for ( Elf_Half i = 0; i < num; ++i ) {
             segment*      seg        = nullptr;
@@ -546,11 +562,10 @@ class elfio
                 return false;
             }
 
-            seg->load( stream,
-                       static_cast<std::streamoff>( offset ) +
-                           static_cast<std::streampos>( i ) * entry_size );
-
-            if ( stream.fail() ) {
+            if ( !seg->load( stream, static_cast<std::streamoff>( offset ) +
+                                         static_cast<std::streampos>( i ) *
+                                             entry_size ) ||
+                 stream.fail() ) {
                 return false;
             }
 

@@ -43,6 +43,7 @@ tests/elf_examples/test_symbols_order.elf
 tests/elf_examples/zavl_gen.ko
 
 tests/elfio_fuzzer
+tests/corpus
 
 examples/writer/hello_x86_64
 examples/write_obj/hello

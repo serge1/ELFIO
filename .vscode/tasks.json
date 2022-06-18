@@ -56,6 +56,30 @@
             "problemMatcher": [
                 "$gcc"
             ]
+        },
+        {
+            "type": "shell",
+            "label": "Fuzzer",
+            "command": "clang",
+            "args": [
+                "-g",
+                "-O0",
+                "-fsanitize=fuzzer",
+                "-I..",
+                "elfio_fuzzer.cpp",
+                "-o",
+                "elfio_fuzzer",
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/tests"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ],
     "version": "2.0.0"
