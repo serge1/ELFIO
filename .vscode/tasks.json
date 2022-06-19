@@ -64,11 +64,30 @@
             "args": [
                 "-g",
                 "-O0",
-                "-fsanitize=fuzzer",
+                "-fsanitize=fuzzer,address",
                 "-I..",
                 "elfio_fuzzer.cpp",
                 "-o",
                 "elfio_fuzzer",
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/tests"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "Fuzzer Tests",
+            "command": "./elfio_fuzzer",
+            "args": [
+                "-jobs=8",
+                "corpus"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/tests"

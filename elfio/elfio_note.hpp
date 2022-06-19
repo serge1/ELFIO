@@ -145,14 +145,18 @@ class note_section_accessor_template
 
         Elf_Word align = sizeof( Elf_Word );
         while ( current + (Elf_Xword)3 * align <= size ) {
-            note_start_positions.emplace_back( current );
             Elf_Word namesz = convertor( *(const Elf_Word*)( data + current ) );
             Elf_Word descsz = convertor(
                 *(const Elf_Word*)( data + current + sizeof( namesz ) ) );
+            Elf_Word advance =
+                (Elf_Xword)3 * sizeof( Elf_Word ) +
+                ( ( namesz + align - 1 ) / align ) * (Elf_Xword)align +
+                ( ( descsz + align - 1 ) / align ) * (Elf_Xword)align;
+            if ( current + advance <= size ) {
+                note_start_positions.emplace_back( current );
+            }
 
-            current += (Elf_Xword)3 * sizeof( Elf_Word ) +
-                       ( ( namesz + align - 1 ) / align ) * (Elf_Xword)align +
-                       ( ( descsz + align - 1 ) / align ) * (Elf_Xword)align;
+            current += advance;
         }
     }
 
