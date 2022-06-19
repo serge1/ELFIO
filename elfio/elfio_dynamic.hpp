@@ -40,8 +40,17 @@ template <class S> class dynamic_section_accessor_template
     //------------------------------------------------------------------------------
     Elf_Xword get_entries_num() const
     {
+        size_t needed_entry_size = -1;
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            needed_entry_size = sizeof( Elf32_Dyn );
+        }
+        else {
+            needed_entry_size = sizeof( Elf64_Dyn );
+        }
+
         if ( ( 0 == entries_num ) &&
-             ( 0 != dynamic_section->get_entry_size() ) ) {
+             ( 0 != dynamic_section->get_entry_size() &&
+               dynamic_section->get_entry_size() >= needed_entry_size ) ) {
             entries_num =
                 dynamic_section->get_size() / dynamic_section->get_entry_size();
             Elf_Xword   i;
@@ -134,7 +143,8 @@ template <class S> class dynamic_section_accessor_template
         // Check unusual case when dynamic section has no data
         if ( dynamic_section->get_data() == nullptr ||
              ( index + 1 ) * dynamic_section->get_entry_size() >
-                 dynamic_section->get_size() ) {
+                 dynamic_section->get_size() ||
+             dynamic_section->get_entry_size() < sizeof( T ) ) {
             tag   = DT_NULL;
             value = 0;
             return;
