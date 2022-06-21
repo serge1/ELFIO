@@ -152,8 +152,11 @@ class note_section_accessor_template
                 (Elf_Xword)3 * sizeof( Elf_Word ) +
                 ( ( namesz + align - 1 ) / align ) * (Elf_Xword)align +
                 ( ( descsz + align - 1 ) / align ) * (Elf_Xword)align;
-            if ( current + advance <= size ) {
+            if ( namesz < size && descsz < size && current + advance <= size ) {
                 note_start_positions.emplace_back( current );
+            }
+            else {
+                break;
             }
 
             current += advance;

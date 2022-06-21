@@ -102,7 +102,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/tests/elfio_fuzzer",
             "args": [
-                "oom-9025696a52c7f5cb94d482225a6b3727e9691f5b"
+                "oom-7ff496ad1166860893dba1121d088da4ce9fef65"
             ],
             "cwd": "${workspaceFolder}/tests",
         }
