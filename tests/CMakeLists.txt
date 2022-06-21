@@ -65,11 +65,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         elfio::elfio)
 
     target_compile_options(elfio_fuzzer
-        PRIVATE $<$<C_COMPILER_ID:Clang>:-g -O1 -fsanitize=fuzzer>
+        PRIVATE $<$<C_COMPILER_ID:Clang>:-g -O1 -fsanitize=fuzzer,address>
     )
 
     target_link_libraries(elfio_fuzzer
-        PRIVATE $<$<C_COMPILER_ID:Clang>:-fsanitize=fuzzer>
+        PRIVATE $<$<C_COMPILER_ID:Clang>:-fsanitize=fuzzer,address>
     )
 endif()
 
