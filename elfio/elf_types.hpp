@@ -1019,6 +1019,49 @@ constexpr Elf_Word DF_TEXTREL    = 0x4;
 constexpr Elf_Word DF_BIND_NOW   = 0x8;
 constexpr Elf_Word DF_STATIC_TLS = 0x10;
 
+// Legal values for d_tag (dynamic entry type).
+constexpr Elf_Word AT_NULL          = 0;  // End of vector
+constexpr Elf_Word AT_IGNORE        = 1;  // Entry should be ignored
+constexpr Elf_Word AT_EXECFD        = 2;  // File descriptor of program
+constexpr Elf_Word AT_PHDR          = 3;  // Program headers for program
+constexpr Elf_Word AT_PHENT         = 4;  // Size of program header entry
+constexpr Elf_Word AT_PHNUM         = 5;  // Number of program headers
+constexpr Elf_Word AT_PAGESZ        = 6;  // System page size
+constexpr Elf_Word AT_BASE          = 7;  // Base address of interpreter
+constexpr Elf_Word AT_FLAGS         = 8;  // Flags
+constexpr Elf_Word AT_ENTRY         = 9;  // Entry point of program
+constexpr Elf_Word AT_NOTELF        = 10; // Program is not ELF
+constexpr Elf_Word AT_UID           = 11; // Real uid
+constexpr Elf_Word AT_EUID          = 12; // Effective uid
+constexpr Elf_Word AT_GID           = 13; // Real gid
+constexpr Elf_Word AT_EGID          = 14; // Effective gid
+constexpr Elf_Word AT_CLKTCK        = 17; // Frequency of times()
+constexpr Elf_Word AT_PLATFORM      = 15; // String identifying platform.
+constexpr Elf_Word AT_HWCAP         = 16; // Hints about processor capabilities.
+constexpr Elf_Word AT_FPUCW         = 18; // Used FPU control word.
+constexpr Elf_Word AT_DCACHEBSIZE   = 19; // Data cache block size.
+constexpr Elf_Word AT_ICACHEBSIZE   = 20; // Instruction cache block size.
+constexpr Elf_Word AT_UCACHEBSIZE   = 21; // Unified cache block size.
+constexpr Elf_Word AT_IGNOREPPC     = 22; // Entry should be ignored.
+constexpr Elf_Word AT_SECURE        = 23; // Boolean, was exec setuid-like?
+constexpr Elf_Word AT_BASE_PLATFORM = 24; // String identifying real platforms.
+constexpr Elf_Word AT_RANDOM        = 25; // Address of 16 random bytes.
+constexpr Elf_Word AT_HWCAP2  = 26; // More hints about processor capabilities.
+constexpr Elf_Word AT_EXECFN  = 31; // Filename of executable.
+constexpr Elf_Word AT_SYSINFO = 32; // EP to the system call in the vDSO.
+constexpr Elf_Word AT_SYSINFO_EHDR = 33; // Start of the ELF header of the vDSO.
+constexpr Elf_Word AT_L1I_CACHESHAPE    = 34;
+constexpr Elf_Word AT_L1D_CACHESHAPE    = 35;
+constexpr Elf_Word AT_L2_CACHESHAPE     = 36;
+constexpr Elf_Word AT_L3_CACHESHAPE     = 37;
+constexpr Elf_Word AT_L1I_CACHESIZE     = 40;
+constexpr Elf_Word AT_L1I_CACHEGEOMETRY = 41;
+constexpr Elf_Word AT_L1D_CACHESIZE     = 42;
+constexpr Elf_Word AT_L1D_CACHEGEOMETRY = 43;
+constexpr Elf_Word AT_L2_CACHESIZE      = 44;
+constexpr Elf_Word AT_L2_CACHEGEOMETRY  = 45;
+constexpr Elf_Word AT_L3_CACHESIZE      = 46;
+
 // ELF file header
 struct Elf32_Ehdr
 {
@@ -1208,6 +1251,38 @@ struct Elfxx_Vernaux
     Elf_Half vna_other;
     Elf_Word vna_name;
     Elf_Word vna_next;
+};
+
+// ELF auxiliary vectors, they are usually run-time information
+// being passed to program when the kernel is loading it.
+// This is now required,
+// because in order to initialize the stack cookie
+// to protect against buffer overflows,
+// most of libc ask us to have a valid pointer for the AT_RANDOM entry.
+// glibc for example crashes if you don't.
+// https://sourceware.org/git/?p=glibc.git;a=blob;f=csu/libc-start.c;h=543560f36c33b07a1fbe1b7e4578374fe8007b1f;hb=HEAD#l308
+// This is also useful to be able to reconstruct at run-time
+// the ELF headers, if ELF headers were erased after loading.
+// Although this library is targeted to be parsing files only,
+// I assume auxiliary vectors could be also used to get
+// more information about the ELF binary at run-time in future.
+// The main purpose is also for ELF injectors.
+struct Elf32_auxv
+{
+    uint32_t a_type; // Entry type
+
+    union {
+        uint32_t a_val; // Integer value, usually a pointer
+    } a_un;
+};
+
+struct Elf64_auxv
+{
+    uint64_t a_type; // Entry type
+
+    union {
+        uint64_t a_val; // Integer value, usually a pointer
+    } a_un;
 };
 
 #ifdef __cplusplus
