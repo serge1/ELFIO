@@ -226,7 +226,7 @@ template <class T> class section_impl : public section
                 stream.seekg(
                     ( *translator )[( *convertor )( header.sh_offset )] );
                 stream.read( data, size );
-                if (stream.gcount() != size) {
+                if (static_cast<Elf_Xword>(stream.gcount()) != size) {
                     delete[] data;
                     data = nullptr;
                     return false;
