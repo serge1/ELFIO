@@ -185,7 +185,7 @@ template <class T> class segment_impl : public segment
 
                 if ( nullptr != data ) {
                     stream.read( data, size );
-                    if (stream.gcount() != size) {
+                    if (static_cast<Elf_Xword>(stream.gcount()) != size) {
                         delete[] data;
                         data = nullptr;
                         return false;
