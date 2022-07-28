@@ -100,7 +100,7 @@
             "name": "Fuzzer",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/tests/elfio_fuzzer",
+            "program": "${workspaceFolder}/build/tests/elfio_fuzzer",
             "args": [
                 "oom-7ff496ad1166860893dba1121d088da4ce9fef65"
             ],
