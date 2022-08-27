@@ -10,8 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/ELFIOTest",
             "args": [
-                "-r",
-                "short"
+                "--gtest_filter=ELFIOTest.load32",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build/tests",

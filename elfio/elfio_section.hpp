@@ -108,7 +108,7 @@ template <class T> class section_impl : public section
     std::string get_name() const override { return name; }
 
     //------------------------------------------------------------------------------
-    void set_name( std::string name ) override { this->name = name; }
+    void set_name( std::string name_prm ) override { this->name = name_prm; }
 
     //------------------------------------------------------------------------------
     void set_address( Elf64_Addr value ) override
@@ -207,7 +207,7 @@ template <class T> class section_impl : public section
                      '\0' );
 
         if ( translator->empty() ) {
-            stream.seekg( 0, stream.end );
+            stream.seekg( 0, std::istream::end );
             set_stream_size( size_t( stream.tellg() ) );
         }
         else {

@@ -224,6 +224,12 @@ TEST( ELFIOTest, load32 )
     sec = reader.sections[27];
     checkSection( sec, 27, ".strtab", SHT_STRTAB, 0, 0x0, 0x259, 0, 0, 1, 0 );
 
+    for ( Elf_Half i = 0; i < reader.sections.size(); ++i )
+    {
+        sec = reader.sections[i];
+        EXPECT_EQ( sec->get_index(), i );
+    }
+
     const section* sec1 = reader.sections[".strtab"];
     EXPECT_EQ( sec->get_index(), sec1->get_index() );
 

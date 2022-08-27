@@ -51,7 +51,7 @@ using namespace ELFIO;
 
 void overwrite_data( const std::string& filename,
                      Elf64_Off          offset,
-                     std::string&       str )
+                     const std::string& str )
 {
     std::ofstream file( filename,
                         std::ios::in | std::ios::out | std::ios::binary );
@@ -92,12 +92,11 @@ int main( int argc, char** argv )
         return 1;
     }
 
-    for ( auto section = reader.sections.begin();
-          section != reader.sections.end(); ++section ) {
-        if ( ( *section )->get_type() == SHT_STRTAB &&
-             std::string( ( *section )->get_name() ) ==
+    for ( const auto& section : reader.sections ) {
+        if ( section->get_type() == SHT_STRTAB &&
+             std::string( section->get_name() ) ==
                  std::string( ".strtab" ) ) {
-            process_string_table( *section, filename );
+            process_string_table( section.get(), filename );
         }
     }
     return 0;
