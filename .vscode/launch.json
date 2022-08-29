@@ -33,7 +33,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/examples/elfdump/elfdump",
             "args": [
-                "tests/slow-unit-98e0b3724bca5039b0c12d9e31f6afcbe4f3ce64"
+                "build/tests/crash-de896e9e31bf6f4c540e7462ccc0440018e4f0de"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -101,9 +101,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/elfio_fuzzer",
             "args": [
-                "oom-7ff496ad1166860893dba1121d088da4ce9fef65"
+                "crash-7143f5e49745dc6ce8909e642f9351d9d6496020"
             ],
-            "cwd": "${workspaceFolder}/tests",
+            "cwd": "${workspaceFolder}/build/tests",
         }
     ]
 }
