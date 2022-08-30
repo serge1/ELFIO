@@ -140,10 +140,10 @@ class elfio
         sections_.clear();
         segments_.clear();
 
-        unsigned char e_ident[EI_NIDENT] = { 0 };
+        std::array<char, EI_NIDENT> e_ident = { 0 };
         // Read ELF file signature
         stream.seekg( addr_translator[0] );
-        stream.read( reinterpret_cast<char*>( &e_ident ), sizeof( e_ident ) );
+        stream.read( e_ident.data(), sizeof( e_ident ) );
 
         // Is it ELF file?
         if ( stream.gcount() != sizeof( e_ident ) ||
@@ -313,6 +313,7 @@ class elfio
                 }
             }
         }
+        // clang-format on
 
         // Check for conflicting section / program header tables, where
         // the same offset has different vaddresses in section table and
@@ -324,15 +325,20 @@ class elfio
         //   since offsets are re-calculated from vaddress
         for ( int h = 0; h < segments.size(); ++h ) {
             const segment* seg = segments[h];
-            if ( seg->get_type() == PT_LOAD && seg->get_file_size() > 0 ) {
-                const section* sec = find_prog_section_for_offset( seg->get_offset() );
-                if ( sec != nullptr ) {
-                    Elf64_Addr sec_addr = get_virtual_addr( seg->get_offset(), sec );
-                    if ( sec_addr != seg->get_virtual_address() ) {
-                        errors += "Virtual address of segment " + std::to_string( h ) + " (" + to_hex_string( seg->get_virtual_address() ) + ")"
-                               +  " conflicts with address of section " + sec->get_name() + " (" + to_hex_string( sec_addr ) + ")"
-                               +  " at offset " + to_hex_string( seg->get_offset() ) + "\n";
-                    }
+            const section* sec =
+                find_prog_section_for_offset( seg->get_offset() );
+            if ( seg->get_type() == PT_LOAD && seg->get_file_size() > 0 &&
+                 sec != nullptr ) {
+                Elf64_Addr sec_addr =
+                    get_virtual_addr( seg->get_offset(), sec );
+                if ( sec_addr != seg->get_virtual_address() ) {
+                    errors += "Virtual address of segment " +
+                              std::to_string( h ) + " (" +
+                              to_hex_string( seg->get_virtual_address() ) +
+                              ")" + " conflicts with address of section " +
+                              sec->get_name() + " (" +
+                              to_hex_string( sec_addr ) + ")" + " at offset " +
+                              to_hex_string( seg->get_offset() ) + "\n";
                 }
             }
         }
@@ -340,7 +346,6 @@ class elfio
         // more checks to be added here...
 
         return errors;
-        // clang-format on
     }
 
   private:
@@ -395,23 +400,23 @@ class elfio
     //------------------------------------------------------------------------------
     section* create_section()
     {
-        section*      new_section = nullptr;
-        unsigned char file_class  = get_class();
+        unsigned char file_class = get_class();
 
         if ( file_class == ELFCLASS64 ) {
-            new_section =
-                new section_impl<Elf64_Shdr>( &convertor, &addr_translator );
+            sections_.emplace_back(
+                new section_impl<Elf64_Shdr>( &convertor, &addr_translator ) );
         }
         else if ( file_class == ELFCLASS32 ) {
-            new_section =
-                new section_impl<Elf32_Shdr>( &convertor, &addr_translator );
+            sections_.emplace_back(
+                new section_impl<Elf32_Shdr>( &convertor, &addr_translator ) );
         }
         else {
+            sections_.pop_back();
             return nullptr;
         }
 
-        new_section->set_index( static_cast<Elf_Half>( sections_.size() ) );
-        sections_.emplace_back( new_section );
+        section* new_section = sections_.back().get();
+        new_section->set_index( static_cast<Elf_Half>( sections_.size() - 1 ) );
 
         return new_section;
     }
@@ -419,23 +424,23 @@ class elfio
     //------------------------------------------------------------------------------
     segment* create_segment()
     {
-        segment*      new_segment = nullptr;
-        unsigned char file_class  = header->get_class();
+        unsigned char file_class = header->get_class();
 
         if ( file_class == ELFCLASS64 ) {
-            new_segment =
-                new segment_impl<Elf64_Phdr>( &convertor, &addr_translator );
+            segments_.emplace_back(
+                new segment_impl<Elf64_Phdr>( &convertor, &addr_translator ) );
         }
         else if ( file_class == ELFCLASS32 ) {
-            new_segment =
-                new segment_impl<Elf32_Phdr>( &convertor, &addr_translator );
+            segments_.emplace_back(
+                new segment_impl<Elf32_Phdr>( &convertor, &addr_translator ) );
         }
         else {
+            segments_.pop_back();
             return nullptr;
         }
 
-        new_segment->set_index( static_cast<Elf_Half>( segments_.size() ) );
-        segments_.emplace_back( new_segment );
+        segment* new_segment = segments_.back().get();
+        new_segment->set_index( static_cast<Elf_Half>( segments_.size() - 1 ) );
 
         return new_segment;
     }
@@ -530,26 +535,26 @@ class elfio
         }
 
         for ( Elf_Half i = 0; i < num; ++i ) {
-            segment*      seg        = nullptr;
-
             if ( file_class == ELFCLASS64 ) {
-                seg = new segment_impl<Elf64_Phdr>( &convertor,
-                                                    &addr_translator );
+                segments_.emplace_back( new segment_impl<Elf64_Phdr>(
+                    &convertor, &addr_translator ) );
             }
             else if ( file_class == ELFCLASS32 ) {
-                seg = new segment_impl<Elf32_Phdr>( &convertor,
-                                                    &addr_translator );
+                segments_.emplace_back( new segment_impl<Elf32_Phdr>(
+                    &convertor, &addr_translator ) );
             }
             else {
+                segments_.pop_back();
                 return false;
             }
+
+            segment* seg = segments_.back().get();
 
             if ( !seg->load( stream, static_cast<std::streamoff>( offset ) +
                                          static_cast<std::streampos>( i ) *
                                              entry_size ) ||
                  stream.fail() ) {
-                delete seg;
-                seg = nullptr;
+                segments_.pop_back();
                 return false;
             }
 
@@ -574,9 +579,6 @@ class elfio
                     seg->add_section_index( psec->get_index(), 0 );
                 }
             }
-
-            // Add section into the segments' container
-            segments_.emplace_back( seg );
         }
 
         return true;
