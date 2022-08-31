@@ -272,8 +272,8 @@ template <class T> class section_impl : public section
     std::string                name;
     std::unique_ptr<char>      data;
     Elf_Word                   data_size      = 0;
-    const endianess_convertor* convertor      = 0;
-    const address_translator*  translator     = 0;
+    const endianess_convertor* convertor      = nullptr;
+    const address_translator*  translator     = nullptr;
     bool                       is_address_set = false;
     size_t                     stream_size    = 0;
 };

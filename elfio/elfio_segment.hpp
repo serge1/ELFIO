@@ -74,14 +74,9 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     segment_impl( const endianess_convertor* convertor,
                   const address_translator*  translator )
-        : index( 0 ), data( nullptr ), convertor( convertor ),
-          translator( translator ), stream_size( 0 ), is_offset_set( false )
+        : convertor( convertor ), translator( translator )
     {
-        std::fill_n( reinterpret_cast<char*>( &ph ), sizeof( ph ), '\0' );
     }
-
-    //------------------------------------------------------------------------------
-    ~segment_impl() override { delete[] data; }
 
     //------------------------------------------------------------------------------
     // Section info functions
@@ -98,7 +93,7 @@ template <class T> class segment_impl : public segment
     Elf_Half get_index() const override { return index; }
 
     //------------------------------------------------------------------------------
-    const char* get_data() const override { return data; }
+    const char* get_data() const override { return data.get(); }
 
     //------------------------------------------------------------------------------
     Elf_Half add_section_index( Elf_Half  sec_index,
@@ -162,7 +157,7 @@ template <class T> class segment_impl : public segment
     bool load( std::istream& stream, std::streampos header_offset ) override
     {
         if ( translator->empty() ) {
-            stream.seekg( 0, stream.end );
+            stream.seekg( 0, std::istream::end );
             set_stream_size( size_t( stream.tellg() ) );
         }
         else {
@@ -173,25 +168,26 @@ template <class T> class segment_impl : public segment
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
         is_offset_set = true;
 
-        if ( PT_NULL != get_type() && 0 != get_file_size() ) {
-            stream.seekg( ( *translator )[( *convertor )( ph.p_offset )] );
-            Elf_Xword size = get_file_size();
+        if ( PT_NULL == get_type() || 0 == get_file_size() ) {
+            return true;
+        }
 
-            if ( size > get_stream_size() ) {
-                data = nullptr;
-            }
-            else {
-                data = new ( std::nothrow ) char[(size_t)size + 1];
+        stream.seekg( ( *translator )[( *convertor )( ph.p_offset )] );
+        Elf_Xword size = get_file_size();
 
-                if ( nullptr != data ) {
-                    stream.read( data, size );
-                    if (static_cast<Elf_Xword>(stream.gcount()) != size) {
-                        delete[] data;
-                        data = nullptr;
-                        return false;
-                    }
-                    data[size] = 0;
+        if ( size > get_stream_size() ) {
+            data = nullptr;
+        }
+        else {
+            data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
+
+            if ( nullptr != data.get() ) {
+                stream.read( data.get(), size );
+                if ( static_cast<Elf_Xword>( stream.gcount() ) != size ) {
+                    data = nullptr;
+                    return false;
                 }
+                data.get()[size] = 0;
             }
         }
 
@@ -217,14 +213,14 @@ template <class T> class segment_impl : public segment
 
     //------------------------------------------------------------------------------
   private:
-    T                          ph;
-    Elf_Half                   index;
-    char*                      data;
+    T                          ph    = { 0 };
+    Elf_Half                   index = 0;
+    std::unique_ptr<char>      data;
     std::vector<Elf_Half>      sections;
-    const endianess_convertor* convertor;
-    const address_translator*  translator;
-    size_t                     stream_size;
-    bool                       is_offset_set;
+    const endianess_convertor* convertor     = nullptr;
+    const address_translator*  translator    = nullptr;
+    size_t                     stream_size   = 0;
+    bool                       is_offset_set = false;
 };
 
 } // namespace ELFIO
