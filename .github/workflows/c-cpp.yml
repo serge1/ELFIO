@@ -6,13 +6,13 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  BUILD_TYPE: Release
+
 jobs:
   build_cmake:
     name: CMake Build & Test
 
-    env:
-      BUILD_TYPE: Release
-    
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
     - name: Build
