@@ -78,13 +78,8 @@ template <class T> class elf_header_impl : public elf_header
     elf_header_impl( endianess_convertor*      convertor,
                      unsigned char             encoding,
                      const address_translator* translator )
+        : convertor( convertor ), translator( translator )
     {
-        this->convertor  = convertor;
-        this->translator = translator;
-
-        std::fill_n( reinterpret_cast<char*>( &header ), sizeof( header ),
-                     '\0' );
-
         header.e_ident[EI_MAG0]    = ELFMAG0;
         header.e_ident[EI_MAG1]    = ELFMAG1;
         header.e_ident[EI_MAG2]    = ELFMAG2;
@@ -148,9 +143,9 @@ template <class T> class elf_header_impl : public elf_header
     ELFIO_GET_SET_ACCESS( Elf64_Off, segments_offset, header.e_phoff );
 
   private:
-    T                         header;
-    endianess_convertor*      convertor;
-    const address_translator* translator;
+    T                         header     = {};
+    endianess_convertor*      convertor  = nullptr;
+    const address_translator* translator = nullptr;
 };
 
 } // namespace ELFIO

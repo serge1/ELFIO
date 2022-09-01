@@ -187,7 +187,7 @@ void checkNote( const note_section_accessor& notes,
 {
     Elf_Word    type;
     std::string name;
-    void*       desc;
+    char*       desc;
     Elf_Word    descSize;
 
     ASSERT_EQ( notes.get_note( index, type, name, desc, descSize ), true );
@@ -224,8 +224,7 @@ TEST( ELFIOTest, load32 )
     sec = reader.sections[27];
     checkSection( sec, 27, ".strtab", SHT_STRTAB, 0, 0x0, 0x259, 0, 0, 1, 0 );
 
-    for ( Elf_Half i = 0; i < reader.sections.size(); ++i )
-    {
+    for ( Elf_Half i = 0; i < reader.sections.size(); ++i ) {
         sec = reader.sections[i];
         EXPECT_EQ( sec->get_index(), i );
     }
@@ -717,7 +716,7 @@ TEST( ELFIOTest, test_dummy_out_i386_32 )
     note_sec->set_addr_align( 4 );
     note_section_accessor note_writer( writer, note_sec );
     char                  descr[6] = { 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
-    note_writer.add_note( 0x77, "Hello", &descr, 6 );
+    note_writer.add_note( 0x77, "Hello", descr, 6 );
     EXPECT_EQ( note_sec->get_index(), 2 );
 
     // Create ELF file
@@ -770,7 +769,7 @@ TEST( ELFIOTest, test_dummy_out_ppc_32 )
     note_sec->set_addr_align( 4 );
     note_section_accessor note_writer( writer, note_sec );
     char                  descr[6] = { 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
-    note_writer.add_note( 0x77, "Hello", &descr, 6 );
+    note_writer.add_note( 0x77, "Hello", descr, 6 );
     EXPECT_EQ( note_sec->get_index(), 2 );
 
     // Create ELF file
@@ -823,7 +822,7 @@ TEST( ELFIOTest, test_dummy_out_i386_64 )
     note_sec->set_addr_align( 4 );
     note_section_accessor note_writer( writer, note_sec );
     char                  descr[6] = { 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
-    note_writer.add_note( 0x77, "Hello", &descr, 6 );
+    note_writer.add_note( 0x77, "Hello", descr, 6 );
     EXPECT_EQ( note_sec->get_index(), 2 );
 
     // Create ELF file
@@ -876,7 +875,7 @@ TEST( ELFIOTest, test_dummy_out_ppc_64 )
     note_sec->set_addr_align( 4 );
     note_section_accessor note_writer( writer, note_sec );
     char                  descr[6] = { 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
-    note_writer.add_note( 0x77, "Hello", &descr, 6 );
+    note_writer.add_note( 0x77, "Hello", descr, 6 );
     EXPECT_EQ( note_sec->get_index(), 2 );
 
     // Create ELF file

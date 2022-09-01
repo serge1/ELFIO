@@ -181,13 +181,12 @@ template <class T> class segment_impl : public segment
         else {
             data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
 
-            if ( nullptr != data.get() ) {
-                stream.read( data.get(), size );
-                if ( static_cast<Elf_Xword>( stream.gcount() ) != size ) {
-                    data = nullptr;
-                    return false;
-                }
+            if ( nullptr != data.get() && stream.read( data.get(), size ) ) {
                 data.get()[size] = 0;
+            }
+            else {
+                data = nullptr;
+                return false;
             }
         }
 

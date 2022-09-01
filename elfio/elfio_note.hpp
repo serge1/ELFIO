@@ -59,7 +59,7 @@ class note_section_accessor_template
     bool get_note( Elf_Word     index,
                    Elf_Word&    type,
                    std::string& name,
-                   void*&       desc,
+                   char*&       desc,
                    Elf_Word&    descSize ) const
     {
         if ( index >= ( notes->*F_get_size )() ) {
@@ -96,7 +96,7 @@ class note_section_accessor_template
     //------------------------------------------------------------------------------
     void add_note( Elf_Word           type,
                    const std::string& name,
-                   const void*        desc,
+                   const char*        desc,
                    Elf_Word           descSize )
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
@@ -117,7 +117,7 @@ class note_section_accessor_template
             buffer.append( pad, (size_t)align - nameLen % align );
         }
         if ( desc != nullptr && descSize != 0 ) {
-            buffer.append( reinterpret_cast<const char*>( desc ), descSize );
+            buffer.append( desc, descSize );
             if ( descSize % align != 0 ) {
                 buffer.append( pad, (size_t)align - descSize % align );
             }

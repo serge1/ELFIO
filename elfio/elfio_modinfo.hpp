@@ -33,7 +33,7 @@ template <class S> class modinfo_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    modinfo_section_accessor_template( S* section ) : modinfo_section( section )
+    explicit modinfo_section_accessor_template( S* section ) : modinfo_section( section )
     {
         process_section();
     }
@@ -55,9 +55,9 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    bool get_attribute( const std::string field_name, std::string& value ) const
+    bool get_attribute( const std::string& field_name, std::string& value ) const
     {
-        for ( auto i : content ) {
+        for ( auto& i : content ) {
             if ( field_name == i.first ) {
                 value = i.second;
                 return true;
@@ -68,7 +68,7 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    Elf_Word add_attribute( const std::string field, const std::string value )
+    Elf_Word add_attribute( const std::string& field, const std::string& value )
     {
         Elf_Word current_position = 0;
 

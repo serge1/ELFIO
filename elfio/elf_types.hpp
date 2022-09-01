@@ -630,8 +630,7 @@ constexpr Elf_Word NT_MEMTAG    = 0xff000001; // Contains a copy of the memory t
 /* ARM-specific NT_MEMTAG types.  */
 constexpr Elf_Word NT_MEMTAG_TYPE_AARCH_MTE = 0x400; // MTE memory tags for AArch64.
 
-/* Note segment for SystemTap probes.  */
-#define NT_STAPSDT 3
+constexpr Elf_Word NT_STAPSDT = 3; // Note segment for SystemTap probes.
 
 // Note name is "FreeBSD"
 constexpr Elf_Word NT_FREEBSD_THRMISC            = 7;  // Thread miscellaneous info.
