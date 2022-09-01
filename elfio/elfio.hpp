@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <fstream>
 #include <functional>
 #include <algorithm>
+#include <array>
 #include <vector>
 #include <deque>
 #include <memory>
