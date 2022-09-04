@@ -214,7 +214,7 @@ template <class T> class segment_impl : public segment
   private:
     T                          ph    = { 0 };
     Elf_Half                   index = 0;
-    std::unique_ptr<char>      data;
+    std::unique_ptr<char[]>    data;
     std::vector<Elf_Half>      sections;
     const endianess_convertor* convertor     = nullptr;
     const address_translator*  translator    = nullptr;
