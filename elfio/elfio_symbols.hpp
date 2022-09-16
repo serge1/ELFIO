@@ -356,34 +356,36 @@ template <class S> class symbol_section_accessor_template
             ( (T)1 << ( hash % ( 8 * sizeof( T ) ) ) ) |
             ( (T)1 << ( ( hash >> bloom_shift ) % ( 8 * sizeof( T ) ) ) );
 
-        if ( ( convertor( bloom_filter[bloom_index] ) & bloom_bits ) ==
-             bloom_bits ) {
-            uint32_t bucket = hash % nbuckets;
-            auto*    buckets =
-                (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
-                             bloom_size * sizeof( T ) );
-            auto* chains =
-                (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
-                             bloom_size * sizeof( T ) +
-                             nbuckets * sizeof( uint32_t ) );
+        if ( ( convertor( bloom_filter[bloom_index] ) & bloom_bits ) !=
+             bloom_bits )
+            return ret;
 
-            if ( convertor( buckets[bucket] ) >= symoffset ) {
-                uint32_t chain_index = convertor( buckets[bucket] ) - symoffset;
-                uint32_t chain_hash  = convertor( chains[chain_index] );
-                std::string symname;
-                while ( true ) {
-                    if ( ( chain_hash >> 1 ) == ( hash >> 1 ) &&
-                         get_symbol( chain_index + symoffset, symname, value,
-                                     size, bind, type, section_index, other ) &&
-                         name == symname ) {
-                        ret = true;
-                        break;
-                    }
+        uint32_t bucket = hash % nbuckets;
+        auto*    buckets =
+            (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
+                         bloom_size * sizeof( T ) );
+        auto* chains =
+            (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
+                         bloom_size * sizeof( T ) +
+                         nbuckets * sizeof( uint32_t ) );
 
-                    if ( chain_hash & 1 )
-                        break;
-                    chain_hash = convertor( chains[++chain_index] );
+        if ( convertor( buckets[bucket] ) >= symoffset ) {
+            uint32_t    chain_index = convertor( buckets[bucket] ) - symoffset;
+            uint32_t    chain_hash  = convertor( chains[chain_index] );
+            std::string symname;
+
+            while ( true ) {
+                if ( ( chain_hash >> 1 ) == ( hash >> 1 ) &&
+                     get_symbol( chain_index + symoffset, symname, value, size,
+                                 bind, type, section_index, other ) &&
+                     name == symname ) {
+                    ret = true;
+                    break;
                 }
+
+                if ( chain_hash & 1 )
+                    break;
+                chain_hash = convertor( chains[++chain_index] );
             }
         }
 

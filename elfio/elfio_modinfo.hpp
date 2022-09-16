@@ -43,7 +43,7 @@ template <class S> class modinfo_section_accessor_template
 
     //------------------------------------------------------------------------------
     bool
-    get_attribute( Elf_Word no, std::string& field, std::string& value ) const
+    get_attribute( Elf_Word no, const std::string& field, const std::string& value ) const
     {
         if ( no < content.size() ) {
             field = content[no].first;

@@ -209,7 +209,8 @@ class address_translator
 //------------------------------------------------------------------------------
 inline uint32_t elf_hash( const unsigned char* name )
 {
-    uint32_t h = 0, g = 0;
+    uint32_t h = 0;
+    uint32_t g = 0;
     while ( *name != '\0' ) {
         h = ( h << 4 ) + *name++;
         g = h & 0xf0000000;
