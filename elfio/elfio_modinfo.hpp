@@ -33,7 +33,8 @@ template <class S> class modinfo_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    explicit modinfo_section_accessor_template( S* section ) : modinfo_section( section )
+    explicit modinfo_section_accessor_template( S* section )
+        : modinfo_section( section )
     {
         process_section();
     }
@@ -43,7 +44,7 @@ template <class S> class modinfo_section_accessor_template
 
     //------------------------------------------------------------------------------
     bool
-    get_attribute( Elf_Word no, const std::string& field, const std::string& value ) const
+    get_attribute( Elf_Word no, std::string& field, std::string& value ) const
     {
         if ( no < content.size() ) {
             field = content[no].first;
@@ -55,7 +56,8 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    bool get_attribute( const std::string& field_name, std::string& value ) const
+    bool get_attribute( const std::string& field_name,
+                        std::string&       value ) const
     {
         for ( auto& i : content ) {
             if ( field_name == i.first ) {

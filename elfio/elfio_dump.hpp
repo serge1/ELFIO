@@ -931,8 +931,7 @@ class dump
                 note_segment_accessor notes( reader, seg );
                 Elf_Word              no_notes = notes.get_notes_num();
                 if ( no > 0 ) {
-                    out << "Note segment (" << i << ")"
-                        << std::endl
+                    out << "Note segment (" << i << ")" << std::endl
                         << "    No Name         Data size  Description"
                         << std::endl;
                     for ( Elf_Word j = 0; j < no_notes; ++j ) { // For all notes
