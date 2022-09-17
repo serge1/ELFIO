@@ -43,7 +43,7 @@ class note_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    note_section_accessor_template( const elfio& elf_file, S* section )
+    explicit note_section_accessor_template( const elfio& elf_file, S* section )
         : elf_file( elf_file ), notes( section )
     {
         process_section();

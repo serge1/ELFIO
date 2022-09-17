@@ -32,7 +32,8 @@ template <class S, typename T> class array_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    array_section_accessor_template( const elfio& elf_file, S* section )
+    explicit array_section_accessor_template( const elfio& elf_file,
+                                              S*           section )
         : elf_file( elf_file ), array_section( section )
     {
     }

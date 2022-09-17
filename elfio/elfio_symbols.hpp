@@ -30,7 +30,8 @@ template <class S> class symbol_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    symbol_section_accessor_template( const elfio& elf_file, S* symbol_section )
+    explicit symbol_section_accessor_template( const elfio& elf_file,
+                                               S*           symbol_section )
         : elf_file( elf_file ), symbol_section( symbol_section )
     {
         hash_section       = nullptr;

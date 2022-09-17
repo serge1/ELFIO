@@ -64,7 +64,8 @@ template <class S> class relocation_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
-    relocation_section_accessor_template( const elfio& elf_file, S* section )
+    explicit relocation_section_accessor_template( const elfio& elf_file,
+                                                   S*           section )
         : elf_file( elf_file ), relocation_section( section )
     {
     }
