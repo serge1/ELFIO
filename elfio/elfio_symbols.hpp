@@ -551,8 +551,8 @@ template <class S> class symbol_section_accessor_template
   private:
     const elfio&   elf_file;
     S*             symbol_section;
-    Elf_Half       hash_section_index;
-    const section* hash_section;
+    Elf_Half       hash_section_index{ 0 };
+    const section* hash_section{ nullptr };
 };
 
 using symbol_section_accessor = symbol_section_accessor_template<section>;
