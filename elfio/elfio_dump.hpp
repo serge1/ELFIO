@@ -51,6 +51,33 @@ static const struct endian_table_t
     { ELFDATA2MSB, "Big endian" },
 };
 
+static const struct os_abi_table_t
+{
+    const unsigned char  key;
+    const char* str;
+} os_abi_table[] = {
+    { ELFOSABI_NONE, "UNIX System V" },
+    { ELFOSABI_HPUX, "Hewlett-Packard HP-UX" },
+    { ELFOSABI_NETBSD, "NetBSD" },
+    { ELFOSABI_LINUX, "Linux" },
+    { ELFOSABI_HURD, "GNU Hurd" },
+    { ELFOSABI_SOLARIS, "Sun Solaris" },
+    { ELFOSABI_AIX, "AIX" },
+    { ELFOSABI_IRIX, "IRIX" },
+    { ELFOSABI_FREEBSD, "FreeBSD" },
+    { ELFOSABI_TRU64, "Compaq TRU64 UNIX" },
+    { ELFOSABI_MODESTO, "Novell Modesto" },
+    { ELFOSABI_OPENBSD, "Open BSD" },
+    { ELFOSABI_OPENVMS, "Open VMS" },
+    { ELFOSABI_NSK, "Hewlett-Packard Non-Stop Kernel" },
+    { ELFOSABI_AROS, "Amiga Research OS" },
+    { ELFOSABI_FENIXOS, "FenixOS" },
+    { ELFOSABI_NUXI, "Nuxi CloudABI" },
+    { ELFOSABI_OPENVOS, "OpenVOS" },
+    { ELFOSABI_ARM, "ARM" },
+    { ELFOSABI_STANDALONE, "Standalone (embedded)" },
+};
+
 static const struct version_table_t
 {
     const Elf64_Word key;
@@ -369,6 +396,11 @@ static const struct section_type_table_t
     { SHT_GNU_verdef, "GNU_verdef" },
     { SHT_GNU_verneed, "GNU_verneed" },
     { SHT_GNU_versym, "GNU_versym" },
+    { SHT_ARM_EXIDX, "ARM_EXIDX" },
+    { SHT_ARM_PREEMPTMAP, "ARM_PREEMPTMAP" },
+    { SHT_ARM_ATTRIBUTES, "ARM_ATTRIBUTES" },
+    { SHT_ARM_DEBUGOVERLAY, "ARM_DEBUGOVERLAY" },
+    { SHT_ARM_OVERLAYSECTION, "ARM_OVERLAYSECTION" },
 
 };
 
@@ -395,6 +427,7 @@ static const struct segment_type_table_t
     { PT_OPENBSD_RANDOMIZE, "OPENBSD_RANDOMIZE" },
     { PT_OPENBSD_WXNEEDED, "OPENBSD_WXNEEDED " },
     { PT_OPENBSD_BOOTDATA, "OPENBSD_BOOTDATA " },
+    { PT_SUNWBSS, "PT_SUNWBSS" },
     { PT_SUNWSTACK, "SUNWSTACK" },
 };
 
@@ -472,8 +505,23 @@ static const struct dynamic_tag_t
     { DT_PREINIT_ARRAYSZ, "PREINIT_ARRAYSZ" },
     { DT_MAXPOSTAGS, "MAXPOSTAGS" },
     { DT_GNU_HASH, "GNU_HASH" },
+    { DT_TLSDESC_PLT, "TLSDESC_PLT" },
+    { DT_TLSDESC_GOT, "TLSDESC_GOT" },
+    { DT_GNU_CONFLICT, "GNU_CONFLICT" },
+    { DT_GNU_LIBLIST, "GNU_LIBLIST" },
+    { DT_CONFIG, "CONFIG" },
+    { DT_DEPAUDIT, "DEPAUDIT" },
+    { DT_AUDIT, "AUDIT" },
+    { DT_PLTPAD, "PLTPAD" },
+    { DT_MOVETAB, "MOVETAB" },
+    { DT_SYMINFO, "SYMINFO" },
+    { DT_ADDRRNGHI, "ADDRRNGHI" },
     { DT_VERSYM, "VERSYM" },
+    { DT_RELACOUNT, "RELACOUNT"},
+    { DT_RELCOUNT, "RELCOUNT"},
     { DT_FLAGS_1, "FLAGS_1" },
+    { DT_VERDEF, "VERDEF" },
+    { DT_VERDEFNUM, "VERDEFNUM" },
     { DT_VERNEED, "VERNEED" },
     { DT_VERNEEDNUM, "VERNEEDNUM" },
 };
@@ -652,6 +700,8 @@ class dump
             << std::endl
             << "  ELFVersion: " << str_version( reader.get_elf_version() )
             << std::endl
+            << "  OS/ABI:     " << str_os_abi(reader.get_os_abi()) << std::endl
+            << "  ABI Version:" << (int)reader.get_abi_version() << std::endl
             << "  Type:       " << str_type( reader.get_type() ) << std::endl
             << "  Machine:    " << str_machine( reader.get_machine() )
             << std::endl
@@ -1193,6 +1243,7 @@ class dump
     STR_FUNC_TABLE( class )
     STR_FUNC_TABLE( endian )
     STR_FUNC_TABLE( version )
+    STR_FUNC_TABLE( os_abi )
     STR_FUNC_TABLE( type )
     STR_FUNC_TABLE( machine )
     STR_FUNC_TABLE( section_type )
