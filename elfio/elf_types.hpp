@@ -298,26 +298,26 @@ constexpr Elf_Half EM_GRAPHCORE_IPU   = 248; // Graphcore Intelligent Processing
 constexpr Elf_Half EM_IMG1            = 249; // Imagination Technologies
 constexpr Elf_Half EM_NFP             = 250; // Netronome Flow Processor (P)
 constexpr Elf_Half EM_CSKY            = 252; // C-SKY processor family
-constexpr Elf_Half EM_ARC_COMPACT3_64 = 253; // "Synopsys ARCv2.3 64-bit";
-constexpr Elf_Half EM_MCS6502         = 254; // "MOS Technology MCS 6502 processor";
-constexpr Elf_Half EM_ARC_COMPACT3    = 255; // "Synopsys ARCv2.3 32-bit";
-constexpr Elf_Half EM_KVX             = 256; // "Kalray VLIW core of the MPPA processor family";
-constexpr Elf_Half EM_65816           = 257; // "WDC 65816/65C816";
-constexpr Elf_Half EM_LOONGARCH       = 258; // "Loongson Loongarch";
-constexpr Elf_Half EM_KF32            = 259; // "ChipON KungFu32";
+constexpr Elf_Half EM_ARC_COMPACT3_64 = 253; // Synopsys ARCv2.3 64-bit
+constexpr Elf_Half EM_MCS6502         = 254; // MOS Technology MCS 6502 processor
+constexpr Elf_Half EM_ARC_COMPACT3    = 255; // Synopsys ARCv2.3 32-bit
+constexpr Elf_Half EM_KVX             = 256; // Kalray VLIW core of the MPPA processor family
+constexpr Elf_Half EM_65816           = 257; // WDC 65816/65C816
+constexpr Elf_Half EM_LOONGARCH       = 258; // Loongson Loongarch
+constexpr Elf_Half EM_KF32            = 259; // ChipON KungFu32
 
-constexpr Elf_Half EM_MT                = 0x2530; // "Morpho Techologies MT processor";
-constexpr Elf_Half EM_ALPHA             = 0x9026; // "Alpha";
-constexpr Elf_Half EM_WEBASSEMBLY       = 0x4157; // "Web Assembly";
-constexpr Elf_Half EM_DLX               = 0x5aa5; // "OpenDLX";
-constexpr Elf_Half EM_XSTORMY16         = 0xad45; // "Sanyo XStormy16 CPU core";
-constexpr Elf_Half EM_IQ2000            = 0xFEBA; // "Vitesse IQ2000";
+constexpr Elf_Half EM_MT                = 0x2530; // Morpho Techologies MT processor
+constexpr Elf_Half EM_ALPHA             = 0x9026; // Alpha
+constexpr Elf_Half EM_WEBASSEMBLY       = 0x4157; // Web Assembly
+constexpr Elf_Half EM_DLX               = 0x5aa5; // OpenDLX
+constexpr Elf_Half EM_XSTORMY16         = 0xad45; // Sanyo XStormy16 CPU core
+constexpr Elf_Half EM_IQ2000            = 0xFEBA; // Vitesse IQ2000
 constexpr Elf_Half EM_M32C_OLD          = 0xFEB;
-constexpr Elf_Half EM_NIOS32            = 0xFEBB; // "Altera Nios";
-constexpr Elf_Half EM_CYGNUS_MEP        = 0xF00D; // "Toshiba MeP Media Engine";
-constexpr Elf_Half EM_ADAPTEVA_EPIPHANY = 0x1223; // "Adapteva EPIPHANY";
-constexpr Elf_Half EM_CYGNUS_FRV        = 0x5441; // "Fujitsu FR-V";
-constexpr Elf_Half EM_S12Z              = 0x4DEF; // "Freescale S12Z";
+constexpr Elf_Half EM_NIOS32            = 0xFEBB; // Altera Nios
+constexpr Elf_Half EM_CYGNUS_MEP        = 0xF00D; // Toshiba MeP Media Engine
+constexpr Elf_Half EM_ADAPTEVA_EPIPHANY = 0x1223; // Adapteva EPIPHANY
+constexpr Elf_Half EM_CYGNUS_FRV        = 0x5441; // Fujitsu FR-V
+constexpr Elf_Half EM_S12Z              = 0x4DEF; // Freescale S12Z
 // clang-format on
 
 // File version
@@ -580,7 +580,7 @@ constexpr Elf_Word NT_WIN32PSTATUS = 18; // Has a struct win32_pstatus
 // clang-format off
 
 // Note name must be "LINUX"    
-constexpr Elf_Word NT_PRXFPREG             = 0x46e62b7f; // Contains a user_xfpregs_struct;
+constexpr Elf_Word NT_PRXFPREG             = 0x46e62b7f; // Contains a user_xfpregs_struct
 constexpr Elf_Word NT_PPC_VMX              = 0x100;      // PowerPC Altivec/VMX registers
 constexpr Elf_Word NT_PPC_VSX              = 0x102;      // PowerPC VSX registers
 constexpr Elf_Word NT_PPC_TAR              = 0x103;      // PowerPC Target Address Register

@@ -34,8 +34,6 @@ template <class S> class symbol_section_accessor_template
                                                S*           symbol_section )
         : elf_file( elf_file ), symbol_section( symbol_section )
     {
-        hash_section       = nullptr;
-        hash_section_index = 0;
         find_hash_section();
     }
 
