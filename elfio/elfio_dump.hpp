@@ -739,8 +739,10 @@ class dump
             section_header( out, i, sec, reader.get_class() );
         }
 
-        out << "Key to Flags: W (write), A (alloc), X (execute)\n\n"
-            << std::endl;
+        out << "Key to Flags: W (write), A (alloc), X (execute), " << std::endl;
+        out << "              M (merge), S (strings), I (info)," << std::endl;
+        out << "              L (link order), O (extra OS processing required)," << std::endl;
+        out << "              G (group), T (TLS), C (compressed), E (exclude)" << std::endl;
     }
 
     //------------------------------------------------------------------------------
@@ -1298,6 +1300,36 @@ class dump
         }
         if ( flags & SHF_EXECINSTR ) {
             ret += "X";
+        }
+        if ( flags & SHF_MERGE ) {
+            ret += "M";
+        }
+        if ( flags & SHF_STRINGS ) {
+            ret += "S";
+        }
+        if ( flags & SHF_INFO_LINK ) {
+            ret += "I";
+        }
+        if ( flags & SHF_LINK_ORDER ) {
+            ret += "L";
+        }
+        if ( flags & SHF_OS_NONCONFORMING ) {
+            ret += "O";
+        }
+        if ( flags & SHF_GROUP ) {
+            ret += "G";
+        }
+        if ( flags & SHF_TLS ) {
+            ret += "T";
+        }
+        if ( flags & SHF_COMPRESSED ) {
+            ret += "C";
+        }
+        if ( flags & SHF_EXCLUDE ) {
+            ret += "E";
+        }
+        if ( flags & SHF_GNU_MBIND ) {
+            ret += "D";
         }
 
         return ret;

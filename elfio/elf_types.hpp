@@ -542,7 +542,13 @@ constexpr Elf_Xword SHF_LINK_ORDER       = 0x80;
 constexpr Elf_Xword SHF_OS_NONCONFORMING = 0x100;
 constexpr Elf_Xword SHF_GROUP            = 0x200;
 constexpr Elf_Xword SHF_TLS              = 0x400;
-constexpr Elf_Xword SHF_MASKOS           = 0x0ff00000;
+constexpr Elf_Xword SHF_COMPRESSED       = 0x800;
+constexpr Elf_Xword SHF_GNU_RETAIN       = 0x200000;
+constexpr Elf_Xword SHF_GNU_MBIND        = 0x01000000;
+constexpr Elf_Xword SHF_MASKOS           = 0x0FF00000;
+constexpr Elf_Xword SHF_MIPS_GPREL       = 0x10000000;
+constexpr Elf_Xword SHF_ORDERED          = 0x40000000;
+constexpr Elf_Xword SHF_EXCLUDE          = 0x80000000;
 constexpr Elf_Xword SHF_MASKPROC         = 0xF0000000;
 
 // Section group flags
