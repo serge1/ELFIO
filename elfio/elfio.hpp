@@ -124,7 +124,8 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool load( const std::string& file_name )
+    template <typename T>
+    bool load( const std::basic_string<T>& file_name )
     {
         std::ifstream stream;
         stream.open( file_name.c_str(), std::ios::in | std::ios::binary );
@@ -178,7 +179,8 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool save( const std::string& file_name )
+    template <typename T>
+    bool save( const std::basic_string<T>& file_name )
     {
         std::ofstream stream;
         stream.open( file_name.c_str(), std::ios::out | std::ios::binary );
