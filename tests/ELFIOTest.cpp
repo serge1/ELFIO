@@ -60,17 +60,17 @@ void checkHeader( elfio&        reader,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void checkSection( const section* sec,
-                   Elf_Half       index,
-                   std::string    name,
-                   Elf_Word       type,
-                   Elf_Xword      flags,
-                   Elf64_Addr     address,
-                   Elf_Xword      size,
-                   Elf_Word       link,
-                   Elf_Word       info,
-                   Elf_Xword      addrAlign,
-                   Elf_Xword      entrySize )
+void checkSection( const section*     sec,
+                   Elf_Half           index,
+                   const std::string& name,
+                   Elf_Word           type,
+                   Elf_Xword          flags,
+                   Elf64_Addr         address,
+                   Elf_Xword          size,
+                   Elf_Word           link,
+                   Elf_Word           info,
+                   Elf_Xword          addrAlign,
+                   Elf_Xword          entrySize )
 {
     EXPECT_EQ( sec->get_index(), index );
     EXPECT_EQ( sec->get_name(), name );
@@ -122,7 +122,7 @@ void checkSegment( const segment* seg,
 ////////////////////////////////////////////////////////////////////////////////
 void checkSymbol( const symbol_section_accessor& sr,
                   Elf_Xword                      index,
-                  std::string                    name_,
+                  const std::string&             name_,
                   Elf64_Addr                     value_,
                   Elf_Xword                      size_,
                   unsigned char                  bind_,
@@ -155,7 +155,7 @@ void checkRelocation( const relocation_section_accessor* pRT,
                       Elf_Xword                          index,
                       Elf64_Addr                         offset_,
                       Elf64_Addr                         symbolValue_,
-                      std::string                        symbolName_,
+                      const std::string&                 symbolName_,
                       unsigned char                      type_,
                       Elf_Sxword                         addend_,
                       Elf_Sxword                         calcValue_ )
@@ -182,7 +182,7 @@ void checkRelocation( const relocation_section_accessor* pRT,
 void checkNote( const note_section_accessor& notes,
                 Elf_Word                     index,
                 Elf_Word                     type_,
-                std::string                  name_,
+                const std::string&           name_,
                 Elf_Word                     descSize_ )
 {
     Elf_Word    type;
@@ -913,7 +913,7 @@ TEST( ELFIOTest, test_dynamic_64_1 )
     ASSERT_EQ( reader.load( "elf_examples/main" ), true );
 
     section* dynsec = reader.sections[".dynamic"];
-    ASSERT_TRUE( dynsec != NULL );
+    ASSERT_TRUE( dynsec != nullptr );
 
     dynamic_section_accessor da( reader, dynsec );
 
@@ -947,7 +947,7 @@ TEST( ELFIOTest, test_dynamic_64_2 )
     ASSERT_EQ( reader.load( "elf_examples/libfunc.so" ), true );
 
     section* dynsec = reader.sections[".dynamic"];
-    ASSERT_TRUE( dynsec != NULL );
+    ASSERT_TRUE( dynsec != nullptr );
 
     dynamic_section_accessor da( reader, dynsec );
 
@@ -978,7 +978,7 @@ TEST( ELFIOTest, test_dynamic_64_3 )
     ASSERT_EQ( reader.load( "elf_examples/main" ), true );
 
     section* dynsec = reader.sections[".dynamic"];
-    ASSERT_TRUE( dynsec != NULL );
+    ASSERT_TRUE( dynsec != nullptr );
 
     dynamic_section_accessor da( reader, dynsec );
     EXPECT_EQ( da.get_entries_num(), 21 );
@@ -993,9 +993,12 @@ TEST( ELFIOTest, test_dynamic_64_3 )
     dynsec1->set_link( strsec1->get_index() );
     dynamic_section_accessor da1( reader, dynsec1 );
 
-    Elf_Xword   tag, tag1;
-    Elf_Xword   value, value1;
-    std::string str, str1;
+    Elf_Xword   tag;
+    Elf_Xword   tag1;
+    Elf_Xword   value;
+    Elf_Xword   value1;
+    std::string str;
+    std::string str1;
 
     for ( unsigned int i = 0; i < da.get_entries_num(); ++i ) {
         da.get_entry( i, tag, value, str );

@@ -294,10 +294,10 @@ template <class S> class relocation_section_accessor_template
     //------------------------------------------------------------------------------
     void swap_symbols( Elf_Xword first, Elf_Xword second )
     {
-        Elf64_Addr offset;
-        Elf_Word   symbol;
-        unsigned   rtype;
-        Elf_Sxword addend;
+        Elf64_Addr offset = 0;
+        Elf_Word   symbol = 0;
+        unsigned   rtype  = 0;
+        Elf_Sxword addend = 0;
         for ( Elf_Word i = 0; i < get_entries_num(); i++ ) {
             get_entry( i, offset, symbol, rtype, addend );
             if ( symbol == first ) {
@@ -447,7 +447,7 @@ template <class S> class relocation_section_accessor_template
     //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    S*           relocation_section;
+    S*           relocation_section = nullptr;
 };
 
 using relocation_section_accessor =

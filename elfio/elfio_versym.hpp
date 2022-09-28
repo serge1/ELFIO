@@ -33,7 +33,7 @@ template <class S> class versym_section_accessor_template
     explicit versym_section_accessor_template( S* section )
         : versym_section( section )
     {
-        if ( section ) {
+        if ( section != nullptr ) {
             entries_num = decltype( entries_num )( section->get_size() /
                                                    sizeof( Elf_Half ) );
         }
@@ -85,8 +85,8 @@ template <class S> class versym_section_accessor_template
 
     //------------------------------------------------------------------------------
   private:
-    S*       versym_section;
-    Elf_Word entries_num;
+    S*       versym_section = nullptr;
+    Elf_Word entries_num    = 0;
 };
 
 using versym_section_accessor = versym_section_accessor_template<section>;
@@ -166,8 +166,8 @@ template <class S> class versym_r_section_accessor_template
     //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    S*           versym_r_section;
-    Elf_Word     entries_num;
+    S*           versym_r_section = nullptr;
+    Elf_Word     entries_num      = 0;
 };
 
 using versym_r_section_accessor = versym_r_section_accessor_template<section>;
