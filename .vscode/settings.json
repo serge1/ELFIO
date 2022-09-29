@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "copyright": "json",
         "*.ipp": "cpp",
         "strstream": "cpp",
         "cerrno": "cpp",
@@ -71,7 +72,8 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "compare": "cpp"
     },
     "svn.ignoreMissingSvnWarning": true,
     "editor.tokenColorCustomizations": {
