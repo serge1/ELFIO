@@ -813,7 +813,7 @@ TEST( ELFIOTest, test_dummy_out_i386_64 )
     writer.set_flags( 0 );
 
     // Set program entry point
-    writer.set_entry( 0x120380482b0ull );
+    writer.set_entry( 0x120380482b0ULL );
 
     // Add Note section
     section* note_sec = writer.sections.add( ".note" );
@@ -835,7 +835,7 @@ TEST( ELFIOTest, test_dummy_out_i386_64 )
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
     checkHeader( reader, ELFCLASS64, ELFDATA2LSB, EV_CURRENT, ET_REL, EM_X86_64,
-                 EV_CURRENT, 0x120380482b0ull, 0, 3, 0, 0, 0 );
+                 EV_CURRENT, 0x120380482b0ULL, 0, 3, 0, 0, 0 );
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
     section* sec = reader.sections[""];
@@ -866,7 +866,7 @@ TEST( ELFIOTest, test_dummy_out_ppc_64 )
     writer.set_flags( 0 );
 
     // Set program entry point
-    writer.set_entry( 0x120380482b0ull );
+    writer.set_entry( 0x120380482b0ULL );
 
     // Add Note section
     section* note_sec = writer.sections.add( ".note" );
@@ -888,7 +888,7 @@ TEST( ELFIOTest, test_dummy_out_ppc_64 )
     ////////////////////////////////////////////////////////////////////////////
     // Check ELF header
     checkHeader( reader, ELFCLASS64, ELFDATA2MSB, EV_CURRENT, ET_REL, EM_PPC64,
-                 EV_CURRENT, 0x120380482b0ull, 0, 3, 0, 0, 0 );
+                 EV_CURRENT, 0x120380482b0ULL, 0, 3, 0, 0, 0 );
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
     section* sec = reader.sections[""];
