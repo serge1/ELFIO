@@ -28,6 +28,8 @@ THE SOFTWARE.
 #include <new>
 #include <limits>
 
+#include <zlib.h>
+
 namespace ELFIO {
 
 class section
@@ -214,13 +216,59 @@ template <class T> class section_impl : public section
             if ( ( 0 != size ) && ( nullptr != data ) ) {
                 stream.seekg(
                     ( *translator )[( *convertor )( header.sh_offset )] );
-                stream.read( data.get(), size );
-                if ( static_cast<Elf_Xword>( stream.gcount() ) != size ) {
-                    data = nullptr;
-                    return false;
+                if(get_flags() & SHF_RPX_DEFLATE) {
+                    Elf_Xword uncompressed_size = 0;
+                    fixup_size(stream, size, uncompressed_size);
+
+                    // reallocate data to be the correct size
+                    data.reset( new (std::nothrow) char[size_t(uncompressed_size) + 1]);
+                    // create a buffer to hold the compressed bits
+                    auto compressed_data = std::unique_ptr<char>(new char[size_t(size)]);
+                    if( data == nullptr || compressed_data == nullptr) {
+                        std::cerr << "failed to allocate memory buffers for decompression" << std::endl;
+                        return false;
+                    }
+
+                    set_size(uncompressed_size);
+                    // read rest of data into data buffer
+                    stream.read( compressed_data.get(), size);
+
+                    z_stream s = { 0 };
+                    int z_result = 0;
+
+                    s.zalloc = Z_NULL;
+                    s.zfree = Z_NULL;
+                    s.opaque = Z_NULL;
+
+                    if(Z_OK != (z_result = inflateInit_(&s, ZLIB_VERSION, sizeof(s)))) {
+                        std::cerr << "error initializing zlib: " << z_result << std::endl;
+                        data = nullptr;
+                        return false;
+                    }
+
+                    s.avail_in = size;
+                    s.next_in = (Bytef *)compressed_data.get();
+
+                    s.avail_out = uncompressed_size;
+                    s.next_out = (Bytef *)data.get();
+
+                    z_result = inflate(&s, Z_FINISH);
+                    inflateEnd(&s);
+                    if (z_result != Z_OK && z_result != Z_STREAM_END) {
+                        std::cerr << "error decompressing section: " << z_result << std::endl;
+                        data = nullptr;
+                        return false;
+                    }
+                } else {
+                    stream.read( data.get(), size );
+                    if ( static_cast<Elf_Xword>( stream.gcount() ) != size ) {
+                        data = nullptr;
+                        return false;
+                    }
                 }
-                data.get()[size] =
-                    0; // Ensure data is ended with 0 to avoid oob read
+                // refresh size because it may have changed if we had to decompress data
+                size = get_size();
+                data.get()[size] = 0; // Ensure data is ended with 0 to avoid oob read
                 data_size = decltype( data_size )( size );
             }
             else {
@@ -250,6 +298,14 @@ template <class T> class section_impl : public section
 
     //------------------------------------------------------------------------------
   private:
+    void fixup_size(std::istream& stream, Elf_Xword& compressed_size, Elf_Xword& uncompressed_size) {
+        uint32_t tmp = 0;
+        stream.read((char *)&tmp, 4);
+        tmp = (*convertor)(tmp);
+
+        uncompressed_size = static_cast<Elf_Xword>(tmp);
+        compressed_size = get_size() - 4;
+    }
     //------------------------------------------------------------------------------
     void save_header( std::ostream& stream, std::streampos header_offset ) const
     {
