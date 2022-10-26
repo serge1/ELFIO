@@ -223,7 +223,7 @@ template <class T> class section_impl : public section
                     // reallocate data to be the correct size
                     data.reset( new (std::nothrow) char[size_t(uncompressed_size) + 1]);
                     // create a buffer to hold the compressed bits
-                    auto compressed_data = std::unique_ptr<char>(new char[size_t(size)]);
+                    auto compressed_data = std::unique_ptr<char[]>(new char[size_t(size)]);
                     if( data == nullptr || compressed_data == nullptr) {
                         std::cerr << "failed to allocate memory buffers for decompression" << std::endl;
                         return false;
