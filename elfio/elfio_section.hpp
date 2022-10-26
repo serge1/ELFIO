@@ -318,11 +318,47 @@ template <class T> class section_impl : public section
     void save_data( std::ostream& stream, std::streampos data_offset ) const
     {
         adjust_stream_size( stream, data_offset );
-        stream.write( get_data(), get_size() );
+
+        if(get_flags() & SHF_RPX_DEFLATE) {
+            Elf_Xword compressed_size = get_size();
+            auto compressed_ptr = compress_data(compressed_size);
+            stream.write( compressed_ptr.get(), compressed_size);
+        } else {
+            stream.write( get_data(), get_size() );
+        }
     }
 
     //------------------------------------------------------------------------------
   private:
+    std::unique_ptr<char[]> compress_data(Elf_Xword &size) const {
+        auto compressed = std::unique_ptr<char[]>(new char[size]);
+        int z_result = 0;
+        z_stream s = { 0 };
+        s.zalloc = Z_NULL;
+        s.zfree = Z_NULL;
+        s.opaque = Z_NULL;
+        if(Z_OK != (z_result = deflateInit(&s, Z_DEFAULT_COMPRESSION))) {
+            std::cerr << "failed to init zlib for compression: " << z_result << std::endl;
+            return nullptr;
+        }
+
+        s.avail_in = size;
+        s.next_in = (Bytef *)data.get();
+        s.avail_out = size;
+        s.next_out = (Bytef *)compressed.get();
+
+        z_result = deflate(&s, Z_FINISH);
+        if(z_result != Z_OK && z_result != Z_STREAM_END) {
+            std::cerr << "deflate failed: " << z_result << std::endl;
+            deflateEnd(&s);
+            return nullptr;
+        }
+
+        size = size - s.avail_out;
+        deflateEnd(&s);
+        return compressed;
+    }
+
     T                          header = { 0 };
     Elf_Half                   index  = 0;
     std::string                name;
