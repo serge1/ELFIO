@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <gtest/gtest.h>
 
 #include <elfio/elfio.hpp>
+#include <elfio/elfio_utils.hpp>
 
 using namespace ELFIO;
 
@@ -968,6 +969,42 @@ TEST( ELFIOTest, test_dynamic_64_2 )
     da.get_entry( 19, tag, value, str );
     EXPECT_EQ( tag, DT_NULL );
     EXPECT_EQ( value, 0 );
+}
+
+class mock_wiiu_zlib : public wiiu_zlib_interface {
+    public:
+    std::unique_ptr<char[]> inflate(const char *data, const endianess_convertor *convertor, Elf_Xword compressed_size, Elf_Xword &uncompressed_size) const {
+        uncompressed_size = 2 * compressed_size;
+        return std::unique_ptr<char[]>(new char[uncompressed_size+1]);
+    }
+
+    std::unique_ptr<char[]> deflate(const char *data, const endianess_convertor *convertor, Elf_Xword decompressed_size, Elf_Xword &compressed_size) const {
+        compressed_size = decompressed_size / 2;
+        return std::unique_ptr<char[]>(new char[compressed_size+1]);
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Given: a valid RPX file
+// When: we load it with no zlib implementation
+// Then: the size returns the raw section size (compressed size)
+// When: we load it with a mock zlib implementation
+// Then: the size changes to reflect the mock zlib implementation is being called
+//
+// This test does not do any further validation because doing so would require providing
+// a real zlib implementation
+TEST( ELFIOTest, test_rpx )
+{
+    elfio reader(new mock_wiiu_zlib());
+    elfio reader_no_zlib;
+
+    ASSERT_EQ( reader_no_zlib.load( "elf_examples/helloworld.rpx" ), true );
+    section *text1 = reader_no_zlib.sections[1];
+    EXPECT_EQ( text1->get_size(), 36744);
+
+    ASSERT_EQ( reader.load( "elf_examples/helloworld.rpx" ), true );
+    section *text2 = reader.sections[1];
+    EXPECT_EQ(text2->get_size(), text1->get_size() * 2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
