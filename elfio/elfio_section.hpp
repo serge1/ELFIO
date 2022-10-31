@@ -28,8 +28,6 @@ THE SOFTWARE.
 #include <new>
 #include <limits>
 
-#include <zlib.h>
-
 namespace ELFIO {
 
 class section
@@ -76,8 +74,9 @@ template <class T> class section_impl : public section
   public:
     //------------------------------------------------------------------------------
     section_impl( const endianess_convertor* convertor,
-                  const address_translator*  translator )
-        : convertor( convertor ), translator( translator )
+                  const address_translator*  translator,
+                  const std::shared_ptr<wiiu_zlib_interface> &zlib )
+        : convertor( convertor ), translator( translator ), zlib(zlib)
     {
     }
 
@@ -216,55 +215,30 @@ template <class T> class section_impl : public section
             if ( ( 0 != size ) && ( nullptr != data ) ) {
                 stream.seekg(
                     ( *translator )[( *convertor )( header.sh_offset )] );
-                if(get_flags() & SHF_RPX_DEFLATE) {
-                    Elf_Xword uncompressed_size = 0;
-                    fixup_size(stream, size, uncompressed_size);
+                stream.read( data.get(), size );
+                if ( static_cast<Elf_Xword>( stream.gcount() ) != size ) {
+                    data = nullptr;
+                    return false;
+                }
 
-                    // reallocate data to be the correct size
-                    data.reset( new (std::nothrow) char[size_t(uncompressed_size) + 1]);
-                    // create a buffer to hold the compressed bits
-                    auto compressed_data = std::unique_ptr<char[]>(new char[size_t(size)]);
-                    if( data == nullptr || compressed_data == nullptr) {
-                        std::cerr << "failed to allocate memory buffers for decompression" << std::endl;
+                if(get_flags() & SHF_RPX_DEFLATE) {
+                    if(zlib == nullptr) {
+                        std::cerr << "WARN: compressed section found but no zlib implementation provided. Skipping." << std::endl;
+                        data = nullptr;
+                        return false;
+                    }
+                    // at this point, data holds the whole compressed stream
+                    Elf_Xword uncompressed_size = 0;
+                    auto decompressed_data = zlib->inflate(data.get(), convertor, size, uncompressed_size);
+                    if(decompressed_data == nullptr) {
+                        std::cerr << "Failed to decompress section data." << std::endl;
+                        data = nullptr;
                         return false;
                     }
 
                     set_size(uncompressed_size);
-                    // read rest of data into data buffer
-                    stream.read( compressed_data.get(), size);
 
-                    z_stream s = { 0 };
-                    int z_result = 0;
-
-                    s.zalloc = Z_NULL;
-                    s.zfree = Z_NULL;
-                    s.opaque = Z_NULL;
-
-                    if(Z_OK != (z_result = inflateInit_(&s, ZLIB_VERSION, sizeof(s)))) {
-                        std::cerr << "error initializing zlib: " << z_result << std::endl;
-                        data = nullptr;
-                        return false;
-                    }
-
-                    s.avail_in = size;
-                    s.next_in = (Bytef *)compressed_data.get();
-
-                    s.avail_out = uncompressed_size;
-                    s.next_out = (Bytef *)data.get();
-
-                    z_result = inflate(&s, Z_FINISH);
-                    inflateEnd(&s);
-                    if (z_result != Z_OK && z_result != Z_STREAM_END) {
-                        std::cerr << "error decompressing section: " << z_result << std::endl;
-                        data = nullptr;
-                        return false;
-                    }
-                } else {
-                    stream.read( data.get(), size );
-                    if ( static_cast<Elf_Xword>( stream.gcount() ) != size ) {
-                        data = nullptr;
-                        return false;
-                    }
+                    data = std::move(decompressed_data);
                 }
                 // refresh size because it may have changed if we had to decompress data
                 size = get_size();
@@ -298,14 +272,6 @@ template <class T> class section_impl : public section
 
     //------------------------------------------------------------------------------
   private:
-    void fixup_size(std::istream& stream, Elf_Xword& compressed_size, Elf_Xword& uncompressed_size) {
-        uint32_t tmp = 0;
-        stream.read((char *)&tmp, 4);
-        tmp = (*convertor)(tmp);
-
-        uncompressed_size = static_cast<Elf_Xword>(tmp);
-        compressed_size = get_size() - 4;
-    }
     //------------------------------------------------------------------------------
     void save_header( std::ostream& stream, std::streampos header_offset ) const
     {
@@ -319,9 +285,10 @@ template <class T> class section_impl : public section
     {
         adjust_stream_size( stream, data_offset );
 
-        if(get_flags() & SHF_RPX_DEFLATE) {
-            Elf_Xword compressed_size = get_size();
-            auto compressed_ptr = compress_data(compressed_size);
+        if( (get_flags() & SHF_RPX_DEFLATE) && zlib != nullptr) {
+            Elf_Xword decompressed_size = get_size();
+            Elf_Xword compressed_size = 0;
+            auto compressed_ptr = zlib->deflate(data.get(), convertor, decompressed_size, compressed_size);
             stream.write( compressed_ptr.get(), compressed_size);
         } else {
             stream.write( get_data(), get_size() );
@@ -330,44 +297,16 @@ template <class T> class section_impl : public section
 
     //------------------------------------------------------------------------------
   private:
-    std::unique_ptr<char[]> compress_data(Elf_Xword &size) const {
-        auto compressed = std::unique_ptr<char[]>(new char[size]);
-        int z_result = 0;
-        z_stream s = { 0 };
-        s.zalloc = Z_NULL;
-        s.zfree = Z_NULL;
-        s.opaque = Z_NULL;
-        if(Z_OK != (z_result = deflateInit(&s, Z_DEFAULT_COMPRESSION))) {
-            std::cerr << "failed to init zlib for compression: " << z_result << std::endl;
-            return nullptr;
-        }
-
-        s.avail_in = size;
-        s.next_in = (Bytef *)data.get();
-        s.avail_out = size;
-        s.next_out = (Bytef *)compressed.get();
-
-        z_result = deflate(&s, Z_FINISH);
-        if(z_result != Z_OK && z_result != Z_STREAM_END) {
-            std::cerr << "deflate failed: " << z_result << std::endl;
-            deflateEnd(&s);
-            return nullptr;
-        }
-
-        size = size - s.avail_out;
-        deflateEnd(&s);
-        return compressed;
-    }
-
     T                          header = { 0 };
     Elf_Half                   index  = 0;
     std::string                name;
     std::unique_ptr<char[]>    data;
-    Elf_Word                   data_size      = 0;
-    const endianess_convertor* convertor      = nullptr;
-    const address_translator*  translator     = nullptr;
-    bool                       is_address_set = false;
-    size_t                     stream_size    = 0;
+    Elf_Word                   data_size            = 0;
+    const endianess_convertor* convertor            = nullptr;
+    const address_translator*  translator           = nullptr;
+    const std::shared_ptr<wiiu_zlib_interface> zlib = nullptr;
+    bool                       is_address_set       = false;
+    size_t                     stream_size          = 0;
 };
 
 } // namespace ELFIO
