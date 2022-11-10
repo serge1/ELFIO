@@ -100,10 +100,13 @@ template <class T> class section_impl : public section
     std::string get_name() const override { return name; }
 
     //------------------------------------------------------------------------------
-    void set_name( std::string name_prm ) override { this->name = name_prm; }
+    void set_name( const std::string& name_prm ) override
+    {
+        this->name = name_prm;
+    }
 
     //------------------------------------------------------------------------------
-    void set_address( Elf64_Addr value ) override
+    void set_address( const Elf64_Addr& value ) override
     {
         header.sh_addr = decltype( header.sh_addr )( value );
         header.sh_addr = ( *convertor )( header.sh_addr );
@@ -190,7 +193,7 @@ template <class T> class section_impl : public section
     ELFIO_GET_SET_ACCESS( Elf64_Off, offset, header.sh_offset );
 
     //------------------------------------------------------------------------------
-    void set_index( Elf_Half value ) override { index = value; }
+    void set_index( const Elf_Half& value ) override { index = value; }
 
     //------------------------------------------------------------------------------
     bool load( std::istream& stream, std::streampos header_offset ) override
