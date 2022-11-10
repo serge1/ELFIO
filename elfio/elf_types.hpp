@@ -491,50 +491,50 @@ constexpr Elf_Word SHN_XINDEX    = 0xFFFF;
 constexpr Elf_Word SHN_HIRESERVE = 0xFFFF;
 
 // Section types
-constexpr Elf_Word SHT_NULL           = 0;
-constexpr Elf_Word SHT_PROGBITS       = 1;
-constexpr Elf_Word SHT_SYMTAB         = 2;
-constexpr Elf_Word SHT_STRTAB         = 3;
-constexpr Elf_Word SHT_RELA           = 4;
-constexpr Elf_Word SHT_HASH           = 5;
-constexpr Elf_Word SHT_DYNAMIC        = 6;
-constexpr Elf_Word SHT_NOTE           = 7;
-constexpr Elf_Word SHT_NOBITS         = 8;
-constexpr Elf_Word SHT_REL            = 9;
-constexpr Elf_Word SHT_SHLIB          = 10;
-constexpr Elf_Word SHT_DYNSYM         = 11;
-constexpr Elf_Word SHT_INIT_ARRAY     = 14;
-constexpr Elf_Word SHT_FINI_ARRAY     = 15;
-constexpr Elf_Word SHT_PREINIT_ARRAY  = 16;
-constexpr Elf_Word SHT_GROUP          = 17;
-constexpr Elf_Word SHT_SYMTAB_SHNDX   = 18;
-constexpr Elf_Word SHT_GNU_ATTRIBUTES = 0x6ffffff5;
-constexpr Elf_Word SHT_GNU_HASH       = 0x6ffffff6;
-constexpr Elf_Word SHT_GNU_LIBLIST    = 0x6ffffff7;
-constexpr Elf_Word SHT_CHECKSUM       = 0x6ffffff8;
-constexpr Elf_Word SHT_LOSUNW         = 0x6ffffffa;
-constexpr Elf_Word SHT_SUNW_move      = 0x6ffffffa;
-constexpr Elf_Word SHT_SUNW_COMDAT    = 0x6ffffffb;
-constexpr Elf_Word SHT_SUNW_syminfo   = 0x6ffffffc;
-constexpr Elf_Word SHT_GNU_verdef     = 0x6ffffffd;
-constexpr Elf_Word SHT_GNU_verneed    = 0x6ffffffe;
-constexpr Elf_Word SHT_GNU_versym     = 0x6fffffff;
-constexpr Elf_Word SHT_LOOS           = 0x60000000;
-constexpr Elf_Word SHT_HIOS           = 0x6fffffff;
-constexpr Elf_Word SHT_LOPROC         = 0x70000000;
-constexpr Elf_Word SHT_ARM_EXIDX           = 0x70000001;
-constexpr Elf_Word SHT_ARM_PREEMPTMAP      = 0x70000002;
-constexpr Elf_Word SHT_ARM_ATTRIBUTES      = 0x70000003;
-constexpr Elf_Word SHT_ARM_DEBUGOVERLAY    = 0x70000004;
-constexpr Elf_Word SHT_ARM_OVERLAYSECTION  = 0x70000005;
-constexpr Elf_Word SHT_HIPROC         = 0x7FFFFFFF;
-constexpr Elf_Word SHT_LOUSER         = 0x80000000;
+constexpr Elf_Word SHT_NULL               = 0;
+constexpr Elf_Word SHT_PROGBITS           = 1;
+constexpr Elf_Word SHT_SYMTAB             = 2;
+constexpr Elf_Word SHT_STRTAB             = 3;
+constexpr Elf_Word SHT_RELA               = 4;
+constexpr Elf_Word SHT_HASH               = 5;
+constexpr Elf_Word SHT_DYNAMIC            = 6;
+constexpr Elf_Word SHT_NOTE               = 7;
+constexpr Elf_Word SHT_NOBITS             = 8;
+constexpr Elf_Word SHT_REL                = 9;
+constexpr Elf_Word SHT_SHLIB              = 10;
+constexpr Elf_Word SHT_DYNSYM             = 11;
+constexpr Elf_Word SHT_INIT_ARRAY         = 14;
+constexpr Elf_Word SHT_FINI_ARRAY         = 15;
+constexpr Elf_Word SHT_PREINIT_ARRAY      = 16;
+constexpr Elf_Word SHT_GROUP              = 17;
+constexpr Elf_Word SHT_SYMTAB_SHNDX       = 18;
+constexpr Elf_Word SHT_GNU_ATTRIBUTES     = 0x6ffffff5;
+constexpr Elf_Word SHT_GNU_HASH           = 0x6ffffff6;
+constexpr Elf_Word SHT_GNU_LIBLIST        = 0x6ffffff7;
+constexpr Elf_Word SHT_CHECKSUM           = 0x6ffffff8;
+constexpr Elf_Word SHT_LOSUNW             = 0x6ffffffa;
+constexpr Elf_Word SHT_SUNW_move          = 0x6ffffffa;
+constexpr Elf_Word SHT_SUNW_COMDAT        = 0x6ffffffb;
+constexpr Elf_Word SHT_SUNW_syminfo       = 0x6ffffffc;
+constexpr Elf_Word SHT_GNU_verdef         = 0x6ffffffd;
+constexpr Elf_Word SHT_GNU_verneed        = 0x6ffffffe;
+constexpr Elf_Word SHT_GNU_versym         = 0x6fffffff;
+constexpr Elf_Word SHT_LOOS               = 0x60000000;
+constexpr Elf_Word SHT_HIOS               = 0x6fffffff;
+constexpr Elf_Word SHT_LOPROC             = 0x70000000;
+constexpr Elf_Word SHT_ARM_EXIDX          = 0x70000001;
+constexpr Elf_Word SHT_ARM_PREEMPTMAP     = 0x70000002;
+constexpr Elf_Word SHT_ARM_ATTRIBUTES     = 0x70000003;
+constexpr Elf_Word SHT_ARM_DEBUGOVERLAY   = 0x70000004;
+constexpr Elf_Word SHT_ARM_OVERLAYSECTION = 0x70000005;
+constexpr Elf_Word SHT_HIPROC             = 0x7FFFFFFF;
+constexpr Elf_Word SHT_LOUSER             = 0x80000000;
 // Used by Nintendo Wii U
-constexpr Elf_Word SHT_RPL_EXPORTS    = 0x80000001;
-constexpr Elf_Word SHT_RPL_IMPORTS    = 0x80000002;
-constexpr Elf_Word SHT_RPL_CRCS       = 0x80000003;
-constexpr Elf_Word SHT_RPL_FILEINFO   = 0x80000004;
-constexpr Elf_Word SHT_HIUSER         = 0xFFFFFFFF;
+constexpr Elf_Word SHT_RPL_EXPORTS  = 0x80000001;
+constexpr Elf_Word SHT_RPL_IMPORTS  = 0x80000002;
+constexpr Elf_Word SHT_RPL_CRCS     = 0x80000003;
+constexpr Elf_Word SHT_RPL_FILEINFO = 0x80000004;
+constexpr Elf_Word SHT_HIUSER       = 0xFFFFFFFF;
 
 // Section attribute flags
 constexpr Elf_Xword SHF_WRITE            = 0x1;
@@ -550,13 +550,13 @@ constexpr Elf_Xword SHF_TLS              = 0x400;
 constexpr Elf_Xword SHF_COMPRESSED       = 0x800;
 constexpr Elf_Xword SHF_GNU_RETAIN       = 0x200000;
 constexpr Elf_Xword SHF_GNU_MBIND        = 0x01000000;
-// flag used in Nintendo RPX/RPL to indicate section data is zlib-compressed
-constexpr Elf_Xword SHF_RPX_DEFLATE      = 0x08000000;
-constexpr Elf_Xword SHF_MASKOS           = 0x0FF00000;
-constexpr Elf_Xword SHF_MIPS_GPREL       = 0x10000000;
-constexpr Elf_Xword SHF_ORDERED          = 0x40000000;
-constexpr Elf_Xword SHF_EXCLUDE          = 0x80000000;
-constexpr Elf_Xword SHF_MASKPROC         = 0xF0000000;
+// flag used in Nintendo RPX/RPL to indicate section data is compressed
+constexpr Elf_Xword SHF_RPX_DEFLATE = 0x08000000;
+constexpr Elf_Xword SHF_MASKOS      = 0x0FF00000;
+constexpr Elf_Xword SHF_MIPS_GPREL  = 0x10000000;
+constexpr Elf_Xword SHF_ORDERED     = 0x40000000;
+constexpr Elf_Xword SHF_EXCLUDE     = 0x80000000;
+constexpr Elf_Xword SHF_MASKPROC    = 0xF0000000;
 
 // Section group flags
 constexpr Elf_Word GRP_COMDAT   = 0x1;
@@ -1321,6 +1321,23 @@ struct Elf64_auxv
     union {
         uint64_t a_val; // Integer value, usually a pointer
     } a_un;
+};
+
+struct Elf32_Chdr
+{
+    Elf32_Word ch_type; // The compression algorithm used
+    Elf32_Word ch_size; //The size, in	bytes, of the uncompressed section data
+    Elf32_Word
+        ch_addralign; // The address alignment of the	uncompressed section data
+};
+
+struct Elf64_Chdr
+{
+    Elf64_Word ch_type;     //The compression algorithm used
+    Elf64_Word ch_reserved; // Reserved
+    Elf_Xword  ch_size; //The size, in	bytes, of the uncompressed section data
+    Elf_Xword
+        ch_addralign; //The address alignment of the	uncompressed section data
 };
 
 #ifdef __cplusplus

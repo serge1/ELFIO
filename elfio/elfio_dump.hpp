@@ -741,8 +741,10 @@ class dump
 
         out << "Key to Flags: W (write), A (alloc), X (execute), " << std::endl;
         out << "              M (merge), S (strings), I (info)," << std::endl;
-        out << "              L (link order), O (extra OS processing required)," << std::endl;
-        out << "              G (group), T (TLS), C (compressed), E (exclude)" << std::endl;
+        out << "              L (link order), O (extra OS processing required),"
+            << std::endl;
+        out << "              G (group), T (TLS), C (compressed), E (exclude)"
+            << std::endl;
     }
 
     //------------------------------------------------------------------------------
@@ -979,7 +981,7 @@ class dump
                 Elf_Word              no_notes = notes.get_notes_num();
 
                 if ( no_notes == 0 )
-                  continue;
+                    continue;
 
                 out << "Note segment (" << i << ")" << std::endl
                     << "    No Name         Data size  Description"

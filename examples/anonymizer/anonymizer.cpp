@@ -94,8 +94,7 @@ int main( int argc, char** argv )
 
     for ( const auto& section : reader.sections ) {
         if ( section->get_type() == SHT_STRTAB &&
-             std::string( section->get_name() ) ==
-                 std::string( ".strtab" ) ) {
+             std::string( section->get_name() ) == std::string( ".strtab" ) ) {
             process_string_table( section.get(), filename );
         }
     }

@@ -263,12 +263,12 @@ inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 /**
  * Consumers should write an implementation of this class and pass an instance of it to the ELFIO::elfio constructor.
  */
-class wiiu_zlib_interface
+class compression_interface
 {
-    public:
-    virtual ~wiiu_zlib_interface() = default;
+  public:
+    virtual ~compression_interface() = default;
     /**
-     * decompresses a RPX/RPL zlib-compressed section.
+     * decompresses a compressed section
      *
      * @param data the buffer of compressed data
      * @param endianness_convertor pointer to an endianness_convertor instance, used to convert numbers to/from the target endianness.
@@ -276,10 +276,14 @@ class wiiu_zlib_interface
      * @param decompressed_size a reference to a variable where the decompressed buffer size will be stored.
      * @returns a smart pointer to the decompressed data.
      */
-    virtual std::unique_ptr<char[]> inflate(const char *data, const endianess_convertor *convertor, Elf_Xword compressed_size, Elf_Xword &uncompressed_size) const = 0;
+    virtual std::unique_ptr<char[]>
+    inflate( const char*                data,
+             const endianess_convertor* convertor,
+             Elf_Xword                  compressed_size,
+             Elf_Xword&                 uncompressed_size ) const = 0;
 
-        /**
-     * compresses a RPX/RPL zlib-compressed section.
+    /**
+     * compresses a section
      *
      * @param data the buffer of uncompressed data
      * @param endianness_convertor pointer to an endianness_convertor instance, used to convert numbers to/from the target endianness.
@@ -287,9 +291,12 @@ class wiiu_zlib_interface
      * @param compressed_size a reference to a variable where the compressed buffer size will be stored.
      * @returns a smart pointer to the compressed data.
      */
-    virtual std::unique_ptr<char[]> deflate(const char *data, const endianess_convertor *convertor, Elf_Xword decompressed_size, Elf_Xword &compressed_size) const = 0;
+    virtual std::unique_ptr<char[]>
+    deflate( const char*                data,
+             const endianess_convertor* convertor,
+             Elf_Xword                  decompressed_size,
+             Elf_Xword&                 compressed_size ) const = 0;
 };
-
 
 } // namespace ELFIO
 
