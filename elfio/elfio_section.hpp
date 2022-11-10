@@ -225,31 +225,19 @@ template <class T> class section_impl : public section
                     return false;
                 }
 
-                if ( ( get_flags() & SHF_RPX_DEFLATE ) ||
-                     ( get_flags() & SHF_COMPRESSED ) ) {
-                    if ( compression == nullptr ) {
-                        std::cerr
-                            << "WARN: compressed section found but no "
-                               "compression implementation provided. Skipping."
-                            << std::endl;
-                        data = nullptr;
-                        return false;
-                    }
+                if ( ( ( get_flags() & SHF_RPX_DEFLATE ) ||
+                       ( get_flags() & SHF_COMPRESSED ) ) &&
+                     compression != nullptr ) {
                     // at this point, data holds the whole compressed stream
                     Elf_Xword uncompressed_size = 0;
                     auto      decompressed_data = compression->inflate(
                         data.get(), convertor, size, uncompressed_size );
-                    if ( decompressed_data == nullptr ) {
-                        std::cerr << "Failed to decompress section data."
-                                  << std::endl;
-                        data = nullptr;
-                        return false;
+                    if ( decompressed_data != nullptr ) {
+                        set_size( uncompressed_size );
+                        data = std::move( decompressed_data );
                     }
-
-                    set_size( uncompressed_size );
-
-                    data = std::move( decompressed_data );
                 }
+
                 // refresh size because it may have changed if we had to decompress data
                 size = get_size();
                 data.get()[size] =
