@@ -41,8 +41,11 @@ THE SOFTWARE.
 #include <elfio/elfio_segment.hpp>
 #include <elfio/elfio_strings.hpp>
 
-#define ELFIO_HEADER_ACCESS_GET( TYPE, FNAME ) \
-    TYPE get_##FNAME() const { return header ? ( header->get_##FNAME() ) : 0; }
+#define ELFIO_HEADER_ACCESS_GET( TYPE, FNAME )         \
+    TYPE get_##FNAME() const                           \
+    {                                                  \
+        return header ? ( header->get_##FNAME() ) : 0; \
+    }
 
 #define ELFIO_HEADER_ACCESS_GET_SET( TYPE, FNAME )     \
     TYPE get_##FNAME() const                           \
@@ -63,13 +66,12 @@ class elfio
 {
   public:
     //------------------------------------------------------------------------------
-    elfio() noexcept
-        : sections( this ), segments( this ), compression( nullptr )
+    elfio() noexcept : sections( this ), segments( this )
     {
         create( ELFCLASS32, ELFDATA2LSB );
     }
 
-    elfio( compression_interface* compression ) noexcept
+    explicit elfio( compression_interface* compression ) noexcept
         : sections( this ), segments( this ),
           compression( std::shared_ptr<compression_interface>( compression ) )
     {
