@@ -60,11 +60,14 @@ class segment
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half, index );
 
-    virtual const std::vector<Elf_Half>& get_sections() const               = 0;
-    virtual bool load( std::istream& stream, std::streampos header_offset ) = 0;
+    virtual const std::vector<Elf_Half>& get_sections() const = 0;
+
+    virtual bool load( std::istream&  stream,
+                       std::streampos header_offset,
+                       bool           is_lazy = false )       = 0;
     virtual void save( std::ostream&  stream,
                        std::streampos header_offset,
-                       std::streampos data_offset )                         = 0;
+                       std::streampos data_offset ) = 0;
 };
 
 //------------------------------------------------------------------------------
@@ -93,7 +96,14 @@ template <class T> class segment_impl : public segment
     Elf_Half get_index() const override { return index; }
 
     //------------------------------------------------------------------------------
-    const char* get_data() const override { return data.get(); }
+    const char* get_data() const override
+    {
+        if ( is_lazy ) {
+            load_data();
+            is_lazy = false;
+        }
+        return data.get();
+    }
 
     //------------------------------------------------------------------------------
     Elf_Half add_section_index( Elf_Half  sec_index,
@@ -154,8 +164,13 @@ template <class T> class segment_impl : public segment
     void set_index( const Elf_Half& value ) override { index = value; }
 
     //------------------------------------------------------------------------------
-    bool load( std::istream& stream, std::streampos header_offset ) override
+    bool load( std::istream&  stream,
+               std::streampos header_offset,
+               bool           is_lazy_ = false ) override
     {
+        pstream = &stream;
+        is_lazy = is_lazy_;
+
         if ( translator->empty() ) {
             stream.seekg( 0, std::istream::end );
             set_stream_size( size_t( stream.tellg() ) );
@@ -168,20 +183,29 @@ template <class T> class segment_impl : public segment
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
         is_offset_set = true;
 
+        if ( !is_lazy ) {
+            return load_data();
+        }
+
+        return true;
+    }
+
+    bool load_data() const
+    {
         if ( PT_NULL == get_type() || 0 == get_file_size() ) {
             return true;
         }
 
-        stream.seekg( ( *translator )[( *convertor )( ph.p_offset )] );
+        pstream->seekg( ( *translator )[( *convertor )( ph.p_offset )] );
         Elf_Xword size = get_file_size();
 
-        if ( size > get_stream_size() ) {
+        if ( size > get_stream_size() || is_lazy ) {
             data = nullptr;
         }
         else {
             data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
 
-            if ( nullptr != data.get() && stream.read( data.get(), size ) ) {
+            if ( nullptr != data.get() && pstream->read( data.get(), size ) ) {
                 data.get()[size] = 0;
             }
             else {
@@ -212,14 +236,16 @@ template <class T> class segment_impl : public segment
 
     //------------------------------------------------------------------------------
   private:
-    T                          ph    = { 0 };
-    Elf_Half                   index = 0;
-    std::unique_ptr<char[]>    data;
-    std::vector<Elf_Half>      sections;
-    const endianess_convertor* convertor     = nullptr;
-    const address_translator*  translator    = nullptr;
-    size_t                     stream_size   = 0;
-    bool                       is_offset_set = false;
+    mutable std::istream*           pstream = nullptr;
+    T                               ph      = { 0 };
+    Elf_Half                        index   = 0;
+    mutable std::unique_ptr<char[]> data;
+    std::vector<Elf_Half>           sections;
+    const endianess_convertor*      convertor     = nullptr;
+    const address_translator*       translator    = nullptr;
+    size_t                          stream_size   = 0;
+    bool                            is_offset_set = false;
+    mutable bool                    is_lazy       = false;
 };
 
 } // namespace ELFIO
