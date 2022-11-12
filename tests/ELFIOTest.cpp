@@ -981,7 +981,8 @@ class mock_wiiu_compression : public compression_interface
              Elf_Xword&                 uncompressed_size ) const override
     {
         uncompressed_size = 2 * compressed_size;
-        return std::unique_ptr<char[]>( new char[uncompressed_size + 1] );
+        return std::unique_ptr<char[]>(
+            new ( std::nothrow ) char[uncompressed_size + 1] );
     }
 
     std::unique_ptr<char[]> deflate( const char*                data,
@@ -990,7 +991,8 @@ class mock_wiiu_compression : public compression_interface
                                      Elf_Xword& compressed_size ) const override
     {
         compressed_size = decompressed_size / 2;
-        return std::unique_ptr<char[]>( new char[compressed_size + 1] );
+        return std::unique_ptr<char[]>(
+            new ( std::nothrow ) char[compressed_size + 1] );
     }
 };
 
@@ -1005,7 +1007,7 @@ class mock_wiiu_compression : public compression_interface
 // a real compression implementation
 TEST( ELFIOTest, test_rpx )
 {
-    elfio reader( new mock_wiiu_compression() );
+    elfio reader( new ( std::nothrow ) mock_wiiu_compression() );
     elfio reader_no_compression;
 
     ASSERT_EQ( reader_no_compression.load( "elf_examples/helloworld.rpx" ),

@@ -42,17 +42,17 @@ THE SOFTWARE.
 #include <elfio/elfio_strings.hpp>
 
 #define ELFIO_HEADER_ACCESS_GET( TYPE, FNAME )         \
-    TYPE get_##FNAME() const                           \
+    TYPE get_##FNAME() const noexcept                  \
     {                                                  \
         return header ? ( header->get_##FNAME() ) : 0; \
     }
 
 #define ELFIO_HEADER_ACCESS_GET_SET( TYPE, FNAME )     \
-    TYPE get_##FNAME() const                           \
+    TYPE get_##FNAME() const noexcept                  \
     {                                                  \
         return header ? ( header->get_##FNAME() ) : 0; \
     }                                                  \
-    void set_##FNAME( TYPE val )                       \
+    void set_##FNAME( TYPE val ) noexcept              \
     {                                                  \
         if ( header ) {                                \
             header->set_##FNAME( val );                \
@@ -123,7 +123,7 @@ class elfio
     // clang-format on
 
     //------------------------------------------------------------------------------
-    void create( unsigned char file_class, unsigned char encoding )
+    void create( unsigned char file_class, unsigned char encoding ) noexcept
     {
         sections_.clear();
         segments_.clear();
@@ -132,13 +132,14 @@ class elfio
         create_mandatory_sections();
     }
 
-    void set_address_translation( std::vector<address_translation>& addr_trans )
+    void set_address_translation(
+        std::vector<address_translation>& addr_trans ) noexcept
     {
         addr_translator.set_address_translation( addr_trans );
     }
 
     //------------------------------------------------------------------------------
-    bool load( const std::string& file_name, bool is_lazy = false )
+    bool load( const std::string& file_name, bool is_lazy = false ) noexcept
     {
         std::ifstream stream;
         stream.open( file_name.c_str(), std::ios::in | std::ios::binary );
@@ -150,7 +151,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool load( std::istream& stream, bool is_lazy = false )
+    bool load( std::istream& stream, bool is_lazy = false ) noexcept
     {
         sections_.clear();
         segments_.clear();
@@ -192,7 +193,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool save( const std::string& file_name )
+    bool save( const std::string& file_name ) noexcept
     {
         std::ofstream stream;
         stream.open( file_name.c_str(), std::ios::out | std::ios::binary );
@@ -204,7 +205,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool save( std::ostream& stream )
+    bool save( std::ostream& stream ) noexcept
     {
         if ( !stream || header == nullptr ) {
             return false;
@@ -260,10 +261,13 @@ class elfio
     ELFIO_HEADER_ACCESS_GET_SET( Elf_Half, section_name_str_index );
 
     //------------------------------------------------------------------------------
-    const endianess_convertor& get_convertor() const { return convertor; }
+    const endianess_convertor& get_convertor() const noexcept
+    {
+        return convertor;
+    }
 
     //------------------------------------------------------------------------------
-    Elf_Xword get_default_entry_size( Elf_Word section_type ) const
+    Elf_Xword get_default_entry_size( Elf_Word section_type ) const noexcept
     {
         switch ( section_type ) {
         case SHT_RELA:
@@ -303,7 +307,7 @@ class elfio
     //! returns an empty string if no problems are detected,
     //! or a string containing an error message if problems are found,
     //! with one error per line.
-    std::string validate() const
+    std::string validate() const noexcept
     {
         // clang-format off
 
@@ -365,20 +369,23 @@ class elfio
 
   private:
     //------------------------------------------------------------------------------
-    static bool is_offset_in_section( Elf64_Off offset, const section* sec )
+    static bool is_offset_in_section( Elf64_Off      offset,
+                                      const section* sec ) noexcept
     {
         return ( offset >= sec->get_offset() ) &&
                ( offset < ( sec->get_offset() + sec->get_size() ) );
     }
 
     //------------------------------------------------------------------------------
-    static Elf64_Addr get_virtual_addr( Elf64_Off offset, const section* sec )
+    static Elf64_Addr get_virtual_addr( Elf64_Off      offset,
+                                        const section* sec ) noexcept
     {
         return sec->get_address() + offset - sec->get_offset();
     }
 
     //------------------------------------------------------------------------------
-    const section* find_prog_section_for_offset( Elf64_Off offset ) const
+    const section*
+    find_prog_section_for_offset( Elf64_Off offset ) const noexcept
     {
         for ( const auto& sec : sections ) {
             if ( sec->get_type() == SHT_PROGBITS &&
@@ -391,18 +398,18 @@ class elfio
 
     //------------------------------------------------------------------------------
     std::unique_ptr<elf_header> create_header( unsigned char file_class,
-                                               unsigned char encoding )
+                                               unsigned char encoding ) noexcept
     {
         std::unique_ptr<elf_header> new_header;
 
         if ( file_class == ELFCLASS64 ) {
-            new_header =
-                std::unique_ptr<elf_header>( new elf_header_impl<Elf64_Ehdr>(
+            new_header = std::unique_ptr<elf_header>(
+                new ( std::nothrow ) elf_header_impl<Elf64_Ehdr>(
                     &convertor, encoding, &addr_translator ) );
         }
         else if ( file_class == ELFCLASS32 ) {
-            new_header =
-                std::unique_ptr<elf_header>( new elf_header_impl<Elf32_Ehdr>(
+            new_header = std::unique_ptr<elf_header>(
+                new ( std::nothrow ) elf_header_impl<Elf32_Ehdr>(
                     &convertor, encoding, &addr_translator ) );
         }
         else {
@@ -413,17 +420,19 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    section* create_section()
+    section* create_section() noexcept
     {
         unsigned char file_class = get_class();
 
         if ( file_class == ELFCLASS64 ) {
-            sections_.emplace_back( new section_impl<Elf64_Shdr>(
-                &convertor, &addr_translator, compression ) );
+            sections_.emplace_back(
+                new ( std::nothrow ) section_impl<Elf64_Shdr>(
+                    &convertor, &addr_translator, compression ) );
         }
         else if ( file_class == ELFCLASS32 ) {
-            sections_.emplace_back( new section_impl<Elf32_Shdr>(
-                &convertor, &addr_translator, compression ) );
+            sections_.emplace_back(
+                new ( std::nothrow ) section_impl<Elf32_Shdr>(
+                    &convertor, &addr_translator, compression ) );
         }
         else {
             sections_.pop_back();
@@ -437,17 +446,19 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    segment* create_segment()
+    segment* create_segment() noexcept
     {
         unsigned char file_class = header->get_class();
 
         if ( file_class == ELFCLASS64 ) {
             segments_.emplace_back(
-                new segment_impl<Elf64_Phdr>( &convertor, &addr_translator ) );
+                new ( std::nothrow )
+                    segment_impl<Elf64_Phdr>( &convertor, &addr_translator ) );
         }
         else if ( file_class == ELFCLASS32 ) {
             segments_.emplace_back(
-                new segment_impl<Elf32_Phdr>( &convertor, &addr_translator ) );
+                new ( std::nothrow )
+                    segment_impl<Elf32_Phdr>( &convertor, &addr_translator ) );
         }
         else {
             segments_.pop_back();
@@ -461,7 +472,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    void create_mandatory_sections()
+    void create_mandatory_sections() noexcept
     {
         // Create null section without calling to 'add_section' as no string
         // section containing section names exists yet
@@ -477,7 +488,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool load_sections( std::istream& stream )
+    bool load_sections( std::istream& stream ) noexcept
     {
         unsigned char file_class = header->get_class();
         Elf_Half      entry_size = header->get_section_entry_size();
@@ -524,7 +535,7 @@ class elfio
     static bool is_sect_in_seg( Elf64_Off sect_begin,
                                 Elf_Xword sect_size,
                                 Elf64_Off seg_begin,
-                                Elf64_Off seg_end )
+                                Elf64_Off seg_end ) noexcept
     {
         return ( seg_begin <= sect_begin ) &&
                ( sect_begin + sect_size <= seg_end ) &&
@@ -535,7 +546,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool load_segments( std::istream& stream, bool is_lazy )
+    bool load_segments( std::istream& stream, bool is_lazy ) noexcept
     {
         unsigned char file_class = header->get_class();
         Elf_Half      entry_size = header->get_segment_entry_size();
@@ -551,12 +562,14 @@ class elfio
 
         for ( Elf_Half i = 0; i < num; ++i ) {
             if ( file_class == ELFCLASS64 ) {
-                segments_.emplace_back( new segment_impl<Elf64_Phdr>(
-                    &convertor, &addr_translator ) );
+                segments_.emplace_back(
+                    new ( std::nothrow ) segment_impl<Elf64_Phdr>(
+                        &convertor, &addr_translator ) );
             }
             else if ( file_class == ELFCLASS32 ) {
-                segments_.emplace_back( new segment_impl<Elf32_Phdr>(
-                    &convertor, &addr_translator ) );
+                segments_.emplace_back(
+                    new ( std::nothrow ) segment_impl<Elf32_Phdr>(
+                        &convertor, &addr_translator ) );
             }
             else {
                 segments_.pop_back();
@@ -565,9 +578,10 @@ class elfio
 
             segment* seg = segments_.back().get();
 
-            if ( !seg->load( stream, static_cast<std::streamoff>( offset ) +
-                                         static_cast<std::streampos>( i ) *
-                                             entry_size, is_lazy ) ||
+            if ( !seg->load( stream,
+                             static_cast<std::streamoff>( offset ) +
+                                 static_cast<std::streampos>( i ) * entry_size,
+                             is_lazy ) ||
                  stream.fail() ) {
                 segments_.pop_back();
                 return false;
@@ -600,10 +614,13 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool save_header( std::ostream& stream ) { return header->save( stream ); }
+    bool save_header( std::ostream& stream ) const noexcept
+    {
+        return header->save( stream );
+    }
 
     //------------------------------------------------------------------------------
-    bool save_sections( std::ostream& stream )
+    bool save_sections( std::ostream& stream ) const noexcept
     {
         for ( const auto& sec : sections_ ) {
             std::streampos headerPosition =
@@ -618,7 +635,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool save_segments( std::ostream& stream )
+    bool save_segments( std::ostream& stream ) const noexcept
     {
         for ( const auto& seg : segments_ ) {
             std::streampos headerPosition =
@@ -633,7 +650,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool is_section_without_segment( unsigned int section_index ) const
+    bool is_section_without_segment( unsigned int section_index ) const noexcept
     {
         bool found = false;
 
@@ -648,7 +665,8 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    static bool is_subsequence_of( const segment* seg1, const segment* seg2 )
+    static bool is_subsequence_of( const segment* seg1,
+                                   const segment* seg2 ) noexcept
     {
         // Return 'true' if sections of seg1 are a subset of sections in seg2
         const std::vector<Elf_Half>& sections1 = seg1->get_sections();
@@ -664,7 +682,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    std::vector<segment*> get_ordered_segments()
+    std::vector<segment*> get_ordered_segments() const noexcept
     {
         std::vector<segment*> res;
         std::deque<segment*>  worklist;
@@ -710,7 +728,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool layout_sections_without_segments()
+    bool layout_sections_without_segments() noexcept
     {
         for ( unsigned int i = 0; i < sections_.size(); ++i ) {
             if ( is_section_without_segment( i ) ) {
@@ -738,7 +756,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    void calc_segment_alignment()
+    void calc_segment_alignment() const noexcept
     {
         for ( const auto& seg : segments_ ) {
             for ( Elf_Half i = 0; i < seg->get_sections_num(); ++i ) {
@@ -751,7 +769,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool layout_segments_and_their_sections()
+    bool layout_segments_and_their_sections() noexcept
     {
         std::vector<segment*> worklist;
         std::vector<bool>     section_generated( sections.size(), false );
@@ -820,7 +838,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool layout_section_table()
+    bool layout_section_table() noexcept
     {
         // Simply place the section table at the end for now
         Elf64_Off alignmentError = current_file_pos % 4;
@@ -834,7 +852,7 @@ class elfio
                              std::vector<bool>& section_generated,
                              Elf_Xword&         segment_memory,
                              Elf_Xword&         segment_filesize,
-                             const Elf_Xword&   seg_start_pos )
+                             const Elf_Xword&   seg_start_pos ) noexcept
     {
         for ( Elf_Half j = 0; j < seg->get_sections_num(); ++j ) {
             Elf_Half index = seg->get_section_index_at( j );
@@ -931,13 +949,13 @@ class elfio
         explicit Sections( elfio* parent ) : parent( parent ) {}
 
         //------------------------------------------------------------------------------
-        Elf_Half size() const
+        Elf_Half size() const noexcept
         {
             return static_cast<Elf_Half>( parent->sections_.size() );
         }
 
         //------------------------------------------------------------------------------
-        section* operator[]( unsigned int index ) const
+        section* operator[]( unsigned int index ) const noexcept
         {
             section* sec = nullptr;
 
@@ -949,7 +967,7 @@ class elfio
         }
 
         //------------------------------------------------------------------------------
-        section* operator[]( const std::string& name ) const
+        section* operator[]( const std::string& name ) const noexcept
         {
             section* sec = nullptr;
 
@@ -964,7 +982,7 @@ class elfio
         }
 
         //------------------------------------------------------------------------------
-        section* add( const std::string& name )
+        section* add( const std::string& name ) const noexcept
         {
             section* new_section = parent->create_section();
             new_section->set_name( name );
@@ -979,25 +997,27 @@ class elfio
         }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<section>>::iterator begin()
+        std::vector<std::unique_ptr<section>>::iterator begin() noexcept
         {
             return parent->sections_.begin();
         }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<section>>::iterator end()
+        std::vector<std::unique_ptr<section>>::iterator end() noexcept
         {
             return parent->sections_.end();
         }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<section>>::const_iterator begin() const
+        std::vector<std::unique_ptr<section>>::const_iterator
+        begin() const noexcept
         {
             return parent->sections_.cbegin();
         }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<section>>::const_iterator end() const
+        std::vector<std::unique_ptr<section>>::const_iterator
+        end() const noexcept
         {
             return parent->sections_.cend();
         }
@@ -1017,40 +1037,42 @@ class elfio
         explicit Segments( elfio* parent ) : parent( parent ) {}
 
         //------------------------------------------------------------------------------
-        Elf_Half size() const
+        Elf_Half size() const noexcept
         {
             return static_cast<Elf_Half>( parent->segments_.size() );
         }
 
         //------------------------------------------------------------------------------
-        segment* operator[]( unsigned int index ) const
+        segment* operator[]( unsigned int index ) const noexcept
         {
             return parent->segments_[index].get();
         }
 
         //------------------------------------------------------------------------------
-        segment* add() { return parent->create_segment(); }
+        segment* add() noexcept { return parent->create_segment(); }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<segment>>::iterator begin()
+        std::vector<std::unique_ptr<segment>>::iterator begin() noexcept
         {
             return parent->segments_.begin();
         }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<segment>>::iterator end()
+        std::vector<std::unique_ptr<segment>>::iterator end() noexcept
         {
             return parent->segments_.end();
         }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<segment>>::const_iterator begin() const
+        std::vector<std::unique_ptr<segment>>::const_iterator
+        begin() const noexcept
         {
             return parent->segments_.cbegin();
         }
 
         //------------------------------------------------------------------------------
-        std::vector<std::unique_ptr<segment>>::const_iterator end() const
+        std::vector<std::unique_ptr<segment>>::const_iterator
+        end() const noexcept
         {
             return parent->segments_.cend();
         }
@@ -1063,7 +1085,8 @@ class elfio
 
     //------------------------------------------------------------------------------
   private:
-    std::unique_ptr<elf_header>            header = nullptr;
+    std::ifstream*                         pstream = nullptr;
+    std::unique_ptr<elf_header>            header  = nullptr;
     std::vector<std::unique_ptr<section>>  sections_;
     std::vector<std::unique_ptr<segment>>  segments_;
     endianess_convertor                    convertor;

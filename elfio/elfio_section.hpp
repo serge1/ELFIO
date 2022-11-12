@@ -94,19 +94,19 @@ template <class T> class section_impl : public section
     ELFIO_GET_ACCESS( Elf64_Addr, address, header.sh_addr );
 
     //------------------------------------------------------------------------------
-    Elf_Half get_index() const override { return index; }
+    Elf_Half get_index() const noexcept override { return index; }
 
     //------------------------------------------------------------------------------
-    std::string get_name() const override { return name; }
+    std::string get_name() const noexcept override { return name; }
 
     //------------------------------------------------------------------------------
-    void set_name( const std::string& name_prm ) override
+    void set_name( const std::string& name_prm ) noexcept override
     {
         this->name = name_prm;
     }
 
     //------------------------------------------------------------------------------
-    void set_address( const Elf64_Addr& value ) override
+    void set_address( const Elf64_Addr& value ) noexcept override
     {
         header.sh_addr = decltype( header.sh_addr )( value );
         header.sh_addr = ( *convertor )( header.sh_addr );
@@ -193,7 +193,7 @@ template <class T> class section_impl : public section
     ELFIO_GET_SET_ACCESS( Elf64_Off, offset, header.sh_offset );
 
     //------------------------------------------------------------------------------
-    void set_index( const Elf_Half& value ) override { index = value; }
+    void set_index( const Elf_Half& value ) noexcept override { index = value; }
 
     //------------------------------------------------------------------------------
     bool load( std::istream& stream, std::streampos header_offset ) override

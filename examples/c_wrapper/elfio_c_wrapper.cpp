@@ -34,7 +34,7 @@ using namespace ELFIO;
 //-----------------------------------------------------------------------------
 // elfio
 //-----------------------------------------------------------------------------
-pelfio_t elfio_new() { return new elfio; }
+pelfio_t elfio_new() { return new ( std::nothrow ) elfio; }
 
 void elfio_delete( pelfio_t pelfio ) { delete (elfio*)pelfio; }
 
@@ -209,7 +209,7 @@ bool elfio_segment_is_offset_initialized( psegment_t psegment )
 psymbol_t elfio_symbol_section_accessor_new( pelfio_t   pelfio,
                                              psection_t psection )
 {
-    return new symbol_section_accessor( *pelfio, psection );
+    return new ( std::nothrow ) symbol_section_accessor( *pelfio, psection );
 }
 
 void elfio_symbol_section_accessor_delete( psymbol_t psymbol )
@@ -264,7 +264,8 @@ Elf_Xword elfio_symbol_arrange_local_symbols(
 prelocation_t elfio_relocation_section_accessor_new( pelfio_t   pelfio,
                                                      psection_t psection )
 {
-    return new relocation_section_accessor( *pelfio, psection );
+    return new ( std::nothrow )
+        relocation_section_accessor( *pelfio, psection );
 }
 
 void elfio_relocation_section_accessor_delete( prelocation_t prelocation )
@@ -318,7 +319,7 @@ void elfio_relocation_swap_symbols( prelocation_t prelocation,
 //-----------------------------------------------------------------------------
 pstring_t elfio_string_section_accessor_new( psection_t psection )
 {
-    return new string_section_accessor( psection );
+    return new ( std::nothrow ) string_section_accessor( psection );
 }
 
 void elfio_string_section_accessor_delete( pstring_t pstring )
@@ -341,7 +342,7 @@ Elf_Word elfio_string_add_string( pstring_t pstring, char* str )
 //-----------------------------------------------------------------------------
 pnote_t elfio_note_section_accessor_new( pelfio_t pelfio, psection_t psection )
 {
-    return new note_section_accessor( *pelfio, psection );
+    return new ( std::nothrow ) note_section_accessor( *pelfio, psection );
 }
 
 void elfio_note_section_accessor_delete( pnote_t pnote ) { delete pnote; }
@@ -380,7 +381,7 @@ void elfio_note_add_note( pnote_t     pnote,
 //-----------------------------------------------------------------------------
 pmodinfo_t elfio_modinfo_section_accessor_new( psection_t psection )
 {
-    return new modinfo_section_accessor( psection );
+    return new ( std::nothrow ) modinfo_section_accessor( psection );
 }
 
 void elfio_modinfo_section_accessor_delete( pmodinfo_t pmodinfo )
@@ -433,7 +434,7 @@ elfio_modinfo_add_attribute( pmodinfo_t pmodinfo, char* field, char* value )
 pdynamic_t elfio_dynamic_section_accessor_new( pelfio_t   pelfio,
                                                psection_t psection )
 {
-    return new dynamic_section_accessor( *pelfio, psection );
+    return new ( std::nothrow ) dynamic_section_accessor( *pelfio, psection );
 }
 
 void elfio_dynamic_section_accessor_delete( pdynamic_t pdynamic )
@@ -473,7 +474,8 @@ void elfio_dynamic_add_entry( pdynamic_t pdynamic,
 parray_t elfio_array_section_accessor_new( pelfio_t   pelfio,
                                            psection_t psection )
 {
-    return new array_section_accessor<Elf64_Word>( *pelfio, psection );
+    return new ( std::nothrow )
+        array_section_accessor<Elf64_Word>( *pelfio, psection );
 }
 
 void elfio_array_section_accessor_delete( parray_t parray ) { delete parray; }
