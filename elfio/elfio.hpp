@@ -141,13 +141,19 @@ class elfio
     //------------------------------------------------------------------------------
     bool load( const std::string& file_name, bool is_lazy = false ) noexcept
     {
-        std::ifstream stream;
-        stream.open( file_name.c_str(), std::ios::in | std::ios::binary );
-        if ( !stream ) {
+        pstream = std::make_unique<std::ifstream>();
+        pstream->open( file_name.c_str(), std::ios::in | std::ios::binary );
+        if ( pstream == nullptr || !*pstream ) {
             return false;
         }
 
-        return load( stream, is_lazy );
+        bool ret = load( *pstream, is_lazy );
+
+        if ( !is_lazy ) {
+            pstream.release();
+        }
+
+        return ret;
     }
 
     //------------------------------------------------------------------------------
@@ -1085,7 +1091,7 @@ class elfio
 
     //------------------------------------------------------------------------------
   private:
-    std::ifstream*                         pstream = nullptr;
+    std::unique_ptr<std::ifstream>         pstream = nullptr;
     std::unique_ptr<elf_header>            header  = nullptr;
     std::vector<std::unique_ptr<section>>  sections_;
     std::vector<std::unique_ptr<segment>>  segments_;
