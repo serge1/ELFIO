@@ -50,23 +50,25 @@ class section
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word, name_string_offset );
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
-    virtual const char* get_data() const                                   = 0;
-    virtual void        set_data( const char* raw_data, Elf_Word size )    = 0;
-    virtual void        set_data( const std::string& data )                = 0;
-    virtual void        append_data( const char* raw_data, Elf_Word size ) = 0;
-    virtual void        append_data( const std::string& data )             = 0;
-    virtual size_t      get_stream_size() const                            = 0;
-    virtual void        set_stream_size( size_t value )                    = 0;
+    virtual const char* get_data() const noexcept                           = 0;
+    virtual void   set_data( const char* raw_data, Elf_Word size ) noexcept = 0;
+    virtual void   set_data( const std::string& data ) noexcept             = 0;
+    virtual void   append_data( const char* raw_data,
+                                Elf_Word    size ) noexcept                    = 0;
+    virtual void   append_data( const std::string& data ) noexcept          = 0;
+    virtual size_t get_stream_size() const noexcept                         = 0;
+    virtual void   set_stream_size( size_t value ) noexcept                 = 0;
 
   protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half, index );
 
-    virtual bool load( std::istream& stream, std::streampos header_offset ) = 0;
+    virtual bool load( std::istream&  stream,
+                       std::streampos header_offset ) noexcept = 0;
     virtual void save( std::ostream&  stream,
                        std::streampos header_offset,
-                       std::streampos data_offset )                         = 0;
-    virtual bool is_address_initialized() const                             = 0;
+                       std::streampos data_offset ) noexcept   = 0;
+    virtual bool is_address_initialized() const noexcept       = 0;
 };
 
 template <class T> class section_impl : public section
@@ -114,13 +116,16 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    bool is_address_initialized() const override { return is_address_set; }
+    bool is_address_initialized() const noexcept override
+    {
+        return is_address_set;
+    }
 
     //------------------------------------------------------------------------------
-    const char* get_data() const override { return data.get(); }
+    const char* get_data() const noexcept override { return data.get(); }
 
     //------------------------------------------------------------------------------
-    void set_data( const char* raw_data, Elf_Word size ) override
+    void set_data( const char* raw_data, Elf_Word size ) noexcept override
     {
         if ( get_type() != SHT_NOBITS ) {
             data = std::unique_ptr<char[]>( new ( std::nothrow ) char[size] );
@@ -140,13 +145,13 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    void set_data( const std::string& str_data ) override
+    void set_data( const std::string& str_data ) noexcept override
     {
         return set_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
     //------------------------------------------------------------------------------
-    void append_data( const char* raw_data, Elf_Word size ) override
+    void append_data( const char* raw_data, Elf_Word size ) noexcept override
     {
         if ( get_type() != SHT_NOBITS ) {
             if ( get_size() + size < data_size ) {
@@ -176,16 +181,19 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    void append_data( const std::string& str_data ) override
+    void append_data( const std::string& str_data ) noexcept override
     {
         return append_data( str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
     //------------------------------------------------------------------------------
-    size_t get_stream_size() const override { return stream_size; }
+    size_t get_stream_size() const noexcept override { return stream_size; }
 
     //------------------------------------------------------------------------------
-    void set_stream_size( size_t value ) override { stream_size = value; }
+    void set_stream_size( size_t value ) noexcept override
+    {
+        stream_size = value;
+    }
 
     //------------------------------------------------------------------------------
   protected:
@@ -196,7 +204,8 @@ template <class T> class section_impl : public section
     void set_index( const Elf_Half& value ) noexcept override { index = value; }
 
     //------------------------------------------------------------------------------
-    bool load( std::istream& stream, std::streampos header_offset ) override
+    bool load( std::istream&  stream,
+               std::streampos header_offset ) noexcept override
     {
         header = { 0 };
 
@@ -255,7 +264,7 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
     void save( std::ostream&  stream,
                std::streampos header_offset,
-               std::streampos data_offset ) override
+               std::streampos data_offset ) noexcept override
     {
         if ( 0 != get_index() ) {
             header.sh_offset = decltype( header.sh_offset )( data_offset );
@@ -272,7 +281,8 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
   private:
     //------------------------------------------------------------------------------
-    void save_header( std::ostream& stream, std::streampos header_offset ) const
+    void save_header( std::ostream&  stream,
+                      std::streampos header_offset ) const noexcept
     {
         adjust_stream_size( stream, header_offset );
         stream.write( reinterpret_cast<const char*>( &header ),
@@ -280,7 +290,8 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    void save_data( std::ostream& stream, std::streampos data_offset ) const
+    void save_data( std::ostream&  stream,
+                    std::streampos data_offset ) const noexcept
     {
         adjust_stream_size( stream, data_offset );
 
@@ -300,7 +311,7 @@ template <class T> class section_impl : public section
 
     //------------------------------------------------------------------------------
   private:
-    T                                            header = { 0 };
+    T                                            header = {};
     Elf_Half                                     index  = 0;
     std::string                                  name;
     std::unique_ptr<char[]>                      data;
