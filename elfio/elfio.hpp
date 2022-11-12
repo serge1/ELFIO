@@ -193,7 +193,7 @@ class elfio
             return false;
         }
 
-        load_sections( stream );
+        load_sections( stream, is_lazy );
         bool is_still_good = load_segments( stream, is_lazy );
         return is_still_good;
     }
@@ -494,7 +494,7 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    bool load_sections( std::istream& stream ) noexcept
+    bool load_sections( std::istream& stream, bool is_lazy ) noexcept
     {
         unsigned char file_class = header->get_class();
         Elf_Half      entry_size = header->get_section_entry_size();
@@ -512,7 +512,8 @@ class elfio
             section* sec = create_section();
             sec->load( stream,
                        static_cast<std::streamoff>( offset ) +
-                           static_cast<std::streampos>( i ) * entry_size );
+                           static_cast<std::streampos>( i ) * entry_size,
+                       is_lazy );
             // To mark that the section is not permitted to reassign address
             // during layout calculation
             sec->set_address( sec->get_address() );
