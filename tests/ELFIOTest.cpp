@@ -321,7 +321,7 @@ TEST( ELFIOTest, load64 )
 
         ////////////////////////////////////////////////////////////////////////////
         // Check sections
-        section* sec = reader.sections[0];
+        const section* sec = reader.sections[0];
 
         checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -350,7 +350,7 @@ TEST( ELFIOTest, load64 )
 
         ////////////////////////////////////////////////////////////////////////////
         // Check segments
-        segment* seg = reader.segments[0];
+        const segment* seg = reader.segments[0];
         checkSegment( seg, PT_PHDR, 0x0000000000400040, 0x0000000000400040,
                       0x00000000000001c0, 0x00000000000001c0, PF_R + PF_X, 8 );
 
@@ -744,7 +744,7 @@ TEST( ELFIOTest, test_dummy_out_i386_32 )
                  EV_CURRENT, 0x80482b0, 0, 3, 0, 0, 0 );
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[""];
+    const section* sec = reader.sections[""];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -797,7 +797,7 @@ TEST( ELFIOTest, test_dummy_out_ppc_32 )
                  EV_CURRENT, 0x80482b0, 0, 3, 0, 0, 0 );
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[""];
+    const section* sec = reader.sections[""];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -850,7 +850,7 @@ TEST( ELFIOTest, test_dummy_out_i386_64 )
                  EV_CURRENT, 0x120380482b0ULL, 0, 3, 0, 0, 0 );
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[""];
+    const section* sec = reader.sections[""];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -903,7 +903,7 @@ TEST( ELFIOTest, test_dummy_out_ppc_64 )
                  EV_CURRENT, 0x120380482b0ULL, 0, 3, 0, 0, 0 );
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[""];
+    const section* sec = reader.sections[""];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
