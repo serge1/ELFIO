@@ -121,15 +121,15 @@ void checkSegment( const segment* seg,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void checkSymbol( const symbol_section_accessor& sr,
-                  Elf_Xword                      index,
-                  const std::string&             name_,
-                  Elf64_Addr                     value_,
-                  Elf_Xword                      size_,
-                  unsigned char                  bind_,
-                  unsigned char                  type_,
-                  Elf_Half                       section_,
-                  unsigned char                  other_ )
+void checkSymbol( const const_symbol_section_accessor& sr,
+                  Elf_Xword                            index,
+                  const std::string&                   name_,
+                  Elf64_Addr                           value_,
+                  Elf_Xword                            size_,
+                  unsigned char                        bind_,
+                  unsigned char                        type_,
+                  Elf_Half                             section_,
+                  unsigned char                        other_ )
 {
     std::string   name;
     Elf64_Addr    value;
@@ -152,14 +152,14 @@ void checkSymbol( const symbol_section_accessor& sr,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void checkRelocation( const relocation_section_accessor* pRT,
-                      Elf_Xword                          index,
-                      Elf64_Addr                         offset_,
-                      Elf64_Addr                         symbolValue_,
-                      const std::string&                 symbolName_,
-                      unsigned char                      type_,
-                      Elf_Sxword                         addend_,
-                      Elf_Sxword                         calcValue_ )
+void checkRelocation( const const_relocation_section_accessor* pRT,
+                      Elf_Xword                                index,
+                      Elf64_Addr                               offset_,
+                      Elf64_Addr                               symbolValue_,
+                      const std::string&                       symbolName_,
+                      unsigned char                            type_,
+                      Elf_Sxword                               addend_,
+                      Elf_Sxword                               calcValue_ )
 {
     Elf64_Addr  offset;
     Elf64_Addr  symbolValue;
@@ -180,11 +180,11 @@ void checkRelocation( const relocation_section_accessor* pRT,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void checkNote( const note_section_accessor& notes,
-                Elf_Word                     index,
-                Elf_Word                     type_,
-                const std::string&           name_,
-                Elf_Word                     descSize_ )
+void checkNote( const const_note_section_accessor& notes,
+                Elf_Word                           index,
+                Elf_Word                           type_,
+                const std::string&                 name_,
+                Elf_Word                           descSize_ )
 {
     Elf_Word    type;
     std::string name;
@@ -200,208 +200,219 @@ void checkNote( const note_section_accessor& notes,
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ELFIOTest, load32 )
 {
-    elfio reader;
-    ASSERT_EQ( reader.load( "elf_examples/hello_32" ), true );
-    checkHeader( reader, ELFCLASS32, ELFDATA2LSB, EV_CURRENT, ET_EXEC, EM_386,
-                 1, 0x80482b0, 0, 28, 7, 0, 0 );
+    bool is_lazy = false;
+    do {
+        is_lazy = !is_lazy;
+        elfio reader;
+        ASSERT_EQ( reader.load( "elf_examples/hello_32", is_lazy ), true );
+        checkHeader( reader, ELFCLASS32, ELFDATA2LSB, EV_CURRENT, ET_EXEC,
+                     EM_386, 1, 0x80482b0, 0, 28, 7, 0, 0 );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check sections
-    section* sec = reader.sections[0];
-    checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
+        ////////////////////////////////////////////////////////////////////////////
+        // Check sections
+        const section* sec = reader.sections[0];
+        checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
-    sec = reader.sections[1];
-    checkSection( sec, 1, ".interp", SHT_PROGBITS, SHF_ALLOC, 0x08048114, 0x13,
-                  0, 0, 1, 0 );
+        sec = reader.sections[1];
+        checkSection( sec, 1, ".interp", SHT_PROGBITS, SHF_ALLOC, 0x08048114,
+                      0x13, 0, 0, 1, 0 );
 
-    sec = reader.sections[9];
-    checkSection( sec, 9, ".rel.plt", SHT_REL, SHF_ALLOC, 0x08048234, 0x18, 4,
-                  11, 4, 8 );
+        sec = reader.sections[9];
+        checkSection( sec, 9, ".rel.plt", SHT_REL, SHF_ALLOC, 0x08048234, 0x18,
+                      4, 11, 4, 8 );
 
-    sec = reader.sections[19];
-    checkSection( sec, 19, ".dynamic", SHT_DYNAMIC, SHF_WRITE | SHF_ALLOC,
-                  0x080494a0, 0xc8, 5, 0, 4, 8 );
+        sec = reader.sections[19];
+        checkSection( sec, 19, ".dynamic", SHT_DYNAMIC, SHF_WRITE | SHF_ALLOC,
+                      0x080494a0, 0xc8, 5, 0, 4, 8 );
 
-    sec = reader.sections[27];
-    checkSection( sec, 27, ".strtab", SHT_STRTAB, 0, 0x0, 0x259, 0, 0, 1, 0 );
+        sec = reader.sections[27];
+        checkSection( sec, 27, ".strtab", SHT_STRTAB, 0, 0x0, 0x259, 0, 0, 1,
+                      0 );
 
-    for ( Elf_Half i = 0; i < reader.sections.size(); ++i ) {
-        sec = reader.sections[i];
-        EXPECT_EQ( sec->get_index(), i );
-    }
+        for ( Elf_Half i = 0; i < reader.sections.size(); ++i ) {
+            sec = reader.sections[i];
+            EXPECT_EQ( sec->get_index(), i );
+        }
 
-    const section* sec1 = reader.sections[".strtab"];
-    EXPECT_EQ( sec->get_index(), sec1->get_index() );
+        const section* sec1 = reader.sections[".strtab"];
+        EXPECT_EQ( sec->get_index(), sec1->get_index() );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check segments
-    segment* seg = reader.segments[0];
-    checkSegment( seg, PT_PHDR, 0x08048034, 0x08048034, 0x000e0, 0x000e0,
-                  PF_R + PF_X, 4 );
+        ////////////////////////////////////////////////////////////////////////////
+        // Check segments
+        const segment* seg = reader.segments[0];
+        checkSegment( seg, PT_PHDR, 0x08048034, 0x08048034, 0x000e0, 0x000e0,
+                      PF_R + PF_X, 4 );
 
-    seg = reader.segments[4];
-    checkSegment( seg, PT_DYNAMIC, 0x080494a0, 0x080494a0, 0x000c8, 0x000c8,
-                  PF_R + PF_W, 4 );
+        seg = reader.segments[4];
+        checkSegment( seg, PT_DYNAMIC, 0x080494a0, 0x080494a0, 0x000c8, 0x000c8,
+                      PF_R + PF_W, 4 );
 
-    seg = reader.segments[6];
-    checkSegment( seg, 0x6474E551, 0x0, 0x0, 0x0, 0x0, PF_R + PF_W, 4 );
+        seg = reader.segments[6];
+        checkSegment( seg, 0x6474E551, 0x0, 0x0, 0x0, 0x0, PF_R + PF_W, 4 );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check symbol table
-    sec = reader.sections[".symtab"];
+        ////////////////////////////////////////////////////////////////////////////
+        // Check symbol table
+        sec = reader.sections[".symtab"];
 
-    symbol_section_accessor sr( reader, sec );
+        const_symbol_section_accessor sr( reader, sec );
 
-    EXPECT_EQ( sr.get_symbols_num(), 68 );
-    checkSymbol( sr, 0, "", 0x00000000, 0, STB_LOCAL, STT_NOTYPE, STN_UNDEF,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 1, "", 0x08048114, 0, STB_LOCAL, STT_SECTION, 1,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 39, "hello.c", 0x00000000, 0, STB_LOCAL, STT_FILE, SHN_ABS,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 65, "__i686.get_pc_thunk.bx", 0x08048429, 0, STB_GLOBAL,
-                 STT_FUNC, 12, ELF_ST_VISIBILITY( STV_HIDDEN ) );
-    checkSymbol( sr, 66, "main", 0x08048384, 43, STB_GLOBAL, STT_FUNC, 12,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 67, "_init", 0x0804824c, 0, STB_GLOBAL, STT_FUNC, 10,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        EXPECT_EQ( sr.get_symbols_num(), 68 );
+        checkSymbol( sr, 0, "", 0x00000000, 0, STB_LOCAL, STT_NOTYPE, STN_UNDEF,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 1, "", 0x08048114, 0, STB_LOCAL, STT_SECTION, 1,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 39, "hello.c", 0x00000000, 0, STB_LOCAL, STT_FILE,
+                     SHN_ABS, ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 65, "__i686.get_pc_thunk.bx", 0x08048429, 0,
+                     STB_GLOBAL, STT_FUNC, 12,
+                     ELF_ST_VISIBILITY( STV_HIDDEN ) );
+        checkSymbol( sr, 66, "main", 0x08048384, 43, STB_GLOBAL, STT_FUNC, 12,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 67, "_init", 0x0804824c, 0, STB_GLOBAL, STT_FUNC, 10,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check relocation table
-    sec = reader.sections[".rel.dyn"];
+        ////////////////////////////////////////////////////////////////////////////
+        // Check relocation table
+        sec = reader.sections[".rel.dyn"];
 
-    relocation_section_accessor reloc( reader, sec );
-    EXPECT_EQ( reloc.get_entries_num(), 1 );
+        const_relocation_section_accessor reloc( reader, sec );
+        EXPECT_EQ( reloc.get_entries_num(), 1 );
 
-    checkRelocation( &reloc, 0, 0x08049568, 0x0, "__gmon_start__",
-                     R_386_GLOB_DAT, 0, 0 );
+        checkRelocation( &reloc, 0, 0x08049568, 0x0, "__gmon_start__",
+                         R_386_GLOB_DAT, 0, 0 );
 
-    sec = reader.sections[".rel.plt"];
+        sec = reader.sections[".rel.plt"];
 
-    relocation_section_accessor reloc1( reader, sec );
-    EXPECT_EQ( reloc1.get_entries_num(), 3 );
+        const_relocation_section_accessor reloc1( reader, sec );
+        EXPECT_EQ( reloc1.get_entries_num(), 3 );
 
-    checkRelocation( &reloc1, 0, 0x08049578, 0x0, "__gmon_start__",
-                     R_X86_64_JUMP_SLOT, 0, 0 );
-    checkRelocation( &reloc1, 1, 0x0804957c, 0x0, "__libc_start_main",
-                     R_X86_64_JUMP_SLOT, 0, 0 );
-    checkRelocation( &reloc1, 2, 0x08049580, 0x0, "puts", R_X86_64_JUMP_SLOT, 0,
-                     0 );
+        checkRelocation( &reloc1, 0, 0x08049578, 0x0, "__gmon_start__",
+                         R_X86_64_JUMP_SLOT, 0, 0 );
+        checkRelocation( &reloc1, 1, 0x0804957c, 0x0, "__libc_start_main",
+                         R_X86_64_JUMP_SLOT, 0, 0 );
+        checkRelocation( &reloc1, 2, 0x08049580, 0x0, "puts",
+                         R_X86_64_JUMP_SLOT, 0, 0 );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check note reader
-    sec = reader.sections[".note.ABI-tag"];
+        ////////////////////////////////////////////////////////////////////////////
+        // Check note reader
+        sec = reader.sections[".note.ABI-tag"];
 
-    note_section_accessor notes( reader, sec );
-    EXPECT_EQ( notes.get_notes_num(), 1u );
+        const_note_section_accessor notes( reader, sec );
+        EXPECT_EQ( notes.get_notes_num(), 1u );
 
-    checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
+        checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
+    } while ( is_lazy );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ELFIOTest, load64 )
 {
-    elfio reader;
+    bool is_lazy = false;
+    do {
+        is_lazy = !is_lazy;
+        elfio reader;
 
-    ASSERT_EQ( reader.load( "elf_examples/hello_64" ), true );
+        ASSERT_EQ( reader.load( "elf_examples/hello_64", is_lazy ), true );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check ELF header
-    checkHeader( reader, ELFCLASS64, ELFDATA2LSB, EV_CURRENT, ET_EXEC,
-                 EM_X86_64, 1, 0x4003c0, 0, 29, 8, 0, 0 );
+        ////////////////////////////////////////////////////////////////////////////
+        // Check ELF header
+        checkHeader( reader, ELFCLASS64, ELFDATA2LSB, EV_CURRENT, ET_EXEC,
+                     EM_X86_64, 1, 0x4003c0, 0, 29, 8, 0, 0 );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check sections
-    section* sec = reader.sections[0];
+        ////////////////////////////////////////////////////////////////////////////
+        // Check sections
+        section* sec = reader.sections[0];
 
-    checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
+        checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
-    sec = reader.sections[1];
+        sec = reader.sections[1];
 
-    checkSection( sec, 1, ".interp", SHT_PROGBITS, SHF_ALLOC,
-                  0x0000000000400200, 0x1c, 0, 0, 1, 0 );
+        checkSection( sec, 1, ".interp", SHT_PROGBITS, SHF_ALLOC,
+                      0x0000000000400200, 0x1c, 0, 0, 1, 0 );
 
-    sec = reader.sections[9];
+        sec = reader.sections[9];
 
-    checkSection( sec, 9, ".rela.plt", SHT_RELA, SHF_ALLOC, 0x0000000000400340,
-                  0x30, 4, 11, 8, 0x18 );
+        checkSection( sec, 9, ".rela.plt", SHT_RELA, SHF_ALLOC,
+                      0x0000000000400340, 0x30, 4, 11, 8, 0x18 );
 
-    sec = reader.sections[20];
+        sec = reader.sections[20];
 
-    checkSection( sec, 20, ".dynamic", SHT_DYNAMIC, SHF_WRITE | SHF_ALLOC,
-                  0x0000000000600698, 0x190, 5, 0, 8, 0x10 );
+        checkSection( sec, 20, ".dynamic", SHT_DYNAMIC, SHF_WRITE | SHF_ALLOC,
+                      0x0000000000600698, 0x190, 5, 0, 8, 0x10 );
 
-    sec = reader.sections[28];
+        sec = reader.sections[28];
 
-    checkSection( sec, 28, ".strtab", SHT_STRTAB, 0, 0x0, 0x23f, 0, 0, 1, 0 );
+        checkSection( sec, 28, ".strtab", SHT_STRTAB, 0, 0x0, 0x23f, 0, 0, 1,
+                      0 );
 
-    const section* sec1 = reader.sections[".strtab"];
-    EXPECT_EQ( sec->get_index(), sec1->get_index() );
+        const section* sec1 = reader.sections[".strtab"];
+        EXPECT_EQ( sec->get_index(), sec1->get_index() );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check segments
-    segment* seg = reader.segments[0];
-    checkSegment( seg, PT_PHDR, 0x0000000000400040, 0x0000000000400040,
-                  0x00000000000001c0, 0x00000000000001c0, PF_R + PF_X, 8 );
+        ////////////////////////////////////////////////////////////////////////////
+        // Check segments
+        segment* seg = reader.segments[0];
+        checkSegment( seg, PT_PHDR, 0x0000000000400040, 0x0000000000400040,
+                      0x00000000000001c0, 0x00000000000001c0, PF_R + PF_X, 8 );
 
-    seg = reader.segments[2];
-    checkSegment( seg, PT_LOAD, 0x0000000000400000, 0x0000000000400000,
-                  0x000000000000066c, 0x000000000000066c, PF_R + PF_X,
-                  0x200000 );
+        seg = reader.segments[2];
+        checkSegment( seg, PT_LOAD, 0x0000000000400000, 0x0000000000400000,
+                      0x000000000000066c, 0x000000000000066c, PF_R + PF_X,
+                      0x200000 );
 
-    seg = reader.segments[7];
-    checkSegment( seg, 0x6474E551, 0x0, 0x0, 0x0, 0x0, PF_R + PF_W, 8 );
+        seg = reader.segments[7];
+        checkSegment( seg, 0x6474E551, 0x0, 0x0, 0x0, 0x0, PF_R + PF_W, 8 );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check symbol table
-    sec = reader.sections[".symtab"];
+        ////////////////////////////////////////////////////////////////////////////
+        // Check symbol table
+        sec = reader.sections[".symtab"];
 
-    symbol_section_accessor sr( reader, sec );
+        const_symbol_section_accessor sr( reader, sec );
 
-    EXPECT_EQ( sr.get_symbols_num(), 67 );
-    checkSymbol( sr, 0, "", 0x00000000, 0, STB_LOCAL, STT_NOTYPE, STN_UNDEF,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 1, "", 0x00400200, 0, STB_LOCAL, STT_SECTION, 1,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 40, "hello.c", 0x00000000, 0, STB_LOCAL, STT_FILE, SHN_ABS,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 52, "__gmon_start__", 0x00000000, 0, STB_WEAK, STT_NOTYPE,
-                 STN_UNDEF, ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 64, "_edata", 0x0060085c, 0, STB_GLOBAL, STT_NOTYPE,
-                 SHN_ABS, ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 65, "main", 0x00400498, 21, STB_GLOBAL, STT_FUNC, 12,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
-    checkSymbol( sr, 66, "_init", 0x00400370, 0, STB_GLOBAL, STT_FUNC, 10,
-                 ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        EXPECT_EQ( sr.get_symbols_num(), 67 );
+        checkSymbol( sr, 0, "", 0x00000000, 0, STB_LOCAL, STT_NOTYPE, STN_UNDEF,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 1, "", 0x00400200, 0, STB_LOCAL, STT_SECTION, 1,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 40, "hello.c", 0x00000000, 0, STB_LOCAL, STT_FILE,
+                     SHN_ABS, ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 52, "__gmon_start__", 0x00000000, 0, STB_WEAK,
+                     STT_NOTYPE, STN_UNDEF, ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 64, "_edata", 0x0060085c, 0, STB_GLOBAL, STT_NOTYPE,
+                     SHN_ABS, ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 65, "main", 0x00400498, 21, STB_GLOBAL, STT_FUNC, 12,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
+        checkSymbol( sr, 66, "_init", 0x00400370, 0, STB_GLOBAL, STT_FUNC, 10,
+                     ELF_ST_VISIBILITY( STV_DEFAULT ) );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check relocation table
-    sec = reader.sections[".rela.dyn"];
+        ////////////////////////////////////////////////////////////////////////////
+        // Check relocation table
+        sec = reader.sections[".rela.dyn"];
 
-    relocation_section_accessor reloc( reader, sec );
-    EXPECT_EQ( reloc.get_entries_num(), 1 );
+        const_relocation_section_accessor reloc( reader, sec );
+        EXPECT_EQ( reloc.get_entries_num(), 1 );
 
-    checkRelocation( &reloc, 0, 0x00600828, 0x0, "__gmon_start__",
-                     R_X86_64_GLOB_DAT, 0, 0 );
+        checkRelocation( &reloc, 0, 0x00600828, 0x0, "__gmon_start__",
+                         R_X86_64_GLOB_DAT, 0, 0 );
 
-    sec = reader.sections[".rela.plt"];
+        sec = reader.sections[".rela.plt"];
 
-    relocation_section_accessor reloc1( reader, sec );
-    EXPECT_EQ( reloc1.get_entries_num(), 2 );
+        const_relocation_section_accessor reloc1( reader, sec );
+        EXPECT_EQ( reloc1.get_entries_num(), 2 );
 
-    checkRelocation( &reloc1, 0, 0x00600848, 0x0, "puts", R_X86_64_JUMP_SLOT, 0,
-                     0 );
-    checkRelocation( &reloc1, 1, 0x00600850, 0x0, "__libc_start_main",
-                     R_X86_64_JUMP_SLOT, 0, 0 );
+        checkRelocation( &reloc1, 0, 0x00600848, 0x0, "puts",
+                         R_X86_64_JUMP_SLOT, 0, 0 );
+        checkRelocation( &reloc1, 1, 0x00600850, 0x0, "__libc_start_main",
+                         R_X86_64_JUMP_SLOT, 0, 0 );
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Check note reader
-    sec = reader.sections[".note.ABI-tag"];
+        ////////////////////////////////////////////////////////////////////////////
+        // Check note reader
+        sec = reader.sections[".note.ABI-tag"];
 
-    note_section_accessor notes( reader, sec );
-    EXPECT_EQ( notes.get_notes_num(), 1u );
+        const_note_section_accessor notes( reader, sec );
+        EXPECT_EQ( notes.get_notes_num(), 1u );
 
-    checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
+        checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
+    } while ( is_lazy );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -418,7 +429,7 @@ TEST( ELFIOTest, hello_64_o )
 
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[0];
+    const section* sec = reader.sections[0];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -427,7 +438,7 @@ TEST( ELFIOTest, hello_64_o )
     checkSection( sec, 1, ".text", SHT_PROGBITS, SHF_ALLOC | SHF_EXECINSTR, 0x0,
                   0x15, 0, 0, 4, 0 );
 
-    section* sec1 = reader.sections[".text"];
+    const section* sec1 = reader.sections[".text"];
     EXPECT_EQ( sec->get_index(), sec1->get_index() );
 
     sec = reader.sections[12];
@@ -440,7 +451,7 @@ TEST( ELFIOTest, hello_64_o )
     // Check symbol table
     sec = reader.sections[".symtab"];
 
-    symbol_section_accessor sr( reader, sec );
+    const_symbol_section_accessor sr( reader, sec );
 
     EXPECT_EQ( sr.get_symbols_num(), 11 );
     checkSymbol( sr, 9, "main", 0x00000000, 21, STB_GLOBAL, STT_FUNC, 1,
@@ -450,7 +461,7 @@ TEST( ELFIOTest, hello_64_o )
     // Check relocation table
     sec = reader.sections[".rela.text"];
 
-    relocation_section_accessor reloc( reader, sec );
+    const_relocation_section_accessor reloc( reader, sec );
     EXPECT_EQ( reloc.get_entries_num(), 2 );
 
     checkRelocation( &reloc, 0, 0x00000005, 0x0, "", R_X86_64_32, 0, 0 );
@@ -459,7 +470,7 @@ TEST( ELFIOTest, hello_64_o )
 
     sec = reader.sections[".rela.eh_frame"];
 
-    relocation_section_accessor reloc1( reader, sec );
+    const_relocation_section_accessor reloc1( reader, sec );
     EXPECT_EQ( reloc1.get_entries_num(), 1 );
 
     checkRelocation( &reloc1, 0, 0x00000020, 0x0, "", R_X86_64_32, 0, 0 );
@@ -479,7 +490,7 @@ TEST( ELFIOTest, hello_32_o )
 
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[0];
+    const section* sec = reader.sections[0];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -488,7 +499,7 @@ TEST( ELFIOTest, hello_32_o )
     checkSection( sec, 1, ".text", SHT_PROGBITS, SHF_ALLOC | SHF_EXECINSTR, 0x0,
                   0x2b, 0, 0, 4, 0 );
 
-    section* sec1 = reader.sections[".text"];
+    const section* sec1 = reader.sections[".text"];
     EXPECT_EQ( sec->get_index(), sec1->get_index() );
 
     sec = reader.sections[10];
@@ -502,7 +513,7 @@ TEST( ELFIOTest, hello_32_o )
     // Check symbol table
     sec = reader.sections[".symtab"];
 
-    symbol_section_accessor sr( reader, sec );
+    const_symbol_section_accessor sr( reader, sec );
 
     EXPECT_EQ( sr.get_symbols_num(), 10 );
     checkSymbol( sr, 8, "main", 0x00000000, 43, STB_GLOBAL, STT_FUNC, 1,
@@ -512,7 +523,7 @@ TEST( ELFIOTest, hello_32_o )
     // Check relocation table
     sec = reader.sections[".rel.text"];
 
-    relocation_section_accessor reloc( reader, sec );
+    const_relocation_section_accessor reloc( reader, sec );
     EXPECT_EQ( reloc.get_entries_num(), 2 );
 
     checkRelocation( &reloc, 0, 0x00000014, 0x0, "", R_386_32, 0, 0 );
@@ -533,7 +544,7 @@ TEST( ELFIOTest, test_ppc_o )
 
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[0];
+    const section* sec = reader.sections[0];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -542,7 +553,7 @@ TEST( ELFIOTest, test_ppc_o )
     checkSection( sec, 1, ".text", SHT_PROGBITS, SHF_ALLOC | SHF_EXECINSTR, 0x0,
                   0x118, 0, 0, 4, 0 );
 
-    section* sec1 = reader.sections[".text"];
+    const section* sec1 = reader.sections[".text"];
     EXPECT_EQ( sec->get_index(), sec1->get_index() );
 
     sec = reader.sections[15];
@@ -556,7 +567,7 @@ TEST( ELFIOTest, test_ppc_o )
     // Check symbol table
     sec = reader.sections[".symtab"];
 
-    symbol_section_accessor sr( reader, sec );
+    const_symbol_section_accessor sr( reader, sec );
 
     EXPECT_EQ( sr.get_symbols_num(), 24 );
     checkSymbol( sr, 14, "main", 0x00000000, 92, STB_GLOBAL, STT_FUNC, 1,
@@ -568,7 +579,7 @@ TEST( ELFIOTest, test_ppc_o )
     // Check relocation table
     sec = reader.sections[".rela.text"];
 
-    relocation_section_accessor reloc( reader, sec );
+    const_relocation_section_accessor reloc( reader, sec );
     EXPECT_EQ( reloc.get_entries_num(), 18 );
 
     checkRelocation( &reloc, 0, 0x00000016, 0x0, "_ZSt4cout", 6, 0, 0 );
@@ -577,14 +588,14 @@ TEST( ELFIOTest, test_ppc_o )
 
     sec = reader.sections[".rela.ctors"];
 
-    relocation_section_accessor reloc1( reader, sec );
+    const_relocation_section_accessor reloc1( reader, sec );
     EXPECT_EQ( reloc1.get_entries_num(), 1 );
 
     checkRelocation( &reloc1, 0, 0x00000000, 0x0, "", 1, 0xDC, 0xDC );
 
     sec = reader.sections[".rela.eh_frame"];
 
-    relocation_section_accessor reloc2( reader, sec );
+    const_relocation_section_accessor reloc2( reader, sec );
     EXPECT_EQ( reloc2.get_entries_num(), 3 );
 
     checkRelocation( &reloc2, 1, 0x00000020, 0x0, "", 1, 0x0, 0x0 );
@@ -604,7 +615,7 @@ TEST( ELFIOTest, test_ppc )
 
     ////////////////////////////////////////////////////////////////////////////
     // Check sections
-    section* sec = reader.sections[0];
+    const section* sec = reader.sections[0];
 
     checkSection( sec, 0, "", SHT_NULL, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -632,7 +643,7 @@ TEST( ELFIOTest, test_ppc )
 
     ////////////////////////////////////////////////////////////////////////////
     // Check segments
-    segment* seg = reader.segments[0];
+    const segment* seg = reader.segments[0];
     checkSegment( seg, PT_PHDR, 0x10000034, 0x10000034, 0x00100, 0x00100,
                   PF_R + PF_X, 4 );
 
@@ -647,7 +658,7 @@ TEST( ELFIOTest, test_ppc )
     // Check symbol table
     sec = reader.sections[".symtab"];
 
-    symbol_section_accessor sr( reader, sec );
+    const_symbol_section_accessor sr( reader, sec );
 
     EXPECT_EQ( sr.get_symbols_num(), 80 );
     checkSymbol( sr, 0, "", 0x00000000, 0, STB_LOCAL, STT_NOTYPE, STN_UNDEF,
@@ -670,14 +681,14 @@ TEST( ELFIOTest, test_ppc )
     // Check relocation table
     sec = reader.sections[".rela.dyn"];
 
-    relocation_section_accessor reloc( reader, sec );
+    const_relocation_section_accessor reloc( reader, sec );
     EXPECT_EQ( reloc.get_entries_num(), 2 );
 
     checkRelocation( &reloc, 1, 0x10010c0c, 0x10010c0c, "_ZSt4cout", 19, 0, 0 );
 
     sec = reader.sections[".rela.plt"];
 
-    relocation_section_accessor reloc1( reader, sec );
+    const_relocation_section_accessor reloc1( reader, sec );
     EXPECT_EQ( reloc1.get_entries_num(), 9 );
 
     checkRelocation( &reloc1, 0, 0x10010be4, 0x100008e0, "__cxa_atexit", 21, 0,
@@ -688,7 +699,7 @@ TEST( ELFIOTest, test_ppc )
     // Check note reader
     sec = reader.sections[".note.ABI-tag"];
 
-    note_section_accessor notes( reader, sec );
+    const_note_section_accessor notes( reader, sec );
     EXPECT_EQ( notes.get_notes_num(), 1u );
 
     checkNote( notes, 0, 1, std::string( "GNU" ), 16 );
