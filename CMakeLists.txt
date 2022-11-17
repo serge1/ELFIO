@@ -11,7 +11,7 @@ if(IS_TOP_PROJECT)
     option(ELFIO_BUILD_EXAMPLES "Build ELFIO examples" ON)
 
     # Turns this on in order to build tests
-    option(ELFIO_BUILD_TESTS "Build ELFIO tests" ON)
+    option(ELFIO_BUILD_TESTS "Build ELFIO tests" OFF)
 endif()
 
 # Read version from header file
