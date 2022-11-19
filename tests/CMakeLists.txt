@@ -3,6 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/9a32aee22d771387c494be2d8519fbdf46a713b2.zip
+    FIND_PACKAGE_ARGS NAMES GTest
 )
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
@@ -44,7 +45,8 @@ target_link_libraries(
     ELFIOTest
     PRIVATE
     elfio::elfio
-    gtest_main)
+    gtest_main
+    GTest::gtest_main)
 
 add_test(
     NAME
