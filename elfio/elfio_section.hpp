@@ -50,13 +50,19 @@ class section
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word, name_string_offset );
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
-    virtual const char* get_data() const                                   = 0;
-    virtual void        set_data( const char* raw_data, Elf_Word size )    = 0;
-    virtual void        set_data( const std::string& data )                = 0;
-    virtual void        append_data( const char* raw_data, Elf_Word size ) = 0;
-    virtual void        append_data( const std::string& data )             = 0;
-    virtual size_t      get_stream_size() const                            = 0;
-    virtual void        set_stream_size( size_t value )                    = 0;
+    virtual const char* get_data() const noexcept                           = 0;
+    virtual void   set_data( const char* raw_data, Elf_Word size ) noexcept = 0;
+    virtual void   set_data( const std::string& data ) noexcept             = 0;
+    virtual void   append_data( const char* raw_data,
+                                Elf_Word    size ) noexcept                    = 0;
+    virtual void   append_data( const std::string& data ) noexcept          = 0;
+    virtual void   insert_data( Elf_Word    pos,
+                                const char* raw_data,
+                                Elf_Word    size ) noexcept                    = 0;
+    virtual void   insert_data( Elf_Word           pos,
+                                const std::string& data ) noexcept          = 0;
+    virtual size_t get_stream_size() const noexcept                         = 0;
+    virtual void   set_stream_size( size_t value ) noexcept                 = 0;
 
   protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
@@ -189,7 +195,43 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    size_t get_stream_size() const override { return stream_size; }
+    void insert_data( Elf_Word    pos,
+                      const char* raw_data,
+                      Elf_Word    size ) noexcept override
+    {
+        if ( get_type() != SHT_NOBITS ) {
+            if ( get_size() + size < data_size ) {
+                char* d = data.get();
+                std::copy_backward( d + pos, d + get_size(),
+                                    d + get_size() + size );
+                std::copy( raw_data, raw_data + size, d + pos );
+            }
+            else {
+                data_size = 2 * ( data_size + size );
+                std::unique_ptr<char[]> new_data(
+                    new ( std::nothrow ) char[data_size] );
+
+                if ( nullptr != new_data ) {
+                    char* d = data.get();
+                    std::copy( d, d + pos, new_data.get() );
+                    std::copy( raw_data, raw_data + size,
+                               new_data.get() + pos );
+                    std::copy( d + pos, d + get_size(),
+                               new_data.get() + pos + size );
+                    data = std::move( new_data );
+                }
+                else {
+                    size = 0;
+                }
+            }
+            set_size( get_size() + size );
+            if ( translator->empty() ) {
+                set_stream_size( get_stream_size() + size );
+            }
+        }
+    }
+
+    size_t get_stream_size() const noexcept override { return stream_size; }
 
     //------------------------------------------------------------------------------
     void set_stream_size( size_t value ) override { stream_size = value; }
@@ -237,7 +279,7 @@ template <class T> class section_impl : public section
                 Elf_Xword size              = get_size();
                 Elf_Xword uncompressed_size = 0;
                 auto      decompressed_data = compression->inflate(
-                         data.get(), convertor, size, uncompressed_size );
+                    data.get(), convertor, size, uncompressed_size );
                 if ( decompressed_data != nullptr ) {
                     set_size( uncompressed_size );
                     data = std::move( decompressed_data );
@@ -319,7 +361,7 @@ template <class T> class section_impl : public section
             Elf_Xword decompressed_size = get_size();
             Elf_Xword compressed_size   = 0;
             auto      compressed_ptr    = compression->deflate(
-                        data.get(), convertor, decompressed_size, compressed_size );
+                data.get(), convertor, decompressed_size, compressed_size );
             stream.write( compressed_ptr.get(), compressed_size );
         }
         else {
