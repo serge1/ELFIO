@@ -56,6 +56,10 @@ class section
     virtual void   append_data( const char* raw_data,
                                 Elf_Word    size ) noexcept                    = 0;
     virtual void   append_data( const std::string& data ) noexcept          = 0;
+    virtual void   insert_data( Elf_Word pos, const char* raw_data,
+                                Elf_Word size ) noexcept                    = 0;
+    virtual void   insert_data( Elf_Word pos,
+                                const std::string& data ) noexcept          = 0;
     virtual size_t get_stream_size() const noexcept                         = 0;
     virtual void   set_stream_size( size_t value ) noexcept                 = 0;
 
@@ -190,6 +194,44 @@ template <class T> class section_impl : public section
     void append_data( const std::string& str_data ) noexcept override
     {
         return append_data( str_data.c_str(), (Elf_Word)str_data.size() );
+    }
+
+    //------------------------------------------------------------------------------
+    void insert_data( Elf_Word pos, const char* raw_data, Elf_Word size ) noexcept override
+    {
+        if ( get_type() != SHT_NOBITS ) {
+            if ( get_size() + size < data_size ) {
+                char *d = data.get();
+                std::copy_backward( d + pos, d + get_size(), d + get_size() + size );
+                std::copy( raw_data, raw_data + size, d + pos );
+            }
+            else {
+                data_size = 2 * ( data_size + size );
+                std::unique_ptr<char[]> new_data(
+                    new ( std::nothrow ) char[data_size] );
+
+                if ( nullptr != new_data ) {
+                    char *d = data.get();
+                    std::copy( d, d + pos, new_data.get() );
+                    std::copy( raw_data, raw_data + size, new_data.get() + pos );
+                    std::copy( d + pos, d + get_size(), new_data.get() + pos + size );
+                    data = std::move( new_data );
+                }
+                else {
+                    size = 0;
+                }
+            }
+            set_size( get_size() + size );
+            if ( translator->empty() ) {
+                set_stream_size( get_stream_size() + size );
+            }
+        }
+    }
+
+    //------------------------------------------------------------------------------
+    void insert_data( Elf_Word pos, const std::string& str_data ) noexcept override
+    {
+        return insert_data( pos, str_data.c_str(), (Elf_Word)str_data.size() );
     }
 
     //------------------------------------------------------------------------------
