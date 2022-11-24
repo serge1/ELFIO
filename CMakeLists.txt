@@ -13,7 +13,7 @@ if(IS_TOP_PROJECT)
     # Turns this on in order to build tests
     option(ELFIO_BUILD_TESTS "Build ELFIO tests" OFF)
 
-    # 
+    # Generate output of compile commands during generation
     set(CMAKE_EXPORT_COMPILE_COMMANDS, ON)
 endif()
 
