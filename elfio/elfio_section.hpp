@@ -161,31 +161,7 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
     void append_data( const char* raw_data, Elf_Word size ) override
     {
-        if ( get_type() != SHT_NOBITS ) {
-            if ( get_size() + size < data_size ) {
-                std::copy( raw_data, raw_data + size, data.get() + get_size() );
-            }
-            else {
-                data_size = 2 * ( data_size + size );
-                std::unique_ptr<char[]> new_data(
-                    new ( std::nothrow ) char[data_size] );
-
-                if ( nullptr != new_data ) {
-                    std::copy( data.get(), data.get() + get_size(),
-                               new_data.get() );
-                    std::copy( raw_data, raw_data + size,
-                               new_data.get() + get_size() );
-                    data = std::move( new_data );
-                }
-                else {
-                    size = 0;
-                }
-            }
-            set_size( get_size() + size );
-            if ( translator->empty() ) {
-                set_stream_size( get_stream_size() + size );
-            }
-        }
+        insert_data( get_size(), raw_data, size );
     }
 
     //------------------------------------------------------------------------------
