@@ -99,6 +99,5 @@
         ]
     },
     "gtest-adapter.debugConfig": "Run ELFIO Tests",
-    "gtest-adapter.supportLocation": true,
-    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json"
+    "gtest-adapter.supportLocation": true
 }
