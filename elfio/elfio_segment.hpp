@@ -47,28 +47,27 @@ class segment
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword, memory_size );
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
-    virtual const char* get_data() const noexcept = 0;
+    virtual const char* get_data() const = 0;
 
-    virtual Elf_Half add_section( section*  psec,
-                                  Elf_Xword addr_align ) noexcept        = 0;
+    virtual Elf_Half add_section( section* psec, Elf_Xword addr_align ) = 0;
     virtual Elf_Half add_section_index( Elf_Half  index,
-                                        Elf_Xword addr_align ) noexcept  = 0;
-    virtual Elf_Half get_sections_num() const noexcept                   = 0;
-    virtual Elf_Half get_section_index_at( Elf_Half num ) const noexcept = 0;
-    virtual bool     is_offset_initialized() const noexcept              = 0;
+                                        Elf_Xword addr_align )          = 0;
+    virtual Elf_Half get_sections_num() const                           = 0;
+    virtual Elf_Half get_section_index_at( Elf_Half num ) const         = 0;
+    virtual bool     is_offset_initialized() const                      = 0;
 
   protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
     ELFIO_SET_ACCESS_DECL( Elf_Half, index );
 
-    virtual const std::vector<Elf_Half>& get_sections() const noexcept = 0;
+    virtual const std::vector<Elf_Half>& get_sections() const = 0;
 
     virtual bool load( std::istream&  stream,
                        std::streampos header_offset,
-                       bool           is_lazy ) noexcept               = 0;
+                       bool           is_lazy )               = 0;
     virtual void save( std::ostream&  stream,
                        std::streampos header_offset,
-                       std::streampos data_offset ) noexcept = 0;
+                       std::streampos data_offset ) = 0;
 };
 
 //------------------------------------------------------------------------------
@@ -94,10 +93,10 @@ template <class T> class segment_impl : public segment
     ELFIO_GET_ACCESS( Elf64_Off, offset, ph.p_offset );
 
     //------------------------------------------------------------------------------
-    Elf_Half get_index() const noexcept override { return index; }
+    Elf_Half get_index() const override { return index; }
 
     //------------------------------------------------------------------------------
-    const char* get_data() const noexcept override
+    const char* get_data() const override
     {
         if ( is_lazy ) {
             load_data();
@@ -107,7 +106,7 @@ template <class T> class segment_impl : public segment
 
     //------------------------------------------------------------------------------
     Elf_Half add_section_index( Elf_Half  sec_index,
-                                Elf_Xword addr_align ) noexcept override
+                                Elf_Xword addr_align ) override
     {
         sections.emplace_back( sec_index );
         if ( addr_align > get_align() ) {
@@ -118,20 +117,19 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    Elf_Half add_section( section*  psec,
-                          Elf_Xword addr_align ) noexcept override
+    Elf_Half add_section( section* psec, Elf_Xword addr_align ) override
     {
         return add_section_index( psec->get_index(), addr_align );
     }
 
     //------------------------------------------------------------------------------
-    Elf_Half get_sections_num() const noexcept override
+    Elf_Half get_sections_num() const override
     {
         return (Elf_Half)sections.size();
     }
 
     //------------------------------------------------------------------------------
-    Elf_Half get_section_index_at( Elf_Half num ) const noexcept override
+    Elf_Half get_section_index_at( Elf_Half num ) const override
     {
         if ( num < sections.size() ) {
             return sections[num];
@@ -145,7 +143,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
 
     //------------------------------------------------------------------------------
-    void set_offset( const Elf64_Off& value ) noexcept override
+    void set_offset( const Elf64_Off& value ) override
     {
         ph.p_offset   = decltype( ph.p_offset )( value );
         ph.p_offset   = ( *convertor )( ph.p_offset );
@@ -153,24 +151,21 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    bool is_offset_initialized() const noexcept override
-    {
-        return is_offset_set;
-    }
+    bool is_offset_initialized() const override { return is_offset_set; }
 
     //------------------------------------------------------------------------------
-    const std::vector<Elf_Half>& get_sections() const noexcept override
+    const std::vector<Elf_Half>& get_sections() const override
     {
         return sections;
     }
 
     //------------------------------------------------------------------------------
-    void set_index( const Elf_Half& value ) noexcept override { index = value; }
+    void set_index( const Elf_Half& value ) override { index = value; }
 
     //------------------------------------------------------------------------------
     bool load( std::istream&  stream,
                std::streampos header_offset,
-               bool           is_lazy_ ) noexcept override
+               bool           is_lazy_ ) override
     {
         pstream = &stream;
         is_lazy = is_lazy_;
@@ -195,7 +190,7 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    bool load_data() const noexcept
+    bool load_data() const
     {
         is_lazy = false;
         if ( PT_NULL == get_type() || 0 == get_file_size() ) {
@@ -226,7 +221,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     void save( std::ostream&  stream,
                std::streampos header_offset,
-               std::streampos data_offset ) noexcept override
+               std::streampos data_offset ) override
     {
         ph.p_offset = decltype( ph.p_offset )( data_offset );
         ph.p_offset = ( *convertor )( ph.p_offset );
@@ -235,10 +230,10 @@ template <class T> class segment_impl : public segment
     }
 
     //------------------------------------------------------------------------------
-    size_t get_stream_size() const noexcept { return stream_size; }
+    size_t get_stream_size() const { return stream_size; }
 
     //------------------------------------------------------------------------------
-    void set_stream_size( size_t value ) noexcept { stream_size = value; }
+    void set_stream_size( size_t value ) { stream_size = value; }
 
     //------------------------------------------------------------------------------
   private:

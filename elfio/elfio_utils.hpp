@@ -26,37 +26,30 @@ THE SOFTWARE.
 #include <cstdint>
 #include <ostream>
 
-#define ELFIO_GET_ACCESS_DECL( TYPE, NAME ) \
-    virtual TYPE get_##NAME() const noexcept = 0
+#define ELFIO_GET_ACCESS_DECL( TYPE, NAME ) virtual TYPE get_##NAME() const = 0
 
 #define ELFIO_SET_ACCESS_DECL( TYPE, NAME ) \
-    virtual void set_##NAME( const TYPE& value ) noexcept = 0
+    virtual void set_##NAME( const TYPE& value ) = 0
 
-#define ELFIO_GET_SET_ACCESS_DECL( TYPE, NAME )                \
-    virtual TYPE get_##NAME() const noexcept              = 0; \
-    virtual void set_##NAME( const TYPE& value ) noexcept = 0
+#define ELFIO_GET_SET_ACCESS_DECL( TYPE, NAME )       \
+    virtual TYPE get_##NAME() const              = 0; \
+    virtual void set_##NAME( const TYPE& value ) = 0
 
 #define ELFIO_GET_ACCESS( TYPE, NAME, FIELD ) \
-    TYPE get_##NAME() const noexcept override \
-    {                                         \
-        return ( *convertor )( FIELD );       \
-    }
+    TYPE get_##NAME() const override { return ( *convertor )( FIELD ); }
 
-#define ELFIO_SET_ACCESS( TYPE, NAME, FIELD )              \
-    void set_##NAME( const TYPE& value ) noexcept override \
-    {                                                      \
-        FIELD = decltype( FIELD )( value );                \
-        FIELD = ( *convertor )( FIELD );                   \
+#define ELFIO_SET_ACCESS( TYPE, NAME, FIELD )     \
+    void set_##NAME( const TYPE& value ) override \
+    {                                             \
+        FIELD = decltype( FIELD )( value );       \
+        FIELD = ( *convertor )( FIELD );          \
     }
-#define ELFIO_GET_SET_ACCESS( TYPE, NAME, FIELD )          \
-    TYPE get_##NAME() const noexcept override              \
-    {                                                      \
-        return ( *convertor )( FIELD );                    \
-    }                                                      \
-    void set_##NAME( const TYPE& value ) noexcept override \
-    {                                                      \
-        FIELD = decltype( FIELD )( value );                \
-        FIELD = ( *convertor )( FIELD );                   \
+#define ELFIO_GET_SET_ACCESS( TYPE, NAME, FIELD )                        \
+    TYPE get_##NAME() const override { return ( *convertor )( FIELD ); } \
+    void set_##NAME( const TYPE& value ) override                        \
+    {                                                                    \
+        FIELD = decltype( FIELD )( value );                              \
+        FIELD = ( *convertor )( FIELD );                                 \
     }
 
 namespace ELFIO {
