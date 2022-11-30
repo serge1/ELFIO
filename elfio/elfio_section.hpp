@@ -50,19 +50,16 @@ class section
     ELFIO_GET_SET_ACCESS_DECL( Elf_Word, name_string_offset );
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
-    virtual const char* get_data() const noexcept                           = 0;
-    virtual void   set_data( const char* raw_data, Elf_Word size ) noexcept = 0;
-    virtual void   set_data( const std::string& data ) noexcept             = 0;
-    virtual void   append_data( const char* raw_data,
-                                Elf_Word    size ) noexcept                    = 0;
-    virtual void   append_data( const std::string& data ) noexcept          = 0;
-    virtual void   insert_data( Elf_Word    pos,
-                                const char* raw_data,
-                                Elf_Word    size ) noexcept                    = 0;
-    virtual void   insert_data( Elf_Word           pos,
-                                const std::string& data ) noexcept          = 0;
-    virtual size_t get_stream_size() const noexcept                         = 0;
-    virtual void   set_stream_size( size_t value ) noexcept                 = 0;
+    virtual const char* get_data() const                                   = 0;
+    virtual void        set_data( const char* raw_data, Elf_Word size )    = 0;
+    virtual void        set_data( const std::string& data )                = 0;
+    virtual void        append_data( const char* raw_data, Elf_Word size ) = 0;
+    virtual void        append_data( const std::string& data )             = 0;
+    virtual void
+    insert_data( Elf_Xword pos, const char* raw_data, Elf_Word size )    = 0;
+    virtual void   insert_data( Elf_Xword pos, const std::string& data ) = 0;
+    virtual size_t get_stream_size() const                               = 0;
+    virtual void   set_stream_size( size_t value )                       = 0;
 
   protected:
     ELFIO_SET_ACCESS_DECL( Elf64_Off, offset );
@@ -171,9 +168,8 @@ template <class T> class section_impl : public section
     }
 
     //------------------------------------------------------------------------------
-    void insert_data( Elf_Word    pos,
-                      const char* raw_data,
-                      Elf_Word    size ) noexcept override
+    void
+    insert_data( Elf_Xword pos, const char* raw_data, Elf_Word size ) override
     {
         if ( get_type() != SHT_NOBITS ) {
             if ( get_size() + size < data_size ) {
@@ -207,7 +203,13 @@ template <class T> class section_impl : public section
         }
     }
 
-    size_t get_stream_size() const noexcept override { return stream_size; }
+    //------------------------------------------------------------------------------
+    void insert_data( Elf_Xword pos, const std::string& str_data ) override
+    {
+        return insert_data( pos, str_data.c_str(), (Elf_Word)str_data.size() );
+    }
+
+    size_t get_stream_size() const override { return stream_size; }
 
     //------------------------------------------------------------------------------
     void set_stream_size( size_t value ) override { stream_size = value; }
