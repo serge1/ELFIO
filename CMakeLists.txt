@@ -47,7 +47,7 @@ target_include_directories(
 
 # If this is the top level project, add in logic to install elfio
 if(IS_TOP_PROJECT)
-    # Enable C++11 for examples and tests
+    # Enable C++14 for examples and tests
     if(ELFIO_BUILD_EXAMPLES OR ELFIO_BUILD_TESTS)
         set(CMAKE_CXX_STANDARD 14)
     endif()
@@ -57,7 +57,7 @@ if(IS_TOP_PROJECT)
         add_subdirectory(examples)
     endif()
 
-    if(ELFIO_BUILD_TESTS AND IS_TOP_PROJECT)
+    if(ELFIO_BUILD_TESTS)
         # set (CMAKE_CXX_FLAGS "-Wall")
         enable_testing()
         add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} USES_TERMINAL)
