@@ -149,7 +149,7 @@ class elfio
         bool ret = load( *pstream, is_lazy );
 
         if ( !is_lazy ) {
-            pstream.release();
+            pstream.reset();
         }
 
         return ret;
