@@ -236,7 +236,6 @@ template <class T> class section_impl : public section
     {
         pstream = &stream;
         is_lazy = is_lazy_;
-        header  = { 0 };
 
         if ( translator->empty() ) {
             stream.seekg( 0, std::istream::end );
