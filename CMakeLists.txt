@@ -49,7 +49,7 @@ target_include_directories(
 if(IS_TOP_PROJECT)
     # Enable C++14 for examples and tests
     if(ELFIO_BUILD_EXAMPLES OR ELFIO_BUILD_TESTS)
-        set(CMAKE_CXX_STANDARD 14)
+        set(CMAKE_CXX_STANDARD 17)
     endif()
 
     if(ELFIO_BUILD_EXAMPLES)
