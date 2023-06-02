@@ -256,7 +256,7 @@ template <class T> class section_impl : public section
                 Elf_Xword size              = get_size();
                 Elf_Xword uncompressed_size = 0;
                 auto      decompressed_data = compression->inflate(
-                    data.get(), convertor, size, uncompressed_size );
+                         data.get(), convertor, size, uncompressed_size );
                 if ( decompressed_data != nullptr ) {
                     set_size( uncompressed_size );
                     data = std::move( decompressed_data );
@@ -338,7 +338,7 @@ template <class T> class section_impl : public section
             Elf_Xword decompressed_size = get_size();
             Elf_Xword compressed_size   = 0;
             auto      compressed_ptr    = compression->deflate(
-                data.get(), convertor, decompressed_size, compressed_size );
+                        data.get(), convertor, decompressed_size, compressed_size );
             stream.write( compressed_ptr.get(), compressed_size );
         }
         else {

@@ -177,11 +177,11 @@ class address_translator
     {
         addr_translations = addr_trans;
 
-        std::sort(
-            addr_translations.begin(), addr_translations.end(),
-            []( address_translation& a, address_translation& b ) -> bool {
-                return a.start < b.start;
-            } );
+        std::sort( addr_translations.begin(), addr_translations.end(),
+                   []( const address_translation& a,
+                       const address_translation& b ) -> bool {
+                       return a.start < b.start;
+                   } );
     }
 
     //------------------------------------------------------------------------------
@@ -236,8 +236,7 @@ inline std::string to_hex_string( uint64_t value )
     std::string str;
 
     while ( value ) {
-        auto digit = value & 0xF;
-        if ( digit < 0xA ) {
+        if ( auto digit = value & 0xF; digit < 0xA ) {
             str = char( '0' + digit ) + str;
         }
         else {

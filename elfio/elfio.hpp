@@ -41,11 +41,8 @@ THE SOFTWARE.
 #include <elfio/elfio_segment.hpp>
 #include <elfio/elfio_strings.hpp>
 
-#define ELFIO_HEADER_ACCESS_GET( TYPE, FNAME )         \
-    TYPE get_##FNAME() const                           \
-    {                                                  \
-        return header ? ( header->get_##FNAME() ) : 0; \
-    }
+#define ELFIO_HEADER_ACCESS_GET( TYPE, FNAME ) \
+    TYPE get_##FNAME() const { return header ? ( header->get_##FNAME() ) : 0; }
 
 #define ELFIO_HEADER_ACCESS_GET_SET( TYPE, FNAME )     \
     TYPE get_##FNAME() const                           \
@@ -421,9 +418,7 @@ class elfio
     //------------------------------------------------------------------------------
     section* create_section()
     {
-        unsigned char file_class = get_class();
-
-        if ( file_class == ELFCLASS64 ) {
+        if ( auto file_class = get_class(); file_class == ELFCLASS64 ) {
             sections_.emplace_back(
                 new ( std::nothrow ) section_impl<Elf64_Shdr>(
                     &convertor, &addr_translator, compression ) );
@@ -447,9 +442,7 @@ class elfio
     //------------------------------------------------------------------------------
     segment* create_segment()
     {
-        unsigned char file_class = header->get_class();
-
-        if ( file_class == ELFCLASS64 ) {
+        if ( auto file_class = header->get_class(); file_class == ELFCLASS64 ) {
             segments_.emplace_back(
                 new ( std::nothrow )
                     segment_impl<Elf64_Phdr>( &convertor, &addr_translator ) );
@@ -512,9 +505,8 @@ class elfio
             sec->set_address( sec->get_address() );
         }
 
-        Elf_Half shstrndx = get_section_name_str_index();
-
-        if ( SHN_UNDEF != shstrndx ) {
+        if ( Elf_Half shstrndx = get_section_name_str_index();
+             SHN_UNDEF != shstrndx ) {
             string_section_accessor str_reader( sections[shstrndx] );
             for ( Elf_Half i = 0; i < num; ++i ) {
                 Elf_Word section_offset = sections[i]->get_name_string_offset();
@@ -733,8 +725,8 @@ class elfio
             if ( is_section_without_segment( i ) ) {
                 const auto& sec = sections_[i];
 
-                Elf_Xword section_align = sec->get_addr_align();
-                if ( section_align > 1 &&
+                if ( Elf_Xword section_align = sec->get_addr_align();
+                     section_align > 1 &&
                      current_file_pos % section_align != 0 ) {
                     current_file_pos +=
                         section_align - current_file_pos % section_align;
@@ -966,7 +958,7 @@ class elfio
         }
 
         //------------------------------------------------------------------------------
-        section* operator[]( const std::string& name ) const
+        section* operator[]( const std::string_view& name ) const
         {
             section* sec = nullptr;
 

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #ifndef ELFIO_MODINFO_HPP
 #define ELFIO_MODINFO_HPP
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 namespace ELFIO {
@@ -56,12 +56,12 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    bool get_attribute( const std::string& field_name,
-                        std::string&       value ) const
+    bool get_attribute( const std::string_view& field_name,
+                        std::string&            value ) const
     {
-        for ( auto& i : content ) {
-            if ( field_name == i.first ) {
-                value = i.second;
+        for ( const auto [first, second] : content ) {
+            if ( field_name == first ) {
+                value = second;
                 return true;
             }
         }
