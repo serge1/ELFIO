@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include <cstdint>
 #include <ostream>
+#include <cstring>
 
 #define ELFIO_GET_ACCESS_DECL( TYPE, NAME ) virtual TYPE get_##NAME() const = 0
 
@@ -257,6 +258,13 @@ inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
         stream.write( std::string( size_t( size ), '\0' ).c_str(), size );
     }
     stream.seekp( offset );
+}
+
+//------------------------------------------------------------------------------
+inline static size_t strnlength( const char* s, size_t n )
+{
+    const char* found = (const char*)std::memchr( s, '\0', n );
+    return found ? (size_t)( found - s ) : n;
 }
 
 /**

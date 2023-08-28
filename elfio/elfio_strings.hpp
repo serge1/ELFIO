@@ -45,8 +45,8 @@ template <class S> class string_section_accessor_template
         if ( string_section ) {
             const char* data = string_section->get_data();
             if ( index < string_section->get_size() && nullptr != data ) {
-                size_t string_length =
-                    strnlen( data + index, string_section->get_size() - index );
+                size_t string_length = strnlength(
+                    data + index, string_section->get_size() - index );
                 if ( string_length < ( string_section->get_size() - index ) )
                     return data + index;
             }
