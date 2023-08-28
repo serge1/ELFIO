@@ -263,7 +263,7 @@ inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 //------------------------------------------------------------------------------
 inline static size_t strnlength( const char* s, size_t n )
 {
-    const char* found = (const char*)std::memchr( s, '\0', n );
+    auto found = (const char*)std::memchr( s, '\0', n );
     return found ? (size_t)( found - s ) : n;
 }
 
