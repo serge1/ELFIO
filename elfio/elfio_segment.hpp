@@ -47,8 +47,8 @@ class segment
     ELFIO_GET_SET_ACCESS_DECL( Elf_Xword, memory_size );
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
-    virtual const char* get_data() const = 0;
-    virtual void free_data() const = 0;
+    virtual const char* get_data() const  = 0;
+    virtual void        free_data() const = 0;
 
     virtual Elf_Half add_section( section* psec, Elf_Xword addr_align ) = 0;
     virtual Elf_Half add_section_index( Elf_Half  index,
@@ -105,9 +105,10 @@ template <class T> class segment_impl : public segment
         return data.get();
     }
 
+    //------------------------------------------------------------------------------
     void free_data() const override
     {
-        data.reset(nullptr);
+        data.reset( nullptr );
         is_lazy = true;
     }
 
