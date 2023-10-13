@@ -51,6 +51,7 @@ class section
     ELFIO_GET_ACCESS_DECL( Elf64_Off, offset );
 
     virtual const char* get_data() const                                   = 0;
+    virtual void        free_data() const                                  = 0;
     virtual void        set_data( const char* raw_data, Elf_Word size )    = 0;
     virtual void        set_data( const std::string& data )                = 0;
     virtual void        append_data( const char* raw_data, Elf_Word size ) = 0;
@@ -123,10 +124,19 @@ template <class T> class section_impl : public section
     //------------------------------------------------------------------------------
     const char* get_data() const override
     {
-        if ( is_lazy ) {
+        if ( !is_loaded ) {
             load_data();
         }
         return data.get();
+    }
+
+    //------------------------------------------------------------------------------
+    void free_data() const override
+    {
+        if ( is_lazy ) {
+            data.reset( nullptr );
+            is_loaded = false;
+        }
     }
 
     //------------------------------------------------------------------------------
@@ -248,15 +258,14 @@ template <class T> class section_impl : public section
         stream.seekg( ( *translator )[header_offset] );
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
-        if ( !is_lazy || is_compressed() ) {
-
+        if ( !( is_lazy || is_loaded ) ) {
             bool ret = load_data();
 
             if ( is_compressed() ) {
                 Elf_Xword size              = get_size();
                 Elf_Xword uncompressed_size = 0;
                 auto      decompressed_data = compression->inflate(
-                         data.get(), convertor, size, uncompressed_size );
+                    data.get(), convertor, size, uncompressed_size );
                 if ( decompressed_data != nullptr ) {
                     set_size( uncompressed_size );
                     data = std::move( decompressed_data );
@@ -271,7 +280,6 @@ template <class T> class section_impl : public section
 
     bool load_data() const
     {
-        is_lazy        = false;
         Elf_Xword size = get_size();
         if ( nullptr == data && SHT_NULL != get_type() &&
              SHT_NOBITS != get_type() && size < get_stream_size() ) {
@@ -296,6 +304,8 @@ template <class T> class section_impl : public section
                 data_size = 0;
             }
         }
+
+        is_loaded = true;
 
         return true;
     }
@@ -338,7 +348,7 @@ template <class T> class section_impl : public section
             Elf_Xword decompressed_size = get_size();
             Elf_Xword compressed_size   = 0;
             auto      compressed_ptr    = compression->deflate(
-                        data.get(), convertor, decompressed_size, compressed_size );
+                data.get(), convertor, decompressed_size, compressed_size );
             stream.write( compressed_ptr.get(), compressed_size );
         }
         else {
@@ -360,6 +370,7 @@ template <class T> class section_impl : public section
     bool                                         is_address_set = false;
     size_t                                       stream_size    = 0;
     mutable bool                                 is_lazy        = false;
+    mutable bool                                 is_loaded      = false;
 };
 
 } // namespace ELFIO

@@ -99,7 +99,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     const char* get_data() const override
     {
-        if ( is_lazy ) {
+        if ( !is_loaded ) {
             load_data();
         }
         return data.get();
@@ -108,8 +108,10 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     void free_data() const override
     {
-        data.reset( nullptr );
-        is_lazy = true;
+        if ( is_lazy ) {
+            data.reset( nullptr );
+            is_loaded = false;
+        }
     }
 
     //------------------------------------------------------------------------------
@@ -190,7 +192,7 @@ template <class T> class segment_impl : public segment
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
         is_offset_set = true;
 
-        if ( !is_lazy ) {
+        if ( !( is_lazy || is_loaded ) ) {
             return load_data();
         }
 
@@ -200,7 +202,6 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     bool load_data() const
     {
-        is_lazy = false;
         if ( PT_NULL == get_type() || 0 == get_file_size() ) {
             return true;
         }
@@ -222,6 +223,8 @@ template <class T> class segment_impl : public segment
                 return false;
             }
         }
+
+        is_loaded = true;
 
         return true;
     }
@@ -255,6 +258,7 @@ template <class T> class segment_impl : public segment
     size_t                          stream_size   = 0;
     bool                            is_offset_set = false;
     mutable bool                    is_lazy       = false;
+    mutable bool                    is_loaded     = false;
 };
 
 } // namespace ELFIO
