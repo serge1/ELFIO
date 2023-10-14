@@ -1110,7 +1110,7 @@ TEST( ELFIOTest, test_dynamic_64_3 )
     }
 }
 
-TEST( ELFIOTest, test_is_lazy )
+TEST( ELFIOTest, test_free_data )
 {
     bool is_lazy = false;
     do {
