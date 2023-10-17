@@ -108,7 +108,7 @@ int main( void )
     relocation_section_accessor rela( writer, rel_sec );
     // Add relocation entry (adjust address at offset 11)
     rela.add_entry( place_to_adjust, sym_to_adjust,
-                    (unsigned char)R_386_RELATIVE );
+                    (unsigned char)R_X86_64_32 );
 
     // Another method to add the same relocation entry at one step is:
     // rela.add_entry( stra, "msg",
