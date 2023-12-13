@@ -3,12 +3,12 @@ include(FetchContent)
 if(${CMAKE_VERSION} VERSION_LESS "3.24.0")
     FetchContent_Declare(
         googletest
-        URL https://github.com/google/googletest/archive/41fe6be7d738237d1ca53070bd6ddebb73190b58.zip
+        URL https://github.com/google/googletest/archive/530d5c8c84.zip
     )
 else()
     FetchContent_Declare(
         googletest
-        URL https://github.com/google/googletest/archive/41fe6be7d738237d1ca53070bd6ddebb73190b58.zip
+        URL https://github.com/google/googletest/archive/530d5c8c84.zip
         FIND_PACKAGE_ARGS NAMES GTest
         DOWNLOAD_EXTRACT_TIMESTAMP = TRUE
     )
