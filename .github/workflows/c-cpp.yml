@@ -16,6 +16,22 @@ jobs:
         os: [ubuntu-latest, ubuntu-20.04, windows-latest]
         build_type: [Release, Debug]
         cpp_compiler: [g++, clang++, cl]
+        include:
+          - os: windows-latest
+            cpp_compiler: cl
+            c_compiler: cl
+          - os: ubuntu-latest
+            cpp_compiler: g++
+            c_compiler: gcc
+          - os: ubuntu-latest
+            cpp_compiler: clang++
+            c_compiler: clang
+          - os: ubuntu-20.04
+            cpp_compiler: g++
+            c_compiler: gcc
+          - os: ubuntu-20.04
+            cpp_compiler: clang++
+            c_compiler: clang
         exclude:
           - os: windows-latest
             cpp_compiler: g++
@@ -40,6 +56,7 @@ jobs:
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DELFIO_BUILD_EXAMPLES=YES -DELFIO_BUILD_TESTS=YES
         -S ${{ github.workspace }}
