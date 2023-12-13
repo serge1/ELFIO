@@ -16,22 +16,14 @@ jobs:
         os: [ubuntu-latest, ubuntu-20.04, windows-latest]
         build_type: [Release, Debug]
         c_compiler: [gcc, clang, cl]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
         exclude:
           - os: windows-latest
             c_compiler: gcc
           - os: windows-latest
             c_compiler: clang
           - os: ubuntu-latest
+            c_compiler: cl
+          - os: ubuntu-20.04
             c_compiler: cl
 
     steps:
