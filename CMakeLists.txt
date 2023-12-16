@@ -140,7 +140,7 @@ if(IS_TOP_PROJECT)
     set(CPACK_PACKAGE_FILE_NAME "${_project_lower}-${_sys}")
     set(CPACK_SOURCE_PACKAGE_FILE_NAME "${_project_lower}-${PROJECT_VERSION}")
 
-    set(CPACK_SOURCE_IGNORE_FILES "/.git/;/.github/;/.vscode/;/build;/.clang-format;/.gitignore;/.travis.yml;/doc/images/;/doc/site;/doc/elfio.docx;/examples/sudo_gdb.sh;/tests")
+    set(CPACK_SOURCE_IGNORE_FILES "/.git.*;/.vs.*;/build;/.clang-format;/doc/site;/doc/elfio.docx;/doc/images/callouts/;/doc/images/colorsvg/;/doc/images/res2/;/doc/images/.*\.svg;/doc/images/.*\.gif;/doc/images/[^/]*\.png$;/doc/images/.*\.tif;/examples/sudo_gdb.sh;/tests")
 
     install(FILES ${CPACK_RESOURCE_FILE_README} ${CPACK_RESOURCE_FILE_LICENSE}
         DESTINATION share/docs/${PROJECT_NAME})
