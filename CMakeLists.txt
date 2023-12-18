@@ -47,7 +47,7 @@ target_include_directories(
 
 # If this is the top level project, add in logic to install elfio
 if(IS_TOP_PROJECT)
-    # Enable C++14 for examples and tests
+    # Enable C++17 for examples and tests
     if(ELFIO_BUILD_EXAMPLES OR ELFIO_BUILD_TESTS)
         set(CMAKE_CXX_STANDARD 17)
     endif()
