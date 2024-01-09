@@ -59,7 +59,7 @@ template <class S> class modinfo_section_accessor_template
     bool get_attribute( const std::string_view& field_name,
                         std::string&            value ) const
     {
-        for ( const auto [first, second] : content ) {
+        for ( const auto& [first, second] : content ) {
             if ( field_name == first ) {
                 value = second;
                 return true;
