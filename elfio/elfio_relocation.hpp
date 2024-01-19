@@ -96,26 +96,26 @@ template <class S> class relocation_section_accessor_template
 
         if ( elf_file.get_class() == ELFCLASS32 ) {
             if ( SHT_REL == relocation_section->get_type() ) {
-                generic_get_entry_rel<Elf32_Rel>( index, offset, symbol, type,
+                return generic_get_entry_rel<Elf32_Rel>( index, offset, symbol, type,
                                                   addend );
             }
             else if ( SHT_RELA == relocation_section->get_type() ) {
-                generic_get_entry_rela<Elf32_Rela>( index, offset, symbol, type,
+                return generic_get_entry_rela<Elf32_Rela>( index, offset, symbol, type,
                                                     addend );
             }
         }
         else {
             if ( SHT_REL == relocation_section->get_type() ) {
-                generic_get_entry_rel<Elf64_Rel>( index, offset, symbol, type,
+                return generic_get_entry_rel<Elf64_Rel>( index, offset, symbol, type,
                                                   addend );
             }
             else if ( SHT_RELA == relocation_section->get_type() ) {
-                generic_get_entry_rela<Elf64_Rela>( index, offset, symbol, type,
+                return generic_get_entry_rela<Elf64_Rela>( index, offset, symbol, type,
                                                     addend );
             }
         }
-
-        return true;
+        // Unknown relocation section type.
+        return false;
     }
 
     //------------------------------------------------------------------------------
@@ -319,7 +319,7 @@ template <class S> class relocation_section_accessor_template
 
     //------------------------------------------------------------------------------
     template <class T>
-    void generic_get_entry_rel( Elf_Xword   index,
+    bool generic_get_entry_rel( Elf_Xword   index,
                                 Elf64_Addr& offset,
                                 Elf_Word&   symbol,
                                 unsigned&   type,
@@ -327,6 +327,9 @@ template <class S> class relocation_section_accessor_template
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
 
+        if (relocation_section->get_entry_size() < sizeof( T ) ) {
+            return false;
+        }
         const T* pEntry = reinterpret_cast<const T*>(
             relocation_section->get_data() +
             index * relocation_section->get_entry_size() );
@@ -335,17 +338,22 @@ template <class S> class relocation_section_accessor_template
         symbol        = get_sym_and_type<T>::get_r_sym( tmp );
         type          = get_sym_and_type<T>::get_r_type( tmp );
         addend        = 0;
+        return true;
     }
 
     //------------------------------------------------------------------------------
     template <class T>
-    void generic_get_entry_rela( Elf_Xword   index,
+    bool generic_get_entry_rela( Elf_Xword   index,
                                  Elf64_Addr& offset,
                                  Elf_Word&   symbol,
                                  unsigned&   type,
                                  Elf_Sxword& addend ) const
     {
         const endianess_convertor& convertor = elf_file.get_convertor();
+
+        if (relocation_section->get_entry_size() < sizeof( T ) ) {
+            return false;
+        }
 
         const T* pEntry = reinterpret_cast<const T*>(
             relocation_section->get_data() +
@@ -355,6 +363,7 @@ template <class S> class relocation_section_accessor_template
         symbol        = get_sym_and_type<T>::get_r_sym( tmp );
         type          = get_sym_and_type<T>::get_r_type( tmp );
         addend        = convertor( pEntry->r_addend );
+        return true;
     }
 
     //------------------------------------------------------------------------------
