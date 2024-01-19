@@ -395,6 +395,9 @@ template <class S> class symbol_section_accessor_template
     template <class T> const T* generic_get_symbol_ptr( Elf_Xword index ) const
     {
         if ( 0 != symbol_section->get_data() && index < get_symbols_num() ) {
+            if ( symbol_section->get_entry_size() < sizeof( T ) ) {
+                return nullptr;
+            }
             const T* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
                 index * symbol_section->get_entry_size() );
