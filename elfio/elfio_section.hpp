@@ -280,14 +280,16 @@ template <class T> class section_impl : public section
 
     bool load_data() const
     {
+        Elf_Xword sh_offset =
+            ( *translator )[( *convertor )( header.sh_offset )];
         Elf_Xword size = get_size();
         if ( nullptr == data && SHT_NULL != get_type() &&
-             SHT_NOBITS != get_type() && size < get_stream_size() ) {
+             SHT_NOBITS != get_type() &&
+             ( sh_offset + size ) <= get_stream_size() ) {
             data.reset( new ( std::nothrow ) char[size_t( size ) + 1] );
 
             if ( ( 0 != size ) && ( nullptr != data ) ) {
-                pstream->seekg(
-                    ( *translator )[( *convertor )( header.sh_offset )] );
+                pstream->seekg( sh_offset );
                 pstream->read( data.get(), size );
                 if ( static_cast<Elf_Xword>( pstream->gcount() ) != size ) {
                     data = nullptr;

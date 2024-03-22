@@ -206,22 +206,23 @@ template <class T> class segment_impl : public segment
             return true;
         }
 
-        pstream->seekg( ( *translator )[( *convertor )( ph.p_offset )] );
-        Elf_Xword size = get_file_size();
+        Elf_Xword p_offset = ( *translator )[( *convertor )( ph.p_offset )];
+        Elf_Xword size     = get_file_size();
 
-        if ( size > get_stream_size() ) {
+        if ( p_offset + size > get_stream_size() ) {
             data = nullptr;
+            return false;
+        }
+
+        data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
+
+        pstream->seekg( p_offset );
+        if ( nullptr != data.get() && pstream->read( data.get(), size ) ) {
+            data.get()[size] = 0;
         }
         else {
-            data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
-
-            if ( nullptr != data.get() && pstream->read( data.get(), size ) ) {
-                data.get()[size] = 0;
-            }
-            else {
-                data = nullptr;
-                return false;
-            }
+            data = nullptr;
+            return false;
         }
 
         is_loaded = true;
