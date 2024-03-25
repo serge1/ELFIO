@@ -1149,3 +1149,74 @@ TEST( ELFIOTest, test_free_data )
         }
     } while ( is_lazy );
 }
+
+TEST( ELFIOTest, test_segment_resize_bug )
+{
+    elfio reader;
+    ASSERT_EQ( reader.load( "elf_examples/x86_64_static" ), true );
+    /*
+     * Binary built with:
+     *  echo "int main(){}" | gcc -xc -static -o x86_64_static -
+     *
+     * readelf -l x86_64_static:
+     *
+     * Program Headers:
+     *   Type           Offset             VirtAddr           PhysAddr
+     *                  FileSiz            MemSiz              Flags  Align
+     *   LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000
+     *                  0x0000000000000518 0x0000000000000518  R      0x1000
+     *   LOAD           0x0000000000001000 0x0000000000401000 0x0000000000401000
+     *                  0x00000000000936bd 0x00000000000936bd  R E    0x1000
+     *   LOAD           0x0000000000095000 0x0000000000495000 0x0000000000495000
+     *                  0x000000000002664d 0x000000000002664d  R      0x1000
+     *   LOAD           0x00000000000bc0c0 0x00000000004bd0c0 0x00000000004bd0c0
+     *                  0x0000000000005170 0x00000000000068c0  RW     0x1000
+     *   NOTE           0x0000000000000270 0x0000000000400270 0x0000000000400270
+     *                  0x0000000000000020 0x0000000000000020  R      0x8
+     *   NOTE           0x0000000000000290 0x0000000000400290 0x0000000000400290
+     *                  0x0000000000000044 0x0000000000000044  R      0x4
+     *   TLS            0x00000000000bc0c0 0x00000000004bd0c0 0x00000000004bd0c0
+     *                  0x0000000000000020 0x0000000000000060  R      0x8
+     *   GNU_PROPERTY   0x0000000000000270 0x0000000000400270 0x0000000000400270
+     *                  0x0000000000000020 0x0000000000000020  R      0x8
+     *   GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
+     *                  0x0000000000000000 0x0000000000000000  RW     0x10
+     *   GNU_RELRO      0x00000000000bc0c0 0x00000000004bd0c0 0x00000000004bd0c0
+     *                  0x0000000000002f40 0x0000000000002f40  R      0x1
+     * 
+     * Section to Segment mapping:
+     *  Segment Sections...
+     *   00     .note.gnu.property .note.gnu.build-id .note.ABI-tag .rela.plt 
+     *   01     .init .plt .text __libc_freeres_fn .fini 
+     *   02     .rodata .stapsdt.base .eh_frame .gcc_except_table 
+     *   03     .tdata .init_array .fini_array .data.rel.ro .got .got.plt .data __libc_subfreeres __libc_IO_vtables __libc_atexit .bss __libc_freeres_ptrs 
+     *   04     .note.gnu.property 
+     *   05     .note.gnu.build-id .note.ABI-tag 
+     *   06     .tdata .tbss 
+     *   07     .note.gnu.property 
+     *   08     
+     *   09     .tdata .init_array .fini_array .data.rel.ro .got 
+    */
+
+    auto checkElf = [](auto &reader) {
+        const auto &segments = reader.segments;
+        ASSERT_EQ( segments.size(), 10 );
+        checkSegment(segments[0], PT_LOAD, 0x400000, 0x400000, 0x518, 0x518, PF_R, 0x1000);
+        checkSegment(segments[1], PT_LOAD, 0x401000, 0x401000, 0x936bd, 0x936bd, PF_R | PF_X, 0x1000);
+        checkSegment(segments[2], PT_LOAD, 0x495000, 0x495000, 0x2664d, 0x2664d, PF_R, 0x1000);
+        checkSegment(segments[3], PT_LOAD, 0x4bd0c0, 0x4bd0c0, 0x5170, 0x68c0, PF_R | PF_W, 0x1000);
+        checkSegment(segments[4], PT_NOTE, 0x400270, 0x400270, 0x20, 0x20, PF_R, 0x8);
+        checkSegment(segments[5], PT_NOTE, 0x400290, 0x400290, 0x44, 0x44, PF_R, 0x4);
+        checkSegment(segments[6], PT_TLS, 0x4bd0c0, 0x4bd0c0, 0x20, 0x60, PF_R, 0x8);
+        checkSegment(segments[7], PT_GNU_PROPERTY, 0x400270, 0x400270, 0x20, 0x20, PF_R, 0x8);
+        checkSegment(segments[8], PT_GNU_STACK, 0, 0, 0, 0, PF_R | PF_W, 0x10);
+        checkSegment(segments[9], PT_GNU_RELRO, 0x4bd0c0, 0x4bd0c0, 0x2f40, 0x2f40, PF_R, 0x1);
+    };
+
+    checkElf(reader);
+
+    ASSERT_EQ( reader.save("elf_examples/x86_64_static.save"), true );
+    ASSERT_EQ( reader.load( "elf_examples/x86_64_static.save" ), true );
+
+    checkElf(reader);
+}
