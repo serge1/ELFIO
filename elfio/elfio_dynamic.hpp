@@ -139,7 +139,7 @@ template <class S> class dynamic_section_accessor_template
                                 Elf_Xword& tag,
                                 Elf_Xword& value ) const
     {
-        const endianess_convertor& convertor = elf_file.get_convertor();
+        const endianness_convertor& convertor = elf_file.get_convertor();
 
         // Check unusual case when dynamic section has no data
         if ( dynamic_section->get_data() == nullptr ||
@@ -203,7 +203,7 @@ template <class S> class dynamic_section_accessor_template
     template <class T>
     void generic_add_entry_dyn( Elf_Xword tag, Elf_Xword value )
     {
-        const endianess_convertor& convertor = elf_file.get_convertor();
+        const endianness_convertor& convertor = elf_file.get_convertor();
 
         T entry;
 

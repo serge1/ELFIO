@@ -263,7 +263,7 @@ class elfio
     ELFIO_HEADER_ACCESS_GET_SET( Elf_Half, section_name_str_index );
 
     //------------------------------------------------------------------------------
-    const endianess_convertor& get_convertor() const { return convertor; }
+    const endianness_convertor& get_convertor() const { return convertor; }
 
     //------------------------------------------------------------------------------
     Elf_Xword get_default_entry_size( Elf_Word section_type ) const
@@ -1076,7 +1076,7 @@ class elfio
     std::unique_ptr<elf_header>            header  = nullptr;
     std::vector<std::unique_ptr<section>>  sections_;
     std::vector<std::unique_ptr<segment>>  segments_;
-    endianess_convertor                    convertor;
+    endianness_convertor                    convertor;
     address_translator                     addr_translator;
     std::shared_ptr<compression_interface> compression = nullptr;
 

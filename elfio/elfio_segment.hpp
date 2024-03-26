@@ -76,7 +76,7 @@ template <class T> class segment_impl : public segment
 {
   public:
     //------------------------------------------------------------------------------
-    segment_impl( const endianess_convertor* convertor,
+    segment_impl( const endianness_convertor* convertor,
                   const address_translator*  translator )
         : convertor( convertor ), translator( translator )
     {
@@ -254,7 +254,7 @@ template <class T> class segment_impl : public segment
     Elf_Half                        index   = 0;
     mutable std::unique_ptr<char[]> data;
     std::vector<Elf_Half>           sections;
-    const endianess_convertor*      convertor     = nullptr;
+    const endianness_convertor*      convertor     = nullptr;
     const address_translator*       translator    = nullptr;
     size_t                          stream_size   = 0;
     bool                            is_offset_set = false;
