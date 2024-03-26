@@ -56,7 +56,7 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
-class endianess_convertor
+class endianness_convertor
 {
   public:
     //------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ class compression_interface
      */
     virtual std::unique_ptr<char[]>
     inflate( const char*                data,
-             const endianess_convertor* convertor,
+             const endianness_convertor* convertor,
              Elf_Xword                  compressed_size,
              Elf_Xword&                 uncompressed_size ) const = 0;
 
@@ -300,7 +300,7 @@ class compression_interface
      */
     virtual std::unique_ptr<char[]>
     deflate( const char*                data,
-             const endianess_convertor* convertor,
+             const endianness_convertor* convertor,
              Elf_Xword                  decompressed_size,
              Elf_Xword&                 compressed_size ) const = 0;
 };

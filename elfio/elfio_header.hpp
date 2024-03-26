@@ -75,7 +75,7 @@ template <class T> class elf_header_impl : public elf_header
 {
   public:
     //------------------------------------------------------------------------------
-    elf_header_impl( endianess_convertor*      convertor,
+    elf_header_impl( endianness_convertor*      convertor,
                      unsigned char             encoding,
                      const address_translator* translator )
         : convertor( convertor ), translator( translator )
@@ -144,7 +144,7 @@ template <class T> class elf_header_impl : public elf_header
 
   private:
     T                         header     = {};
-    endianess_convertor*      convertor  = nullptr;
+    endianness_convertor*      convertor  = nullptr;
     const address_translator* translator = nullptr;
 };
 
