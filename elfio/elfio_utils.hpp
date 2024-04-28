@@ -284,10 +284,10 @@ class compression_interface
      * @returns a smart pointer to the decompressed data.
      */
     virtual std::unique_ptr<char[]>
-    inflate( const char*                data,
+    inflate( const char*                 data,
              const endianness_convertor* convertor,
-             Elf_Xword                  compressed_size,
-             Elf_Xword&                 uncompressed_size ) const = 0;
+             Elf_Xword                   compressed_size,
+             Elf_Xword&                  uncompressed_size ) const = 0;
 
     /**
      * compresses a section
@@ -299,10 +299,10 @@ class compression_interface
      * @returns a smart pointer to the compressed data.
      */
     virtual std::unique_ptr<char[]>
-    deflate( const char*                data,
+    deflate( const char*                 data,
              const endianness_convertor* convertor,
-             Elf_Xword                  decompressed_size,
-             Elf_Xword&                 compressed_size ) const = 0;
+             Elf_Xword                   decompressed_size,
+             Elf_Xword&                  compressed_size ) const = 0;
 };
 
 } // namespace ELFIO

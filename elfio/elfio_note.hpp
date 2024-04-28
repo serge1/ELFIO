@@ -132,9 +132,9 @@ class note_section_accessor_template
     void process_section()
     {
         const endianness_convertor& convertor = elf_file.get_convertor();
-        const char*                data      = notes->get_data();
-        Elf_Xword                  size      = ( notes->*F_get_size )();
-        Elf_Xword                  current   = 0;
+        const char*                 data      = notes->get_data();
+        Elf_Xword                   size      = ( notes->*F_get_size )();
+        Elf_Xword                   current   = 0;
 
         note_start_positions.clear();
 

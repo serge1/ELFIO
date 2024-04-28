@@ -96,22 +96,22 @@ template <class S> class relocation_section_accessor_template
 
         if ( elf_file.get_class() == ELFCLASS32 ) {
             if ( SHT_REL == relocation_section->get_type() ) {
-                return generic_get_entry_rel<Elf32_Rel>( index, offset, symbol, type,
-                                                  addend );
+                return generic_get_entry_rel<Elf32_Rel>( index, offset, symbol,
+                                                         type, addend );
             }
             else if ( SHT_RELA == relocation_section->get_type() ) {
-                return generic_get_entry_rela<Elf32_Rela>( index, offset, symbol, type,
-                                                    addend );
+                return generic_get_entry_rela<Elf32_Rela>(
+                    index, offset, symbol, type, addend );
             }
         }
         else {
             if ( SHT_REL == relocation_section->get_type() ) {
-                return generic_get_entry_rel<Elf64_Rel>( index, offset, symbol, type,
-                                                  addend );
+                return generic_get_entry_rel<Elf64_Rel>( index, offset, symbol,
+                                                         type, addend );
             }
             else if ( SHT_RELA == relocation_section->get_type() ) {
-                return generic_get_entry_rela<Elf64_Rela>( index, offset, symbol, type,
-                                                    addend );
+                return generic_get_entry_rela<Elf64_Rela>(
+                    index, offset, symbol, type, addend );
             }
         }
         // Unknown relocation section type.
@@ -327,7 +327,7 @@ template <class S> class relocation_section_accessor_template
     {
         const endianness_convertor& convertor = elf_file.get_convertor();
 
-        if (relocation_section->get_entry_size() < sizeof( T ) ) {
+        if ( relocation_section->get_entry_size() < sizeof( T ) ) {
             return false;
         }
         const T* pEntry = reinterpret_cast<const T*>(
@@ -351,7 +351,7 @@ template <class S> class relocation_section_accessor_template
     {
         const endianness_convertor& convertor = elf_file.get_convertor();
 
-        if (relocation_section->get_entry_size() < sizeof( T ) ) {
+        if ( relocation_section->get_entry_size() < sizeof( T ) ) {
             return false;
         }
 

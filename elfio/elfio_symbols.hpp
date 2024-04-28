@@ -295,7 +295,7 @@ template <class S> class symbol_section_accessor_template
                       Elf_Half&          section_index,
                       unsigned char&     other ) const
     {
-        bool                       ret       = false;
+        bool                        ret       = false;
         const endianness_convertor& convertor = elf_file.get_convertor();
 
         Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
@@ -334,7 +334,7 @@ template <class S> class symbol_section_accessor_template
                           Elf_Half&          section_index,
                           unsigned char&     other ) const
     {
-        bool                       ret       = false;
+        bool                        ret       = false;
         const endianness_convertor& convertor = elf_file.get_convertor();
 
         uint32_t nbuckets    = *( (uint32_t*)hash_section->get_data() + 0 );
