@@ -819,6 +819,30 @@ constexpr unsigned R_386_IRELATIVE          = 42;
 constexpr unsigned R_386_GOT32X             = 43;
 constexpr unsigned R_X86_64_GNU_VTINHERIT   = 250;
 constexpr unsigned R_X86_64_GNU_VTENTRY     = 251;
+//   Arm
+constexpr unsigned R_ARM_NONE            = 0;
+constexpr unsigned R_ARM_PC24            = 1;
+constexpr unsigned R_ARM_ABS32           = 2;
+constexpr unsigned R_ARM_REL32           = 3;
+constexpr unsigned R_ARM_CALL            = 28;
+constexpr unsigned R_ARM_JUMP24          = 29;
+constexpr unsigned R_ARM_TARGET1         = 38;
+constexpr unsigned R_ARM_V4BX            = 40;
+constexpr unsigned R_ARM_PREL31          = 42;
+constexpr unsigned R_ARM_MOVW_ABS_NC     = 43;
+constexpr unsigned R_ARM_MOVT_ABS        = 44;
+constexpr unsigned R_ARM_MOVW_PREL_NC    = 45;
+constexpr unsigned R_ARM_MOVT_PREL       = 46;
+constexpr unsigned R_ARM_ALU_PC_G0_NC    = 57;
+constexpr unsigned R_ARM_ALU_PC_G1_NC    = 59;
+constexpr unsigned R_ARM_LDR_PC_G2       = 63;
+//   Arm thumb
+constexpr unsigned R_ARM_THM_CALL         = 10;
+constexpr unsigned R_ARM_THM_JUMP24       = 30;
+constexpr unsigned R_ARM_THM_MOVW_ABS_NC  = 47;
+constexpr unsigned R_ARM_THM_MOVT_ABS     = 48;
+constexpr unsigned R_ARM_THM_MOVW_PREL_NC = 49;
+constexpr unsigned R_ARM_THM_MOVT_PREL    = 50;
 //   AArch64
 constexpr unsigned R_AARCH64_NONE                         = 0;
 constexpr unsigned R_AARCH64_P32_ABS32                    = 1;
