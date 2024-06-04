@@ -285,7 +285,7 @@ template <class T> class section_impl : public section
         Elf_Xword size = get_size();
         if ( nullptr == data && SHT_NULL != get_type() &&
              SHT_NOBITS != get_type() &&
-             ( sh_offset + size ) <= get_stream_size() ) {
+             sh_offset <= get_stream_size() && size <= (get_stream_size() - sh_offset)) {
             data.reset( new ( std::nothrow ) char[size_t( size ) + 1] );
 
             if ( ( 0 != size ) && ( nullptr != data ) ) {
