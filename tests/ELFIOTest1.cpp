@@ -636,6 +636,8 @@ TEST( ELFIOTest, rearrange_local_symbols )
     sym_sec->set_entry_size( writer.get_default_entry_size( SHT_SYMTAB ) );
     symbol_section_accessor symbols( writer, sym_sec );
 
+    auto sym_num = symbols.get_symbols_num();
+
     name  = "Str1";
     bind  = STB_GLOBAL;
     value = 1;
@@ -676,6 +678,8 @@ TEST( ELFIOTest, rearrange_local_symbols )
     value = 8;
     symbols.add_symbol( str_writer, name.c_str(), value, size, bind, type,
                         other, section_index );
+
+    ASSERT_EQ( symbols.get_symbols_num(), sym_num + 9);
 
     symbols.arrange_local_symbols( [&]( Elf_Xword first, Elf_Xword ) -> void {
         static int counter = 0;
@@ -788,11 +792,15 @@ TEST( ELFIOTest, rearrange_local_symbols_with_reallocation )
     value         = 7;
     Elf_Word sym7 = symbols.add_symbol( str_writer, name.c_str(), value, size,
                                         bind, type, other, section_index );
+    auto     sym_num = symbols.get_symbols_num();
+
     name          = "Str8";
     bind          = STB_WEAK;
     value         = 8;
     Elf_Word sym8 = symbols.add_symbol( str_writer, name.c_str(), value, size,
                                         bind, type, other, section_index );
+
+    ASSERT_EQ( ( symbols.get_symbols_num() ), ( sym_num + 1 ) );
 
     section* rel_sec = writer.sections.add( ".rel.text" );
     rel_sec->set_type( SHT_REL );

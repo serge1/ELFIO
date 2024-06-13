@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/ELFIOTest",
             "args": [
-                "--gtest_filter=ELFIOTest.load32",
+                //"--gtest_filter=ELFIOTest.load32",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build/tests",
@@ -24,7 +24,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "ELFIO Test build",
+            //"preLaunchTask": "ELFIO Test build",
             "miDebuggerPath": "/usr/bin/gdb"
         },
         {

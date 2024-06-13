@@ -120,10 +120,9 @@ template <class S> class symbol_section_accessor_template
             for ( Elf_Xword i = 0; !ret && i < get_symbols_num(); i++ ) {
                 std::string symbol_name;
                 if ( get_symbol( i, symbol_name, value, size, bind, type,
-                                 section_index, other ) ) {
-                    if ( symbol_name == name ) {
-                        ret = true;
-                    }
+                                 section_index, other ) &&
+                     ( symbol_name == name ) ) {
+                    ret = true;
                 }
             }
         }
@@ -346,7 +345,7 @@ template <class S> class symbol_section_accessor_template
         bloom_size           = convertor( bloom_size );
         bloom_shift          = convertor( bloom_shift );
 
-        T* bloom_filter =
+        auto* bloom_filter =
             (T*)( hash_section->get_data() + 4 * sizeof( uint32_t ) );
 
         uint32_t hash = elf_gnu_hash( (const unsigned char*)name.c_str() );
@@ -377,13 +376,14 @@ template <class S> class symbol_section_accessor_template
                 if ( ( chain_hash >> 1 ) == ( hash >> 1 ) &&
                      get_symbol( chain_index + symoffset, symname, value, size,
                                  bind, type, section_index, other ) &&
-                     name == symname ) {
+                     ( name == symname ) ) {
                     ret = true;
                     break;
                 }
 
                 if ( chain_hash & 1 )
                     break;
+
                 chain_hash = convertor( chains[++chain_index] );
             }
         }
@@ -398,7 +398,7 @@ template <class S> class symbol_section_accessor_template
             if ( symbol_section->get_entry_size() < sizeof( T ) ) {
                 return nullptr;
             }
-            const T* pSym = reinterpret_cast<const T*>(
+            const auto* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
                 index * symbol_section->get_entry_size() );
 
@@ -443,7 +443,7 @@ template <class S> class symbol_section_accessor_template
 
         if ( nullptr != symbol_section->get_data() &&
              index < get_symbols_num() ) {
-            const T* pSym = reinterpret_cast<const T*>(
+            const auto* pSym = reinterpret_cast<const T*>(
                 symbol_section->get_data() +
                 index * symbol_section->get_entry_size() );
 
