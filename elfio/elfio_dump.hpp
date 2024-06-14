@@ -705,10 +705,10 @@ class dump
             << std::endl
             << "  Version:    " << str_version( reader.get_version() )
             << std::endl
-            << "  Entry:      "
-            << "0x" << std::hex << reader.get_entry() << std::endl
-            << "  Flags:      "
-            << "0x" << std::hex << reader.get_flags() << std::endl
+            << "  Entry:      " << "0x" << std::hex << reader.get_entry()
+            << std::endl
+            << "  Flags:      " << "0x" << std::hex << reader.get_flags()
+            << std::endl
             << std::endl;
     }
 
@@ -818,6 +818,18 @@ class dump
         for ( Elf_Half i = 0; i < n; ++i ) {
             const segment* seg = reader.segments[i];
             segment_header( out, i, seg, reader.get_class() );
+        }
+
+        out << std::endl;
+        for ( Elf_Half i = 0; i < n; ++i ) {
+            out << "[" << i << "]" << " ";
+            const segment* seg = reader.segments[i];
+            for ( Elf_Half j = 0; j < seg->get_sections_num(); j++ ) {
+                const section* sec =
+                    reader.sections[seg->get_section_index_at( j )];
+                out << sec->get_name() << " ";
+            }
+            out << std::endl;
         }
 
         out << std::endl;
