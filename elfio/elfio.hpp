@@ -319,15 +319,15 @@ class elfio
                 const section* b = sections[j];
                 if (   ( ( a->get_type() & SHT_NOBITS) == 0 )
                     && ( ( b->get_type() & SHT_NOBITS) == 0 )
-                    && ( a->get_size() > 0 )
-                    && ( b->get_size() > 0 )
-                    && ( a->get_offset() > 0 )
-                    && ( b->get_offset() > 0 )
-                    && ( is_offset_in_section( a->get_offset(), b )
-                      || is_offset_in_section( a->get_offset()+a->get_size()-1, b )
-                      || is_offset_in_section( b->get_offset(), a )
-                      || is_offset_in_section( b->get_offset()+b->get_size()-1, a ) ) ) {
-                        errors += "Sections " + a->get_name() + " and " + b->get_name() + " overlap in file\n";
+                      && ( a->get_size() > 0 )
+                      && ( b->get_size() > 0 )
+                      && ( a->get_offset() > 0 )
+                      && ( b->get_offset() > 0 )
+                      && ( is_offset_in_section( a->get_offset(), b )
+                        || is_offset_in_section( a->get_offset()+a->get_size()-1, b )
+                        || is_offset_in_section( b->get_offset(), a )
+                        || is_offset_in_section( b->get_offset()+b->get_size()-1, a ) ) ) {
+                            errors += "Sections " + a->get_name() + " and " + b->get_name() + " overlap in file\n";
                 }
             }
         }
@@ -595,6 +595,14 @@ class elfio
                                            segVEndAddr )
                          : is_sect_in_seg( psec->get_offset(), psec->get_size(),
                                            segBaseOffset, segEndOffset ) ) {
+
+                    // If it is a TLS segment, add TLS sections only and vice versa
+                    if ( ( ( seg->get_type() == PT_TLS ) &&
+                           ( ( psec->get_flags() & SHF_TLS ) != SHF_TLS ) ) ||
+                         ( ( ( psec->get_flags() & SHF_TLS ) == SHF_TLS ) &&
+                           ( seg->get_type() != PT_TLS ) ) )
+                        continue;
+
                     // Alignment of segment shall not be updated, to preserve original value
                     // It will be re-calculated on saving.
                     seg->add_section_index( psec->get_index(), 0 );
@@ -796,9 +804,9 @@ class elfio
                 Elf64_Off cur_page_alignment = current_file_pos % align;
                 Elf64_Off req_page_alignment =
                     seg->get_virtual_address() % align;
-                Elf64_Off error = req_page_alignment - cur_page_alignment;
+                Elf64_Off adjustment = req_page_alignment - cur_page_alignment;
 
-                current_file_pos += ( seg->get_align() + error ) % align;
+                current_file_pos += ( seg->get_align() + adjustment ) % align;
                 seg_start_pos = current_file_pos;
             }
             else if ( seg->get_sections_num() > 0 ) {
@@ -1076,7 +1084,7 @@ class elfio
     std::unique_ptr<elf_header>            header  = nullptr;
     std::vector<std::unique_ptr<section>>  sections_;
     std::vector<std::unique_ptr<segment>>  segments_;
-    endianness_convertor                    convertor;
+    endianness_convertor                   convertor;
     address_translator                     addr_translator;
     std::shared_ptr<compression_interface> compression = nullptr;
 
