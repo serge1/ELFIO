@@ -1009,17 +1009,17 @@ class mock_wiiu_compression : public compression_interface
 {
   public:
     std::unique_ptr<char[]>
-    inflate( const char*                data,
+    inflate( const char*                 data,
              const endianness_convertor* convertor,
-             Elf_Xword                  compressed_size,
-             Elf_Xword&                 uncompressed_size ) const override
+             Elf_Xword                   compressed_size,
+             Elf_Xword&                  uncompressed_size ) const override
     {
         uncompressed_size = 2 * compressed_size;
         return std::unique_ptr<char[]>(
             new ( std::nothrow ) char[uncompressed_size + 1] );
     }
 
-    std::unique_ptr<char[]> deflate( const char*                data,
+    std::unique_ptr<char[]> deflate( const char*                 data,
                                      const endianness_convertor* convertor,
                                      Elf_Xword  decompressed_size,
                                      Elf_Xword& compressed_size ) const override
@@ -1198,7 +1198,7 @@ TEST( ELFIOTest, test_segment_resize_bug )
      *   09     .tdata .init_array .fini_array .data.rel.ro .got 
     */
 
-    auto checkElf = [](auto &reader) {
+auto checkElf = [](auto &reader) {
         const auto &segments = reader.segments;
         ASSERT_EQ( segments.size(), 10 );
         checkSegment(segments[0], PT_LOAD, 0x400000, 0x400000, 0x518, 0x518, PF_R, 0x1000);
@@ -1213,9 +1213,9 @@ TEST( ELFIOTest, test_segment_resize_bug )
         checkSegment(segments[9], PT_GNU_RELRO, 0x4bd0c0, 0x4bd0c0, 0x2f40, 0x2f40, PF_R, 0x1);
     };
 
-    checkElf(reader);
+    checkElf( reader );
 
-    ASSERT_EQ( reader.save("elf_examples/x86_64_static.save"), true );
+    ASSERT_EQ( reader.save( "elf_examples/x86_64_static.save" ), true );
     ASSERT_EQ( reader.load( "elf_examples/x86_64_static.save" ), true );
 
     // Comment out the assertion. The question is - how the original segment size was calculated

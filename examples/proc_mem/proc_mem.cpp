@@ -68,8 +68,8 @@ int main( int argc, char** argv )
     std::ifstream proc_maps( std::string( "/proc/" ) + argv[1] + "/maps" );
     if ( !proc_maps ) {
         std::cout << "Can't open "
-                  << std::string( "/proc/" ) + argv[1] + "/maps"
-                  << " file" << std::endl;
+                  << std::string( "/proc/" ) + argv[1] + "/maps" << " file"
+                  << std::endl;
         return 2;
     }
 
