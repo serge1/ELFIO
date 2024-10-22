@@ -174,6 +174,88 @@ using versym_r_section_accessor = versym_r_section_accessor_template<section>;
 using const_versym_r_section_accessor =
     versym_r_section_accessor_template<const section>;
 
+//------------------------------------------------------------------------------
+template <class S> class versym_d_section_accessor_template
+{
+  public:
+    //------------------------------------------------------------------------------
+    versym_d_section_accessor_template( const elfio& elf_file,
+                                        S*           versym_d_section )
+        : elf_file( elf_file ), versym_d_section( versym_d_section ),
+          entries_num( 0 )
+    {
+        // Find .dynamic section
+        const section* dynamic_section = elf_file.sections[".dynamic"];
+
+        if ( dynamic_section == nullptr ) {
+            return;
+        }
+
+        const_dynamic_section_accessor dynamic_section_acc( elf_file,
+                                                            dynamic_section );
+        Elf_Xword dyn_sec_num = dynamic_section_acc.get_entries_num();
+        for ( Elf_Xword i = 0; i < dyn_sec_num; ++i ) {
+            Elf_Xword   tag;
+            Elf_Xword   value;
+            std::string str;
+
+            if ( dynamic_section_acc.get_entry( i, tag, value, str ) &&
+                 tag == DT_VERDEFNUM ) {
+                entries_num = (Elf_Word)value;
+                break;
+            }
+        }
+    }
+
+    //------------------------------------------------------------------------------
+    Elf_Word get_entries_num() const { return entries_num; }
+
+    //------------------------------------------------------------------------------
+    bool get_entry( Elf_Word     no,
+                    Elf_Half&    flags,
+                    Elf_Half&    version_index,
+                    Elf_Word&    hash,
+                    std::string& dep_name ) const
+    {
+        if ( versym_d_section == nullptr || ( no >= get_entries_num() ) ) {
+            return false;
+        }
+
+        const_string_section_accessor string_section_acc(
+            elf_file.sections[versym_d_section->get_link()] );
+
+        Elfxx_Verdef*  verdef = (Elfxx_Verdef*)versym_d_section->get_data();
+        Elfxx_Verdaux* verdaux =
+            (Elfxx_Verdaux*)( (char*)verdef + verdef->vd_aux );
+        for ( Elf_Word i = 0; i < no; ++i ) {
+            verdef  = (Elfxx_Verdef*)( (char*)verdef + verdef->vd_next );
+            verdaux = (Elfxx_Verdaux*)( (char*)verdef + verdef->vd_aux );
+        }
+
+        // verdef->vd_version should always be 1
+        // see https://refspecs.linuxfoundation.org/LSB_3.0.0/LSB-PDA/LSB-PDA.junk/symversion.html#VERDEFENTRIES
+        // verdef->vd_cnt should always be 1.
+        // see https://maskray.me/blog/2020-11-26-all-about-symbol-versioning
+
+        flags         = verdef->vd_flags;
+        version_index = verdef->vd_ndx;
+        hash          = verdef->vd_hash;
+        dep_name      = string_section_acc.get_string( verdaux->vda_name );
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------------
+  private:
+    const elfio& elf_file;
+    S*           versym_d_section = nullptr;
+    Elf_Word     entries_num      = 0;
+};
+
+using versym_d_section_accessor = versym_d_section_accessor_template<section>;
+using const_versym_d_section_accessor =
+    versym_d_section_accessor_template<const section>;
+
 } // namespace ELFIO
 
 #endif // ELFIO_VERSYM_HPP

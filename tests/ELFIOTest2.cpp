@@ -417,6 +417,78 @@ TEST( ELFIOTest, gnu_version_64_le )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+TEST( ELFIOTest, gnu_version_d_64_le )
+{
+    elfio reader;
+    // Load ELF data
+
+    ASSERT_EQ( reader.load( "elf_examples/libversion_d.so" ), true );
+
+    section*                      dynsym = reader.sections[".dynsym"];
+    const_symbol_section_accessor dynsym_acc( reader, dynsym );
+
+    section*                      gnu_version = reader.sections[".gnu.version"];
+    const_versym_section_accessor gnu_version_arr( gnu_version );
+
+    const section* gnu_version_d = reader.sections[".gnu.version_d"];
+    const_versym_d_section_accessor gnu_version_d_arr( reader, gnu_version_d );
+
+    section* dynstr = reader.sections[".dynstr"];
+
+    EXPECT_EQ( gnu_version_d->get_link(), dynstr->get_index() );
+
+    EXPECT_EQ( dynsym_acc.get_symbols_num(),
+               gnu_version_arr.get_entries_num() );
+
+    EXPECT_EQ( dynsym_acc.get_symbols_num(), 10 );
+
+    EXPECT_EQ( gnu_version_d_arr.get_entries_num(), 3 );
+
+    auto v_check = [&]( const std::string& symbol,
+                        const std::string& vername ) -> void {
+        std::string   name;
+        Elf64_Addr    value;
+        Elf_Xword     size;
+        unsigned char bind;
+        unsigned char type;
+        Elf_Half      section_index;
+        unsigned char other;
+        Elf64_Half    verindex;
+
+        for ( Elf64_Word i = 0; i < dynsym_acc.get_symbols_num(); i++ ) {
+            ASSERT_EQ( dynsym_acc.get_symbol( i, name, value, size, bind, type,
+                                              section_index, other ),
+                       true );
+
+            Elf64_Half vi;
+            ASSERT_EQ( gnu_version_arr.get_entry( i, vi ), true );
+            if ( name == symbol ) {
+                verindex = vi;
+            }
+        }
+        ASSERT_NE( verindex, 0 );
+
+        for ( Elf64_Word i = 0; i < gnu_version_d_arr.get_entries_num(); i++ ) {
+            Elf_Half    flags;
+            Elf_Half    version_index;
+            Elf_Word    hash;
+            std::string dep_name;
+            ASSERT_EQ( gnu_version_d_arr.get_entry( i, flags, version_index,
+                                                    hash, dep_name ),
+                       true );
+            if ( version_index == verindex ) {
+                EXPECT_EQ( flags, 0 );
+                EXPECT_EQ( dep_name, vername );
+                return;
+            }
+        }
+        FAIL() << "version entry is not found";
+    };
+    v_check( "_Z20print_hello_world_v1v", "HELLO_1.0" );
+    v_check( "_Z20print_hello_world_v2v", "HELLO_2.0" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // TEST( ELFIOTest, gnu_version_64_le_modify )
 // {
 //     elfio reader;

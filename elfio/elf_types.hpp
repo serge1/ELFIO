@@ -1349,6 +1349,23 @@ struct Elf64_Dyn
     } d_un;
 };
 
+struct Elfxx_Verdef
+{
+    Elf_Half vd_version;
+    Elf_Half vd_flags;
+    Elf_Half vd_ndx;
+    Elf_Half vd_cnt;
+    Elf_Word vd_hash;
+    Elf_Word vd_aux;
+    Elf_Word vd_next;
+};
+
+struct Elfxx_Verdaux
+{
+    Elf_Word vda_name;
+    Elf_Word vda_next;
+};
+
 struct Elfxx_Verneed
 {
     Elf_Half vn_version;
