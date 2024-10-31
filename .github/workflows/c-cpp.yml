@@ -64,10 +64,6 @@ jobs:
             cpp_compiler: cl
           - os: macos-13
             cpp_compiler: cl
-          - os: macos-13
-            cpp_compiler: cl
-          - os: macos-15
-            cpp_compiler: cl
           - os: macos-15
             cpp_compiler: cl
 
