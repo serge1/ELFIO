@@ -138,8 +138,12 @@ class elfio
     bool load( const std::string& file_name, bool is_lazy = false )
     {
         pstream = std::make_unique<std::ifstream>();
+        if ( !pstream ) {
+            return false;
+        }
+
         pstream->open( file_name.c_str(), std::ios::in | std::ios::binary );
-        if ( pstream == nullptr || !*pstream ) {
+        if ( !*pstream ) {
             return false;
         }
 
