@@ -7,9 +7,6 @@
 [![Documentation](https://img.shields.io/badge/doc-download-brightgreen)](http://elfio.sourceforge.net/elfio.pdf)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/serge1/ELFIO/blob/master/COPYING)
 
-ELFIO is a header-only C++ library intended for reading and generating
-files in the ELF binary format. It is used as a standalone library - it is not
-dependent on any other product or project. Adhering to ISO C++, it compiles on
-a wide variety of architectures and compilers.
+ELFIO is a lightweight, header-only C++ library designed for reading and creating ELF binary files. Completely standalone, it requires no dependencies and integrates seamlessly into any project. Built to ISO C++ standards, it ensures compatibility across a wide range of architectures and compilers.
 
-The full library documentation can be found in *[ELFIO - Tutorial and User Manual](http://elfio.sourceforge.net/elfio.pdf)*.
+Comprehensive library documentation is available in the *[ELFIO - Tutorial and User Manual](http://elfio.sourceforge.net/elfio.pdf)*.
