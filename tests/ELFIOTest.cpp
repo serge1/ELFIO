@@ -1016,7 +1016,7 @@ class mock_wiiu_compression : public compression_interface
     {
         uncompressed_size = 2 * compressed_size;
         return std::unique_ptr<char[]>(
-            new ( std::nothrow ) char[uncompressed_size + 1] );
+            new ( std::nothrow ) char[static_cast<size_t>(uncompressed_size) + 1] );
     }
 
     std::unique_ptr<char[]> deflate( const char*                 data,
@@ -1026,7 +1026,7 @@ class mock_wiiu_compression : public compression_interface
     {
         compressed_size = decompressed_size / 2;
         return std::unique_ptr<char[]>(
-            new ( std::nothrow ) char[compressed_size + 1] );
+            new ( std::nothrow ) char[static_cast<size_t>(compressed_size) + 1] );
     }
 };
 
@@ -1131,7 +1131,7 @@ TEST( ELFIOTest, test_free_data )
             sec->free_data();
 
             EXPECT_TRUE( 0 == std::memcmp( data.data(), sec->get_data(),
-                                           sec->get_size() ) );
+                                           static_cast<size_t>(sec->get_size()) ) );
         }
 
         for ( const auto& seg : reader.segments ) {
@@ -1145,7 +1145,7 @@ TEST( ELFIOTest, test_free_data )
             seg->free_data();
 
             EXPECT_TRUE( 0 == std::memcmp( data.data(), seg->get_data(),
-                                           seg->get_file_size() ) );
+                                           static_cast<size_t>(seg->get_file_size()) ) );
         }
     } while ( is_lazy );
 }

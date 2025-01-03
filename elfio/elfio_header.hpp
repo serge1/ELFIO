@@ -27,12 +27,30 @@ THE SOFTWARE.
 
 namespace ELFIO {
 
+/**
+ * @class elf_header
+ * @brief Abstract base class for ELF header.
+ */
 class elf_header
 {
   public:
+    /**
+     * @brief Virtual destructor.
+     */
     virtual ~elf_header() = default;
 
-    virtual bool load( std::istream& stream )       = 0;
+    /**
+     * @brief Load ELF header from stream.
+     * @param stream Input stream.
+     * @return True if successful, false otherwise.
+     */
+    virtual bool load( std::istream& stream ) = 0;
+
+    /**
+     * @brief Save ELF header to stream.
+     * @param stream Output stream.
+     * @return True if successful, false otherwise.
+     */
     virtual bool save( std::ostream& stream ) const = 0;
 
     // ELF header functions
@@ -57,6 +75,10 @@ class elf_header
     ELFIO_GET_SET_ACCESS_DECL( Elf_Half, section_name_str_index );
 };
 
+/**
+ * @struct elf_header_impl_types
+ * @brief Template specialization for ELF header implementation types.
+ */
 template <class T> struct elf_header_impl_types;
 template <> struct elf_header_impl_types<Elf32_Ehdr>
 {
@@ -71,10 +93,19 @@ template <> struct elf_header_impl_types<Elf64_Ehdr>
     static const unsigned char file_class = ELFCLASS64;
 };
 
+/**
+ * @class elf_header_impl
+ * @brief Template class for ELF header implementation.
+ */
 template <class T> class elf_header_impl : public elf_header
 {
   public:
-    //------------------------------------------------------------------------------
+    /**
+     * @brief Constructor.
+     * @param convertor Endianness convertor.
+     * @param encoding Encoding type.
+     * @param translator Address translator.
+     */
     elf_header_impl( endianness_convertor*     convertor,
                      unsigned char             encoding,
                      const address_translator* translator )
@@ -99,7 +130,11 @@ template <class T> class elf_header_impl : public elf_header
         header.e_shentsize = ( *convertor )( header.e_shentsize );
     }
 
-    //------------------------------------------------------------------------------
+    /**
+     * @brief Load ELF header from stream.
+     * @param stream Input stream.
+     * @return True if successful, false otherwise.
+     */
     bool load( std::istream& stream ) override
     {
         stream.seekg( ( *translator )[0] );
@@ -108,7 +143,11 @@ template <class T> class elf_header_impl : public elf_header
         return ( stream.gcount() == sizeof( header ) );
     }
 
-    //------------------------------------------------------------------------------
+    /**
+     * @brief Save ELF header to stream.
+     * @param stream Output stream.
+     * @return True if successful, false otherwise.
+     */
     bool save( std::ostream& stream ) const override
     {
         stream.seekp( ( *translator )[0] );

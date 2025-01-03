@@ -56,16 +56,23 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
+//! \class endianness_convertor
+//! \brief Class for converting endianness of data
 class endianness_convertor
 {
   public:
     //------------------------------------------------------------------------------
+    //! \brief Setup the endianness convertor
+    //! \param elf_file_encoding The encoding of the ELF file
     void setup( unsigned char elf_file_encoding )
     {
         need_conversion = ( elf_file_encoding != get_host_encoding() );
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert a 64-bit unsigned integer
+    //! \param value The value to convert
+    //! \return The converted value
     uint64_t operator()( uint64_t value ) const
     {
         if ( !need_conversion ) {
@@ -84,6 +91,9 @@ class endianness_convertor
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert a 64-bit signed integer
+    //! \param value The value to convert
+    //! \return The converted value
     int64_t operator()( int64_t value ) const
     {
         if ( !need_conversion ) {
@@ -93,6 +103,9 @@ class endianness_convertor
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert a 32-bit unsigned integer
+    //! \param value The value to convert
+    //! \return The converted value
     uint32_t operator()( uint32_t value ) const
     {
         if ( !need_conversion ) {
@@ -106,6 +119,9 @@ class endianness_convertor
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert a 32-bit signed integer
+    //! \param value The value to convert
+    //! \return The converted value
     int32_t operator()( int32_t value ) const
     {
         if ( !need_conversion ) {
@@ -115,6 +131,9 @@ class endianness_convertor
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert a 16-bit unsigned integer
+    //! \param value The value to convert
+    //! \return The converted value
     uint16_t operator()( uint16_t value ) const
     {
         if ( !need_conversion ) {
@@ -127,6 +146,9 @@ class endianness_convertor
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert a 16-bit signed integer
+    //! \param value The value to convert
+    //! \return The converted value
     int16_t operator()( int16_t value ) const
     {
         if ( !need_conversion ) {
@@ -136,14 +158,22 @@ class endianness_convertor
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert an 8-bit signed integer
+    //! \param value The value to convert
+    //! \return The converted value
     int8_t operator()( int8_t value ) const { return value; }
 
     //------------------------------------------------------------------------------
+    //! \brief Convert an 8-bit unsigned integer
+    //! \param value The value to convert
+    //! \return The converted value
     uint8_t operator()( uint8_t value ) const { return value; }
 
     //------------------------------------------------------------------------------
   private:
     //------------------------------------------------------------------------------
+    //! \brief Get the host encoding
+    //! \return The host encoding
     unsigned char get_host_encoding() const
     {
         static const int tmp = 1;
@@ -156,24 +186,35 @@ class endianness_convertor
     }
 
     //------------------------------------------------------------------------------
-    bool need_conversion = false;
+    bool need_conversion = false; //!< Flag indicating if conversion is needed
 };
 
 //------------------------------------------------------------------------------
+//! \struct address_translation
+//! \brief Structure for address translation
 struct address_translation
 {
+    //------------------------------------------------------------------------------
+    //! \brief Constructor
+    //! \param start The start address
+    //! \param size The size of the address range
+    //! \param mapped_to The mapped address
     address_translation( uint64_t start, uint64_t size, uint64_t mapped_to )
         : start( start ), size( size ), mapped_to( mapped_to ){};
-    std::streampos start;
-    std::streampos size;
-    std::streampos mapped_to;
+    std::streampos start;     //!< Start address
+    std::streampos size;      //!< Size of the address range
+    std::streampos mapped_to; //!< Mapped address
 };
 
 //------------------------------------------------------------------------------
+//! \class address_translator
+//! \brief Class for translating addresses
 class address_translator
 {
   public:
     //------------------------------------------------------------------------------
+    //! \brief Set address translation
+    //! \param addr_trans Vector of address translations
     void set_address_translation( std::vector<address_translation>& addr_trans )
     {
         addr_translations = addr_trans;
@@ -186,6 +227,9 @@ class address_translator
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Translate an address
+    //! \param value The address to translate
+    //! \return The translated address
     std::streampos operator[]( std::streampos value ) const
     {
         if ( addr_translations.empty() ) {
@@ -201,13 +245,20 @@ class address_translator
         return value;
     }
 
+    //------------------------------------------------------------------------------
+    //! \brief Check if the address translator is empty
+    //! \return True if empty, false otherwise
     bool empty() const { return addr_translations.empty(); }
 
   private:
-    std::vector<address_translation> addr_translations;
+    std::vector<address_translation>
+        addr_translations; //!< Vector of address translations
 };
 
 //------------------------------------------------------------------------------
+//! \brief Calculate the ELF hash of a name
+//! \param name The name to hash
+//! \return The ELF hash
 inline uint32_t elf_hash( const unsigned char* name )
 {
     uint32_t h = 0;
@@ -223,6 +274,9 @@ inline uint32_t elf_hash( const unsigned char* name )
 }
 
 //------------------------------------------------------------------------------
+//! \brief Calculate the GNU hash of a name
+//! \param s The name to hash
+//! \return The GNU hash
 inline uint32_t elf_gnu_hash( const unsigned char* s )
 {
     uint32_t h = 0x1505;
@@ -232,6 +286,9 @@ inline uint32_t elf_gnu_hash( const unsigned char* s )
 }
 
 //------------------------------------------------------------------------------
+//! \brief Convert a value to a hexadecimal string
+//! \param value The value to convert
+//! \return The hexadecimal string
 inline std::string to_hex_string( uint64_t value )
 {
     std::string str;
@@ -250,6 +307,9 @@ inline std::string to_hex_string( uint64_t value )
 }
 
 //------------------------------------------------------------------------------
+//! \brief Adjust the size of a stream
+//! \param stream The stream to adjust
+//! \param offset The offset to adjust to
 inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 {
     stream.seekp( 0, std::ios_base::end );
@@ -261,43 +321,44 @@ inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 }
 
 //------------------------------------------------------------------------------
+//! \brief Get the length of a string with a maximum length
+//! \param s The string
+//! \param n The maximum length
+//! \return The length of the string
 inline static size_t strnlength( const char* s, size_t n )
 {
     auto found = (const char*)std::memchr( s, '\0', n );
     return found ? (size_t)( found - s ) : n;
 }
 
-/**
- * Consumers should write an implementation of this class and pass an instance of it to the ELFIO::elfio constructor.
- */
+//------------------------------------------------------------------------------
+//! \class compression_interface
+//! \brief Interface for compression and decompression
 class compression_interface
 {
   public:
     virtual ~compression_interface() = default;
-    /**
-     * decompresses a compressed section
-     *
-     * @param data the buffer of compressed data
-     * @param endianness_convertor pointer to an endianness_convertor instance, used to convert numbers to/from the target endianness.
-     * @param compressed_size the size of the data buffer, in bytes
-     * @param decompressed_size a reference to a variable where the decompressed buffer size will be stored.
-     * @returns a smart pointer to the decompressed data.
-     */
+
+    //------------------------------------------------------------------------------
+    //! \brief Decompress a compressed section
+    //! \param data The buffer of compressed data
+    //! \param convertor Pointer to an endianness convertor instance
+    //! \param compressed_size The size of the compressed data buffer
+    //! \param uncompressed_size Reference to a variable to store the decompressed buffer size
+    //! \return A smart pointer to the decompressed data
     virtual std::unique_ptr<char[]>
     inflate( const char*                 data,
              const endianness_convertor* convertor,
              Elf_Xword                   compressed_size,
              Elf_Xword&                  uncompressed_size ) const = 0;
 
-    /**
-     * compresses a section
-     *
-     * @param data the buffer of uncompressed data
-     * @param endianness_convertor pointer to an endianness_convertor instance, used to convert numbers to/from the target endianness.
-     * @param decompressed_size the size of the data buffer, in bytes
-     * @param compressed_size a reference to a variable where the compressed buffer size will be stored.
-     * @returns a smart pointer to the compressed data.
-     */
+    //------------------------------------------------------------------------------
+    //! \brief Compress a section
+    //! \param data The buffer of uncompressed data
+    //! \param convertor Pointer to an endianness convertor instance
+    //! \param decompressed_size The size of the uncompressed data buffer
+    //! \param compressed_size Reference to a variable to store the compressed buffer size
+    //! \return A smart pointer to the compressed data
     virtual std::unique_ptr<char[]>
     deflate( const char*                 data,
              const endianness_convertor* convertor,

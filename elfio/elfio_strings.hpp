@@ -30,23 +30,31 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
+//! \class string_section_accessor_template
+//! \brief Class for accessing string section data
 template <class S> class string_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
+    //! \brief Constructor
+    //! \param section Pointer to the section
     explicit string_section_accessor_template( S* section )
         : string_section( section )
     {
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Get a string from the section
+    //! \param index Index of the string
+    //! \return Pointer to the string, or nullptr if not found
     const char* get_string( Elf_Word index ) const
     {
         if ( string_section ) {
             const char* data = string_section->get_data();
             if ( index < string_section->get_size() && nullptr != data ) {
                 size_t string_length = strnlength(
-                    data + index, string_section->get_size() - index );
+                    data + index,
+                    static_cast<size_t>( string_section->get_size() ) - index );
                 if ( string_length < ( string_section->get_size() - index ) )
                     return data + index;
             }
@@ -56,12 +64,15 @@ template <class S> class string_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Add a string to the section
+    //! \param str Pointer to the string
+    //! \return Index of the added string
     Elf_Word add_string( const char* str )
     {
         Elf_Word current_position = 0;
 
         if ( string_section ) {
-            // Strings are addeded to the end of the current section data
+            // Strings are added to the end of the current section data
             current_position =
                 static_cast<Elf_Word>( string_section->get_size() );
 
@@ -78,6 +89,9 @@ template <class S> class string_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Add a string to the section
+    //! \param str The string to add
+    //! \return Index of the added string
     Elf_Word add_string( const std::string& str )
     {
         return add_string( str.c_str() );
@@ -85,7 +99,7 @@ template <class S> class string_section_accessor_template
 
     //------------------------------------------------------------------------------
   private:
-    S* string_section;
+    S* string_section; //!< Pointer to the section
 };
 
 using string_section_accessor = string_section_accessor_template<section>;

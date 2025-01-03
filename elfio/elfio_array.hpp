@@ -28,55 +28,86 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
+// Template class for accessing array sections
 template <class S, typename T> class array_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
+    // Constructor
     explicit array_section_accessor_template( const elfio& elf_file,
-                                              S*           section )
-        : elf_file( elf_file ), array_section( section )
-    {
-    }
+                                              S*           section );
 
     //------------------------------------------------------------------------------
-    Elf_Xword get_entries_num() const
-    {
-        Elf_Xword entry_size = sizeof( T );
-        return array_section->get_size() / entry_size;
-    }
+    // Returns the number of entries in the array section
+    Elf_Xword get_entries_num() const;
 
     //------------------------------------------------------------------------------
-    bool get_entry( Elf_Xword index, Elf64_Addr& address ) const
-    {
-        if ( index >= get_entries_num() ) { // Is index valid
-            return false;
-        }
-
-        const endianness_convertor& convertor = elf_file.get_convertor();
-
-        const T temp = *reinterpret_cast<const T*>( array_section->get_data() +
-                                                    index * sizeof( T ) );
-        address      = convertor( temp );
-
-        return true;
-    }
+    // Retrieves an entry from the array section
+    bool get_entry( Elf_Xword index, Elf64_Addr& address ) const;
 
     //------------------------------------------------------------------------------
-    void add_entry( Elf64_Addr address )
-    {
-        const endianness_convertor& convertor = elf_file.get_convertor();
-
-        T temp = convertor( (T)address );
-        array_section->append_data( reinterpret_cast<char*>( &temp ),
-                                    sizeof( temp ) );
-    }
+    // Adds an entry to the array section
+    void add_entry( Elf64_Addr address );
 
   private:
     //------------------------------------------------------------------------------
+    // Reference to the ELF file
     const elfio& elf_file;
-    S*           array_section;
+    //------------------------------------------------------------------------------
+    // Pointer to the array section
+    S* array_section;
 };
 
+//------------------------------------------------------------------------------
+// Constructor
+template <class S, typename T>
+array_section_accessor_template<S, T>::array_section_accessor_template(
+    const elfio& elf_file, S* section )
+    : elf_file( elf_file ), array_section( section )
+{
+}
+
+//------------------------------------------------------------------------------
+// Returns the number of entries in the array section
+template <class S, typename T>
+Elf_Xword array_section_accessor_template<S, T>::get_entries_num() const
+{
+    Elf_Xword entry_size = sizeof( T );
+    return array_section->get_size() / entry_size;
+}
+
+//------------------------------------------------------------------------------
+// Retrieves an entry from the array section
+template <class S, typename T>
+bool array_section_accessor_template<S, T>::get_entry(
+    Elf_Xword index, Elf64_Addr& address ) const
+{
+    if ( index >= get_entries_num() ) { // Is index valid
+        return false;
+    }
+
+    const endianness_convertor& convertor = elf_file.get_convertor();
+
+    const T temp = *reinterpret_cast<const T*>( array_section->get_data() +
+                                                index * sizeof( T ) );
+    address      = convertor( temp );
+
+    return true;
+}
+
+//------------------------------------------------------------------------------
+// Adds an entry to the array section
+template <class S, typename T>
+void array_section_accessor_template<S, T>::add_entry( Elf64_Addr address )
+{
+    const endianness_convertor& convertor = elf_file.get_convertor();
+
+    T temp = convertor( (T)address );
+    array_section->append_data( reinterpret_cast<char*>( &temp ),
+                                sizeof( temp ) );
+}
+
+// Type aliases for array section accessors
 template <typename T = Elf32_Word>
 using array_section_accessor = array_section_accessor_template<section, T>;
 template <typename T = Elf32_Word>

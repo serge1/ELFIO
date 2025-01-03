@@ -29,10 +29,21 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
+/**
+ * @class modinfo_section_accessor_template
+ * @brief A template class to access modinfo section.
+ * 
+ * @tparam S The section type.
+ */
 template <class S> class modinfo_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
+    /**
+     * @brief Construct a new modinfo section accessor template object.
+     * 
+     * @param section The section to be accessed.
+     */
     explicit modinfo_section_accessor_template( S* section )
         : modinfo_section( section )
     {
@@ -40,9 +51,23 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    /**
+     * @brief Get the number of attributes.
+     * 
+     * @return Elf_Word The number of attributes.
+     */
     Elf_Word get_attribute_num() const { return (Elf_Word)content.size(); }
 
     //------------------------------------------------------------------------------
+    /**
+     * @brief Get the attribute by index.
+     * 
+     * @param no The index of the attribute.
+     * @param field The field name of the attribute.
+     * @param value The value of the attribute.
+     * @return true If the attribute is found.
+     * @return false If the attribute is not found.
+     */
     bool
     get_attribute( Elf_Word no, std::string& field, std::string& value ) const
     {
@@ -56,6 +81,14 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    /**
+     * @brief Get the attribute by field name.
+     * 
+     * @param field_name The field name of the attribute.
+     * @param value The value of the attribute.
+     * @return true If the attribute is found.
+     * @return false If the attribute is not found.
+     */
     bool get_attribute( const std::string_view& field_name,
                         std::string&            value ) const
     {
@@ -70,6 +103,13 @@ template <class S> class modinfo_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    /**
+     * @brief Add a new attribute.
+     * 
+     * @param field The field name of the attribute.
+     * @param value The value of the attribute.
+     * @return Elf_Word The position of the new attribute.
+     */
     Elf_Word add_attribute( const std::string& field, const std::string& value )
     {
         Elf_Word current_position = 0;
@@ -89,6 +129,9 @@ template <class S> class modinfo_section_accessor_template
 
     //------------------------------------------------------------------------------
   private:
+    /**
+     * @brief Process the section to extract attributes.
+     */
     void process_section()
     {
         const char* pdata = modinfo_section->get_data();
@@ -111,8 +154,9 @@ template <class S> class modinfo_section_accessor_template
 
     //------------------------------------------------------------------------------
   private:
-    S*                                               modinfo_section;
-    std::vector<std::pair<std::string, std::string>> content;
+    S* modinfo_section; ///< The section to be accessed.
+    std::vector<std::pair<std::string, std::string>>
+        content; ///< The list of attributes.
 };
 
 using modinfo_section_accessor = modinfo_section_accessor_template<section>;

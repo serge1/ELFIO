@@ -672,6 +672,7 @@ static const struct note_tag_t
 static const ELFIO::Elf_Xword MAX_DATA_ENTRIES = 64;
 
 //------------------------------------------------------------------------------
+// Class representing the ELF dump functionality
 class dump
 {
 #define DUMP_DEC_FORMAT( width ) \
@@ -685,6 +686,7 @@ class dump
 
   public:
     //------------------------------------------------------------------------------
+    // Dumps the ELF header information
     static void header( std::ostream& out, const elfio& reader )
     {
         if ( !reader.get_header_size() ) {
@@ -713,6 +715,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the section headers information
     static void section_headers( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.sections.size();
@@ -748,6 +751,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps a single section header information
     static void section_header( std::ostream&  out,
                                 Elf_Half       no,
                                 const section* sec,
@@ -792,6 +796,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the segment headers information
     static void segment_headers( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.segments.size();
@@ -836,6 +841,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps a single segment header information
     static void segment_header( std::ostream&  out,
                                 Elf_Half       no,
                                 const segment* seg,
@@ -874,6 +880,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the symbol tables information
     static void symbol_tables( std::ostream& out, const elfio& reader )
     {
         for ( const auto& sec : reader.sections ) { // For all sections
@@ -918,6 +925,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps a single symbol table entry information
     static void symbol_table( std::ostream&      out,
                               Elf_Xword          no,
                               const std::string& name,
@@ -954,6 +962,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the notes information
     static void notes( std::ostream& out, const elfio& reader )
     {
         for ( const auto& sec : reader.sections ) { // For all sections
@@ -1018,6 +1027,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps a single note information
     static void note( std::ostream&      out,
                       int                no,
                       Elf_Word           type,
@@ -1065,6 +1075,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the module information
     static void modinfo( std::ostream& out, const elfio& reader )
     {
         for ( const auto& sec : reader.sections ) { // For all sections
@@ -1088,6 +1099,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the dynamic tags information
     static void dynamic_tags( std::ostream& out, const elfio& reader )
     {
         for ( const auto& sec : reader.sections ) { // For all sections
@@ -1118,6 +1130,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps a single dynamic tag information
     static void dynamic_tag( std::ostream&      out,
                              Elf_Xword          no,
                              Elf_Xword          tag,
@@ -1137,6 +1150,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the section data
     static void section_data( std::ostream& out, const section* sec )
     {
         std::ios_base::fmtflags original_flags = out.flags();
@@ -1169,6 +1183,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps all sections data
     static void section_datas( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.sections.size();
@@ -1191,6 +1206,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps the segment data
     static void
     segment_data( std::ostream& out, Elf_Half no, const segment* seg )
     {
@@ -1224,6 +1240,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
+    // Dumps all segments data
     static void segment_datas( std::ostream& out, const elfio& reader )
     {
         Elf_Half n = reader.segments.size();

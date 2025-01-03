@@ -26,10 +26,14 @@ THE SOFTWARE.
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
+//! \class versym_section_accessor_template
+//! \brief Class for accessing version symbol section data
 template <class S> class versym_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
+    //! \brief Constructor
+    //! \param section Pointer to the section
     explicit versym_section_accessor_template( S* section )
         : versym_section( section )
     {
@@ -40,6 +44,8 @@ template <class S> class versym_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Get the number of entries
+    //! \return Number of entries
     Elf_Word get_entries_num() const
     {
         if ( versym_section ) {
@@ -49,6 +55,10 @@ template <class S> class versym_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Get an entry
+    //! \param no Index of the entry
+    //! \param value Value of the entry
+    //! \return True if successful, false otherwise
     bool get_entry( Elf_Word no, Elf_Half& value ) const
     {
         if ( versym_section && ( no < get_entries_num() ) ) {
@@ -60,6 +70,10 @@ template <class S> class versym_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Modify an entry
+    //! \param no Index of the entry
+    //! \param value New value of the entry
+    //! \return True if successful, false otherwise
     bool modify_entry( Elf_Word no, Elf_Half value )
     {
         if ( versym_section && ( no < get_entries_num() ) ) {
@@ -71,6 +85,9 @@ template <class S> class versym_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Add an entry
+    //! \param value Value of the entry
+    //! \return True if successful, false otherwise
     bool add_entry( Elf_Half value )
     {
         if ( !versym_section ) {
@@ -85,8 +102,8 @@ template <class S> class versym_section_accessor_template
 
     //------------------------------------------------------------------------------
   private:
-    S*       versym_section = nullptr;
-    Elf_Word entries_num    = 0;
+    S*       versym_section = nullptr; //!< Pointer to the section
+    Elf_Word entries_num    = 0;       //!< Number of entries
 };
 
 using versym_section_accessor = versym_section_accessor_template<section>;
@@ -94,10 +111,15 @@ using const_versym_section_accessor =
     versym_section_accessor_template<const section>;
 
 //------------------------------------------------------------------------------
+//! \class versym_r_section_accessor_template
+//! \brief Class for accessing version requirement section data
 template <class S> class versym_r_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
+    //! \brief Constructor
+    //! \param elf_file Reference to the ELF file
+    //! \param versym_r_section Pointer to the version requirement section
     versym_r_section_accessor_template( const elfio& elf_file,
                                         S*           versym_r_section )
         : elf_file( elf_file ), versym_r_section( versym_r_section ),
@@ -127,9 +149,20 @@ template <class S> class versym_r_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Get the number of entries
+    //! \return Number of entries
     Elf_Word get_entries_num() const { return entries_num; }
 
     //------------------------------------------------------------------------------
+    //! \brief Get an entry
+    //! \param no Index of the entry
+    //! \param version Version of the entry
+    //! \param file_name File name of the entry
+    //! \param hash Hash of the entry
+    //! \param flags Flags of the entry
+    //! \param other Other information of the entry
+    //! \param dep_name Dependency name of the entry
+    //! \return True if successful, false otherwise
     bool get_entry( Elf_Word     no,
                     Elf_Half&    version,
                     std::string& file_name,
@@ -166,8 +199,9 @@ template <class S> class versym_r_section_accessor_template
     //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    S*           versym_r_section = nullptr;
-    Elf_Word     entries_num      = 0;
+    S*           versym_r_section =
+        nullptr;              //!< Pointer to the version requirement section
+    Elf_Word entries_num = 0; //!< Number of entries
 };
 
 using versym_r_section_accessor = versym_r_section_accessor_template<section>;
@@ -175,10 +209,15 @@ using const_versym_r_section_accessor =
     versym_r_section_accessor_template<const section>;
 
 //------------------------------------------------------------------------------
+//! \class versym_d_section_accessor_template
+//! \brief Class for accessing version definition section data
 template <class S> class versym_d_section_accessor_template
 {
   public:
     //------------------------------------------------------------------------------
+    //! \brief Constructor
+    //! \param elf_file Reference to the ELF file
+    //! \param versym_d_section Pointer to the version definition section
     versym_d_section_accessor_template( const elfio& elf_file,
                                         S*           versym_d_section )
         : elf_file( elf_file ), versym_d_section( versym_d_section ),
@@ -208,9 +247,18 @@ template <class S> class versym_d_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Get the number of entries
+    //! \return Number of entries
     Elf_Word get_entries_num() const { return entries_num; }
 
     //------------------------------------------------------------------------------
+    //! \brief Get an entry
+    //! \param no Index of the entry
+    //! \param flags Flags of the entry
+    //! \param version_index Version index of the entry
+    //! \param hash Hash of the entry
+    //! \param dep_name Dependency name of the entry
+    //! \return True if successful, false otherwise
     bool get_entry( Elf_Word     no,
                     Elf_Half&    flags,
                     Elf_Half&    version_index,
@@ -248,8 +296,9 @@ template <class S> class versym_d_section_accessor_template
     //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    S*           versym_d_section = nullptr;
-    Elf_Word     entries_num      = 0;
+    S*           versym_d_section =
+        nullptr;              //!< Pointer to the version definition section
+    Elf_Word entries_num = 0; //!< Number of entries
 };
 
 using versym_d_section_accessor = versym_d_section_accessor_template<section>;
