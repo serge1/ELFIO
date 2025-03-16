@@ -70,7 +70,7 @@ class section
      * @param raw_data Pointer to the raw data.
      * @param size Size of the data.
      */
-    virtual void set_data( const char* raw_data, Elf_Word size ) = 0;
+    virtual void set_data( const char* raw_data, Elf_Xword size ) = 0;
 
     /**
      * @brief Set the data of the section.
@@ -83,7 +83,7 @@ class section
      * @param raw_data Pointer to the raw data.
      * @param size Size of the data.
      */
-    virtual void append_data( const char* raw_data, Elf_Word size ) = 0;
+    virtual void append_data( const char* raw_data, Elf_Xword size ) = 0;
 
     /**
      * @brief Append data to the section.
@@ -98,7 +98,7 @@ class section
      * @param size Size of the data.
      */
     virtual void
-    insert_data( Elf_Xword pos, const char* raw_data, Elf_Word size ) = 0;
+    insert_data( Elf_Xword pos, const char* raw_data, Elf_Xword size ) = 0;
 
     /**
      * @brief Insert data into the section at a specific position.
@@ -250,10 +250,10 @@ template <class T> class section_impl : public section
      * @param raw_data Pointer to the raw data.
      * @param size Size of the data.
      */
-    void set_data( const char* raw_data, Elf_Word size ) override
+    void set_data( const char* raw_data, Elf_Xword size ) override
     {
         if ( get_type() != SHT_NOBITS ) {
-            data = std::unique_ptr<char[]>( new ( std::nothrow ) char[size] );
+            data = std::unique_ptr<char[]>( new ( std::nothrow ) char[(size_t)size] );
             if ( nullptr != data.get() && nullptr != raw_data ) {
                 data_size = size;
                 std::copy( raw_data, raw_data + size, data.get() );
@@ -265,7 +265,7 @@ template <class T> class section_impl : public section
 
         set_size( data_size );
         if ( translator->empty() ) {
-            set_stream_size( data_size );
+            set_stream_size( (size_t)data_size );
         }
     }
 
@@ -283,7 +283,7 @@ template <class T> class section_impl : public section
      * @param raw_data Pointer to the raw data.
      * @param size Size of the data.
      */
-    void append_data( const char* raw_data, Elf_Word size ) override
+    void append_data( const char* raw_data, Elf_Xword size ) override
     {
         insert_data( get_size(), raw_data, size );
     }
@@ -304,19 +304,46 @@ template <class T> class section_impl : public section
      * @param size Size of the data.
      */
     void
-    insert_data( Elf_Xword pos, const char* raw_data, Elf_Word size ) override
+    insert_data( Elf_Xword pos, const char* raw_data, Elf_Xword size ) override
     {
         if ( get_type() != SHT_NOBITS ) {
-            if ( get_size() + size < data_size ) {
+            // Check for valid position
+            if ( pos > get_size() ) {
+                return; // Invalid position
+            }
+
+            // Check for integer overflow in size calculation
+            Elf_Xword new_size = get_size();
+            if ( size > std::numeric_limits<Elf_Xword>::max() - new_size ) {
+                return; // Size would overflow
+            }
+            new_size += size;
+
+            if ( new_size <= data_size ) {
                 char* d = data.get();
                 std::copy_backward( d + pos, d + get_size(),
                                     d + get_size() + size );
                 std::copy( raw_data, raw_data + size, d + pos );
             }
             else {
-                data_size = 2 * ( data_size + size );
+                // Calculate new size with overflow check
+                Elf_Xword new_data_size = data_size;
+                if ( new_data_size > std::numeric_limits<Elf_Xword>::max() / 2 ) {
+                    return; // Multiplication would overflow
+                }
+                new_data_size *= 2;
+                if ( size > std::numeric_limits<Elf_Xword>::max() - new_data_size ) {
+                    return; // Addition would overflow
+                }
+                new_data_size += size;
+
+                // Check if the size would overflow size_t
+                if (new_data_size > std::numeric_limits<size_t>::max()) {
+                    return; // Size would overflow size_t
+                }
+
                 std::unique_ptr<char[]> new_data(
-                    new ( std::nothrow ) char[data_size] );
+                    new (std::nothrow) char[(size_t)new_data_size]);
 
                 if ( nullptr != new_data ) {
                     char* d = data.get();
@@ -326,14 +353,15 @@ template <class T> class section_impl : public section
                     std::copy( d + pos, d + get_size(),
                                new_data.get() + pos + size );
                     data = std::move( new_data );
+                    data_size = new_data_size;
                 }
                 else {
-                    size = 0;
+                    return; // Allocation failed
                 }
             }
-            set_size( get_size() + size );
+            set_size( new_size );
             if ( translator->empty() ) {
-                set_stream_size( get_stream_size() + size );
+                set_stream_size( get_stream_size() + (size_t)size );
             }
         }
     }
@@ -431,36 +459,55 @@ template <class T> class section_impl : public section
      */
     bool load_data() const
     {
-        Elf_Xword sh_offset =
-            ( *translator )[( *convertor )( header.sh_offset )];
+        Elf_Xword sh_offset = (*translator)[(*convertor)(header.sh_offset)];
         Elf_Xword size = get_size();
-        if ( nullptr == data && SHT_NULL != get_type() &&
-             SHT_NOBITS != get_type() && sh_offset <= get_stream_size() &&
-             size <= ( get_stream_size() - sh_offset ) ) {
-            data.reset( new ( std::nothrow ) char[size_t( size ) + 1] );
+        
+        // Check for integer overflow in offset calculation
+        if (sh_offset > get_stream_size()) {
+            return false;
+        }
+        
+        // Check for integer overflow in size calculation
+        if (size > get_stream_size() || 
+            size > (get_stream_size() - sh_offset)) {
+            return false;
+        }
 
-            if ( ( 0 != size ) && ( nullptr != data ) ) {
-                pstream->seekg( sh_offset );
-                pstream->read( data.get(), size );
-                if ( static_cast<Elf_Xword>( pstream->gcount() ) != size ) {
-                    data = nullptr;
+        // Check if we need to load data
+        if (nullptr == data && SHT_NULL != get_type() && SHT_NOBITS != get_type()) {
+            // Check if size can be safely converted to size_t
+            if (size > std::numeric_limits<size_t>::max() - 1) {
+                return false;
+            }
+            
+            data.reset(new (std::nothrow) char[size_t(size) + 1]);
+
+            if ((0 != size) && (nullptr != data)) {
+                pstream->seekg(sh_offset);
+                pstream->read(data.get(), size);
+                if (static_cast<Elf_Xword>(pstream->gcount()) != size) {
+                    data.reset(nullptr);
+                    data_size = 0;
                     return false;
                 }
 
-                // refresh size because it may have changed if we had to decompress data
-                size = get_size();
-                data.get()[size] =
-                    0; // Ensure data is ended with 0 to avoid oob read
-                data_size = decltype( data_size )( size );
+                data_size = size;
+                data.get()[size] = 0; // Safe now as we allocated size + 1
             }
             else {
                 data_size = 0;
+                if (size != 0) {
+                    return false; // Failed to allocate required memory
+                }
             }
+            
+            is_loaded = true;
+            return true;
         }
 
-        is_loaded = true;
-
-        return true;
+        // Data already loaded or doesn't need loading
+        is_loaded = (nullptr != data) || (SHT_NULL == get_type()) || (SHT_NOBITS == get_type());
+        return is_loaded;
     }
 
     /**
@@ -528,7 +575,7 @@ template <class T> class section_impl : public section
     Elf_Half                        index  = 0;    /**< Index of the section. */
     std::string                     name;          /**< Name of the section. */
     mutable std::unique_ptr<char[]> data;          /**< Pointer to the data. */
-    mutable Elf_Word                data_size = 0; /**< Size of the data. */
+    mutable Elf_Xword               data_size = 0; /**< Size of the data. */
     const endianness_convertor*     convertor =
         nullptr; /**< Pointer to the endianness convertor. */
     const address_translator* translator =

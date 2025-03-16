@@ -299,6 +299,7 @@ template <class T> class segment_impl : public segment
 
         stream.seekg( ( *translator )[header_offset] );
         stream.read( reinterpret_cast<char*>( &ph ), sizeof( ph ) );
+
         is_offset_set = true;
 
         if ( !( is_lazy || is_loaded ) ) {
@@ -320,7 +321,21 @@ template <class T> class segment_impl : public segment
         Elf_Xword p_offset = ( *translator )[( *convertor )( ph.p_offset )];
         Elf_Xword size     = get_file_size();
 
-        if ( p_offset + size > get_stream_size() ) {
+        // Check for integer overflow in offset calculation
+        if (p_offset > get_stream_size()) {
+            data = nullptr;
+            return false;
+        }
+
+        // Check for integer overflow in size calculation
+        if (size > get_stream_size() || 
+            size > (get_stream_size() - p_offset)) {
+            data = nullptr;
+            return false;
+        }
+
+        // Check if size can be safely converted to size_t
+        if (size > std::numeric_limits<size_t>::max() - 1) {
             data = nullptr;
             return false;
         }

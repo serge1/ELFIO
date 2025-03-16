@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <limits>
 
 namespace ELFIO {
 
@@ -51,12 +52,26 @@ template <class S> class string_section_accessor_template
     {
         if ( string_section ) {
             const char* data = string_section->get_data();
-            if ( index < string_section->get_size() && nullptr != data ) {
-                size_t string_length = strnlength(
-                    data + index,
-                    static_cast<size_t>( string_section->get_size() ) - index );
-                if ( string_length < ( string_section->get_size() - index ) )
-                    return data + index;
+            size_t      section_size =
+                static_cast<size_t>( string_section->get_size() );
+
+            // Check if index is within bounds
+            if ( index >= section_size || nullptr == data ) {
+                return nullptr;
+            }
+
+            // Check for integer overflow in size calculation
+            size_t remaining_size = section_size - index;
+            if ( remaining_size > section_size ) { // Check for underflow
+                return nullptr;
+            }
+
+            // Use standard C++ functions to find string length
+            const char* str = data + index;
+            const char* end =
+                (const char*)std::memchr( str, '\0', remaining_size );
+            if ( end != nullptr && end < str + remaining_size ) {
+                return str;
             }
         }
 
@@ -69,6 +84,10 @@ template <class S> class string_section_accessor_template
     //! \return Index of the added string
     Elf_Word add_string( const char* str )
     {
+        if ( !str ) {
+            return 0; // Return index of empty string for null input
+        }
+
         Elf_Word current_position = 0;
 
         if ( string_section ) {
@@ -81,8 +100,21 @@ template <class S> class string_section_accessor_template
                 string_section->append_data( &empty_string, 1 );
                 current_position++;
             }
-            string_section->append_data(
-                str, static_cast<Elf_Word>( std::strlen( str ) + 1 ) );
+
+            // Calculate string length and check for overflow
+            size_t str_len = std::strlen( str );
+            if ( str_len > std::numeric_limits<Elf_Word>::max() - 1 ) {
+                return 0; // String too long
+            }
+
+            // Check if appending would overflow section size
+            Elf_Word append_size = static_cast<Elf_Word>( str_len + 1 );
+            if ( append_size >
+                 std::numeric_limits<Elf_Word>::max() - current_position ) {
+                return 0; // Would overflow section size
+            }
+
+            string_section->append_data( str, append_size );
         }
 
         return current_position;

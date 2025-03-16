@@ -150,17 +150,29 @@ template <class S> class dynamic_section_accessor_template
 
         // Check unusual case when dynamic section has no data
         if ( dynamic_section->get_data() == nullptr ||
-             ( index + 1 ) * dynamic_section->get_entry_size() >
-                 dynamic_section->get_size() ||
              dynamic_section->get_entry_size() < sizeof( T ) ) {
             tag   = DT_NULL;
             value = 0;
             return;
         }
 
+        // Check for integer overflow in size calculation
+        if (index > (dynamic_section->get_size() / dynamic_section->get_entry_size()) - 1) {
+            tag   = DT_NULL;
+            value = 0;
+            return;
+        }
+
+        // Check for integer overflow in pointer arithmetic
+        Elf_Xword offset = index * dynamic_section->get_entry_size();
+        if (offset > dynamic_section->get_size() - sizeof(T)) {
+            tag   = DT_NULL;
+            value = 0;
+            return;
+        }
+
         const T* pEntry = reinterpret_cast<const T*>(
-            dynamic_section->get_data() +
-            index * dynamic_section->get_entry_size() );
+            dynamic_section->get_data() + offset );
         tag = convertor( pEntry->d_tag );
         switch ( tag ) {
         case DT_NULL:
