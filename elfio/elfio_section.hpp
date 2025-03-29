@@ -228,8 +228,16 @@ template <class T> class section_impl : public section
      */
     const char* get_data() const override
     {
-        if ( !is_loaded ) {
-            load_data();
+        // If data load failed, the stream is corrupt
+        // When lazy loading, attempts to call get_data() on it after initial load are useless
+        // When loading non-lazily, that load_data() will attempt to read data from 
+        // the stream specified on load() call, which might be freed by this point
+        if ( !is_loaded && can_be_loaded ) {
+            bool res = load_data();
+
+            if ( !res ) {
+                can_be_loaded = false;
+            }
         }
         return data.get();
     }
@@ -434,7 +442,7 @@ template <class T> class section_impl : public section
         stream.read( reinterpret_cast<char*>( &header ), sizeof( header ) );
 
         if ( !( is_lazy || is_loaded ) ) {
-            bool ret = load_data();
+            bool ret = get_data();
 
             if ( is_compressed() ) {
                 Elf_Xword size              = get_size();
@@ -588,6 +596,8 @@ template <class T> class section_impl : public section
         false; /**< Flag indicating if lazy loading is enabled. */
     mutable bool is_loaded =
         false; /**< Flag indicating if the data is loaded. */
+    mutable bool can_be_loaded =
+        true; /**< Flag indicating if the data can loaded. This is not the case if the section is corrupted. */
 };
 
 } // namespace ELFIO
