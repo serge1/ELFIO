@@ -560,6 +560,9 @@ class elfio
 
         for ( Elf_Half i = 0; i < num; ++i ) {
             section* sec = create_section();
+
+            // Load return value is ignored here
+            // This allows retrieval of information from corrupted sections
             sec->load( stream,
                        static_cast<std::streamoff>( offset ) +
                            static_cast<std::streampos>( i ) * entry_size,
