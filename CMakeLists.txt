@@ -10,7 +10,7 @@ if(IS_TOP_PROJECT)
     # Turn this on in order to build elfio examples
     option(ELFIO_BUILD_EXAMPLES "Build ELFIO examples" ON)
 
-    # Turns this on in order to build tests
+    # Turn this on in order to build tests
     option(ELFIO_BUILD_TESTS "Build ELFIO tests" OFF)
 
     # Generate output of compile commands during generation

@@ -8,7 +8,7 @@ if(${CMAKE_VERSION} VERSION_LESS "3.24.0")
 else()
     FetchContent_Declare(
         googletest
-        URL https://github.com/google/googletest/archive/530d5c8c84.zip
+        URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.zip
         FIND_PACKAGE_ARGS NAMES GTest
         DOWNLOAD_EXTRACT_TIMESTAMP = TRUE
     )
