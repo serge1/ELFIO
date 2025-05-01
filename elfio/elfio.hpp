@@ -265,7 +265,7 @@ class elfio
         //   - Other segments
         //   - Section does not belong to a segment
         //   - Section headers
-        
+
         // Reserve space for ELF header and program headers
         // The ELF header is always at the beginning of the file
         // The headers will be written later
@@ -279,15 +279,13 @@ class elfio
                 static_cast<Elf_Xword>( header->get_segments_num() );
         }
 
-        calc_segment_alignment();
-
-        bool is_still_good = layout_segments_and_their_sections();
+        bool is_still_good = layout_and_write_segments_and_their_sections();
         is_still_good = is_still_good && layout_sections_without_segments();
         is_still_good = is_still_good && layout_section_table();
 
-        is_still_good = is_still_good && save_header( stream );
+        is_still_good = is_still_good && save_elf_header( stream );
         is_still_good = is_still_good && save_sections( stream );
-        is_still_good = is_still_good && save_segments( stream );
+        is_still_good = is_still_good && save_program_header( stream );
 
         return is_still_good;
     }
@@ -707,7 +705,7 @@ class elfio
     //! \brief Save the ELF header to a stream
     //! \param stream The output stream to save to
     //! \return True if successful, false otherwise
-    bool save_header( std::ostream& stream ) const
+    bool save_elf_header( std::ostream& stream ) const
     {
         return header->save( stream );
     }
@@ -734,7 +732,7 @@ class elfio
     //! \brief Save the segments to a stream
     //! \param stream The output stream to save to
     //! \return True if successful, false otherwise
-    bool save_segments( std::ostream& stream ) const
+    bool save_program_header( std::ostream& stream ) const
     {
         for ( const auto& seg : segments_ ) {
             std::streampos headerPosition =
@@ -881,14 +879,14 @@ class elfio
     //------------------------------------------------------------------------------
     //! \brief Layout segments and their sections
     //! \return True if successful, false otherwise
-    bool layout_segments_and_their_sections()
+    bool layout_and_write_segments_and_their_sections()
     {
-        std::vector<segment*> worklist;
-        std::vector<bool>     section_generated( sections.size(), false );
+        calc_segment_alignment();
 
         // Get segments in a order in where segments which contain a
         // sub sequence of other segments are located at the end
-        worklist = get_ordered_segments();
+        std::vector<segment*> worklist = get_ordered_segments();
+        std::vector<bool>     section_generated( sections.size(), false );
 
         for ( auto* seg : worklist ) {
             Elf_Xword segment_memory   = 0;
