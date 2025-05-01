@@ -259,11 +259,25 @@ class elfio
         header->set_sections_num( sections.size() );
         header->set_sections_offset( 0 );
 
-        // Layout the first section right after the segment table
-        current_file_pos =
-            header->get_header_size() +
-            header->get_segment_entry_size() *
+        // - Build the layout
+        //   - ELF header (if not a part of other segment)
+        //   - Program headers (if not a part of other segment)
+        //   - Other segments
+        //   - Section does not belong to a segment
+        //   - Section headers
+        
+        // Reserve space for ELF header and program headers
+        // The ELF header is always at the beginning of the file
+        // The headers will be written later
+        current_file_pos = 0;
+        if ( get_segment_with_elf_header() == nullptr ) {
+            current_file_pos += header->get_header_size();
+        }
+        if ( get_segment_with_program_header() == nullptr ) {
+            current_file_pos +=
+                header->get_segment_entry_size() *
                 static_cast<Elf_Xword>( header->get_segments_num() );
+        }
 
         calc_segment_alignment();
 
@@ -1047,6 +1061,33 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
+    //! \brief Set segment containing ELF header
+    //! \param segment Pointer to the segment
+    void set_segment_with_elf_header( segment* segment )
+    {
+        segment_with_elf_header = segment;
+    }
+
+    //------------------------------------------------------------------------------
+    //! \brief Get segment containing ELF header
+    segment* get_segment_with_elf_header() { return segment_with_elf_header; }
+
+    //------------------------------------------------------------------------------
+    //! \brief Set segment containing ELF header
+    //! \param segment Pointer to the segment
+    void set_segment_with_program_header( segment* segment )
+    {
+        segment_with_program_header = segment;
+    }
+
+    //------------------------------------------------------------------------------
+    //! \brief Get segment containing program header
+    segment* get_segment_with_program_header()
+    {
+        return segment_with_program_header;
+    }
+
+    //------------------------------------------------------------------------------
   public:
     //! \class Sections
     //! \brief The Sections class provides methods to manipulate sections in an ELF file.
@@ -1237,6 +1278,10 @@ class elfio
     std::vector<std::unique_ptr<segment>> segments_; //!< Vector of segments
     endianness_convertor                  convertor; //!< Endianness convertor
     address_translator addr_translator;              //!< Address translator
+    segment*           segment_with_elf_header =
+        nullptr; //!< Segment containing ELF header
+    segment* segment_with_program_header =
+        nullptr; //!< Segment containing program header
     std::shared_ptr<compression_interface> compression =
         nullptr; //!< Pointer to the compression interface
 
