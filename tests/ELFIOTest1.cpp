@@ -209,7 +209,7 @@ bool write_exe_i386( const std::string& filename,
 
     return true;
 }
-/*
+
 ////////////////////////////////////////////////////////////////////////////////
 void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
 {
@@ -261,8 +261,7 @@ void checkObjestsAreEqual( std::string file_name1, std::string file_name2 )
                    file2.sections[i]->get_size() );
         if ( ( file2.sections[i]->get_type() != SHT_NULL ) &&
              ( file2.sections[i]->get_type() != SHT_NOBITS ) ) {
-            EXPECT_EQ_COLLECTIONS( pdata1.begin(), pdata1.end(), pdata2.begin(),
-                                   pdata2.end() );
+            EXPECT_EQ( pdata1, pdata2 );
         }
     }
 }
@@ -316,11 +315,11 @@ void checkExeAreEqual( std::string file_name1,
             pdata2 = pdata2.substr( (unsigned int)afterPHDR );
         }
 
-        EXPECT_EQ_COLLECTIONS( pdata1.begin(), pdata1.end(), pdata2.begin(),
-                               pdata2.end() );
+        EXPECT_EQ( pdata1, pdata2 );
     }
 }
 
+/*
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ELFIOTest, write_obj_i386_32 )
 {
@@ -355,7 +354,7 @@ TEST( ELFIOTest, write_exe_i386_32 )
     BOOST_CHECK_MESSAGE( output.match_pattern(), "Comparing " + generated_file +
                                                      " and " + reference_file );
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ELFIOTest, elf_object_copy_32 )
 {
@@ -454,7 +453,7 @@ TEST( ELFIOTest, elf_exe_loadsave_ppc32big3 )
     checkObjestsAreEqual( in, out );
     checkExeAreEqual( in, out, SEG_ALIGN );
 }
-*/
+
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ELFIOTest, get_symbol_32 )
 {
