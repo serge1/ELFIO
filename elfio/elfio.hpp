@@ -283,9 +283,9 @@ class elfio
         is_still_good = is_still_good && layout_sections_without_segments();
         is_still_good = is_still_good && layout_section_table();
 
-        is_still_good = is_still_good && save_elf_header( stream );
-        is_still_good = is_still_good && save_sections( stream );
         is_still_good = is_still_good && save_program_header( stream );
+        is_still_good = is_still_good && save_sections( stream );
+        is_still_good = is_still_good && save_elf_header( stream );
 
         return is_still_good;
     }
@@ -926,10 +926,10 @@ class elfio
             }
 
             // Write segment's data
-            if ( !write_segment_data( seg, section_generated, segment_memory,
-                                      segment_filesize, seg_start_pos ) ) {
-                return false;
-            }
+            // if ( !write_segment_data( seg, section_generated, segment_memory,
+            //                           segment_filesize, seg_start_pos ) ) {
+            //     return false;
+            // }
 
             seg->set_file_size( segment_filesize );
 
