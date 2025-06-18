@@ -926,10 +926,10 @@ class elfio
             }
 
             // Write segment's data
-            // if ( !write_segment_data( seg, section_generated, segment_memory,
-            //                           segment_filesize, seg_start_pos ) ) {
-            //     return false;
-            // }
+            if ( !write_segment_data( seg, section_generated, segment_memory,
+                                      segment_filesize, seg_start_pos ) ) {
+                 return false;
+            }
 
             seg->set_file_size( segment_filesize );
 
