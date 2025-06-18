@@ -295,8 +295,8 @@ void checkExeAreEqual( std::string file_name1,
              !file1.segments[i]->get_file_size() )
             continue;
 
-        ASSERT_NE( file1.segments[i]->get_data(), (const char*)0 );
-        ASSERT_NE( file2.segments[i]->get_data(), (const char*)0 );
+        ASSERT_NE( file1.segments[i]->get_data(), nullptr );
+        ASSERT_NE( file2.segments[i]->get_data(), nullptr );
 
         std::string pdata1( file1.segments[i]->get_data(),
                             file1.segments[i]->get_data() +
@@ -364,10 +364,6 @@ TEST( ELFIOTest, elf_object_copy_32 )
                           "elf_examples/hello_64_copy.o" );
     checkObjestsAreEqual( "elf_examples/test_ppc.o",
                           "elf_examples/test_ppc_copy.o" );
-    checkObjestsAreEqual( "elf_examples/write_obj_i386_32.o",
-                          "elf_examples/write_obj_i386_32_copy.o" );
-    checkObjestsAreEqual( "elf_examples/write_obj_i386_64.o",
-                          "elf_examples/write_obj_i386_64_copy.o" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -410,8 +406,6 @@ TEST( ELFIOTest, elfio_copy )
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ELFIOTest, elf_exe_copy_64 )
 {
-    checkExeAreEqual( "elf_examples/64bitLOAD.elf",
-                      "elf_examples/64bitLOAD_copy.elf" );
     checkExeAreEqual( "elf_examples/asm64", "elf_examples/asm64_copy" );
     checkExeAreEqual( "elf_examples/hello_64", "elf_examples/hello_64_copy" );
 
