@@ -96,8 +96,7 @@ class segment
     //! \param index Index of the section
     //! \param addr_align Alignment of the section
     //! \return Index of the added section
-    virtual Elf_Half add_section_index( Elf_Half  index,
-                                        Elf_Xword addr_align ) = 0;
+    virtual Elf_Half add_section_index( Elf_Half index, Elf_Xword addr_align ) = 0;
     //------------------------------------------------------------------------------
     //! \brief Get the number of sections in the segment
     //! \return Number of sections in the segment
@@ -133,17 +132,14 @@ class segment
     //! \param header_offset Offset of the segment header
     //! \param is_lazy Whether to load the segment lazily
     //! \return True if successful, false otherwise
-    virtual bool load( std::istream&  stream,
-                       std::streampos header_offset,
-                       bool           is_lazy ) = 0;
+    virtual bool load( std::istream& stream, std::streampos header_offset, bool is_lazy ) = 0;
     //------------------------------------------------------------------------------
     //! \brief Save the segment to a stream
     //! \param stream Output stream
     //! \param header_offset Offset of the segment header
     //! \param data_offset Offset of the segment data
-    virtual void save( std::ostream&  stream,
-                       std::streampos header_offset,
-                       std::streampos data_offset ) = 0;
+    virtual void
+    save( std::ostream& stream, std::streampos header_offset, std::streampos data_offset ) = 0;
 };
 
 //------------------------------------------------------------------------------
@@ -156,8 +152,7 @@ template <class T> class segment_impl : public segment
     //! \brief Constructor
     //! \param convertor Pointer to the endianness convertor
     //! \param translator Pointer to the address translator
-    segment_impl( const endianness_convertor* convertor,
-                  const address_translator*   translator )
+    segment_impl( const endianness_convertor* convertor, const address_translator* translator )
         : convertor( convertor ), translator( translator )
     {
     }
@@ -204,8 +199,7 @@ template <class T> class segment_impl : public segment
     //! \param sec_index Index of the section
     //! \param addr_align Alignment of the section
     //! \return Index of the added section
-    Elf_Half add_section_index( Elf_Half  sec_index,
-                                Elf_Xword addr_align ) override
+    Elf_Half add_section_index( Elf_Half sec_index, Elf_Xword addr_align ) override
     {
         sections.emplace_back( sec_index );
         if ( addr_align > get_align() ) {
@@ -228,10 +222,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     //! \brief Get the number of sections in the segment
     //! \return Number of sections in the segment
-    Elf_Half get_sections_num() const override
-    {
-        return (Elf_Half)sections.size();
-    }
+    Elf_Half get_sections_num() const override { return (Elf_Half)sections.size(); }
 
     //------------------------------------------------------------------------------
     //! \brief Get the index of a section at a given position
@@ -266,10 +257,7 @@ template <class T> class segment_impl : public segment
     //------------------------------------------------------------------------------
     //! \brief Get the sections of the segment
     //! \return Vector of section indices
-    const std::vector<Elf_Half>& get_sections() const override
-    {
-        return sections;
-    }
+    const std::vector<Elf_Half>& get_sections() const override { return sections; }
 
     //------------------------------------------------------------------------------
     //! \brief Set the index of the segment
@@ -282,9 +270,7 @@ template <class T> class segment_impl : public segment
     //! \param header_offset Offset of the segment header
     //! \param is_lazy_ Whether to load the segment lazily
     //! \return True if successful, false otherwise
-    bool load( std::istream&  stream,
-               std::streampos header_offset,
-               bool           is_lazy_ ) override
+    bool load( std::istream& stream, std::streampos header_offset, bool is_lazy_ ) override
     {
         pstream = &stream;
         is_lazy = is_lazy_;
@@ -322,20 +308,19 @@ template <class T> class segment_impl : public segment
         Elf_Xword size     = get_file_size();
 
         // Check for integer overflow in offset calculation
-        if (p_offset > get_stream_size()) {
+        if ( p_offset > get_stream_size() ) {
             data = nullptr;
             return false;
         }
 
         // Check for integer overflow in size calculation
-        if (size > get_stream_size() || 
-            size > (get_stream_size() - p_offset)) {
+        if ( size > get_stream_size() || size > ( get_stream_size() - p_offset ) ) {
             data = nullptr;
             return false;
         }
 
         // Check if size can be safely converted to size_t
-        if (size > std::numeric_limits<size_t>::max() - 1) {
+        if ( size > std::numeric_limits<size_t>::max() - 1 ) {
             data = nullptr;
             return false;
         }
@@ -361,9 +346,8 @@ template <class T> class segment_impl : public segment
     //! \param stream Output stream
     //! \param header_offset Offset of the segment header
     //! \param data_offset Offset of the segment data
-    void save( std::ostream&  stream,
-               std::streampos header_offset,
-               std::streampos data_offset ) override
+    void
+    save( std::ostream& stream, std::streampos header_offset, std::streampos data_offset ) override
     {
         ph.p_offset = decltype( ph.p_offset )( data_offset );
         ph.p_offset = ( *convertor )( ph.p_offset );
@@ -383,21 +367,17 @@ template <class T> class segment_impl : public segment
 
     //------------------------------------------------------------------------------
   private:
-    mutable std::istream* pstream = nullptr;  //!< Pointer to the input stream
-    T                     ph      = {};       //!< Segment header
-    Elf_Half              index   = 0;        //!< Index of the segment
-    mutable std::unique_ptr<char[]> data;     //!< Pointer to the segment data
-    std::vector<Elf_Half>           sections; //!< Vector of section indices
-    const endianness_convertor*     convertor =
-        nullptr; //!< Pointer to the endianness convertor
-    const address_translator* translator =
-        nullptr;                  //!< Pointer to the address translator
-    size_t stream_size   = 0;     //!< Stream size
-    bool   is_offset_set = false; //!< Flag indicating if the offset is set
-    mutable bool is_lazy =
-        false; //!< Flag indicating if the segment is loaded lazily
-    mutable bool is_loaded =
-        false; //!< Flag indicating if the segment is loaded
+    mutable std::istream*           pstream = nullptr;     //!< Pointer to the input stream
+    T                               ph      = {};          //!< Segment header
+    Elf_Half                        index   = 0;           //!< Index of the segment
+    mutable std::unique_ptr<char[]> data;                  //!< Pointer to the segment data
+    std::vector<Elf_Half>           sections;              //!< Vector of section indices
+    const endianness_convertor*     convertor   = nullptr; //!< Pointer to the endianness convertor
+    const address_translator*       translator  = nullptr; //!< Pointer to the address translator
+    size_t                          stream_size = 0;       //!< Stream size
+    bool                            is_offset_set = false; //!< Flag indicating if the offset is set
+    mutable bool is_lazy   = false; //!< Flag indicating if the segment is loaded lazily
+    mutable bool is_loaded = false; //!< Flag indicating if the segment is loaded
 };
 
 } // namespace ELFIO

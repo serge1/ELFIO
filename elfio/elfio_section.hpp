@@ -97,8 +97,7 @@ class section
      * @param raw_data Pointer to the raw data.
      * @param size Size of the data.
      */
-    virtual void
-    insert_data( Elf_Xword pos, const char* raw_data, Elf_Xword size ) = 0;
+    virtual void insert_data( Elf_Xword pos, const char* raw_data, Elf_Xword size ) = 0;
 
     /**
      * @brief Insert data into the section at a specific position.
@@ -130,9 +129,7 @@ class section
      * @param is_lazy Whether to load lazily.
      * @return True if successful, false otherwise.
      */
-    virtual bool load( std::istream&  stream,
-                       std::streampos header_offset,
-                       bool           is_lazy ) = 0;
+    virtual bool load( std::istream& stream, std::streampos header_offset, bool is_lazy ) = 0;
 
     /**
      * @brief Save the section to a stream.
@@ -140,9 +137,8 @@ class section
      * @param header_offset Offset of the header.
      * @param data_offset Offset of the data.
      */
-    virtual void save( std::ostream&  stream,
-                       std::streampos header_offset,
-                       std::streampos data_offset ) = 0;
+    virtual void
+    save( std::ostream& stream, std::streampos header_offset, std::streampos data_offset ) = 0;
 
     /**
      * @brief Check if the address is initialized.
@@ -168,8 +164,7 @@ template <class T> class section_impl : public section
     section_impl( const endianness_convertor*                   convertor,
                   const address_translator*                     translator,
                   const std::shared_ptr<compression_interface>& compression )
-        : convertor( convertor ), translator( translator ),
-          compression( compression )
+        : convertor( convertor ), translator( translator ), compression( compression )
     {
     }
 
@@ -200,10 +195,7 @@ template <class T> class section_impl : public section
      * @brief Set the name of the section.
      * @param name_prm Name of the section.
      */
-    void set_name( const std::string& name_prm ) override
-    {
-        this->name = name_prm;
-    }
+    void set_name( const std::string& name_prm ) override { this->name = name_prm; }
 
     /**
      * @brief Set the address of the section.
@@ -230,7 +222,7 @@ template <class T> class section_impl : public section
     {
         // If data load failed, the stream is corrupt
         // When lazy loading, attempts to call get_data() on it after initial load are useless
-        // When loading non-lazily, that load_data() will attempt to read data from 
+        // When loading non-lazily, that load_data() will attempt to read data from
         // the stream specified on load() call, which might be freed by this point
         if ( !is_loaded && can_be_loaded ) {
             bool res = load_data();
@@ -311,8 +303,7 @@ template <class T> class section_impl : public section
      * @param raw_data Pointer to the raw data.
      * @param size Size of the data.
      */
-    void
-    insert_data( Elf_Xword pos, const char* raw_data, Elf_Xword size ) override
+    void insert_data( Elf_Xword pos, const char* raw_data, Elf_Xword size ) override
     {
         if ( get_type() != SHT_NOBITS ) {
             // Check for valid position
@@ -329,8 +320,7 @@ template <class T> class section_impl : public section
 
             if ( new_size <= data_size ) {
                 char* d = data.get();
-                std::copy_backward( d + pos, d + get_size(),
-                                    d + get_size() + size );
+                std::copy_backward( d + pos, d + get_size(), d + get_size() + size );
                 std::copy( raw_data, raw_data + size, d + pos );
             }
             else {
@@ -346,21 +336,19 @@ template <class T> class section_impl : public section
                 new_data_size += size;
 
                 // Check if the size would overflow size_t
-                if (new_data_size > std::numeric_limits<size_t>::max()) {
+                if ( new_data_size > std::numeric_limits<size_t>::max() ) {
                     return; // Size would overflow size_t
                 }
 
                 std::unique_ptr<char[]> new_data(
-                    new (std::nothrow) char[(size_t)new_data_size]);
+                    new ( std::nothrow ) char[(size_t)new_data_size] );
 
                 if ( nullptr != new_data ) {
                     char* d = data.get();
                     std::copy( d, d + pos, new_data.get() );
-                    std::copy( raw_data, raw_data + size,
-                               new_data.get() + pos );
-                    std::copy( d + pos, d + get_size(),
-                               new_data.get() + pos + size );
-                    data = std::move( new_data );
+                    std::copy( raw_data, raw_data + size, new_data.get() + pos );
+                    std::copy( d + pos, d + get_size(), new_data.get() + pos + size );
+                    data      = std::move( new_data );
                     data_size = new_data_size;
                 }
                 else {
@@ -411,8 +399,7 @@ template <class T> class section_impl : public section
      */
     bool is_compressed() const
     {
-        return ( ( get_flags() & SHF_RPX_DEFLATE ) ||
-                 ( get_flags() & SHF_COMPRESSED ) ) &&
+        return ( ( get_flags() & SHF_RPX_DEFLATE ) || ( get_flags() & SHF_COMPRESSED ) ) &&
                compression != nullptr;
     }
 
@@ -423,9 +410,7 @@ template <class T> class section_impl : public section
      * @param is_lazy_ Whether to load lazily.
      * @return True if successful, false otherwise.
      */
-    bool load( std::istream&  stream,
-               std::streampos header_offset,
-               bool           is_lazy_ ) override
+    bool load( std::istream& stream, std::streampos header_offset, bool is_lazy_ ) override
     {
         pstream = &stream;
         is_lazy = is_lazy_;
@@ -447,8 +432,8 @@ template <class T> class section_impl : public section
             if ( is_compressed() ) {
                 Elf_Xword size              = get_size();
                 Elf_Xword uncompressed_size = 0;
-                auto      decompressed_data = compression->inflate(
-                    data.get(), convertor, size, uncompressed_size );
+                auto      decompressed_data =
+                    compression->inflate( data.get(), convertor, size, uncompressed_size );
                 if ( decompressed_data != nullptr ) {
                     set_size( uncompressed_size );
                     data = std::move( decompressed_data );
@@ -467,54 +452,54 @@ template <class T> class section_impl : public section
      */
     bool load_data() const
     {
-        Elf_Xword sh_offset = (*translator)[(*convertor)(header.sh_offset)];
-        Elf_Xword size = get_size();
-        
+        Elf_Xword sh_offset = ( *translator )[( *convertor )( header.sh_offset )];
+        Elf_Xword size      = get_size();
+
         // Check for integer overflow in offset calculation
-        if (sh_offset > get_stream_size()) {
+        if ( sh_offset > get_stream_size() ) {
             return false;
         }
-        
+
         // Check for integer overflow in size calculation
-        if (size > get_stream_size() || 
-            size > (get_stream_size() - sh_offset)) {
+        if ( size > get_stream_size() || size > ( get_stream_size() - sh_offset ) ) {
             return false;
         }
 
         // Check if we need to load data
-        if (nullptr == data && SHT_NULL != get_type() && SHT_NOBITS != get_type()) {
+        if ( nullptr == data && SHT_NULL != get_type() && SHT_NOBITS != get_type() ) {
             // Check if size can be safely converted to size_t
-            if (size > std::numeric_limits<size_t>::max() - 1) {
+            if ( size > std::numeric_limits<size_t>::max() - 1 ) {
                 return false;
             }
-            
-            data.reset(new (std::nothrow) char[size_t(size) + 1]);
 
-            if ((0 != size) && (nullptr != data)) {
-                pstream->seekg(sh_offset);
-                pstream->read(data.get(), size);
-                if (static_cast<Elf_Xword>(pstream->gcount()) != size) {
-                    data.reset(nullptr);
+            data.reset( new ( std::nothrow ) char[size_t( size ) + 1] );
+
+            if ( ( 0 != size ) && ( nullptr != data ) ) {
+                pstream->seekg( sh_offset );
+                pstream->read( data.get(), size );
+                if ( static_cast<Elf_Xword>( pstream->gcount() ) != size ) {
+                    data.reset( nullptr );
                     data_size = 0;
                     return false;
                 }
 
-                data_size = size;
+                data_size        = size;
                 data.get()[size] = 0; // Safe now as we allocated size + 1
             }
             else {
                 data_size = 0;
-                if (size != 0) {
+                if ( size != 0 ) {
                     return false; // Failed to allocate required memory
                 }
             }
-            
+
             is_loaded = true;
             return true;
         }
 
         // Data already loaded or doesn't need loading
-        is_loaded = (nullptr != data) || (SHT_NULL == get_type()) || (SHT_NOBITS == get_type());
+        is_loaded =
+            ( nullptr != data ) || ( SHT_NULL == get_type() ) || ( SHT_NOBITS == get_type() );
         return is_loaded;
     }
 
@@ -524,9 +509,8 @@ template <class T> class section_impl : public section
      * @param header_offset Offset of the header.
      * @param data_offset Offset of the data.
      */
-    void save( std::ostream&  stream,
-               std::streampos header_offset,
-               std::streampos data_offset ) override
+    void
+    save( std::ostream& stream, std::streampos header_offset, std::streampos data_offset ) override
     {
         if ( 0 != get_index() ) {
             header.sh_offset = decltype( header.sh_offset )( data_offset );
@@ -534,8 +518,8 @@ template <class T> class section_impl : public section
         }
 
         save_header( stream, header_offset );
-        if ( get_type() != SHT_NOBITS && get_type() != SHT_NULL &&
-             get_size() != 0 && data != nullptr ) {
+        if ( get_type() != SHT_NOBITS && get_type() != SHT_NULL && get_size() != 0 &&
+             data != nullptr ) {
             save_data( stream, data_offset );
         }
     }
@@ -549,8 +533,7 @@ template <class T> class section_impl : public section
     void save_header( std::ostream& stream, std::streampos header_offset ) const
     {
         adjust_stream_size( stream, header_offset );
-        stream.write( reinterpret_cast<const char*>( &header ),
-                      sizeof( header ) );
+        stream.write( reinterpret_cast<const char*>( &header ), sizeof( header ) );
     }
 
     /**
@@ -562,13 +545,12 @@ template <class T> class section_impl : public section
     {
         adjust_stream_size( stream, data_offset );
 
-        if ( ( ( get_flags() & SHF_COMPRESSED ) ||
-               ( get_flags() & SHF_RPX_DEFLATE ) ) &&
+        if ( ( ( get_flags() & SHF_COMPRESSED ) || ( get_flags() & SHF_RPX_DEFLATE ) ) &&
              compression != nullptr ) {
             Elf_Xword decompressed_size = get_size();
             Elf_Xword compressed_size   = 0;
-            auto      compressed_ptr    = compression->deflate(
-                data.get(), convertor, decompressed_size, compressed_size );
+            auto      compressed_ptr =
+                compression->deflate( data.get(), convertor, decompressed_size, compressed_size );
             stream.write( compressed_ptr.get(), compressed_size );
         }
         else {
@@ -577,25 +559,20 @@ template <class T> class section_impl : public section
     }
 
   private:
-    mutable std::istream* pstream =
-        nullptr; /**< Pointer to the input stream. */
-    T                               header = {};   /**< Section header. */
-    Elf_Half                        index  = 0;    /**< Index of the section. */
-    std::string                     name;          /**< Name of the section. */
-    mutable std::unique_ptr<char[]> data;          /**< Pointer to the data. */
-    mutable Elf_Xword               data_size = 0; /**< Size of the data. */
-    const endianness_convertor*     convertor =
-        nullptr; /**< Pointer to the endianness convertor. */
-    const address_translator* translator =
-        nullptr; /**< Pointer to the address translator. */
+    mutable std::istream*           pstream = nullptr; /**< Pointer to the input stream. */
+    T                               header  = {};      /**< Section header. */
+    Elf_Half                        index   = 0;       /**< Index of the section. */
+    std::string                     name;              /**< Name of the section. */
+    mutable std::unique_ptr<char[]> data;              /**< Pointer to the data. */
+    mutable Elf_Xword               data_size = 0;     /**< Size of the data. */
+    const endianness_convertor* convertor  = nullptr;  /**< Pointer to the endianness convertor. */
+    const address_translator*   translator = nullptr;  /**< Pointer to the address translator. */
     const std::shared_ptr<compression_interface> compression =
-        nullptr; /**< Shared pointer to the compression interface. */
-    bool is_address_set = false;  /**< Flag indicating if the address is set. */
-    size_t       stream_size = 0; /**< Size of the stream. */
-    mutable bool is_lazy =
-        false; /**< Flag indicating if lazy loading is enabled. */
-    mutable bool is_loaded =
-        false; /**< Flag indicating if the data is loaded. */
+        nullptr;                         /**< Shared pointer to the compression interface. */
+    bool         is_address_set = false; /**< Flag indicating if the address is set. */
+    size_t       stream_size    = 0;     /**< Size of the stream. */
+    mutable bool is_lazy        = false; /**< Flag indicating if lazy loading is enabled. */
+    mutable bool is_loaded      = false; /**< Flag indicating if the data is loaded. */
     mutable bool can_be_loaded =
         true; /**< Flag indicating if the data can loaded. This is not the case if the section is corrupted. */
 };

@@ -39,10 +39,7 @@ template <class S> class string_section_accessor_template
     //------------------------------------------------------------------------------
     //! \brief Constructor
     //! \param section Pointer to the section
-    explicit string_section_accessor_template( S* section )
-        : string_section( section )
-    {
-    }
+    explicit string_section_accessor_template( S* section ) : string_section( section ) {}
 
     //------------------------------------------------------------------------------
     //! \brief Get a string from the section
@@ -51,9 +48,8 @@ template <class S> class string_section_accessor_template
     const char* get_string( Elf_Word index ) const
     {
         if ( string_section ) {
-            const char* data = string_section->get_data();
-            size_t      section_size =
-                static_cast<size_t>( string_section->get_size() );
+            const char* data         = string_section->get_data();
+            size_t      section_size = static_cast<size_t>( string_section->get_size() );
 
             // Check if index is within bounds
             if ( index >= section_size || nullptr == data ) {
@@ -68,8 +64,7 @@ template <class S> class string_section_accessor_template
 
             // Use standard C++ functions to find string length
             const char* str = data + index;
-            const char* end =
-                (const char*)std::memchr( str, '\0', remaining_size );
+            const char* end = (const char*)std::memchr( str, '\0', remaining_size );
             if ( end != nullptr && end < str + remaining_size ) {
                 return str;
             }
@@ -92,8 +87,7 @@ template <class S> class string_section_accessor_template
 
         if ( string_section ) {
             // Strings are added to the end of the current section data
-            current_position =
-                static_cast<Elf_Word>( string_section->get_size() );
+            current_position = static_cast<Elf_Word>( string_section->get_size() );
 
             if ( current_position == 0 ) {
                 char empty_string = '\0';
@@ -109,8 +103,7 @@ template <class S> class string_section_accessor_template
 
             // Check if appending would overflow section size
             Elf_Word append_size = static_cast<Elf_Word>( str_len + 1 );
-            if ( append_size >
-                 std::numeric_limits<Elf_Word>::max() - current_position ) {
+            if ( append_size > std::numeric_limits<Elf_Word>::max() - current_position ) {
                 return 0; // Would overflow section size
             }
 
@@ -124,19 +117,15 @@ template <class S> class string_section_accessor_template
     //! \brief Add a string to the section
     //! \param str The string to add
     //! \return Index of the added string
-    Elf_Word add_string( const std::string& str )
-    {
-        return add_string( str.c_str() );
-    }
+    Elf_Word add_string( const std::string& str ) { return add_string( str.c_str() ); }
 
     //------------------------------------------------------------------------------
   private:
     S* string_section; //!< Pointer to the section
 };
 
-using string_section_accessor = string_section_accessor_template<section>;
-using const_string_section_accessor =
-    string_section_accessor_template<const section>;
+using string_section_accessor       = string_section_accessor_template<section>;
+using const_string_section_accessor = string_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

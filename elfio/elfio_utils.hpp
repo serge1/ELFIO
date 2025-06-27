@@ -29,8 +29,7 @@ THE SOFTWARE.
 
 #define ELFIO_GET_ACCESS_DECL( TYPE, NAME ) virtual TYPE get_##NAME() const = 0
 
-#define ELFIO_SET_ACCESS_DECL( TYPE, NAME ) \
-    virtual void set_##NAME( const TYPE& value ) = 0
+#define ELFIO_SET_ACCESS_DECL( TYPE, NAME ) virtual void set_##NAME( const TYPE& value ) = 0
 
 #define ELFIO_GET_SET_ACCESS_DECL( TYPE, NAME )       \
     virtual TYPE get_##NAME() const              = 0; \
@@ -99,7 +98,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return (int64_t)( *this )( (uint64_t)value );
+        return ( int64_t )( *this )( (uint64_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -111,9 +110,8 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        value =
-            ( ( value & 0x000000FF ) << 24 ) | ( ( value & 0x0000FF00 ) << 8 ) |
-            ( ( value & 0x00FF0000 ) >> 8 ) | ( ( value & 0xFF000000 ) >> 24 );
+        value = ( ( value & 0x000000FF ) << 24 ) | ( ( value & 0x0000FF00 ) << 8 ) |
+                ( ( value & 0x00FF0000 ) >> 8 ) | ( ( value & 0xFF000000 ) >> 24 );
 
         return value;
     }
@@ -127,7 +125,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return (int32_t)( *this )( (uint32_t)value );
+        return ( int32_t )( *this )( (uint32_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -139,8 +137,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        value =
-            (uint16_t)( ( value & 0x00FF ) << 8 ) | ( ( value & 0xFF00 ) >> 8 );
+        value = ( uint16_t )( ( value & 0x00FF ) << 8 ) | ( ( value & 0xFF00 ) >> 8 );
 
         return value;
     }
@@ -154,7 +151,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return (int16_t)( *this )( (uint16_t)value );
+        return ( int16_t )( *this )( (uint16_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -220,8 +217,7 @@ class address_translator
         addr_translations = addr_trans;
 
         std::sort( addr_translations.begin(), addr_translations.end(),
-                   []( const address_translation& a,
-                       const address_translation& b ) -> bool {
+                   []( const address_translation& a, const address_translation& b ) -> bool {
                        return a.start < b.start;
                    } );
     }
@@ -251,8 +247,7 @@ class address_translator
     bool empty() const { return addr_translations.empty(); }
 
   private:
-    std::vector<address_translation>
-        addr_translations; //!< Vector of address translations
+    std::vector<address_translation> addr_translations; //!< Vector of address translations
 };
 
 //------------------------------------------------------------------------------
@@ -328,7 +323,7 @@ inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 inline static size_t strnlength( const char* s, size_t n )
 {
     auto found = (const char*)std::memchr( s, '\0', n );
-    return found ? (size_t)( found - s ) : n;
+    return found ? ( size_t )( found - s ) : n;
 }
 
 //------------------------------------------------------------------------------
@@ -346,11 +341,10 @@ class compression_interface
     //! \param compressed_size The size of the compressed data buffer
     //! \param uncompressed_size Reference to a variable to store the decompressed buffer size
     //! \return A smart pointer to the decompressed data
-    virtual std::unique_ptr<char[]>
-    inflate( const char*                 data,
-             const endianness_convertor* convertor,
-             Elf_Xword                   compressed_size,
-             Elf_Xword&                  uncompressed_size ) const = 0;
+    virtual std::unique_ptr<char[]> inflate( const char*                 data,
+                                             const endianness_convertor* convertor,
+                                             Elf_Xword                   compressed_size,
+                                             Elf_Xword& uncompressed_size ) const = 0;
 
     //------------------------------------------------------------------------------
     //! \brief Compress a section
@@ -359,11 +353,10 @@ class compression_interface
     //! \param decompressed_size The size of the uncompressed data buffer
     //! \param compressed_size Reference to a variable to store the compressed buffer size
     //! \return A smart pointer to the compressed data
-    virtual std::unique_ptr<char[]>
-    deflate( const char*                 data,
-             const endianness_convertor* convertor,
-             Elf_Xword                   decompressed_size,
-             Elf_Xword&                  compressed_size ) const = 0;
+    virtual std::unique_ptr<char[]> deflate( const char*                 data,
+                                             const endianness_convertor* convertor,
+                                             Elf_Xword                   decompressed_size,
+                                             Elf_Xword& compressed_size ) const = 0;
 };
 
 } // namespace ELFIO
