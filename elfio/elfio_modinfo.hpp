@@ -44,8 +44,7 @@ template <class S> class modinfo_section_accessor_template
      * 
      * @param section The section to be accessed.
      */
-    explicit modinfo_section_accessor_template( S* section )
-        : modinfo_section( section )
+    explicit modinfo_section_accessor_template( S* section ) : modinfo_section( section )
     {
         process_section();
     }
@@ -68,8 +67,7 @@ template <class S> class modinfo_section_accessor_template
      * @return true If the attribute is found.
      * @return false If the attribute is not found.
      */
-    bool
-    get_attribute( Elf_Word no, std::string& field, std::string& value ) const
+    bool get_attribute( Elf_Word no, std::string& field, std::string& value ) const
     {
         if ( no < content.size() ) {
             field = content[no].first;
@@ -89,8 +87,7 @@ template <class S> class modinfo_section_accessor_template
      * @return true If the attribute is found.
      * @return false If the attribute is not found.
      */
-    bool get_attribute( const std::string_view& field_name,
-                        std::string&            value ) const
+    bool get_attribute( const std::string_view& field_name, std::string& value ) const
     {
         for ( const auto& [first, second] : content ) {
             if ( field_name == first ) {
@@ -143,8 +140,7 @@ template <class S> class modinfo_section_accessor_template
                 if ( i < modinfo_section->get_size() ) {
                     std::string info = pdata + i;
                     size_t      loc  = info.find( '=' );
-                    content.emplace_back( info.substr( 0, loc ),
-                                          info.substr( loc + 1 ) );
+                    content.emplace_back( info.substr( 0, loc ), info.substr( loc + 1 ) );
 
                     i += info.length();
                 }
@@ -154,14 +150,12 @@ template <class S> class modinfo_section_accessor_template
 
     //------------------------------------------------------------------------------
   private:
-    S* modinfo_section; ///< The section to be accessed.
-    std::vector<std::pair<std::string, std::string>>
-        content; ///< The list of attributes.
+    S* modinfo_section;                                       ///< The section to be accessed.
+    std::vector<std::pair<std::string, std::string>> content; ///< The list of attributes.
 };
 
-using modinfo_section_accessor = modinfo_section_accessor_template<section>;
-using const_modinfo_section_accessor =
-    modinfo_section_accessor_template<const section>;
+using modinfo_section_accessor       = modinfo_section_accessor_template<section>;
+using const_modinfo_section_accessor = modinfo_section_accessor_template<const section>;
 
 } // namespace ELFIO
 

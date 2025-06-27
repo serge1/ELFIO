@@ -29,8 +29,7 @@ THE SOFTWARE.
 
 #define ELFIO_GET_ACCESS_DECL( TYPE, NAME ) virtual TYPE get_##NAME() const = 0
 
-#define ELFIO_SET_ACCESS_DECL( TYPE, NAME ) \
-    virtual void set_##NAME( const TYPE& value ) = 0
+#define ELFIO_SET_ACCESS_DECL( TYPE, NAME ) virtual void set_##NAME( const TYPE& value ) = 0
 
 #define ELFIO_GET_SET_ACCESS_DECL( TYPE, NAME )       \
     virtual TYPE get_##NAME() const              = 0; \
@@ -99,7 +98,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return ( std::int64_t )( *this )( (std::uint64_t)value );
+        return ( std:: int64_t  )( *this )( (std::uint64_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -111,9 +110,8 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        value =
-            ( ( value & 0x000000FF ) << 24 ) | ( ( value & 0x0000FF00 ) << 8 ) |
-            ( ( value & 0x00FF0000 ) >> 8 ) | ( ( value & 0xFF000000 ) >> 24 );
+        value = ( ( value & 0x000000FF ) << 24 ) | ( ( value & 0x0000FF00 ) << 8 ) |
+                ( ( value & 0x00FF0000 ) >> 8 ) | ( ( value & 0xFF000000 ) >> 24 );
 
         return value;
     }
@@ -127,7 +125,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return ( std::int32_t )( *this )( (std::uint32_t)value );
+        return ( std:: int32_t  )( *this )( (std::uint32_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -154,7 +152,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return ( std::int16_t )( *this )( (std::uint16_t)value );
+        return ( std:: int16_t  )( *this )( (std::uint16_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -222,8 +220,7 @@ class address_translator
         addr_translations = addr_trans;
 
         std::sort( addr_translations.begin(), addr_translations.end(),
-                   []( const address_translation& a,
-                       const address_translation& b ) -> bool {
+                   []( const address_translation& a, const address_translation& b ) -> bool {
                        return a.start < b.start;
                    } );
     }
@@ -253,8 +250,7 @@ class address_translator
     bool empty() const { return addr_translations.empty(); }
 
   private:
-    std::vector<address_translation>
-        addr_translations; //!< Vector of address translations
+    std::vector<address_translation> addr_translations; //!< Vector of address translations
 };
 
 //------------------------------------------------------------------------------
@@ -330,7 +326,7 @@ inline void adjust_stream_size( std::ostream& stream, std::streamsize offset )
 inline static size_t strnlength( const char* s, size_t n )
 {
     auto found = (const char*)std::memchr( s, '\0', n );
-    return found ? (size_t)( found - s ) : n;
+    return found ? ( size_t )( found - s ) : n;
 }
 
 //------------------------------------------------------------------------------

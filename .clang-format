@@ -20,7 +20,7 @@ BraceWrapping:
   BeforeCatch             : true
   BeforeElse              : true
 BreakBeforeBraces                    : Custom
-ColumnLimit                          : 80
+ColumnLimit                          : 100
 FixNamespaceComments                 : true
 IndentCaseLabels                     : false
 IndentWidth                          : 4
@@ -30,5 +30,7 @@ ReflowComments                       : false
 SortIncludes                         : false
 SpacesInConditionalStatement         : true
 SpacesInParentheses                  : true
+SpaceAfterCStyleCast                 : false
+SpacesInCStyleCastParentheses        : false
 TabWidth                             : 4
 UseTab                               : Never

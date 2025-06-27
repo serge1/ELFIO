@@ -112,8 +112,7 @@ static const struct machine_table_t
     { EM_860, "Intel 80860" },
     { EM_MIPS, "MIPS R3000 (officially, big-endian only)" },
     { EM_S370, "IBM System/370" },
-    { EM_MIPS_RS3_LE,
-      "MIPS R3000 little-endian (Oct 4 1999 Draft) Deprecated" },
+    { EM_MIPS_RS3_LE, "MIPS R3000 little-endian (Oct 4 1999 Draft) Deprecated" },
     { EM_res011, "Reserved" },
     { EM_res012, "Reserved" },
     { EM_res013, "Reserved" },
@@ -273,8 +272,7 @@ static const struct machine_table_t
     { EM_QDSP6, "QUALCOMM DSP6 Processor" },
     { EM_8051, "Intel 8051 and variants" },
     { EM_STXP7X, "STMicroelectronics STxP7x family" },
-    { EM_NDS32,
-      "Andes Technology compact code size embedded RISC processor family" },
+    { EM_NDS32, "Andes Technology compact code size embedded RISC processor family" },
     { EM_ECOG1, "Cyan Technology eCOG1X family" },
     { EM_ECOG1X, "Cyan Technology eCOG1X family" },
     { EM_MAXQ30, "Dallas Semiconductor MAXQ30 Core Micro-controllers" },
@@ -445,9 +443,8 @@ static const struct symbol_bind_t
     const Elf_Word key;
     const char*    str;
 } symbol_bind_table[] = {
-    { STB_LOCAL, "LOCAL" },   { STB_GLOBAL, "GLOBAL" },
-    { STB_WEAK, "WEAK" },     { STB_LOOS, "LOOS" },
-    { STB_HIOS, "HIOS" },     { STB_MULTIDEF, "MULTIDEF" },
+    { STB_LOCAL, "LOCAL" },   { STB_GLOBAL, "GLOBAL" }, { STB_WEAK, "WEAK" },
+    { STB_LOOS, "LOOS" },     { STB_HIOS, "HIOS" },     { STB_MULTIDEF, "MULTIDEF" },
     { STB_LOPROC, "LOPROC" }, { STB_HIPROC, "HIPROC" },
 };
 
@@ -456,12 +453,10 @@ static const struct symbol_type_t
     const Elf_Word key;
     const char*    str;
 } symbol_type_table[] = {
-    { STT_NOTYPE, "NOTYPE" }, { STT_OBJECT, "OBJECT" },
-    { STT_FUNC, "FUNC" },     { STT_SECTION, "SECTION" },
-    { STT_FILE, "FILE" },     { STT_COMMON, "COMMON" },
-    { STT_TLS, "TLS" },       { STT_LOOS, "LOOS" },
-    { STT_HIOS, "HIOS" },     { STT_LOPROC, "LOPROC" },
-    { STT_HIPROC, "HIPROC" },
+    { STT_NOTYPE, "NOTYPE" },   { STT_OBJECT, "OBJECT" }, { STT_FUNC, "FUNC" },
+    { STT_SECTION, "SECTION" }, { STT_FILE, "FILE" },     { STT_COMMON, "COMMON" },
+    { STT_TLS, "TLS" },         { STT_LOOS, "LOOS" },     { STT_HIOS, "HIOS" },
+    { STT_LOPROC, "LOPROC" },   { STT_HIPROC, "HIPROC" },
 };
 
 static const struct dynamic_tag_t
@@ -675,14 +670,11 @@ static const ELFIO::Elf_Xword MAX_DATA_ENTRIES = 64;
 // Class representing the ELF dump functionality
 class dump
 {
-#define DUMP_DEC_FORMAT( width ) \
-    std::setw( width ) << std::setfill( ' ' ) << std::dec << std::right
+#define DUMP_DEC_FORMAT( width ) std::setw( width ) << std::setfill( ' ' ) << std::dec << std::right
 #define DUMP_HEX0x_FORMAT( width ) \
     "0x" << std::setw( width ) << std::setfill( '0' ) << std::hex << std::right
-#define DUMP_HEX_FORMAT( width ) \
-    std::setw( width ) << std::setfill( '0' ) << std::hex << std::right
-#define DUMP_STR_FORMAT( width ) \
-    std::setw( width ) << std::setfill( ' ' ) << std::hex << std::left
+#define DUMP_HEX_FORMAT( width ) std::setw( width ) << std::setfill( '0' ) << std::hex << std::right
+#define DUMP_STR_FORMAT( width ) std::setw( width ) << std::setfill( ' ' ) << std::hex << std::left
 
   public:
     //------------------------------------------------------------------------------
@@ -695,22 +687,17 @@ class dump
         out << "ELF Header" << std::endl
             << std::endl
             << "  Class:      " << str_class( reader.get_class() ) << std::endl
-            << "  Encoding:   " << str_endian( reader.get_encoding() )
-            << std::endl
-            << "  ELFVersion: " << str_version( reader.get_elf_version() )
-            << std::endl
-            << "  OS/ABI:     " << str_os_abi( reader.get_os_abi() )
-            << std::endl
+            << "  Encoding:   " << str_endian( reader.get_encoding() ) << std::endl
+            << "  ELFVersion: " << str_version( reader.get_elf_version() ) << std::endl
+            << "  OS/ABI:     " << str_os_abi( reader.get_os_abi() ) << std::endl
             << "  ABI Version:" << (int)reader.get_abi_version() << std::endl
             << "  Type:       " << str_type( reader.get_type() ) << std::endl
-            << "  Machine:    " << str_machine( reader.get_machine() )
-            << std::endl
-            << "  Version:    " << str_version( reader.get_version() )
-            << std::endl
-            << "  Entry:      " << "0x" << std::hex << reader.get_entry()
-            << std::endl
-            << "  Flags:      " << "0x" << std::hex << reader.get_flags()
-            << std::endl
+            << "  Machine:    " << str_machine( reader.get_machine() ) << std::endl
+            << "  Version:    " << str_version( reader.get_version() ) << std::endl
+            << "  Entry:      "
+            << "0x" << std::hex << reader.get_entry() << std::endl
+            << "  Flags:      "
+            << "0x" << std::hex << reader.get_flags() << std::endl
             << std::endl;
     }
 
@@ -744,18 +731,14 @@ class dump
 
         out << "Key to Flags: W (write), A (alloc), X (execute), " << std::endl;
         out << "              M (merge), S (strings), I (info)," << std::endl;
-        out << "              L (link order), O (extra OS processing required),"
-            << std::endl;
-        out << "              G (group), T (TLS), C (compressed), E (exclude)"
-            << std::endl;
+        out << "              L (link order), O (extra OS processing required)," << std::endl;
+        out << "              G (group), T (TLS), C (compressed), E (exclude)" << std::endl;
     }
 
     //------------------------------------------------------------------------------
     // Dumps a single section header information
-    static void section_header( std::ostream&  out,
-                                Elf_Half       no,
-                                const section* sec,
-                                unsigned char  elf_class )
+    static void
+    section_header( std::ostream& out, Elf_Half no, const section* sec, unsigned char elf_class )
     {
         std::ios_base::fmtflags original_flags = out.flags();
 
@@ -827,11 +810,11 @@ class dump
 
         out << std::endl;
         for ( Elf_Half i = 0; i < n; ++i ) {
-            out << "[" << i << "]" << " ";
+            out << "[" << i << "]"
+                << " ";
             const segment* seg = reader.segments[i];
             for ( Elf_Half j = 0; j < seg->get_sections_num(); j++ ) {
-                const section* sec =
-                    reader.sections[seg->get_section_index_at( j )];
+                const section* sec = reader.sections[seg->get_section_index_at( j )];
                 out << sec->get_name() << " ";
             }
             out << std::endl;
@@ -842,10 +825,8 @@ class dump
 
     //------------------------------------------------------------------------------
     // Dumps a single segment header information
-    static void segment_header( std::ostream&  out,
-                                Elf_Half       no,
-                                const segment* seg,
-                                unsigned int   elf_class )
+    static void
+    segment_header( std::ostream& out, Elf_Half no, const segment* seg, unsigned int elf_class )
     {
         std::ios_base::fmtflags original_flags = out.flags();
         // clang-format off
@@ -884,8 +865,7 @@ class dump
     static void symbol_tables( std::ostream& out, const elfio& reader )
     {
         for ( const auto& sec : reader.sections ) { // For all sections
-            if ( SHT_SYMTAB == sec->get_type() ||
-                 SHT_DYNSYM == sec->get_type() ) {
+            if ( SHT_SYMTAB == sec->get_type() || SHT_DYNSYM == sec->get_type() ) {
                 const_symbol_section_accessor symbols( reader, sec.get() );
 
                 Elf_Xword sym_no = symbols.get_symbols_num();
@@ -913,10 +893,9 @@ class dump
                     unsigned char type    = 0;
                     Elf_Half      section = 0;
                     unsigned char other   = 0;
-                    symbols.get_symbol( i, name, value, size, bind, type,
-                                        section, other );
-                    symbol_table( out, i, name, value, size, bind, type,
-                                  section, reader.get_class() );
+                    symbols.get_symbol( i, name, value, size, bind, type, section, other );
+                    symbol_table( out, i, name, value, size, bind, type, section,
+                                  reader.get_class() );
                 }
 
                 out << std::endl;
@@ -939,23 +918,18 @@ class dump
         std::ios_base::fmtflags original_flags = out.flags();
 
         if ( elf_class == ELFCLASS32 ) { // Output for 32-bit
-            out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
-                << DUMP_HEX0x_FORMAT( 8 ) << value << " "
-                << DUMP_HEX0x_FORMAT( 8 ) << size << " " << DUMP_STR_FORMAT( 7 )
-                << str_symbol_type( type ) << " " << DUMP_STR_FORMAT( 8 )
-                << str_symbol_bind( bind ) << " " << DUMP_DEC_FORMAT( 5 )
-                << section << " " << DUMP_STR_FORMAT( 1 ) << name << " "
-                << std::endl;
+            out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] " << DUMP_HEX0x_FORMAT( 8 ) << value
+                << " " << DUMP_HEX0x_FORMAT( 8 ) << size << " " << DUMP_STR_FORMAT( 7 )
+                << str_symbol_type( type ) << " " << DUMP_STR_FORMAT( 8 ) << str_symbol_bind( bind )
+                << " " << DUMP_DEC_FORMAT( 5 ) << section << " " << DUMP_STR_FORMAT( 1 ) << name
+                << " " << std::endl;
         }
         else { // Output for 64-bit
-            out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
-                << DUMP_HEX0x_FORMAT( 16 ) << value << " "
-                << DUMP_HEX0x_FORMAT( 16 ) << size << " "
-                << DUMP_STR_FORMAT( 7 ) << str_symbol_type( type ) << " "
-                << DUMP_STR_FORMAT( 8 ) << str_symbol_bind( bind ) << " "
-                << DUMP_DEC_FORMAT( 5 ) << section << " " << std::endl
-                << "        " << DUMP_STR_FORMAT( 1 ) << name << " "
-                << std::endl;
+            out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] " << DUMP_HEX0x_FORMAT( 16 ) << value
+                << " " << DUMP_HEX0x_FORMAT( 16 ) << size << " " << DUMP_STR_FORMAT( 7 )
+                << str_symbol_type( type ) << " " << DUMP_STR_FORMAT( 8 ) << str_symbol_bind( bind )
+                << " " << DUMP_DEC_FORMAT( 5 ) << section << " " << std::endl
+                << "        " << DUMP_STR_FORMAT( 1 ) << name << " " << std::endl;
         }
 
         out.flags( original_flags );
@@ -974,8 +948,7 @@ class dump
                     continue;
 
                 out << "Note section (" << sec->get_name() << ")" << std::endl
-                    << "    No Name         Data size  Description"
-                    << std::endl;
+                    << "    No Name         Data size  Description" << std::endl;
                 for ( Elf_Word j = 0; j < no_notes; ++j ) { // For all notes
                     Elf_Word    type;
                     std::string name;
@@ -1005,8 +978,7 @@ class dump
                     continue;
 
                 out << "Note segment (" << i << ")" << std::endl
-                    << "    No Name         Data size  Description"
-                    << std::endl;
+                    << "    No Name         Data size  Description" << std::endl;
                 for ( Elf_Word j = 0; j < no_notes; ++j ) { // For all notes
                     Elf_Word    type;
                     std::string name;
@@ -1037,29 +1009,23 @@ class dump
     {
         out << "  [" << DUMP_DEC_FORMAT( 2 ) << no << "] ";
 
-        const auto name_group = std::find_if(
-            std::begin( note_tag_table ), std::end( note_tag_table ),
-            [&name]( const note_tag_t& entry ) { return entry.name == name; } );
+        const auto name_group =
+            std::find_if( std::begin( note_tag_table ), std::end( note_tag_table ),
+                          [&name]( const note_tag_t& entry ) { return entry.name == name; } );
 
         std::vector<note_tag_t::note_values_t>::const_iterator type_value;
         if ( name_group != std::end( note_tag_table ) ) {
             type_value = std::find_if(
                 name_group->values.begin(), name_group->values.end(),
-                [&type]( const note_tag_t::note_values_t& e ) {
-                    return e.type == type;
-                } );
+                [&type]( const note_tag_t::note_values_t& e ) { return e.type == type; } );
         }
 
-        if ( name_group != std::end( note_tag_table ) &&
-             type_value != name_group->values.end() ) {
-            out << DUMP_STR_FORMAT( 12 ) << name_group->name << " "
-                << DUMP_HEX0x_FORMAT( 8 ) << descsz << " "
-                << type_value->type_str << " (" << type_value->description
-                << ")";
+        if ( name_group != std::end( note_tag_table ) && type_value != name_group->values.end() ) {
+            out << DUMP_STR_FORMAT( 12 ) << name_group->name << " " << DUMP_HEX0x_FORMAT( 8 )
+                << descsz << " " << type_value->type_str << " (" << type_value->description << ")";
         }
         else {
-            out << DUMP_STR_FORMAT( 12 ) << name << " "
-                << DUMP_HEX0x_FORMAT( 8 ) << descsz << " "
+            out << DUMP_STR_FORMAT( 12 ) << name << " " << DUMP_HEX0x_FORMAT( 8 ) << descsz << " "
                 << DUMP_HEX0x_FORMAT( 8 ) << type;
         }
 
@@ -1068,8 +1034,7 @@ class dump
                 if ( i % 16 == 0 ) {
                     out << std::endl << "         ";
                 }
-                out << DUMP_HEX_FORMAT( 2 )
-                    << ( std::uint32_t )( (std::uint8_t*)( desc ) )[i];
+                out << DUMP_HEX_FORMAT( 2 ) << ( std:: uint32_t  )( (std::uint8_t*)( desc ) )[i];
             }
         }
     }
@@ -1087,8 +1052,8 @@ class dump
                     std::string field;
                     std::string value;
                     if ( modinfo.get_attribute( i, field, value ) ) {
-                        out << "  " << std::setw( 20 ) << field
-                            << std::setw( 0 ) << " = " << value << std::endl;
+                        out << "  " << std::setw( 20 ) << field << std::setw( 0 ) << " = " << value
+                            << std::endl;
                     }
                 }
 
@@ -1111,6 +1076,7 @@ class dump
                 Elf_Xword dyn_no = dynamic.get_entries_num();
                 if ( dyn_no == 0 )
                     continue;
+
                 if ( !name_only ) {
                     out << "Dynamic section (" << sec->get_name() << ")"
                         << std::endl;
@@ -1172,14 +1138,12 @@ class dump
         const char* pdata = sec->get_data();
         if ( pdata ) {
             ELFIO::Elf_Xword i;
-            for ( i = 0; i < std::min( sec->get_size(), MAX_DATA_ENTRIES );
-                  ++i ) {
+            for ( i = 0; i < std::min( sec->get_size(), MAX_DATA_ENTRIES ); ++i ) {
                 if ( i % 16 == 0 ) {
                     out << "[" << DUMP_HEX0x_FORMAT( 8 ) << i << "]";
                 }
 
-                out << " " << DUMP_HEX0x_FORMAT( 2 )
-                    << ( pdata[i] & 0x000000FF );
+                out << " " << DUMP_HEX0x_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
 
                 if ( i % 16 == 15 ) {
                     out << std::endl;
@@ -1220,8 +1184,7 @@ class dump
 
     //------------------------------------------------------------------------------
     // Dumps the segment data
-    static void
-    segment_data( std::ostream& out, Elf_Half no, const segment* seg )
+    static void segment_data( std::ostream& out, Elf_Half no, const segment* seg )
     {
         std::ios_base::fmtflags original_flags = out.flags();
 
@@ -1229,14 +1192,12 @@ class dump
         const char* pdata = seg->get_data();
         if ( pdata ) {
             ELFIO::Elf_Xword i;
-            for ( i = 0; i < std::min( seg->get_file_size(), MAX_DATA_ENTRIES );
-                  ++i ) {
+            for ( i = 0; i < std::min( seg->get_file_size(), MAX_DATA_ENTRIES ); ++i ) {
                 if ( i % 16 == 0 ) {
                     out << "[" << DUMP_HEX0x_FORMAT( 8 ) << i << "]";
                 }
 
-                out << " " << DUMP_HEX0x_FORMAT( 2 )
-                    << ( pdata[i] & 0x000000FF );
+                out << " " << DUMP_HEX0x_FORMAT( 2 ) << ( pdata[i] & 0x000000FF );
 
                 if ( i % 16 == 15 ) {
                     out << std::endl;
@@ -1300,8 +1261,7 @@ class dump
     std::string static find_value_in_table( const T& table, const K& key )
     {
         std::string res = "?";
-        for ( unsigned int i = 0; i < sizeof( table ) / sizeof( table[0] );
-              ++i ) {
+        for ( unsigned int i = 0; i < sizeof( table ) / sizeof( table[0] ); ++i ) {
             if ( table[i].key == key ) {
                 res = table[i].str;
                 break;
@@ -1326,8 +1286,7 @@ class dump
     }
 
     //------------------------------------------------------------------------------
-    template <typename T>
-    static std::string format_assoc( const T& table, const char key )
+    template <typename T> static std::string format_assoc( const T& table, const char key )
     {
         return format_assoc( table, (const int)key );
     }

@@ -34,12 +34,10 @@ template <class S> class versym_section_accessor_template
     //------------------------------------------------------------------------------
     //! \brief Constructor
     //! \param section Pointer to the section
-    explicit versym_section_accessor_template( S* section )
-        : versym_section( section )
+    explicit versym_section_accessor_template( S* section ) : versym_section( section )
     {
         if ( section != nullptr ) {
-            entries_num = decltype( entries_num )( section->get_size() /
-                                                   sizeof( Elf_Half ) );
+            entries_num = decltype( entries_num )( section->get_size() / sizeof( Elf_Half ) );
         }
     }
 
@@ -106,9 +104,8 @@ template <class S> class versym_section_accessor_template
     Elf_Word entries_num    = 0;       //!< Number of entries
 };
 
-using versym_section_accessor = versym_section_accessor_template<section>;
-using const_versym_section_accessor =
-    versym_section_accessor_template<const section>;
+using versym_section_accessor       = versym_section_accessor_template<section>;
+using const_versym_section_accessor = versym_section_accessor_template<const section>;
 
 //------------------------------------------------------------------------------
 //! \class versym_r_section_accessor_template
@@ -120,10 +117,8 @@ template <class S> class versym_r_section_accessor_template
     //! \brief Constructor
     //! \param elf_file Reference to the ELF file
     //! \param versym_r_section Pointer to the version requirement section
-    versym_r_section_accessor_template( const elfio& elf_file,
-                                        S*           versym_r_section )
-        : elf_file( elf_file ), versym_r_section( versym_r_section ),
-          entries_num( 0 )
+    versym_r_section_accessor_template( const elfio& elf_file, S* versym_r_section )
+        : elf_file( elf_file ), versym_r_section( versym_r_section ), entries_num( 0 )
     {
         // Find .dynamic section
         const section* dynamic_section = elf_file.sections[".dynamic"];
@@ -132,16 +127,14 @@ template <class S> class versym_r_section_accessor_template
             return;
         }
 
-        const_dynamic_section_accessor dynamic_section_acc( elf_file,
-                                                            dynamic_section );
-        Elf_Xword dyn_sec_num = dynamic_section_acc.get_entries_num();
+        const_dynamic_section_accessor dynamic_section_acc( elf_file, dynamic_section );
+        Elf_Xword                      dyn_sec_num = dynamic_section_acc.get_entries_num();
         for ( Elf_Xword i = 0; i < dyn_sec_num; ++i ) {
             Elf_Xword   tag;
             Elf_Xword   value;
             std::string str;
 
-            if ( dynamic_section_acc.get_entry( i, tag, value, str ) &&
-                 tag == DT_VERNEEDNUM ) {
+            if ( dynamic_section_acc.get_entry( i, tag, value, str ) && tag == DT_VERNEEDNUM ) {
                 entries_num = (Elf_Word)value;
                 break;
             }
@@ -179,8 +172,7 @@ template <class S> class versym_r_section_accessor_template
             elf_file.sections[versym_r_section->get_link()] );
 
         Elfxx_Verneed* verneed = (Elfxx_Verneed*)versym_r_section->get_data();
-        Elfxx_Vernaux* veraux =
-            (Elfxx_Vernaux*)( (char*)verneed + verneed->vn_aux );
+        Elfxx_Vernaux* veraux  = (Elfxx_Vernaux*)( (char*)verneed + verneed->vn_aux );
         for ( Elf_Word i = 0; i < no; ++i ) {
             verneed = (Elfxx_Verneed*)( (char*)verneed + verneed->vn_next );
             veraux  = (Elfxx_Vernaux*)( (char*)verneed + verneed->vn_aux );
@@ -199,14 +191,12 @@ template <class S> class versym_r_section_accessor_template
     //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    S*           versym_r_section =
-        nullptr;              //!< Pointer to the version requirement section
-    Elf_Word entries_num = 0; //!< Number of entries
+    S*           versym_r_section = nullptr; //!< Pointer to the version requirement section
+    Elf_Word     entries_num      = 0;       //!< Number of entries
 };
 
-using versym_r_section_accessor = versym_r_section_accessor_template<section>;
-using const_versym_r_section_accessor =
-    versym_r_section_accessor_template<const section>;
+using versym_r_section_accessor       = versym_r_section_accessor_template<section>;
+using const_versym_r_section_accessor = versym_r_section_accessor_template<const section>;
 
 //------------------------------------------------------------------------------
 //! \class versym_d_section_accessor_template
@@ -218,10 +208,8 @@ template <class S> class versym_d_section_accessor_template
     //! \brief Constructor
     //! \param elf_file Reference to the ELF file
     //! \param versym_d_section Pointer to the version definition section
-    versym_d_section_accessor_template( const elfio& elf_file,
-                                        S*           versym_d_section )
-        : elf_file( elf_file ), versym_d_section( versym_d_section ),
-          entries_num( 0 )
+    versym_d_section_accessor_template( const elfio& elf_file, S* versym_d_section )
+        : elf_file( elf_file ), versym_d_section( versym_d_section ), entries_num( 0 )
     {
         // Find .dynamic section
         const section* dynamic_section = elf_file.sections[".dynamic"];
@@ -230,16 +218,14 @@ template <class S> class versym_d_section_accessor_template
             return;
         }
 
-        const_dynamic_section_accessor dynamic_section_acc( elf_file,
-                                                            dynamic_section );
-        Elf_Xword dyn_sec_num = dynamic_section_acc.get_entries_num();
+        const_dynamic_section_accessor dynamic_section_acc( elf_file, dynamic_section );
+        Elf_Xword                      dyn_sec_num = dynamic_section_acc.get_entries_num();
         for ( Elf_Xword i = 0; i < dyn_sec_num; ++i ) {
             Elf_Xword   tag;
             Elf_Xword   value;
             std::string str;
 
-            if ( dynamic_section_acc.get_entry( i, tag, value, str ) &&
-                 tag == DT_VERDEFNUM ) {
+            if ( dynamic_section_acc.get_entry( i, tag, value, str ) && tag == DT_VERDEFNUM ) {
                 entries_num = (Elf_Word)value;
                 break;
             }
@@ -272,9 +258,8 @@ template <class S> class versym_d_section_accessor_template
         const_string_section_accessor string_section_acc(
             elf_file.sections[versym_d_section->get_link()] );
 
-        Elfxx_Verdef*  verdef = (Elfxx_Verdef*)versym_d_section->get_data();
-        Elfxx_Verdaux* verdaux =
-            (Elfxx_Verdaux*)( (char*)verdef + verdef->vd_aux );
+        Elfxx_Verdef*  verdef  = (Elfxx_Verdef*)versym_d_section->get_data();
+        Elfxx_Verdaux* verdaux = (Elfxx_Verdaux*)( (char*)verdef + verdef->vd_aux );
         for ( Elf_Word i = 0; i < no; ++i ) {
             verdef  = (Elfxx_Verdef*)( (char*)verdef + verdef->vd_next );
             verdaux = (Elfxx_Verdaux*)( (char*)verdef + verdef->vd_aux );
@@ -296,14 +281,12 @@ template <class S> class versym_d_section_accessor_template
     //------------------------------------------------------------------------------
   private:
     const elfio& elf_file;
-    S*           versym_d_section =
-        nullptr;              //!< Pointer to the version definition section
-    Elf_Word entries_num = 0; //!< Number of entries
+    S*           versym_d_section = nullptr; //!< Pointer to the version definition section
+    Elf_Word     entries_num      = 0;       //!< Number of entries
 };
 
-using versym_d_section_accessor = versym_d_section_accessor_template<section>;
-using const_versym_d_section_accessor =
-    versym_d_section_accessor_template<const section>;
+using versym_d_section_accessor       = versym_d_section_accessor_template<section>;
+using const_versym_d_section_accessor = versym_d_section_accessor_template<const section>;
 
 } // namespace ELFIO
 
