@@ -415,15 +415,15 @@ constexpr Elf_Word EF_AMDGPU_FEATURE_SRAMECC_OFF_V4         = 0x800;
 constexpr Elf_Word EF_AMDGPU_FEATURE_SRAMECC_ON_V4          = 0xc00;
 
 // AMDGPU processors
-constexpr Elf_Word EF_AMDGPU_MACH_NONE       = 0x000; // Unspecified processor.
-constexpr Elf_Word EF_AMDGPU_MACH_R600_R600  = 0x001;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_R630  = 0x002;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_RS880 = 0x003;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_RV670 = 0x004;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_RV710 = 0x005;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_RV730 = 0x006;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_RV770 = 0x007;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_CEDAR = 0x008;
+constexpr Elf_Word EF_AMDGPU_MACH_NONE                = 0x000; // Unspecified processor.
+constexpr Elf_Word EF_AMDGPU_MACH_R600_R600           = 0x001;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_R630           = 0x002;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_RS880          = 0x003;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_RV670          = 0x004;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_RV710          = 0x005;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_RV730          = 0x006;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_RV770          = 0x007;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_CEDAR          = 0x008;
 constexpr Elf_Word EF_AMDGPU_MACH_R600_CYPRESS        = 0x009;
 constexpr Elf_Word EF_AMDGPU_MACH_R600_JUNIPER        = 0x00a;
 constexpr Elf_Word EF_AMDGPU_MACH_R600_REDWOOD        = 0x00b;
@@ -434,8 +434,8 @@ constexpr Elf_Word EF_AMDGPU_MACH_R600_CAYMAN         = 0x00f;
 constexpr Elf_Word EF_AMDGPU_MACH_R600_TURKS          = 0x010;
 constexpr Elf_Word EF_AMDGPU_MACH_R600_RESERVED_FIRST = 0x011;
 constexpr Elf_Word EF_AMDGPU_MACH_R600_RESERVED_LAST  = 0x01f;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_FIRST = EF_AMDGPU_MACH_R600_R600;
-constexpr Elf_Word EF_AMDGPU_MACH_R600_LAST  = EF_AMDGPU_MACH_R600_TURKS;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_FIRST          = EF_AMDGPU_MACH_R600_R600;
+constexpr Elf_Word EF_AMDGPU_MACH_R600_LAST           = EF_AMDGPU_MACH_R600_TURKS;
 
 // AMDGCN-based processors.
 constexpr Elf_Word EF_AMDGPU_MACH_AMDGCN_GFX600        = 0x020;
@@ -576,11 +576,11 @@ constexpr unsigned char STB_LOPROC   = 13;
 constexpr unsigned char STB_HIPROC   = 15;
 
 // Values of note segment descriptor types for core files
-constexpr Elf_Word NT_PRSTATUS   = 1; // Contains copy of prstatus struct
-constexpr Elf_Word NT_FPREGSET   = 2; // Contains copy of fpregset struct
-constexpr Elf_Word NT_PRPSINFO   = 3; // Contains copy of prpsinfo struct
-constexpr Elf_Word NT_TASKSTRUCT = 4; // Contains copy of task struct
-constexpr Elf_Word NT_AUXV       = 6; // Contains copy of Elfxx_auxv_t
+constexpr Elf_Word NT_PRSTATUS   = 1;          // Contains copy of prstatus struct
+constexpr Elf_Word NT_FPREGSET   = 2;          // Contains copy of fpregset struct
+constexpr Elf_Word NT_PRPSINFO   = 3;          // Contains copy of prpsinfo struct
+constexpr Elf_Word NT_TASKSTRUCT = 4;          // Contains copy of task struct
+constexpr Elf_Word NT_AUXV       = 6;          // Contains copy of Elfxx_auxv_t
 constexpr Elf_Word NT_SIGINFO    = 0x53494749; // Fields of siginfo_t.
 constexpr Elf_Word NT_FILE       = 0x46494c45; // Description of mapped files.
 
@@ -1035,22 +1035,22 @@ constexpr unsigned R_RISCV_32_PCREL      = 57;
 constexpr unsigned R_RISCV_IRELATIVE     = 58;
 
 // Segment types
-constexpr Elf_Word PT_NULL         = 0;
-constexpr Elf_Word PT_LOAD         = 1;
-constexpr Elf_Word PT_DYNAMIC      = 2;
-constexpr Elf_Word PT_INTERP       = 3;
-constexpr Elf_Word PT_NOTE         = 4;
-constexpr Elf_Word PT_SHLIB        = 5;
-constexpr Elf_Word PT_PHDR         = 6;
-constexpr Elf_Word PT_TLS          = 7;
-constexpr Elf_Word PT_LOOS         = 0X60000000;
-constexpr Elf_Word PT_GNU_EH_FRAME = 0X6474E550; // Frame unwind information
-constexpr Elf_Word PT_GNU_STACK    = 0X6474E551; // Stack flags
-constexpr Elf_Word PT_GNU_RELRO    = 0X6474E552; // Read only after relocs
-constexpr Elf_Word PT_GNU_PROPERTY = 0X6474E553; // GNU property
-constexpr Elf_Word PT_GNU_MBIND_LO = 0X6474E555; // Mbind segments start
-constexpr Elf_Word PT_GNU_MBIND_HI = 0X6474F554; // Mbind segments finish
-constexpr Elf_Word PT_PAX_FLAGS    = 0X65041580;
+constexpr Elf_Word PT_NULL              = 0;
+constexpr Elf_Word PT_LOAD              = 1;
+constexpr Elf_Word PT_DYNAMIC           = 2;
+constexpr Elf_Word PT_INTERP            = 3;
+constexpr Elf_Word PT_NOTE              = 4;
+constexpr Elf_Word PT_SHLIB             = 5;
+constexpr Elf_Word PT_PHDR              = 6;
+constexpr Elf_Word PT_TLS               = 7;
+constexpr Elf_Word PT_LOOS              = 0X60000000;
+constexpr Elf_Word PT_GNU_EH_FRAME      = 0X6474E550; // Frame unwind information
+constexpr Elf_Word PT_GNU_STACK         = 0X6474E551; // Stack flags
+constexpr Elf_Word PT_GNU_RELRO         = 0X6474E552; // Read only after relocs
+constexpr Elf_Word PT_GNU_PROPERTY      = 0X6474E553; // GNU property
+constexpr Elf_Word PT_GNU_MBIND_LO      = 0X6474E555; // Mbind segments start
+constexpr Elf_Word PT_GNU_MBIND_HI      = 0X6474F554; // Mbind segments finish
+constexpr Elf_Word PT_PAX_FLAGS         = 0X65041580;
 constexpr Elf_Word PT_OPENBSD_RANDOMIZE = 0X65A3DBE6;
 constexpr Elf_Word PT_OPENBSD_WXNEEDED  = 0X65A3DBE7;
 constexpr Elf_Word PT_OPENBSD_BOOTDATA  = 0X65A41BE6;
@@ -1136,36 +1136,36 @@ constexpr Elf_Word DF_BIND_NOW   = 0x8;
 constexpr Elf_Word DF_STATIC_TLS = 0x10;
 
 // Legal values for d_tag (dynamic entry type).
-constexpr Elf_Word AT_NULL          = 0;  // End of vector
-constexpr Elf_Word AT_IGNORE        = 1;  // Entry should be ignored
-constexpr Elf_Word AT_EXECFD        = 2;  // File descriptor of program
-constexpr Elf_Word AT_PHDR          = 3;  // Program headers for program
-constexpr Elf_Word AT_PHENT         = 4;  // Size of program header entry
-constexpr Elf_Word AT_PHNUM         = 5;  // Number of program headers
-constexpr Elf_Word AT_PAGESZ        = 6;  // System page size
-constexpr Elf_Word AT_BASE          = 7;  // Base address of interpreter
-constexpr Elf_Word AT_FLAGS         = 8;  // Flags
-constexpr Elf_Word AT_ENTRY         = 9;  // Entry point of program
-constexpr Elf_Word AT_NOTELF        = 10; // Program is not ELF
-constexpr Elf_Word AT_UID           = 11; // Real uid
-constexpr Elf_Word AT_EUID          = 12; // Effective uid
-constexpr Elf_Word AT_GID           = 13; // Real gid
-constexpr Elf_Word AT_EGID          = 14; // Effective gid
-constexpr Elf_Word AT_CLKTCK        = 17; // Frequency of times()
-constexpr Elf_Word AT_PLATFORM      = 15; // String identifying platform.
-constexpr Elf_Word AT_HWCAP         = 16; // Hints about processor capabilities.
-constexpr Elf_Word AT_FPUCW         = 18; // Used FPU control word.
-constexpr Elf_Word AT_DCACHEBSIZE   = 19; // Data cache block size.
-constexpr Elf_Word AT_ICACHEBSIZE   = 20; // Instruction cache block size.
-constexpr Elf_Word AT_UCACHEBSIZE   = 21; // Unified cache block size.
-constexpr Elf_Word AT_IGNOREPPC     = 22; // Entry should be ignored.
-constexpr Elf_Word AT_SECURE        = 23; // Boolean, was exec setuid-like?
-constexpr Elf_Word AT_BASE_PLATFORM = 24; // String identifying real platforms.
-constexpr Elf_Word AT_RANDOM        = 25; // Address of 16 random bytes.
-constexpr Elf_Word AT_HWCAP2  = 26; // More hints about processor capabilities.
-constexpr Elf_Word AT_EXECFN  = 31; // Filename of executable.
-constexpr Elf_Word AT_SYSINFO = 32; // EP to the system call in the vDSO.
-constexpr Elf_Word AT_SYSINFO_EHDR = 33; // Start of the ELF header of the vDSO.
+constexpr Elf_Word AT_NULL              = 0;  // End of vector
+constexpr Elf_Word AT_IGNORE            = 1;  // Entry should be ignored
+constexpr Elf_Word AT_EXECFD            = 2;  // File descriptor of program
+constexpr Elf_Word AT_PHDR              = 3;  // Program headers for program
+constexpr Elf_Word AT_PHENT             = 4;  // Size of program header entry
+constexpr Elf_Word AT_PHNUM             = 5;  // Number of program headers
+constexpr Elf_Word AT_PAGESZ            = 6;  // System page size
+constexpr Elf_Word AT_BASE              = 7;  // Base address of interpreter
+constexpr Elf_Word AT_FLAGS             = 8;  // Flags
+constexpr Elf_Word AT_ENTRY             = 9;  // Entry point of program
+constexpr Elf_Word AT_NOTELF            = 10; // Program is not ELF
+constexpr Elf_Word AT_UID               = 11; // Real uid
+constexpr Elf_Word AT_EUID              = 12; // Effective uid
+constexpr Elf_Word AT_GID               = 13; // Real gid
+constexpr Elf_Word AT_EGID              = 14; // Effective gid
+constexpr Elf_Word AT_CLKTCK            = 17; // Frequency of times()
+constexpr Elf_Word AT_PLATFORM          = 15; // String identifying platform.
+constexpr Elf_Word AT_HWCAP             = 16; // Hints about processor capabilities.
+constexpr Elf_Word AT_FPUCW             = 18; // Used FPU control word.
+constexpr Elf_Word AT_DCACHEBSIZE       = 19; // Data cache block size.
+constexpr Elf_Word AT_ICACHEBSIZE       = 20; // Instruction cache block size.
+constexpr Elf_Word AT_UCACHEBSIZE       = 21; // Unified cache block size.
+constexpr Elf_Word AT_IGNOREPPC         = 22; // Entry should be ignored.
+constexpr Elf_Word AT_SECURE            = 23; // Boolean, was exec setuid-like?
+constexpr Elf_Word AT_BASE_PLATFORM     = 24; // String identifying real platforms.
+constexpr Elf_Word AT_RANDOM            = 25; // Address of 16 random bytes.
+constexpr Elf_Word AT_HWCAP2            = 26; // More hints about processor capabilities.
+constexpr Elf_Word AT_EXECFN            = 31; // Filename of executable.
+constexpr Elf_Word AT_SYSINFO           = 32; // EP to the system call in the vDSO.
+constexpr Elf_Word AT_SYSINFO_EHDR      = 33; // Start of the ELF header of the vDSO.
 constexpr Elf_Word AT_L1I_CACHESHAPE    = 34;
 constexpr Elf_Word AT_L1D_CACHESHAPE    = 35;
 constexpr Elf_Word AT_L2_CACHESHAPE     = 36;
@@ -1367,10 +1367,10 @@ struct Elf64_Sym
 };
 
 #define ELF_ST_BIND( i )    ( ( i ) >> 4 )
-#define ELF_ST_TYPE( i )    ( ( i ) & 0xf )
-#define ELF_ST_INFO( b, t ) ( ( ( b ) << 4 ) + ( ( t ) & 0xf ) )
+#define ELF_ST_TYPE( i )    ( (i)&0xf )
+#define ELF_ST_INFO( b, t ) ( ( ( b ) << 4 ) + ( (t)&0xf ) )
 
-#define ELF_ST_VISIBILITY( o ) ( ( o ) & 0x3 )
+#define ELF_ST_VISIBILITY( o ) ( (o)&0x3 )
 
 // Relocation entries
 struct Elf32_Rel
@@ -1413,10 +1413,9 @@ struct Elf64_Rela
 #define ELF32_R_TYPE( i )    ( (unsigned char)( i ) )
 #define ELF32_R_INFO( s, t ) ( ( ( s ) << 8 ) + (unsigned char)( t ) )
 
-#define ELF64_R_SYM( i )  ( ( i ) >> 32 )
-#define ELF64_R_TYPE( i ) ( ( i ) & 0xffffffffL )
-#define ELF64_R_INFO( s, t ) \
-    ( ( ( (int64_t)( s ) ) << 32 ) + ( ( t ) & 0xffffffffL ) )
+#define ELF64_R_SYM( i )     ( ( i ) >> 32 )
+#define ELF64_R_TYPE( i )    ( (i)&0xffffffffL )
+#define ELF64_R_INFO( s, t ) ( ( ( ( int64_t )( s ) ) << 32 ) + ( (t)&0xffffffffL ) )
 
 // Dynamic structure
 struct Elf32_Dyn
@@ -1540,8 +1539,7 @@ struct Elf32_Chdr
     // The size, in	bytes, of the uncompressed section data
     Elf32_Word ch_size; //The size, in	bytes, of the uncompressed section data
     // The address alignment of the	uncompressed section data
-    Elf32_Word
-        ch_addralign; // The address alignment of the	uncompressed section data
+    Elf32_Word ch_addralign; // The address alignment of the	uncompressed section data
 };
 
 struct Elf64_Chdr
@@ -1553,8 +1551,7 @@ struct Elf64_Chdr
     //The size, in	bytes, of the uncompressed section data
     Elf_Xword ch_size; //The size, in	bytes, of the uncompressed section data
     //The address alignment of the	uncompressed section data
-    Elf_Xword
-        ch_addralign; //The address alignment of the	uncompressed section data
+    Elf_Xword ch_addralign; //The address alignment of the	uncompressed section data
 };
 
 #ifdef __cplusplus

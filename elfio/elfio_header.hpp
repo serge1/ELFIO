@@ -122,12 +122,10 @@ template <class T> class elf_header_impl : public elf_header
         header.e_ehsize            = ( sizeof( header ) );
         header.e_ehsize            = ( *convertor )( header.e_ehsize );
         header.e_shstrndx          = ( *convertor )( (Elf_Half)1 );
-        header.e_phentsize =
-            sizeof( typename elf_header_impl_types<T>::Phdr_type );
-        header.e_shentsize =
-            sizeof( typename elf_header_impl_types<T>::Shdr_type );
-        header.e_phentsize = ( *convertor )( header.e_phentsize );
-        header.e_shentsize = ( *convertor )( header.e_shentsize );
+        header.e_phentsize         = sizeof( typename elf_header_impl_types<T>::Phdr_type );
+        header.e_shentsize         = sizeof( typename elf_header_impl_types<T>::Shdr_type );
+        header.e_phentsize         = ( *convertor )( header.e_phentsize );
+        header.e_shentsize         = ( *convertor )( header.e_shentsize );
     }
 
     /**
@@ -151,8 +149,7 @@ template <class T> class elf_header_impl : public elf_header
     bool save( std::ostream& stream ) const override
     {
         stream.seekp( ( *translator )[0] );
-        stream.write( reinterpret_cast<const char*>( &header ),
-                      sizeof( header ) );
+        stream.write( reinterpret_cast<const char*>( &header ), sizeof( header ) );
 
         return stream.good();
     }
@@ -168,9 +165,7 @@ template <class T> class elf_header_impl : public elf_header
 
     ELFIO_GET_SET_ACCESS( Elf_Word, version, header.e_version );
     ELFIO_GET_SET_ACCESS( unsigned char, os_abi, header.e_ident[EI_OSABI] );
-    ELFIO_GET_SET_ACCESS( unsigned char,
-                          abi_version,
-                          header.e_ident[EI_ABIVERSION] );
+    ELFIO_GET_SET_ACCESS( unsigned char, abi_version, header.e_ident[EI_ABIVERSION] );
     ELFIO_GET_SET_ACCESS( Elf_Half, type, header.e_type );
     ELFIO_GET_SET_ACCESS( Elf_Half, machine, header.e_machine );
     ELFIO_GET_SET_ACCESS( Elf_Word, flags, header.e_flags );
