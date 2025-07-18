@@ -38,9 +38,17 @@ include(GNUInstallDirs)
 # Create a header only CMake target for elfio
 add_library(elfio INTERFACE)
 add_library(elfio::elfio ALIAS elfio)
+add_library(ario INTERFACE)
+add_library(ario::ario ALIAS ario)
 
 target_include_directories(
     elfio
+    INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+target_include_directories(
+    ario
     INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

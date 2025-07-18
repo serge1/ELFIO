@@ -40,6 +40,23 @@ foreach(example ${elf_examples})
     configure_file(${example} ${CMAKE_CURRENT_BINARY_DIR}/elf_examples COPYONLY)
 endforeach()
 
+# First, create an ario folder under the current build directory
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ario)
+
+# Second, glob all files under ario
+file(GLOB ario
+    LIST_DIRECTORIES
+    false
+    CONFIGURE_DEPENDS
+    ario/*)
+
+# Third, copy each file globbed to the ario folder under the current
+# build directory
+foreach(example ${ario})
+    configure_file(${example} ${CMAKE_CURRENT_BINARY_DIR}/ario COPYONLY)
+endforeach()
+
+
 # Lastly, copy the script to run the tests
 configure_file(runELFtests ${CMAKE_CURRENT_BINARY_DIR}/runELFtests COPYONLY)
 
@@ -47,12 +64,14 @@ add_executable(
     ELFIOTest
     ELFIOTest.cpp
     ELFIOTest1.cpp
-    ELFIOTest2.cpp)
+    ELFIOTest2.cpp
+    ARIOTest.cpp)
 
 target_link_libraries(
     ELFIOTest
     PRIVATE
     elfio::elfio
+    ario::ario
     gtest_main
     GTest::gtest_main)
 
