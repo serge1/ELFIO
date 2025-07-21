@@ -27,7 +27,7 @@ using namespace ARIO;
 int main( int argc, char** argv )
 {
     if ( argc != 2 ) {
-        printf( "Usage: elfdump <file_name>\n" );
+        printf( "Usage: archive_dump <file_name>\n" );
         return 1;
     }
 

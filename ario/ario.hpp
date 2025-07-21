@@ -68,19 +68,20 @@ class ario
     //! @brief Represents a single member (file) in the archive
     class Member
     {
+        friend class ario;
+
       public:
         explicit Member( std::ifstream* pstream = nullptr ) : pstream( pstream )
         {
         }
 
-        std::string    short_name = {}; ///< Short name of the member
-        std::string    name       = {}; ///< Name of the member
-        int            date       = {}; ///< Date of the member
-        int            uid        = {}; ///< User ID of the member
-        int            gid        = {}; ///< Group ID of the member
-        int            mode       = {}; ///< Mode of the member
-        int            size       = {}; ///< Size of the member in the archive
-        std::streamoff filepos    = {}; ///< File position in the archive
+        std::string    name    = {}; ///< Name of the member
+        int            date    = {}; ///< Date of the member
+        int            uid     = {}; ///< User ID of the member
+        int            gid     = {}; ///< Group ID of the member
+        int            mode    = {}; ///< Mode of the member
+        int            size    = {}; ///< Size of the member in the archive
+        std::streamoff filepos = {}; ///< File position in the archive
 
         //------------------------------------------------------------------------------
         //! @brief Get the data of the member as a string
@@ -105,7 +106,8 @@ class ario
         }
 
       protected:
-        std::ifstream* pstream = nullptr; ///< Pointer to the input stream
+        std::string    short_name = {};      ///< Short name of the member
+        std::ifstream* pstream    = nullptr; ///< Pointer to the input stream
     };
 
     //------------------------------------------------------------------------------
