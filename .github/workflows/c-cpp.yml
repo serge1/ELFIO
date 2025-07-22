@@ -18,14 +18,14 @@ jobs:
     
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-20.04, windows-latest, windows-2019, macos-13, macos-15]
+        os: [ubuntu-latest, ubuntu-20.04, windows-latest, windows-2022, macos-13, macos-15]
         build_type: [Release, Debug]
         cpp_compiler: [g++, clang++, cl]
         include:
           - os: windows-latest
             cpp_compiler: cl
             c_compiler: cl
-          - os: windows-2019
+          - os: windows-2022
             cpp_compiler: cl
             c_compiler: cl
           - os: ubuntu-latest
@@ -57,9 +57,9 @@ jobs:
             cpp_compiler: g++
           - os: windows-latest
             cpp_compiler: clang++
-          - os: windows-2019
+          - os: windows-2022
             cpp_compiler: g++
-          - os: windows-2019
+          - os: windows-2022
             cpp_compiler: clang++
           - os: ubuntu-latest
             cpp_compiler: cl
