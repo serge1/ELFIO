@@ -14,7 +14,7 @@ if(IS_TOP_PROJECT)
     option(ELFIO_BUILD_TESTS "Build ELFIO tests" OFF)
 
     # Generate output of compile commands during generation
-    set(CMAKE_EXPORT_COMPILE_COMMANDS, ON)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
 # Read version from header file
