@@ -95,7 +95,7 @@ class ario
 
             std::string    data( size, '\0' );
             std::streamoff current_pos = pstream->tellg();
-            pstream->seekg( filepos + header_size, std::ios::beg );
+            pstream->seekg( filepos + HEADER_SIZE, std::ios::beg );
             pstream->read( &data[0], size );
             pstream->clear();
             pstream->seekg( current_pos, std::ios::beg );
@@ -281,11 +281,11 @@ class ario
     //! @return Error object indicating success or failure
     Result load_header()
     {
-        std::string magic( sizeof( arch_magic ), ' ' );
-        pstream->read( &magic[0], sizeof( arch_magic ) );
-        if ( magic != arch_magic ) {
+        std::string magic( sizeof( ARCH_MAGIC ), ' ' );
+        pstream->read( &magic[0], sizeof( ARCH_MAGIC ) );
+        if ( magic != ARCH_MAGIC ) {
             return { std::string( "Invalid archive format. Expected magic: " ) +
-                     arch_magic };
+                     ARCH_MAGIC };
         }
 
         return {};
@@ -299,42 +299,48 @@ class ario
     {
         while ( true ) {
             Member m( &*pstream );
-            char   header[header_size];
+            char   header[HEADER_SIZE];
             auto   filepos = pstream->tellg();
 
-            pstream->read( header, header_size );
-            if ( pstream->gcount() < header_size ) {
+            pstream->read( header, HEADER_SIZE );
+            if ( pstream->gcount() < HEADER_SIZE ) {
                 break; // End of file or error
             }
+            std::streamoff current_pos = pstream->tellg();
+            m.short_name               = std::string( header, 16 );
+            m.name                     = m.short_name;
+            m.filepos                  = filepos;
 
-            m.short_name = std::string( header, 16 );
-            m.name       = m.short_name;
+            std::string date_str( header + 16, 12 );
+            std::string uid_str( header + 28, 6 );
+            std::string gid_str( header + 34, 6 );
+            std::string mode_str( header + 40, 8 );
             std::string size_str( header + 48, 10 );
+
             try {
+                // Get m.size from the header. Do it earlier due to the potential use of m.data()
+                // It is the only valid field in special members like symbol table and long name directory
                 m.size = std::stoi( size_str );
             }
             catch ( const std::exception& ) {
-                return { "Invalid member size: '" + size_str + "'" };
+                return { "Invalid member size" };
             }
-            m.filepos = filepos;
 
-            std::streamoff current_pos = pstream->tellg();
-
-            if ( m.short_name == "/               " ) {
+            if ( m.short_name ==
+                 "/               " ) { // Special case for the symbol table
+                m.name      = "/";
                 auto result = load_symbol_table();
                 if ( !result.ok() ) {
                     return result;
                 }
             }
-            else if ( m.short_name == "//              " ) {
-                // Read the long name directory data
-                string_table = m.data();
+            else if (
+                m.short_name ==
+                "//              " ) { // Special case for the long name directory
+                m.name       = "//";
+                string_table = m.data(); // Read the long name directory data
             }
             else {
-                std::string date_str( header + 16, 12 );
-                std::string uid_str( header + 28, 6 );
-                std::string gid_str( header + 34, 6 );
-                std::string mode_str( header + 40, 8 );
                 try {
                     m.date = std::stoi( date_str );
                     m.uid  = std::stoi( uid_str );
@@ -342,8 +348,21 @@ class ario
                     m.mode = std::stoi( mode_str, nullptr, 8 );
                 }
                 catch ( const std::exception& ) {
-                    return { "Invalid member header fields" };
+                    return { "Invalid member header's field" };
                 }
+
+                if ( m.short_name[0] == '/' ) {
+                    auto name_result = convert_name( m.short_name );
+                    if ( !name_result.has_value() ) {
+                        return { "Failed to convert long name for member " +
+                                 m.short_name };
+                    }
+                    m.name = *name_result;
+                }
+                else {
+                    m.name = m.short_name.substr( 0, m.short_name.find( '/' ) );
+                }
+
                 // Add only the regular member to the list
                 members_.emplace_back( m );
             }
@@ -354,29 +373,6 @@ class ario
         }
 
         pstream->clear();
-
-        // Convert short names to full names
-        for ( auto& m : members_ ) {
-            if ( m.short_name.size() < 2 ) {
-                return { "Malformed short_name in member" };
-            }
-            if ( m.short_name[0] == '/' && m.short_name[1] == ' ' ) {
-                m.name = "/";
-            }
-            else if ( m.short_name[0] == '/' && m.short_name[1] == '/' ) {
-                m.name = "//";
-            }
-            else if ( m.short_name[0] == '/' ) {
-                auto name_result = convert_name( m.short_name );
-                if ( !name_result.has_value() ) {
-                    return { "Failed to convert long name for member" };
-                }
-                m.name = *name_result;
-            }
-            else {
-                m.name = m.short_name.substr( 0, m.short_name.find( '/' ) );
-            }
-        }
 
         // Substitute symbol locations with member indexes
         for ( auto& symbol : symbol_table ) {
@@ -482,12 +478,12 @@ class ario
     Members members; //!< Members object
 
   protected:
-    static constexpr const char* arch_magic =
+    static constexpr const char* ARCH_MAGIC =
         "!<arch>\x0A"; ///< Archive magic string
-    static constexpr std::streamsize header_size =
-        60; ///< Size of archive header
-    static constexpr const char* header_end_magic =
+    static constexpr const char* HEADER_END_MAGIC =
         "\x60\x0A"; ///< End of header magic
+    static constexpr std::streamsize HEADER_SIZE =
+        60; ///< Size of archive header
 
     std::unique_ptr<std::ifstream> pstream =
         nullptr;                  //!< Pointer to the input stream
