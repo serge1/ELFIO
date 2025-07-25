@@ -213,7 +213,7 @@ class ario
         }
 
         auto result = load( std::move( ifs ) );
-        
+
         return result;
     }
 
@@ -246,6 +246,64 @@ class ario
     }
 
     //------------------------------------------------------------------------------
+    //! @brief Save an archive to a file
+    //! @param file_name The name of the archive file
+    //! @return Error object indicating success or failure
+    Result save( const std::string& file_name )
+    {
+        std::ofstream ofs;
+
+        ofs.open( file_name.c_str(), std::ios::out | std::ios::binary );
+        if ( !ofs ) {
+            return { "Failed to open file: " + file_name };
+        }
+
+        auto result = save( ofs );
+
+        ofs.close();
+
+        return result;
+    }
+
+    //------------------------------------------------------------------------------
+    //! @brief Save an archive to a stream
+    //! @param stream The output stream to save to
+    //! @return Error object indicating success or failure
+    Result save( std::ostream& pos )
+    {
+        if ( !pos ) {
+            return { "Output stream is null" };
+        }
+
+        auto result = save_header( pos );
+        if ( !result.ok() ) {
+            return result;
+        }
+
+        // Save symbol table if it exists
+        if ( !symbol_table.empty() ) {
+            result = save_symbol_table( pos );
+            if ( !result.ok() ) {
+                return result;
+            }
+        }
+
+        // Save long name directory if it exists
+        if ( !string_table.empty() ) {
+            result = save_long_name_directory( pos );
+            if ( !result.ok() ) {
+                return result;
+            }
+        }
+
+        result = save_members( pos );
+        if ( !result.ok() ) {
+            return result;
+        }
+
+        return {};
+    }
+
     //! @brief Find a symbol in the archive
     //! @param name The name of the symbol to find
     //! @param out_member Pointer to store the found member
@@ -409,6 +467,97 @@ class ario
         return {};
     }
 
+    Result save_header( std::ostream& os )
+    {
+        if ( !os ) {
+            return { "Output stream is null" };
+        }
+
+        // Write the archive magic string
+        os << ARCH_MAGIC;
+
+        return {};
+    }
+
+    //------------------------------------------------------------------------------
+    //! @brief Save the symbol table to the archive
+    //! @param os Output stream to save the symbol table
+    //! @return Error object indicating success or failure
+    Result save_symbol_table( std::ostream& os )
+    {
+        if ( !os ) {
+            return { "Output stream is null" };
+        }
+        // Write the number of symbols
+        uint32_t num_of_symbols = static_cast<uint32_t>( symbol_table.size() );
+        os.write( reinterpret_cast<const char*>( &num_of_symbols ),
+                  sizeof( num_of_symbols ) );
+
+        for ( const auto& symbol : symbol_table ) {
+            os.write( reinterpret_cast<const char*>( &symbol.first ),
+                      sizeof( symbol.first ) );
+            //os.write( symbol.second.c_str(), symbol.second.size() + 1 );
+        }
+
+        return {};
+    }
+
+    //------------------------------------------------------------------------------
+    //! @brief Save the long name directory to the archive
+    //! @param os Output stream to save the long name directory
+    //! @return Error object indicating success or failure
+    Result save_long_name_directory( std::ostream& os )
+    {
+        if ( !os ) {
+            return { "Output stream is null" };
+        }
+        // Write the long name directory
+        os << "//";
+        os << string_table;
+        os << HEADER_END_MAGIC; // End of long name directory
+
+        return {};
+    }
+
+    //------------------------------------------------------------------------------
+    //! @brief Save the member information to the archive
+    //! @param os Output stream to save the member information
+    //! @return Error object indicating success or failure
+    Result save_members( std::ostream& os )
+    {
+        if ( !os ) {
+            return { "Output stream is null" };
+        }
+
+        for ( const auto& member : members_ ) {
+            // clang-format off
+            // Write the member header
+            os << std::setw( 16 ) << std::left << member.short_name
+                << std::setw( 12 ) << std::left << member.date
+                << std::setw( 6 )  << std::left << member.uid
+                << std::setw( 6 )  << std::left << member.gid
+                << std::setw( 8 )  << std::left << std::oct << member.mode
+                << std::setw( 10 ) << std::left << std::dec << member.size
+                << HEADER_END_MAGIC;
+            // clang-format on
+
+            // Write the content of the member
+            os.write( member.data().data(), member.size );
+            if ( os.fail() ) {
+                return { "Failed to write member data" };
+            }
+            if ( member.size % 2 != 0 ) {
+                // Write a padding byte if the size is odd
+                os.put( '\x0A' );
+                if ( os.fail() ) {
+                    return { "Failed to write padding byte" };
+                }
+            }
+        }
+
+        return {};
+    }
+
     //------------------------------------------------------------------------------
     //! @brief Read the symbol table from the archive symbol table member
     //! @return Error object indicating success or failure
@@ -508,7 +657,11 @@ class ario
     std::unique_ptr<std::istream> pstream =
         nullptr;                  //!< Pointer to the input stream
     std::vector<Member> members_; //!< Vector of archive members
-    std::unordered_map<std::string, uint32_t> symbol_table; //!< Symbol table
+    //!< Symbol table
+    //!< This is a map from symbol names to member indexes
+    //!< The member index is the index in the members_ vector
+    //!< This allows for quick lookup of symbols by name
+    std::unordered_map<std::string, uint32_t> symbol_table;
     std::string string_table; //!< Long names for members
 };
 

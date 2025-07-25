@@ -239,3 +239,37 @@ TEST( ARIOTest, get_symbols_for_ELF_files_in_archive )
         ASSERT_EQ( counter, symbols_from_the_member.size() );
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, basic_header_save )
+{
+    ario               archive;
+    std::ostringstream oss;
+
+    auto result = archive.save( oss );
+    ASSERT_EQ( result.ok(), true );
+
+    ASSERT_EQ( oss.str(), "!<arch>\n" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, header_save )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+
+    // Save the archive to a new file
+    auto result = archive.save( "ario/simple_text_saved.a" );
+    ASSERT_EQ( result.ok(), true );
+
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/simple_text_saved.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() );
+    EXPECT_EQ( loaded_archive.members[0].name, archive.members[0].name );
+    EXPECT_EQ( loaded_archive.members[0].size, archive.members[0].size );
+    EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].name,
+               archive.members[archive.members.size() - 1].name );
+    EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].size,
+               archive.members[archive.members.size() - 1].size );
+}
