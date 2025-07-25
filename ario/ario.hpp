@@ -72,7 +72,7 @@ class ario
         friend class ario;
 
       public:
-        explicit Member( std::ifstream* pstream = nullptr ) : pstream( pstream )
+        explicit Member( std::istream* pstream = nullptr ) : pstream( pstream )
         {
         }
 
@@ -107,8 +107,8 @@ class ario
         }
 
       protected:
-        std::string    short_name = {};      ///< Short name of the member
-        std::ifstream* pstream    = nullptr; ///< Pointer to the input stream
+        std::string   short_name = {};      ///< Short name of the member
+        std::istream* pstream    = nullptr; ///< Pointer to the input stream
     };
 
     //------------------------------------------------------------------------------
@@ -202,14 +202,34 @@ class ario
     //! @return Error object indicating success or failure
     Result load( const std::string& file_name )
     {
-        pstream = std::make_unique<std::ifstream>();
-        if ( !pstream ) {
+        auto ifs = std::make_unique<std::ifstream>();
+        if ( !ifs ) {
             return { "Failed to create input stream" };
         }
 
-        pstream->open( file_name.c_str(), std::ios::in | std::ios::binary );
-        if ( !*pstream ) {
+        ifs->open( file_name.c_str(), std::ios::in | std::ios::binary );
+        if ( !*ifs ) {
             return { "Failed to open file: " + file_name };
+        }
+
+        auto result = load( std::move( ifs ) );
+        
+        return result;
+    }
+
+    //------------------------------------------------------------------------------
+    //! @brief Load an archive from a stream
+    //! @param stream The input stream to load from
+    //! @return Error object indicating success or failure
+    Result load( std::unique_ptr<std::istream> is )
+    {
+        if ( !is ) {
+            return { "Input stream is null" };
+        }
+
+        pstream = std::move( is );
+        if ( !*pstream ) {
+            return { "Failed to set input stream" };
         }
 
         auto result = load_header();
@@ -485,7 +505,7 @@ class ario
     static constexpr std::streamsize HEADER_SIZE =
         60; ///< Size of archive header
 
-    std::unique_ptr<std::ifstream> pstream =
+    std::unique_ptr<std::istream> pstream =
         nullptr;                  //!< Pointer to the input stream
     std::vector<Member> members_; //!< Vector of archive members
     std::unordered_map<std::string, uint32_t> symbol_table; //!< Symbol table
