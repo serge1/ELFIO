@@ -269,20 +269,22 @@ class ario
     //! @brief Save an archive to a stream
     //! @param stream The output stream to save to
     //! @return Error object indicating success or failure
-    Result save( std::ostream& pos )
+    Result save( std::ostream& os )
     {
-        if ( !pos ) {
+        if ( !os ) {
             return { "Output stream is null" };
         }
 
-        auto result = save_header( pos );
+        os.clear();
+        os.seekp( 0, std::ios::beg );
+        auto result = save_header( os );
         if ( !result.ok() ) {
             return result;
         }
 
         // Save symbol table if it exists
         if ( !symbol_table.empty() ) {
-            result = save_symbol_table( pos );
+            result = save_symbol_table( os );
             if ( !result.ok() ) {
                 return result;
             }
@@ -290,13 +292,13 @@ class ario
 
         // Save long name directory if it exists
         if ( !string_table.empty() ) {
-            result = save_long_name_directory( pos );
+            result = save_long_name_directory( os );
             if ( !result.ok() ) {
                 return result;
             }
         }
 
-        result = save_members( pos );
+        result = save_members( os );
         if ( !result.ok() ) {
             return result;
         }
@@ -309,7 +311,7 @@ class ario
     //! @param out_member Pointer to store the found member
     //! @return Error object indicating success or failure
     //! If the symbol is found, out_member will point to the corresponding member
-    //! If the symbol is not found, out_member will be set to nullptr
+    //! If the symbol is not found, out_member will stay unchanged
     Result find_symbol( std::string_view name, Member& member ) const
     {
         const auto it = symbol_table.find( std::string( name ) );
@@ -332,7 +334,7 @@ class ario
     {
         // Use string_view for comparison to avoid unnecessary allocations
         std::string_view member_name = member.name;
-        auto             index       = std::distance(
+        size_t           index       = std::distance(
             members.begin(),
             std::find_if(
                 members.begin(), members.end(), [&]( const auto& mem ) {
@@ -454,12 +456,12 @@ class ario
 
         // Substitute symbol locations with member indexes
         for ( auto& symbol : symbol_table ) {
-            uint32_t   index = 0;
+            auto       index = 0;
             const auto it    = std::find_if(
                 members_.begin(), members_.end(),
                 [&]( const Member& m ) { return m.filepos == symbol.second; } );
             if ( it != members_.end() ) {
-                index = std::distance( members_.begin(), it );
+                index = (uint32_t)std::distance( members_.begin(), it );
             }
             symbol.second = index;
         }
@@ -511,10 +513,23 @@ class ario
         if ( !os ) {
             return { "Output stream is null" };
         }
+
+        // clang-format off
         // Write the long name directory
-        os << "//";
-        os << string_table;
-        os << HEADER_END_MAGIC; // End of long name directory
+        os << "//                                              "
+           << std::setw( 10 ) << std::left << std::dec << string_table.size()
+           << HEADER_END_MAGIC
+           << string_table;
+        // clang-format on
+
+        if ( string_table.size() % 2 != 0 ) {
+            // Write a padding byte if the size is odd
+            os.put( '\x0A' );
+        }
+
+        if ( os.fail() ) {
+            return { "Failed to write member data" };
+        }
 
         return {};
     }
@@ -654,9 +669,11 @@ class ario
     static constexpr std::streamsize HEADER_SIZE =
         60; ///< Size of archive header
 
-    std::unique_ptr<std::istream> pstream =
-        nullptr;                  //!< Pointer to the input stream
-    std::vector<Member> members_; //!< Vector of archive members
+    //!< Pointer to the input stream
+    //! It is used to read the archive members
+    //! data even after the archive is loaded
+    std::unique_ptr<std::istream> pstream = nullptr;
+    std::vector<Member>           members_; //!< Vector of archive members
     //!< Symbol table
     //!< This is a map from symbol names to member indexes
     //!< The member index is the index in the members_ vector
