@@ -172,9 +172,19 @@ TEST( ARIOTest, get_symbols_for_member_libgcov )
     result = archive.get_symbols_for_member( archive.members[28], symbols );
     ASSERT_EQ( result.ok(), true );
     ASSERT_EQ( symbols.size(), 20 );
-    ASSERT_EQ( symbols[0], "__gcov_exit" );
-    ASSERT_EQ( symbols[10], "__gcov_var" );
-    ASSERT_EQ( symbols[19], "__gcov_read_counter" );
+    // We cannot garantee the order of symbols in the symbol table,
+    // so we just check that some of them are present
+    ASSERT_NE(
+        std::find( symbols.begin(), symbols.end(), "__gcov_exit" ),
+        symbols.end() );
+    ASSERT_NE(
+        std::find( symbols.begin(), symbols.end(), "__gcov_var" ),
+        symbols.end() );
+    ASSERT_NE(
+        std::find( symbols.begin(), symbols.end(), "__gcov_read_counter" ),
+        symbols.end() );
+    ASSERT_EQ( std::find( symbols.begin(), symbols.end(), "doesn't exist" ),
+               symbols.end() );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
