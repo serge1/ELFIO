@@ -216,7 +216,7 @@ TEST( ARIOTest, get_symbols_for_ELF_files_in_archive )
                 std::string   name;
                 Elf64_Addr    value;
                 Elf_Xword     size;
-                unsigned char bind, type;
+                unsigned char bind = 0, type = 0;
                 Elf_Half      section_index;
                 unsigned char other;
 
@@ -281,5 +281,47 @@ TEST( ARIOTest, header_save )
     EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].name,
                archive.members[archive.members.size() - 1].name );
     EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].size,
+               archive.members[archive.members.size() - 1].size );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, long_name_save )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/long_name.a" ).ok(), true );
+
+    // Save the archive to a new file
+    auto result = archive.save( "ario/long_name_saved.a" );
+    ASSERT_EQ( result.ok(), true );
+
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/long_name_saved.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() );
+    EXPECT_EQ( loaded_archive.members[0].name, archive.members[0].name );
+    EXPECT_EQ( loaded_archive.members[0].size, archive.members[0].size );
+    EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].name,
+               archive.members[archive.members.size() - 1].name );
+    EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].size,
+               archive.members[archive.members.size() - 1].size );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, libgcov_save )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/libgcov.a" ).ok(), true );
+    // Save the archive to a new file
+    auto result = archive.save( "ario/libgcov_saved.a" );
+    ASSERT_EQ( result.ok(), true );
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/libgcov_saved.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() );
+    EXPECT_EQ( loaded_archive.members[0].name, archive.members[0].name );
+    EXPECT_EQ( loaded_archive.members[0].size, archive.members[0].size );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].name,
+               archive.members[archive.members.size() - 1].name );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].size,
                archive.members[archive.members.size() - 1].size );
 }
