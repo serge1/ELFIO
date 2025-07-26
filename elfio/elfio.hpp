@@ -74,11 +74,10 @@ class elfio
     //------------------------------------------------------------------------------
     //! \brief Constructor with compression interface
     //! \param compression Pointer to the compression interface
-    explicit elfio( compression_interface* compression ) noexcept
-        : sections( this ), segments( this ),
-          compression( std::shared_ptr<compression_interface>( compression ) )
+    explicit elfio( compression_interface* compression_ptr ) noexcept : elfio()
     {
-        elfio();
+        this->compression =
+            std::shared_ptr<compression_interface>( compression_ptr );
     }
 
     //------------------------------------------------------------------------------
