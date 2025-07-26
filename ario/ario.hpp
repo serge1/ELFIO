@@ -482,6 +482,49 @@ class ario
     }
 
     //------------------------------------------------------------------------------
+    std::streamoff calculate_symbol_table_size() const
+    {
+        auto num_of_symbols = static_cast<uint32_t>( symbol_table.size() );
+
+        // Calculate the symbol table size
+        auto symbol_table_size =
+            HEADER_SIZE +
+            sizeof( num_of_symbols ) + // Size of the number of symbols
+            num_of_symbols *
+                ( sizeof( uint32_t ) ); // Size of each symbol location
+        for ( const auto& symbol : symbol_table ) {
+            // Size of each symbol name + null terminator
+            symbol_table_size += symbol.first.size() + 1;
+        }
+
+        // Add padding byte if the size is odd
+        symbol_table_size += symbol_table_size % 2;
+
+        return symbol_table_size;
+    }
+
+    std::vector<uint32_t> calculate_member_relative_offsets()
+    {
+        std::vector<uint32_t> member_relative_offset;
+        auto                  position = 0;
+
+        member_relative_offset.reserve( members_.size() );
+        for ( const auto& member : members_ ) {
+            // Store the relative offset of the member in the archive
+            member_relative_offset.push_back(
+                static_cast<uint32_t>( position ) );
+            position += HEADER_SIZE + member.size +
+                        member.size % 2; // Add padding if needed
+        }
+        return member_relative_offset;
+    }
+
+    std::streamoff calculate_long_names_dir_size()
+    {
+        return HEADER_SIZE + string_table.size() + string_table.size() % 2;
+    }
+
+    //------------------------------------------------------------------------------
     //! @brief Save the symbol table to the archive
     //! @param os Output stream to save the symbol table
     //! @return Error object indicating success or failure
@@ -490,15 +533,57 @@ class ario
         if ( !os ) {
             return { "Output stream is null" };
         }
-        // Write the number of symbols
-        uint32_t num_of_symbols = static_cast<uint32_t>( symbol_table.size() );
-        os.write( reinterpret_cast<const char*>( &num_of_symbols ),
-                  sizeof( num_of_symbols ) );
 
+        auto num_of_symbols = static_cast<uint32_t>( symbol_table.size() );
+        if ( num_of_symbols == 0 ) {
+            return {};
+        }
+
+        auto symbol_table_size      = calculate_symbol_table_size();
+        auto long_names_dir_size    = calculate_long_names_dir_size();
+        auto member_relative_offset = calculate_member_relative_offsets();
+
+        // Write the symbol table header
+        os << "/               0           0     0     0       "
+           << std::setw( 10 ) << std::left << std::dec
+           << symbol_table_size - HEADER_SIZE << HEADER_END_MAGIC;
+
+        // Write the number of symbols
+        char buf[4];
+        buf[0] = static_cast<char>( ( num_of_symbols >> 24 ) & 0xFF );
+        buf[1] = static_cast<char>( ( num_of_symbols >> 16 ) & 0xFF );
+        buf[2] = static_cast<char>( ( num_of_symbols >> 8 ) & 0xFF );
+        buf[3] = static_cast<char>( ( num_of_symbols >> 0 ) & 0xFF );
+        // Write the number of symbols as a 4-byte big-endian integer
+        os.write( buf, sizeof( buf ) );
+
+        // Write symbol locations (location of the member in the archive)
+        auto members_start_from = std::string( ARCH_MAGIC ).size() +
+                                  static_cast<uint32_t>( symbol_table_size ) +
+                                  static_cast<uint32_t>( long_names_dir_size );
         for ( const auto& symbol : symbol_table ) {
-            os.write( reinterpret_cast<const char*>( &symbol.first ),
-                      sizeof( symbol.first ) );
-            //os.write( symbol.second.c_str(), symbol.second.size() + 1 );
+            auto index    = static_cast<uint32_t>( symbol.second );
+            auto location = members_start_from + member_relative_offset[index];
+            buf[0]        = static_cast<char>( ( location >> 24 ) & 0xFF );
+            buf[1]        = static_cast<char>( ( location >> 16 ) & 0xFF );
+            buf[2]        = static_cast<char>( ( location >> 8 ) & 0xFF );
+            buf[3]        = static_cast<char>( ( location >> 0 ) & 0xFF );
+            os.write( buf, sizeof( buf ) );
+        }
+        if ( os.fail() ) {
+            return { "Failed to write symbol table" };
+        }
+
+        // Write symbol names
+        for ( const auto& symbol : symbol_table ) {
+            os << symbol.first << '\0'; // Null-terminated string
+        }
+        if ( os.tellp() % 2 == 1 ) {
+            os << '\x0A';
+        }
+
+        if ( os.fail() ) {
+            return { "Failed to write symbol table" };
         }
 
         return {};
@@ -626,12 +711,12 @@ class ario
     //! @return The long name
     std::optional<std::string> convert_name( std::string_view short_name )
     {
-        size_t pos = short_name.find( '/' );
+        auto pos = short_name.find( '/' );
         if ( pos == 0 ) {
             if ( short_name.size() < 3 ) {
                 return std::nullopt;
             }
-            size_t offset_in_dir = 0;
+            auto offset_in_dir = 0;
             try {
                 offset_in_dir = std::stoul( std::string(
                     short_name.substr( 1, short_name.size() - 2 ) ) );
@@ -642,7 +727,7 @@ class ario
             if ( offset_in_dir >= string_table.size() ) {
                 return std::nullopt;
             }
-            size_t end = string_table.find( '/', offset_in_dir );
+            auto end = string_table.find( '/', offset_in_dir );
             if ( end == std::string::npos || end <= offset_in_dir ) {
                 return std::nullopt;
             }
