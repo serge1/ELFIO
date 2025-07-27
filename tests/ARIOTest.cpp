@@ -325,3 +325,49 @@ TEST( ARIOTest, libgcov_save )
     EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].size,
                archive.members[archive.members.size() - 1].size );
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, add_simple_member )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+
+    ario::Member m;
+    m.name = "added_text.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "The content\nof this\nmember" );
+    m.name = "added_text1.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "The content\nof this\nmember\n" );
+
+    // Save the archive to a new file
+    auto result = archive.save( "ario/simple_text_saved.a" );
+    ASSERT_EQ( result.ok(), true );
+
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.load( "ario/simple_text_saved.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() + 2 );
+    EXPECT_EQ( loaded_archive.members[0].name, archive.members[0].name );
+    EXPECT_EQ( loaded_archive.members[0].size, archive.members[0].size );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].name,
+               archive.members[archive.members.size() - 1].name );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].size,
+               archive.members[archive.members.size() - 1].size );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].name,
+               "added_text.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].data(),
+               "The content\nof this\nmember" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].name,
+               "added_text1.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].data(),
+               "The content\nof this\nmember\n" );
+}

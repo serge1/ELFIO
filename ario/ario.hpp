@@ -72,23 +72,24 @@ class ario
         friend class ario;
 
       public:
-        explicit Member( std::istream* pstream = nullptr ) : pstream( pstream )
-        {
-        }
+        explicit Member() {}
 
-        std::string    name    = {}; ///< Name of the member
-        int            date    = {}; ///< Date of the member
-        int            uid     = {}; ///< User ID of the member
-        int            gid     = {}; ///< Group ID of the member
-        int            mode    = {}; ///< Mode of the member
-        int            size    = {}; ///< Size of the member in the archive
-        std::streamoff filepos = {}; ///< File position in the archive
+        std::string name = {}; ///< Name of the member
+        int         date = {}; ///< Date of the member
+        int         uid  = {}; ///< User ID of the member
+        int         gid  = {}; ///< Group ID of the member
+        int         mode = {}; ///< Mode of the member
+        size_t      size = {}; ///< Size of the member in the archive
 
         //------------------------------------------------------------------------------
         //! @brief Get the data of the member as a string
         //! @return The data of the member
         std::string data() const
         {
+            if ( new_data.has_value() ) {
+                return new_data.value();
+            }
+
             if ( !pstream ) {
                 return { "No input stream available for member data" };
             }
@@ -99,7 +100,7 @@ class ario
             pstream->read( &data[0], size );
             pstream->clear();
             pstream->seekg( current_pos, std::ios::beg );
-            if ( pstream->gcount() < size ) {
+            if ( (size_t)pstream->gcount() < size ) {
                 return { "Member data read error" };
             }
 
@@ -107,8 +108,18 @@ class ario
         }
 
       protected:
-        std::string   short_name = {};      ///< Short name of the member
-        std::istream* pstream    = nullptr; ///< Pointer to the input stream
+        void set_input_stream( std::istream* pstream )
+        {
+            this->pstream = pstream;
+        }
+
+        void set_new_data( const std::string& data ) { this->new_data = data; }
+
+      protected:
+        std::string    short_name = {};      ///< Short name of the member
+        std::istream*  pstream    = nullptr; ///< Pointer to the input stream
+        std::streamoff filepos    = {};      ///< File position in the archive
+        std::optional<std::string> new_data = {};
     };
 
     //------------------------------------------------------------------------------
@@ -232,6 +243,8 @@ class ario
             return { "Failed to set input stream" };
         }
 
+        members_.clear();
+
         auto result = load_header();
         if ( !result.ok() ) {
             return result;
@@ -312,7 +325,7 @@ class ario
     //! @return Error object indicating success or failure
     //! If the symbol is found, out_member will point to the corresponding member
     //! If the symbol is not found, out_member will stay unchanged
-    Result find_symbol( std::string_view name, Member& member ) const
+    Result find_symbol( std::string_view name, ario::Member& member ) const
     {
         const auto it = symbol_table.find( std::string( name ) );
         if ( it != symbol_table.end() ) {
@@ -354,6 +367,18 @@ class ario
         return {};
     }
 
+    Result add_member( const Member& m, const std::string& data )
+    {
+        members_.emplace_back( m );
+        members_[members_.size() - 1].short_name =
+            m.name + "/"; // Conversion is required!!!
+        members_[members_.size() - 1].set_new_data( data );
+        members_[members_.size() - 1].size = data.size();
+        members_[members_.size() - 1].set_input_stream( pstream.get() );
+
+        return {};
+    }
+
   protected:
     //------------------------------------------------------------------------------
     //! @brief Load the archive header
@@ -378,9 +403,11 @@ class ario
     Result load_members()
     {
         while ( true ) {
-            Member m( &*pstream );
-            char   header[HEADER_SIZE];
-            auto   filepos = pstream->tellg();
+            Member m;
+            m.set_input_stream( pstream.get() );
+
+            char header[HEADER_SIZE];
+            auto filepos = pstream->tellg();
 
             pstream->read( header, HEADER_SIZE );
             if ( pstream->gcount() < HEADER_SIZE ) {
@@ -506,7 +533,7 @@ class ario
     std::vector<uint32_t> calculate_member_relative_offsets()
     {
         std::vector<uint32_t> member_relative_offset;
-        auto                  position = 0;
+        size_t                position = 0;
 
         member_relative_offset.reserve( members_.size() );
         for ( const auto& member : members_ ) {
