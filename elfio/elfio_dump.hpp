@@ -636,7 +636,7 @@ static const struct note_tag_t
       { { NT_SPU, "NT_SPU", "" }
       } },
     { "GNU",
-      { 
+      {
         { NT_GNU_ABI_TAG,          "NT_GNU_ABI_TAG",         "GNU ABI tag" },
         { NT_GNU_HWCAP,            "NT_GNU_HWCAP",           "Used by ld.so and kernel vDSO" },
         { NT_GNU_BUILD_ID,         "NT_GNU_BUILD_ID",        "Build ID of the binary" },
@@ -862,7 +862,7 @@ class dump
         }
         else { // Output for 64-bit
             out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
-                << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() ) << " " 
+                << DUMP_STR_FORMAT( 14 ) << str_segment_type( seg->get_type() ) << " "
                 << DUMP_HEX0x_FORMAT( 16 ) << seg->get_offset()           << " "
                 << DUMP_HEX0x_FORMAT( 16 ) << seg->get_virtual_address()  << " "
                 << DUMP_HEX0x_FORMAT( 16 ) << seg->get_physical_address()
@@ -871,7 +871,7 @@ class dump
                 << DUMP_HEX0x_FORMAT( 16 ) << seg->get_file_size()         << " "
                 << DUMP_HEX0x_FORMAT( 16 ) << seg->get_memory_size()       << "  "
                 << DUMP_STR_FORMAT(  3 ) << str_segment_flag( seg->get_flags() ) << "    "
-                << DUMP_HEX0x_FORMAT(  1 ) << seg->get_align() 
+                << DUMP_HEX0x_FORMAT(  1 ) << seg->get_align()
                 << std::endl;
         }
         // clang-format on
@@ -1100,7 +1100,7 @@ class dump
 
     //------------------------------------------------------------------------------
     // Dumps the dynamic tags information
-    static void dynamic_tags( std::ostream& out, const elfio& reader )
+    static void dynamic_tags( std::ostream& out, const elfio& reader, bool name_only = false )
     {
         for ( const auto& sec : reader.sections ) { // For all sections
             if ( SHT_DYNAMIC == sec->get_type() ) {
@@ -1109,22 +1109,24 @@ class dump
                 Elf_Xword dyn_no = dynamic.get_entries_num();
                 if ( dyn_no == 0 )
                     continue;
-
-                out << "Dynamic section (" << sec->get_name() << ")"
-                    << std::endl;
-                out << "[  Nr ] Tag              Name/Value" << std::endl;
+                if ( !name_only ) {
+                    out << "Dynamic section (" << sec->get_name() << ")"
+                        << std::endl;
+                    out << "[  Nr ] Tag              Name/Value" << std::endl;
+                }
                 for ( Elf_Xword i = 0; i < dyn_no; ++i ) {
                     Elf_Xword   tag   = 0;
                     Elf_Xword   value = 0;
                     std::string str;
                     dynamic.get_entry( i, tag, value, str );
-                    dynamic_tag( out, i, tag, value, str, reader.get_class() );
+                    dynamic_tag( out, i, tag, value, str, reader.get_class(), name_only );
                     if ( DT_NULL == tag ) {
                         break;
                     }
                 }
-
-                out << std::endl;
+                if ( !name_only ) {
+                    out << std::endl;
+                }
             }
         }
     }
@@ -1136,8 +1138,16 @@ class dump
                              Elf_Xword          tag,
                              Elf_Xword          value,
                              const std::string& str,
-                             unsigned int /*elf_class*/ )
+                             unsigned int /*elf_class*/,
+                             bool               name_only = false )
     {
+        if ( name_only ) {
+            if ( str.empty() || tag != DT_NEEDED ) {
+                return;
+            }
+            out << str << std::endl;
+            return;
+        }
         out << "[" << DUMP_DEC_FORMAT( 5 ) << no << "] "
             << DUMP_STR_FORMAT( 16 ) << str_dynamic_tag( tag ) << " ";
         if ( str.empty() ) {
