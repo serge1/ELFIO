@@ -346,6 +346,18 @@ TEST( ARIOTest, add_simple_member )
     m.uid  = 5678;
     m.mode = 0644;
     archive.add_member( m, "The content\nof this\nmember\n" );
+    m.name = "added_text2.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "" );
+    m.name = "added_text3.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "Hello\n" );
 
     // Save the archive to a new file
     auto result = archive.save( "ario/simple_text_saved.a" );
@@ -355,19 +367,27 @@ TEST( ARIOTest, add_simple_member )
     ario loaded_archive;
     ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
     ASSERT_EQ( loaded_archive.load( "ario/simple_text_saved.a" ).ok(), true );
-    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() + 2 );
+    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() + 4 );
     EXPECT_EQ( loaded_archive.members[0].name, archive.members[0].name );
     EXPECT_EQ( loaded_archive.members[0].size, archive.members[0].size );
-    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].name,
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 5].name,
                archive.members[archive.members.size() - 1].name );
-    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].size,
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 5].size,
                archive.members[archive.members.size() - 1].size );
-    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].name,
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 4].name,
                "added_text.txt" );
-    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].data(),
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 4].data(),
                "The content\nof this\nmember" );
-    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].name,
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].name,
                "added_text1.txt" );
-    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].data(),
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].data(),
                "The content\nof this\nmember\n" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].name,
+               "added_text2.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].data(),
+               "" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].name,
+               "added_text3.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].data(),
+               "Hello\n" );
 }

@@ -367,6 +367,8 @@ class ario
         return {};
     }
 
+    //------------------------------------------------------------------------------
+    //! @brief 
     Result add_member( const Member& m, const std::string& data )
     {
         members_.emplace_back( m );
