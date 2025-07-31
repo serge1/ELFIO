@@ -368,15 +368,22 @@ class ario
     }
 
     //------------------------------------------------------------------------------
-    //! @brief 
+    //! @brief
     Result add_member( const Member& m, const std::string& data )
     {
-        members_.emplace_back( m );
-        members_[members_.size() - 1].short_name =
-            m.name + "/"; // Conversion is required!!!
-        members_[members_.size() - 1].set_new_data( data );
-        members_[members_.size() - 1].size = data.size();
-        members_[members_.size() - 1].set_input_stream( pstream.get() );
+        auto& new_member   = members_.emplace_back( m );
+        new_member.size    = data.size();
+        new_member.pstream = nullptr;
+        new_member.set_new_data( data );
+
+        if ( m.name.size() < FIELD_NAME_SIZE ) {
+            new_member.short_name = m.name + "/";
+        }
+        else {
+            auto location = string_table.size();
+            string_table += m.name + "/\x0A";
+            new_member.short_name = "/" + std::to_string( location );
+        }
 
         return {};
     }
@@ -416,15 +423,23 @@ class ario
                 break; // End of file or error
             }
             std::streamoff current_pos = pstream->tellg();
-            m.short_name               = std::string( header, 16 );
+            m.short_name               = std::string( header, FIELD_NAME_SIZE );
             m.name                     = m.short_name;
             m.filepos                  = filepos;
 
-            std::string date_str( header + 16, 12 );
-            std::string uid_str( header + 28, 6 );
-            std::string gid_str( header + 34, 6 );
-            std::string mode_str( header + 40, 8 );
-            std::string size_str( header + 48, 10 );
+            std::string date_str( header + FIELD_NAME_SIZE, FIELD_DATE_SIZE );
+            std::string uid_str( header + FIELD_NAME_SIZE + FIELD_DATE_SIZE,
+                                 FIELD_UID_SIZE );
+            std::string gid_str( header + +FIELD_NAME_SIZE + FIELD_DATE_SIZE +
+                                     FIELD_UID_SIZE,
+                                 FIELD_GID_SIZE );
+            std::string mode_str( header + FIELD_NAME_SIZE + FIELD_DATE_SIZE +
+                                      FIELD_UID_SIZE + FIELD_GID_SIZE,
+                                  FIELD_MODE_SIZE );
+            std::string size_str( header + FIELD_NAME_SIZE + FIELD_DATE_SIZE +
+                                      FIELD_UID_SIZE + FIELD_GID_SIZE +
+                                      FIELD_MODE_SIZE,
+                                  FIELD_SIZE_SIZE );
 
             try {
                 // Get m.size from the header. Do it earlier due to the potential use of m.data()
@@ -454,7 +469,7 @@ class ario
                     m.date = std::stoi( date_str );
                     m.uid  = std::stoi( uid_str );
                     m.gid  = std::stoi( gid_str );
-                    m.mode = std::stoi( mode_str, nullptr, 8 );
+                    m.mode = std::stoi( mode_str, nullptr, FIELD_MODE_SIZE );
                 }
                 catch ( const std::exception& ) {
                     return { "Invalid member header's field" };
@@ -574,7 +589,7 @@ class ario
 
         // Write the symbol table header
         os << "/               0           0     0     0       "
-           << std::setw( 10 ) << std::left << std::dec
+           << std::setw( FIELD_SIZE_SIZE ) << std::left << std::dec
            << symbol_table_size - HEADER_SIZE << HEADER_END_MAGIC;
 
         // Write the number of symbols
@@ -631,7 +646,7 @@ class ario
         // clang-format off
         // Write the long name directory
         os << "//                                              "
-           << std::setw( 10 ) << std::left << std::dec << string_table.size()
+           << std::setw( FIELD_SIZE_SIZE ) << std::left << std::dec << string_table.size()
            << HEADER_END_MAGIC
            << string_table;
         // clang-format on
@@ -661,12 +676,12 @@ class ario
         for ( const auto& member : members_ ) {
             // clang-format off
             // Write the member header
-            os << std::setw( 16 ) << std::left << member.short_name
-                << std::setw( 12 ) << std::left << member.date
-                << std::setw( 6 )  << std::left << member.uid
-                << std::setw( 6 )  << std::left << member.gid
-                << std::setw( 8 )  << std::left << std::oct << member.mode
-                << std::setw( 10 ) << std::left << std::dec << member.size
+            os << std::setw( FIELD_NAME_SIZE )  << std::left << member.short_name
+                << std::setw( FIELD_DATE_SIZE ) << std::left << member.date
+                << std::setw( FIELD_UID_SIZE )  << std::left << member.uid
+                << std::setw( FIELD_GID_SIZE )  << std::left << member.gid
+                << std::setw( FIELD_MODE_SIZE ) << std::left << std::oct << member.mode
+                << std::setw( FIELD_SIZE_SIZE ) << std::left << std::dec << member.size
                 << HEADER_END_MAGIC;
             // clang-format on
 
@@ -782,6 +797,12 @@ class ario
         "\x60\x0A"; ///< End of header magic
     static constexpr std::streamsize HEADER_SIZE =
         60; ///< Size of archive header
+    static constexpr int FIELD_NAME_SIZE = 16;
+    static constexpr int FIELD_DATE_SIZE = 12;
+    static constexpr int FIELD_UID_SIZE  = 6;
+    static constexpr int FIELD_GID_SIZE  = 6;
+    static constexpr int FIELD_MODE_SIZE = 8;
+    static constexpr int FIELD_SIZE_SIZE = 10;
 
     //!< Pointer to the input stream
     //! It is used to read the archive members

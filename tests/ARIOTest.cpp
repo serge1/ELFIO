@@ -174,12 +174,10 @@ TEST( ARIOTest, get_symbols_for_member_libgcov )
     ASSERT_EQ( symbols.size(), 20 );
     // We cannot garantee the order of symbols in the symbol table,
     // so we just check that some of them are present
-    ASSERT_NE(
-        std::find( symbols.begin(), symbols.end(), "__gcov_exit" ),
-        symbols.end() );
-    ASSERT_NE(
-        std::find( symbols.begin(), symbols.end(), "__gcov_var" ),
-        symbols.end() );
+    ASSERT_NE( std::find( symbols.begin(), symbols.end(), "__gcov_exit" ),
+               symbols.end() );
+    ASSERT_NE( std::find( symbols.begin(), symbols.end(), "__gcov_var" ),
+               symbols.end() );
     ASSERT_NE(
         std::find( symbols.begin(), symbols.end(), "__gcov_read_counter" ),
         symbols.end() );
@@ -326,7 +324,6 @@ TEST( ARIOTest, libgcov_save )
                archive.members[archive.members.size() - 1].size );
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ARIOTest, add_simple_member )
 {
@@ -390,4 +387,130 @@ TEST( ARIOTest, add_simple_member )
                "added_text3.txt" );
     EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].data(),
                "Hello\n" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, add_long_name_member )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+
+    ario::Member m;
+    m.name = "long_name_member_added_text.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "The content\nof this\nmember" );
+    m.name = "long_name_member_added_text1.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "The content\nof this\nmember\n" );
+    m.name = "long_name_member_added_text2.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "" );
+    m.name = "long_name_member_added_text333.txt";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "Hello\n" );
+
+    // Save the archive to a new file
+    auto result = archive.save( "ario/long_name_saved.a" );
+    ASSERT_EQ( result.ok(), true );
+
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.load( "ario/long_name_saved.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() + 4 );
+    EXPECT_EQ( loaded_archive.members[0].name, archive.members[0].name );
+    EXPECT_EQ( loaded_archive.members[0].size, archive.members[0].size );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 5].name,
+               archive.members[archive.members.size() - 1].name );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 5].size,
+               archive.members[archive.members.size() - 1].size );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 4].name,
+               "long_name_member_added_text.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 4].data(),
+               "The content\nof this\nmember" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].name,
+               "long_name_member_added_text1.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 3].data(),
+               "The content\nof this\nmember\n" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].name,
+               "long_name_member_added_text2.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 2].data(),
+               "" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].name,
+               "long_name_member_added_text333.txt" );
+    EXPECT_EQ( loaded_archive.members[loaded_archive.members.size() - 1].data(),
+               "Hello\n" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, new_text_lib )
+{
+    ario archive;
+
+    ario::Member m;
+    m.name = "123456789012345";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "data\n" );
+    m.name = "1234567890123456";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "data\n" );
+    m.name = "12345678901234567";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "data\n" );
+    m.name = "12345";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "data\n" );
+    m.name = "123456789012345678";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "data\n" );
+    m.name = "1234567";
+    m.date = 0;
+    m.gid  = 1234;
+    m.uid  = 5678;
+    m.mode = 0644;
+    archive.add_member( m, "data\n" );
+
+    // Save the archive to a new file
+    auto result = archive.save( "ario/new_text_lib.a" );
+    ASSERT_EQ( result.ok(), true );
+
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/new_text_lib.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), 6 );
+    std::vector<std::string> ref_names = {
+        "123456789012345", "1234567890123456",   "12345678901234567",
+        "12345",           "123456789012345678", "1234567" };
+    for ( auto i = 0; i < loaded_archive.members.size(); i++ ) {
+        EXPECT_EQ( loaded_archive.members[i].name, ref_names[i] );
+        EXPECT_EQ( loaded_archive.members[i].size, 5 );
+        EXPECT_EQ( loaded_archive.members[i].data(), "data\n" );
+    }
 }
