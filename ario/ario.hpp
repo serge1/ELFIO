@@ -345,7 +345,6 @@ class ario
     Result get_symbols_for_member( const ario::Member&       member,
                                    std::vector<std::string>& symbols ) const
     {
-        // Use string_view for comparison to avoid unnecessary allocations
         std::string_view member_name = member.name;
         size_t           index       = std::distance(
             members.begin(),
@@ -387,6 +386,29 @@ class ario
 
         return {};
     }
+
+    Result add_symbols_for_member(const ario::Member& member,
+        const std::vector<std::string>& symbols)
+    {
+        std::string_view member_name = member.name;
+        size_t           index       = std::distance(
+            members.begin(),
+            std::find_if(
+                members.begin(), members.end(), [&]( const auto& mem ) {
+                    return std::string_view( mem.name ) == member_name;
+                } ) );
+        if ( index >= members.size() ) {
+            return { "Member not found in archive" };
+        }
+
+        for (const auto& symbol : symbols)
+        {
+            symbol_table[symbol] = index;
+        }
+
+        return {};
+    }
+
 
   protected:
     //------------------------------------------------------------------------------

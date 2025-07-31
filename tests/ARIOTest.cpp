@@ -514,3 +514,50 @@ TEST( ARIOTest, new_text_lib )
         EXPECT_EQ( loaded_archive.members[i].data(), "data\n" );
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, new_text_lib_with_symbols )
+{
+    ario archive;
+
+    for ( auto i = 0; i < 20; i++ ) {
+        ario::Member m;
+        m.name = "name__________" + std::to_string( i );
+        m.date = 0;
+        m.gid  = 1234;
+        m.uid  = 5678;
+        m.mode = 0644;
+        archive.add_member( m, "data" + std::to_string( i ) + "\n" );
+
+        const auto&              added_member = archive.members[m.name];
+        std::vector<std::string> symbols      = {};
+        for ( auto j = 0; j < i; j++ ) {
+            symbols.emplace_back( "symbol_" + std::to_string( 100 * i + j ) );
+        }
+        ASSERT_EQ( archive.add_symbols_for_member( added_member, symbols ).ok(),
+                   true );
+    }
+    // Save the archive to a new file
+    auto result = archive.save( "ario/new_text_lib_with_symbols.a" );
+    ASSERT_EQ( result.ok(), true );
+
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/new_text_lib_with_symbols.a" ).ok(),
+               true );
+    ASSERT_EQ( loaded_archive.members.size(), 20 );
+    for ( const auto& m : loaded_archive.members ) {
+        auto index = std::stoi( m.name.c_str() + 14 );
+        ASSERT_EQ( loaded_archive.members[index].name, m.name );
+
+        std::vector<std::string> symbols = {};
+        ASSERT_EQ( loaded_archive.get_symbols_for_member( m, symbols ).ok(),
+                   true );
+        ASSERT_EQ( symbols.size(), index );
+        for ( const auto& symbol : symbols ) {
+            ario::Member ms;
+            ASSERT_EQ( loaded_archive.find_symbol( symbol, ms ).ok(), true );
+            ASSERT_EQ( ms.name, m.name );
+        }
+    }
+}
