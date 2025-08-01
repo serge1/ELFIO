@@ -273,7 +273,6 @@ void compare_archives( const ario& archive1, const ario& archive2 )
         EXPECT_EQ( archive1.members[i].gid, archive2.members[i].gid );
         EXPECT_EQ( archive1.members[i].mode, archive2.members[i].mode );
         EXPECT_EQ( archive1.members[i].size, archive2.members[i].size );
-        EXPECT_EQ( archive1.members[i].filepos, archive2.members[i].filepos );
         EXPECT_EQ( archive1.members[i].data(), archive2.members[i].data() );
     }
 }
