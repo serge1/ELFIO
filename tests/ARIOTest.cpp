@@ -262,6 +262,22 @@ TEST( ARIOTest, basic_header_save )
     ASSERT_EQ( oss.str(), "!<arch>\n" );
 }
 
+void compare_archives( const ario& archive1, const ario& archive2 )
+{
+    ASSERT_EQ( archive1.members.size(), archive2.members.size() );
+
+    for ( size_t i = 0; i < archive1.members.size(); ++i ) {
+        EXPECT_EQ( archive1.members[i].name, archive2.members[i].name );
+        EXPECT_EQ( archive1.members[i].date, archive2.members[i].date );
+        EXPECT_EQ( archive1.members[i].uid, archive2.members[i].uid );
+        EXPECT_EQ( archive1.members[i].gid, archive2.members[i].gid );
+        EXPECT_EQ( archive1.members[i].mode, archive2.members[i].mode );
+        EXPECT_EQ( archive1.members[i].size, archive2.members[i].size );
+        EXPECT_EQ( archive1.members[i].filepos, archive2.members[i].filepos );
+        EXPECT_EQ( archive1.members[i].data(), archive2.members[i].data() );
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ARIOTest, header_save )
 {
@@ -269,19 +285,30 @@ TEST( ARIOTest, header_save )
     ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
 
     // Save the archive to a new file
-    auto result = archive.save( "ario/simple_text_saved.a" );
-    ASSERT_EQ( result.ok(), true );
+    ASSERT_EQ( archive.save( "ario/simple_text_saved.a" ).ok(), true );
 
     // Load the saved archive and check its contents
     ario loaded_archive;
     ASSERT_EQ( loaded_archive.load( "ario/simple_text_saved.a" ).ok(), true );
-    ASSERT_EQ( loaded_archive.members.size(), archive.members.size() );
-    EXPECT_EQ( loaded_archive.members[0].name, archive.members[0].name );
-    EXPECT_EQ( loaded_archive.members[0].size, archive.members[0].size );
-    EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].name,
-               archive.members[archive.members.size() - 1].name );
-    EXPECT_EQ( loaded_archive.members[archive.members.size() - 1].size,
-               archive.members[archive.members.size() - 1].size );
+
+    compare_archives( loaded_archive, archive );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, long_name_dir_save )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/long_name.a" ).ok(), true );
+
+    // Save the archive to a new file
+    auto result = archive.save( "ario/long_name_saved.a" );
+    ASSERT_EQ( result.ok(), true );
+
+    // Load the saved archive and check its contents
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/long_name_saved.a" ).ok(), true );
+
+    compare_archives( loaded_archive, archive );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
