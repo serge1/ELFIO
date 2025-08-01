@@ -43,7 +43,7 @@ int main( int argc, char** argv )
         std::cout << "Member: " << std::setw( 40 ) << std::left << member.name
                   << " Size: " << std::setw( 8 ) << std::right << member.size
                   << " Mode: " << std::setw( 3 ) << std::oct << member.mode
-                  << " Data: " << member.data().substr( 1, 3 ) << std::endl;
+                  << std::endl;
         std::vector<std::string> symbols;
         result = archive.get_symbols_for_member( member, symbols );
         if ( result.ok() ) {

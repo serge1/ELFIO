@@ -132,23 +132,24 @@ TEST( ARIOTest, find_symbol_libgcov )
     ario archive;
     ASSERT_EQ( archive.load( "ario/libgcov.a" ).ok(), true );
 
-    ario::Member member;
-    auto         result = archive.find_symbol( "__gcov_merge_add", member );
+    std::optional<std::reference_wrapper<const ario::Member>> member =
+        std::nullopt;
+    auto result = archive.find_symbol( "__gcov_merge_add", member );
     ASSERT_EQ( result.ok(), true );
-    ASSERT_EQ( member.name, "_gcov_merge_add.o" );
+    ASSERT_EQ( member->get().name, "_gcov_merge_add.o" );
 
     result =
         archive.find_symbol( "__gcov_indirect_call_topn_profiler", member );
     ASSERT_EQ( result.ok(), true );
-    ASSERT_EQ( member.name, "_gcov_indirect_call_topn_profiler.o" );
+    ASSERT_EQ( member->get().name, "_gcov_indirect_call_topn_profiler.o" );
 
     result = archive.find_symbol( "__not_found", member );
     ASSERT_EQ( result.ok(), false );
-    ASSERT_EQ( member.name, "_gcov_indirect_call_topn_profiler.o" );
+    ASSERT_EQ( member.has_value(), false );
 
     result = archive.find_symbol( "__gcov_write_counter", member );
     ASSERT_EQ( result.ok(), true );
-    ASSERT_EQ( member.name, "_gcov.o" );
+    ASSERT_EQ( member->get().name, "_gcov.o" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +219,8 @@ TEST( ARIOTest, get_symbols_for_ELF_files_in_archive )
                 Elf_Half      section_index;
                 unsigned char other;
 
-                ario::Member found_member;
+                std::optional<std::reference_wrapper<const ario::Member>>
+                    found_member = std::nullopt;
                 // Iterate over all symbols in the symbol table
                 for ( Elf_Xword i = 0; i < symbols.get_symbols_num(); ++i ) {
                     // Extract symbol properties
@@ -330,31 +332,33 @@ TEST( ARIOTest, add_simple_member )
     ario archive;
     ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
 
-    ario::Member m;
+    ario::Member                                              m;
+    std::optional<std::reference_wrapper<const ario::Member>> added_member =
+        std::nullopt;
     m.name = "added_text.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember" );
+    archive.add_member( m, "The content\nof this\nmember", added_member );
     m.name = "added_text1.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember\n" );
+    archive.add_member( m, "The content\nof this\nmember\n", added_member );
     m.name = "added_text2.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "" );
+    archive.add_member( m, "", added_member );
     m.name = "added_text3.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "Hello\n" );
+    archive.add_member( m, "Hello\n", added_member );
 
     // Save the archive to a new file
     auto result = archive.save( "ario/simple_text_saved.a" );
@@ -395,31 +399,33 @@ TEST( ARIOTest, add_long_name_member )
     ario archive;
     ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
 
-    ario::Member m;
+    ario::Member                                              m;
+    std::optional<std::reference_wrapper<const ario::Member>> added_member =
+        std::nullopt;
     m.name = "long_name_member_added_text.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember" );
+    archive.add_member( m, "The content\nof this\nmember", added_member );
     m.name = "long_name_member_added_text1.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember\n" );
+    archive.add_member( m, "The content\nof this\nmember\n", added_member );
     m.name = "long_name_member_added_text2.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "" );
+    archive.add_member( m, "", added_member );
     m.name = "long_name_member_added_text333.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "Hello\n" );
+    archive.add_member( m, "Hello\n", added_member );
 
     // Save the archive to a new file
     auto result = archive.save( "ario/long_name_saved.a" );
@@ -459,43 +465,45 @@ TEST( ARIOTest, new_text_lib )
 {
     ario archive;
 
-    ario::Member m;
+    ario::Member                                              m;
+    std::optional<std::reference_wrapper<const ario::Member>> added_member =
+        std::nullopt;
     m.name = "123456789012345";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n" );
+    archive.add_member( m, "data\n", added_member );
     m.name = "1234567890123456";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n" );
+    archive.add_member( m, "data\n", added_member );
     m.name = "12345678901234567";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n" );
+    archive.add_member( m, "data\n", added_member );
     m.name = "12345";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n" );
+    archive.add_member( m, "data\n", added_member );
     m.name = "123456789012345678";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n" );
+    archive.add_member( m, "data\n", added_member );
     m.name = "1234567";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n" );
+    archive.add_member( m, "data\n", added_member );
 
     // Save the archive to a new file
     auto result = archive.save( "ario/new_text_lib.a" );
@@ -521,21 +529,27 @@ TEST( ARIOTest, new_text_lib_with_symbols )
     ario archive;
 
     for ( auto i = 0; i < 20; i++ ) {
-        ario::Member m;
+        ario::Member                                              m;
+        std::optional<std::reference_wrapper<const ario::Member>> added_member =
+            std::nullopt;
         m.name = "name__________" + std::to_string( i );
         m.date = 0;
         m.gid  = 1234;
         m.uid  = 5678;
         m.mode = 0644;
-        archive.add_member( m, "data" + std::to_string( i ) + "\n" );
+        ASSERT_EQ( archive
+                       .add_member( m, "data" + std::to_string( i ) + "\n",
+                                    added_member )
+                       .ok(),
+                   true );
 
-        const auto&              added_member = archive.members[m.name];
-        std::vector<std::string> symbols      = {};
+        std::vector<std::string> symbols = {};
         for ( auto j = 0; j < i; j++ ) {
             symbols.emplace_back( "symbol_" + std::to_string( 100 * i + j ) );
         }
-        ASSERT_EQ( archive.add_symbols_for_member( added_member, symbols ).ok(),
-                   true );
+        ASSERT_EQ(
+            archive.add_symbols_for_member( added_member->get(), symbols ).ok(),
+            true );
     }
     // Save the archive to a new file
     auto result = archive.save( "ario/new_text_lib_with_symbols.a" );
@@ -555,9 +569,10 @@ TEST( ARIOTest, new_text_lib_with_symbols )
                    true );
         ASSERT_EQ( symbols.size(), index );
         for ( const auto& symbol : symbols ) {
-            ario::Member ms;
+            std::optional<std::reference_wrapper<const ario::Member>> ms =
+                std::nullopt;
             ASSERT_EQ( loaded_archive.find_symbol( symbol, ms ).ok(), true );
-            ASSERT_EQ( ms.name, m.name );
+            ASSERT_EQ( ms->get().name, m.name );
         }
     }
 }

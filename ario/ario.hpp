@@ -72,8 +72,6 @@ class ario
         friend class ario;
 
       public:
-        explicit Member() {}
-
         std::string name = {}; ///< Name of the member
         int         date = {}; ///< Date of the member
         int         uid  = {}; ///< User ID of the member
@@ -322,16 +320,21 @@ class ario
     //! @brief Find a symbol in the archive
     //! @param name The name of the symbol to find
     //! @param out_member Pointer to store the found member
+    //! @param member Reference to store the found member
     //! @return Error object indicating success or failure
     //! If the symbol is found, out_member will point to the corresponding member
     //! If the symbol is not found, out_member will stay unchanged
-    Result find_symbol( std::string_view name, ario::Member& member ) const
+    Result
+    find_symbol( std::string_view name,
+                 std::optional<std::reference_wrapper<const ario::Member>>&
+                     member ) const
     {
         const auto it = symbol_table.find( std::string( name ) );
         if ( it != symbol_table.end() ) {
             member = members_[it->second];
             return {};
         }
+        member = std::nullopt;
         return { std::string( "Symbol not found: " ) + std::string( name ) };
     }
 
@@ -367,28 +370,42 @@ class ario
     }
 
     //------------------------------------------------------------------------------
-    //! @brief
-    Result add_member( const Member& m, const std::string& data )
+    //! @brief Add a member to the archive
+    //! @param member The member to add
+    //! @param data The data associated with the member
+    //! @param added_member Reference to store the added member
+    //! @return Error object indicating success or failure
+    Result
+    add_member( const Member&      member,
+                const std::string& data,
+                std::optional<std::reference_wrapper<const ario::Member>>&
+                    added_member )
     {
-        auto& new_member   = members_.emplace_back( m );
+        auto& new_member = members_.emplace_back( member );
         new_member.size    = data.size();
         new_member.pstream = nullptr;
         new_member.set_new_data( data );
 
-        if ( m.name.size() < FIELD_NAME_SIZE ) {
-            new_member.short_name = m.name + "/";
+        if ( member.name.size() < FIELD_NAME_SIZE ) {
+            new_member.short_name = member.name + "/";
         }
         else {
             auto location = string_table.size();
-            string_table += m.name + "/\x0A";
+            string_table += member.name + "/\x0A";
             new_member.short_name = "/" + std::to_string( location );
         }
 
+        added_member = new_member;
         return {};
     }
 
-    Result add_symbols_for_member(const ario::Member& member,
-        const std::vector<std::string>& symbols)
+    //------------------------------------------------------------------------------
+    //! @brief Add symbols for a member
+    //! @param member The member to add symbols for
+    //! @param symbols The symbols to add
+    //! @return Error object indicating success or failure
+    Result add_symbols_for_member( const ario::Member&             member,
+                                   const std::vector<std::string>& symbols )
     {
         std::string_view member_name = member.name;
         size_t           index       = std::distance(
@@ -401,14 +418,12 @@ class ario
             return { "Member not found in archive" };
         }
 
-        for (const auto& symbol : symbols)
-        {
+        for ( const auto& symbol : symbols ) {
             symbol_table[symbol] = index;
         }
 
         return {};
     }
-
 
   protected:
     //------------------------------------------------------------------------------
@@ -535,6 +550,10 @@ class ario
         return {};
     }
 
+    //------------------------------------------------------------------------------
+    //! @brief Save the archive header
+    //! @param os Output stream to save the header
+    //! @return Error object indicating success or failure
     Result save_header( std::ostream& os )
     {
         if ( !os ) {
@@ -548,6 +567,11 @@ class ario
     }
 
     //------------------------------------------------------------------------------
+    //! @brief Calculate the size of the symbol table
+    //! @return The size of the symbol table in bytes
+    //! The size includes the header, number of symbols, symbol locations, and names
+    //! It also includes padding if the size is odd
+    //! @note The symbol table is saved after the archive header and before the long name directory
     std::streamoff calculate_symbol_table_size() const
     {
         auto num_of_symbols = static_cast<uint32_t>( symbol_table.size() );
@@ -569,6 +593,10 @@ class ario
         return symbol_table_size;
     }
 
+    //------------------------------------------------------------------------------
+    //! @brief Calculate the relative offsets of members in the archive
+    //! @return A vector of relative offsets for each member
+    //! The offsets are calculated from the start of the archive
     std::vector<uint32_t> calculate_member_relative_offsets()
     {
         std::vector<uint32_t> member_relative_offset;
@@ -585,6 +613,12 @@ class ario
         return member_relative_offset;
     }
 
+    //------------------------------------------------------------------------------
+    //! @brief Calculate the size of the long names directory
+    //! @return The size of the long names directory in bytes
+    //! The size includes the header and the string table
+    //! It also includes padding if the size is odd
+    //! @note The long names directory is saved after the symbol table and before the members
     std::streamoff calculate_long_names_dir_size()
     {
         return HEADER_SIZE + string_table.size() + string_table.size() % 2;
