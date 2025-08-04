@@ -46,14 +46,14 @@ TEST( ARIOTest, wrong_file_magic )
     auto result = archive.load( "ario/invalid_magic.a" );
     ASSERT_EQ( result.ok(), false );
     ASSERT_EQ( result.what(),
-               "Invalid archive format. Expected magic: !<arch>\n" );
+               "Invalid archive format. Expected magic: !<arch>\n, but got !<arkh>\n" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 TEST( ARIOTest, simple_text_load )
 {
     ario archive;
-    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).what(), "No errors" );
     ASSERT_EQ( archive.members.size(), 6 );
     EXPECT_EQ( archive.members[0].name, "hello.c" );
     EXPECT_EQ( archive.members[0].size, 45 );
@@ -542,7 +542,7 @@ TEST( ARIOTest, new_text_lib )
     std::vector<std::string> ref_names = {
         "123456789012345", "1234567890123456",   "12345678901234567",
         "12345",           "123456789012345678", "1234567" };
-    for ( auto i = 0; i < loaded_archive.members.size(); i++ ) {
+    for ( size_t i = 0; i < loaded_archive.members.size(); i++ ) {
         EXPECT_EQ( loaded_archive.members[i].name, ref_names[i] );
         EXPECT_EQ( loaded_archive.members[i].size, 5 );
         EXPECT_EQ( loaded_archive.members[i].data(), "data\n" );
