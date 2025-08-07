@@ -105,7 +105,7 @@ Contributions, bug reports, and feature requests are welcome! Please open an iss
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/serge1/ELFIO/blob/master/COPYING).
+This project is licensed under the [MIT License](https://github.com/serge1/ELFIO/blob/main/LICENSE.txt).
 
 ---
 
