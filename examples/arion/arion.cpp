@@ -27,7 +27,7 @@ using namespace ARIO;
 int main( int argc, char** argv )
 {
     if ( argc != 2 ) {
-        printf( "Usage: archive_dump <file_name>\n" );
+        printf( "Usage: arion <file_name>\n" );
         return 1;
     }
 
@@ -43,10 +43,9 @@ int main( int argc, char** argv )
         std::cout << "Member: " << std::setw( 40 ) << std::left << member.name
                   << " Size: " << std::setw( 8 ) << std::right << member.size
                   << " Mode: " << std::setw( 3 ) << std::oct << member.mode
-                  << std::endl;
+                  << std::dec << std::endl;
         std::vector<std::string> symbols;
-        result = archive.get_symbols_for_member( member, symbols );
-        if ( result.ok() ) {
+        if ( archive.get_symbols_for_member( member, symbols ).ok() ) {
             auto first_time = true;
             for ( const auto& symbol : symbols ) {
                 if ( first_time ) {

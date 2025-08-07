@@ -39,6 +39,17 @@
       "console": "externalTerminal"
     },
     {
+      "name": "arioso (Windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/examples/arioso/Debug/arioso.exe",
+      "args": ["${workspaceFolder}/build/tests/ario/simple_text.a", "-e", "hello.c", "-d", "hello.c", "-a", "hello.c"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/examples/arioso",
+      "environment": [],
+      "console": "externalTerminal"
+    },
+    {
       "name": "Run ELF Dump",
       "type": "cppdbg",
       "request": "launch",

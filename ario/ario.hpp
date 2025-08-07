@@ -105,6 +105,14 @@ class ario
             return data;
         }
 
+        operator std::string() const { return name; }
+        operator std::string_view() const { return name; }
+        operator const char*() const { return name.c_str(); }
+        bool operator==( const std::string& name ) const
+        {
+            return this->name == name;
+        }
+
       protected:
         void set_input_stream( std::istream* pstream )
         {
@@ -155,7 +163,7 @@ class ario
         const Member& operator[]( std::string_view name ) const
         {
             for ( const auto& m : parent->members_ ) {
-                if ( m.name == name ) {
+                if ( m == name ) {
                     return m;
                 }
             }
@@ -381,6 +389,13 @@ class ario
                 std::optional<std::reference_wrapper<const ario::Member>>&
                     added_member )
     {
+        // Check if the member with such name already exists
+        for ( const auto& mem : members_ ) {
+            if ( mem.name == member.name ) {
+                return {"Member '" + member.name + "' already exists"};
+            }
+        }
+
         auto& new_member   = members_.emplace_back( member );
         new_member.size    = data.size();
         new_member.pstream = nullptr;
