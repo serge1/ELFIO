@@ -13,13 +13,15 @@
 - [Overview](#overview)
 - [ELFIO: ELF Object and Executable File Reader/Writer](#elfio-elf-object-and-executable-file-readerwriter)
 - [ARIO: Advanced Archive Input/Output Library](#ario-advanced-archive-inputoutput-library)
-- [Getting Started](#getting-started)
 - [Who Uses ELFIO & ARIO?](#who-uses-elfio--ario)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Examples](#examples)
+- [Support](#support)
 - [Contributing](#contributing)
 - [License](#license)
 - [Resources](#resources)
-- [Installation](#installation)
-- [Support](#support)
 
 ---
 
@@ -70,6 +72,22 @@
 
 ---
 
+## Who Uses ELFIO & ARIO?
+
+- Open-source projects
+- Commercial toolchains
+- Academic research
+- Embedded systems
+- Binary analysis and reverse engineering tools
+
+---
+
+## Installation
+
+Simply copy the `elfio` and/or `ario` directories into your project and include the relevant headers. No build or linking steps are required.
+
+---
+
 ## Getting Started
 
 1. **Add the header files** to your project:
@@ -102,13 +120,31 @@
 
 ---
 
-## Who Uses ELFIO & ARIO?
+## Project Structure
 
-- Open-source projects
-- Commercial toolchains
-- Academic research
-- Embedded systems
-- Binary analysis and reverse engineering tools
+- `elfio/` — ELFIO header files
+- `ario/` — ARIO header files
+- `examples/` — Example usage and sample tools
+
+---
+
+## Examples
+
+The `examples/` directory contains a collection of sample programs demonstrating how to use ELFIO and ARIO in real-world scenarios. Each example focuses on a specific use case, such as reading and modifying ELF files, manipulating archive files, or integrating with C code. These examples serve both as practical tutorials and as a starting point for your own tools and applications.
+
+**Purpose:**  
+
+- Illustrate typical usage patterns for ELFIO and ARIO
+- Provide ready-to-use code for common binary and archive operations
+- Help users quickly get started and understand library capabilities
+
+Explore the `examples/` subdirectories for detailed demonstrations, including adding sections to ELF files, anonymizing binaries, working with archives, and more.
+
+---
+
+## Support
+
+For questions or support, please open an issue on [GitHub](https://github.com/serge1/ELFIO/issues).
 
 ---
 
@@ -129,25 +165,3 @@ This project is licensed under the [MIT License](https://github.com/serge1/ELFIO
 - [ELFIO Documentation (PDF)](http://elfio.sourceforge.net/elfio.pdf)
 - [ELFIO on GitHub](https://github.com/serge1/ELFIO)
 - [ELF Specification](https://refspecs.linuxbase.org/elf/elf.pdf)
-
----
-
-## Project Structure
-
-- `elfio/` — ELFIO header files
-- `ario/` — ARIO header files
-- `examples/` — Example usage and sample tools
-
----
-
-## Installation
-
-Simply copy the `elfio` and/or `ario` directories into your project and include the relevant headers. No build or linking steps are required.
-
----
-
-## Support
-
-For questions or support, please open an issue on [GitHub](https://github.com/serge1/ELFIO/issues).
-
-*ELFIO and ARIO: Empowering your C++ binary and archive manipulation with simplicity, performance, and reliability!*
