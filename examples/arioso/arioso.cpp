@@ -268,7 +268,11 @@ int main( int argc, char** argv )
 
     // Open existing library or create a new one. In the last case, the library will be empty.
     ario archive;
-    archive.load( opts.archive_name );
+    const auto result = archive.load( opts.archive_name );
+    if ( !result.ok() ) {
+        std::cerr << "Error loading archive: " << result.what() << std::endl;
+        return 1;
+    }
 
     // Extract members from the archive
     int retVal = extract_members( opts, archive );
