@@ -1,4 +1,46 @@
-// This example demonstrates how to use the ARIO library to read and manipulate UNIX archive files.
+/*
+Copyright (C) 2025-present by Serge Lamikhov-Center
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+//------------------------------------------------------------------------------
+// arioso.cpp
+//
+// This example demonstrates how to use the ARIO library (with optional ELFIO integration)
+// to manage UNIX archive (.ar) files from the command line. It provides a practical tool
+// for extracting, deleting, and adding files to an archive, similar to the standard 'ar' utility.
+//
+// Purpose:
+//   - Showcase ARIO’s API for reading, modifying, and writing UNIX archive files.
+//   - Illustrate integration with ELFIO for symbol extraction from ELF object files.
+//
+// Abilities:
+//   - Extraction: Extracts specified files from the archive to the current directory.
+//   - Deletion: Removes specified files from the archive.
+//   - Addition: Adds new files to the archive, collecting and storing global symbols if the file is an ELF object.
+//   - Archive update: Safely writes changes to the archive using a temporary file for atomic updates.
+//   - Command-line interface: Accepts commands in the form:
+//         arioso <archive> [-e <files...>] [-d <files...>] [-a <files...>]
+//
+// This example serves as both a reference for ARIO/ELFIO usage and a foundation for building custom archive management tools.
+//
 
 #include <iostream>
 #include <vector>

@@ -20,6 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+//------------------------------------------------------------------------------
+// arion.cpp
+//
+// This example demonstrates how to use the ARIO library to inspect and list the
+// contents of a UNIX archive (.ar) file. It provides a simple command-line tool
+// that displays information about each member of the archive, including its name,
+// size, file mode, and any associated symbols.
+//
+// Purpose:
+//   - Showcase ARIO’s API for reading and iterating over archive members.
+//   - Provide a minimal example for archive inspection and symbol listing.
+//
+// Abilities:
+//   - Loads and parses a specified archive file.
+//   - Lists all members with their names, sizes, and file modes.
+//   - Displays symbols associated with each member, if available.
+//   - Command-line interface: Accepts the archive file name as an argument.
+//
+// This example serves as a reference for basic ARIO usage and as a foundation
+// for building custom archive inspection tools.
+//------------------------------------------------------------------------------
+
+#include <iostream>
 #include <ario/ario.hpp>
 
 using namespace ARIO;
@@ -27,13 +50,13 @@ using namespace ARIO;
 int main( int argc, char** argv )
 {
     if ( argc != 2 ) {
-        printf( "Usage: arion <file_name>\n" );
+        std::cout << "Usage: arion <file_name>" << std::endl;
         return 1;
     }
 
     ario archive;
 
-    auto result = archive.load( argv[1] );
+    const auto result = archive.load( argv[1] );
     if ( !result.ok() ) {
         std::cerr << "Error loading archive: " << result.what() << std::endl;
         return 1;
