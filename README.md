@@ -8,6 +8,21 @@
 
 ---
 
+## Table of Contents
+
+- [Overview](#overview)
+- [ELFIO: ELF Object and Executable File Reader/Writer](#elfio-elf-object-and-executable-file-readerwriter)
+- [ARIO: Advanced Archive Input/Output Library](#ario-advanced-archive-inputoutput-library)
+- [Getting Started](#getting-started)
+- [Who Uses ELFIO & ARIO?](#who-uses-elfio--ario)
+- [Contributing](#contributing)
+- [License](#license)
+- [Resources](#resources)
+- [Installation](#installation)
+- [Support](#support)
+
+---
+
 ## Overview
 
 **ELFIO** and **ARIO** are robust, header-only C++ libraries designed to make binary file and archive manipulation effortless, efficient, and portable. Whether you are building compilers, linkers, binary analysis tools, or custom build systems, these libraries provide the foundation you need for working with ELF files and UNIX archives.
@@ -116,5 +131,23 @@ This project is licensed under the [MIT License](https://github.com/serge1/ELFIO
 - [ELF Specification](https://refspecs.linuxbase.org/elf/elf.pdf)
 
 ---
+
+## Project Structure
+
+- `elfio/` — ELFIO header files
+- `ario/` — ARIO header files
+- `examples/` — Example usage and sample tools
+
+---
+
+## Installation
+
+Simply copy the `elfio` and/or `ario` directories into your project and include the relevant headers. No build or linking steps are required.
+
+---
+
+## Support
+
+For questions or support, please open an issue on [GitHub](https://github.com/serge1/ELFIO/issues).
 
 *ELFIO and ARIO: Empowering your C++ binary and archive manipulation with simplicity, performance, and reliability!*
