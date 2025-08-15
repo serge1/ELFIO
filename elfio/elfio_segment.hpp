@@ -156,8 +156,8 @@ template <class T> class segment_impl : public segment
     //! \brief Constructor
     //! \param convertor Pointer to the endianness convertor
     //! \param translator Pointer to the address translator
-    segment_impl( const endianness_convertor* convertor,
-                  const address_translator*   translator )
+    segment_impl( std::shared_ptr<endianness_convertor> convertor,
+                  std::shared_ptr<address_translator>   translator )
         : convertor( convertor ), translator( translator )
     {
     }
@@ -322,20 +322,20 @@ template <class T> class segment_impl : public segment
         Elf_Xword size     = get_file_size();
 
         // Check for integer overflow in offset calculation
-        if (p_offset > get_stream_size()) {
+        if ( p_offset > get_stream_size() ) {
             data = nullptr;
             return false;
         }
 
         // Check for integer overflow in size calculation
-        if (size > get_stream_size() || 
-            size > (get_stream_size() - p_offset)) {
+        if ( size > get_stream_size() ||
+             size > ( get_stream_size() - p_offset ) ) {
             data = nullptr;
             return false;
         }
 
         // Check if size can be safely converted to size_t
-        if (size > std::numeric_limits<size_t>::max() - 1) {
+        if ( size > std::numeric_limits<size_t>::max() - 1 ) {
             data = nullptr;
             return false;
         }
@@ -388,9 +388,9 @@ template <class T> class segment_impl : public segment
     Elf_Half              index   = 0;        //!< Index of the segment
     mutable std::unique_ptr<char[]> data;     //!< Pointer to the segment data
     std::vector<Elf_Half>           sections; //!< Vector of section indices
-    const endianness_convertor*     convertor =
+    std::shared_ptr<endianness_convertor> convertor =
         nullptr; //!< Pointer to the endianness convertor
-    const address_translator* translator =
+    std::shared_ptr<address_translator> translator =
         nullptr;                  //!< Pointer to the address translator
     size_t stream_size   = 0;     //!< Stream size
     bool   is_offset_set = false; //!< Flag indicating if the offset is set

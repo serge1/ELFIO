@@ -68,6 +68,8 @@ class elfio
     //! \brief Default constructor
     elfio() noexcept : sections( this ), segments( this )
     {
+        convertor       = std::make_shared<endianness_convertor>();
+        addr_translator = std::make_shared<address_translator>();
         create( ELFCLASS32, ELFDATA2LSB );
     }
 
@@ -138,7 +140,7 @@ class elfio
     {
         sections_.clear();
         segments_.clear();
-        convertor.setup( encoding );
+        convertor->setup( encoding );
         header = create_header( file_class, encoding );
         create_mandatory_sections();
     }
@@ -148,7 +150,7 @@ class elfio
     //! \param addr_trans Vector of address translations
     void set_address_translation( std::vector<address_translation>& addr_trans )
     {
-        addr_translator.set_address_translation( addr_trans );
+        addr_translator->set_address_translation( addr_trans );
     }
 
     //------------------------------------------------------------------------------
@@ -189,7 +191,7 @@ class elfio
 
         std::array<char, EI_NIDENT> e_ident = { 0 };
         // Read ELF file signature
-        stream.seekg( addr_translator[0] );
+        stream.seekg( (*addr_translator)[0] );
         stream.read( e_ident.data(), sizeof( e_ident ) );
 
         // Is it ELF file?
@@ -209,7 +211,7 @@ class elfio
             return false;
         }
 
-        convertor.setup( e_ident[EI_DATA] );
+        convertor->setup( e_ident[EI_DATA] );
         header = create_header( e_ident[EI_CLASS], e_ident[EI_DATA] );
         if ( nullptr == header ) {
             return false;
@@ -300,7 +302,7 @@ class elfio
     //------------------------------------------------------------------------------
     //! \brief Get the endianness convertor
     //! \return Reference to the endianness convertor
-    const endianness_convertor& get_convertor() const { return convertor; }
+    const std::shared_ptr<endianness_convertor>& get_convertor() const { return convertor; }
 
     //------------------------------------------------------------------------------
     //! \brief Get the default entry size for a section type
@@ -455,12 +457,12 @@ class elfio
         if ( file_class == ELFCLASS64 ) {
             new_header = std::unique_ptr<elf_header>(
                 new ( std::nothrow ) elf_header_impl<Elf64_Ehdr>(
-                    &convertor, encoding, &addr_translator ) );
+                    convertor, encoding, addr_translator ) );
         }
         else if ( file_class == ELFCLASS32 ) {
             new_header = std::unique_ptr<elf_header>(
                 new ( std::nothrow ) elf_header_impl<Elf32_Ehdr>(
-                    &convertor, encoding, &addr_translator ) );
+                    convertor, encoding, addr_translator ) );
         }
         else {
             return nullptr;
@@ -477,12 +479,12 @@ class elfio
         if ( auto file_class = get_class(); file_class == ELFCLASS64 ) {
             sections_.emplace_back(
                 new ( std::nothrow ) section_impl<Elf64_Shdr>(
-                    &convertor, &addr_translator, compression ) );
+                    convertor, addr_translator, compression ) );
         }
         else if ( file_class == ELFCLASS32 ) {
             sections_.emplace_back(
                 new ( std::nothrow ) section_impl<Elf32_Shdr>(
-                    &convertor, &addr_translator, compression ) );
+                    convertor, addr_translator, compression ) );
         }
         else {
             sections_.pop_back();
@@ -503,12 +505,12 @@ class elfio
         if ( auto file_class = header->get_class(); file_class == ELFCLASS64 ) {
             segments_.emplace_back(
                 new ( std::nothrow )
-                    segment_impl<Elf64_Phdr>( &convertor, &addr_translator ) );
+                    segment_impl<Elf64_Phdr>( convertor, addr_translator ) );
         }
         else if ( file_class == ELFCLASS32 ) {
             segments_.emplace_back(
                 new ( std::nothrow )
-                    segment_impl<Elf32_Phdr>( &convertor, &addr_translator ) );
+                    segment_impl<Elf32_Phdr>( convertor, addr_translator ) );
         }
         else {
             segments_.pop_back();
@@ -631,12 +633,12 @@ class elfio
             if ( file_class == ELFCLASS64 ) {
                 segments_.emplace_back(
                     new ( std::nothrow ) segment_impl<Elf64_Phdr>(
-                        &convertor, &addr_translator ) );
+                        convertor, addr_translator ) );
             }
             else if ( file_class == ELFCLASS32 ) {
                 segments_.emplace_back(
                     new ( std::nothrow ) segment_impl<Elf32_Phdr>(
-                        &convertor, &addr_translator ) );
+                        convertor, addr_translator ) );
             }
             else {
                 segments_.pop_back();
@@ -1234,8 +1236,8 @@ class elfio
     std::unique_ptr<elf_header> header = nullptr; //!< Pointer to the ELF header
     std::vector<std::unique_ptr<section>> sections_; //!< Vector of sections
     std::vector<std::unique_ptr<segment>> segments_; //!< Vector of segments
-    endianness_convertor                  convertor; //!< Endianness convertor
-    address_translator addr_translator;              //!< Address translator
+    std::shared_ptr<endianness_convertor> convertor; //!< Endianness convertor
+    std::shared_ptr<address_translator> addr_translator; //!< Address translator
     std::shared_ptr<compression_interface> compression =
         nullptr; //!< Pointer to the compression interface
 

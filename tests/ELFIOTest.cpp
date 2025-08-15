@@ -1009,24 +1009,25 @@ class mock_wiiu_compression : public compression_interface
 {
   public:
     std::unique_ptr<char[]>
-    inflate( const char*                 data,
-             const endianness_convertor* convertor,
-             Elf_Xword                   compressed_size,
-             Elf_Xword&                  uncompressed_size ) const override
+    inflate( const char*                                 data,
+             std::shared_ptr<const endianness_convertor> convertor,
+             Elf_Xword                                   compressed_size,
+             Elf_Xword& uncompressed_size ) const override
     {
         uncompressed_size = 2 * compressed_size;
-        return std::unique_ptr<char[]>(
-            new ( std::nothrow ) char[static_cast<size_t>(uncompressed_size) + 1] );
+        return std::unique_ptr<char[]>( new (
+            std::nothrow ) char[static_cast<size_t>( uncompressed_size ) + 1] );
     }
 
-    std::unique_ptr<char[]> deflate( const char*                 data,
-                                     const endianness_convertor* convertor,
-                                     Elf_Xword  decompressed_size,
-                                     Elf_Xword& compressed_size ) const override
+    std::unique_ptr<char[]>
+    deflate( const char*                                 data,
+             std::shared_ptr<const endianness_convertor> convertor,
+             Elf_Xword                                   decompressed_size,
+             Elf_Xword& compressed_size ) const override
     {
         compressed_size = decompressed_size / 2;
-        return std::unique_ptr<char[]>(
-            new ( std::nothrow ) char[static_cast<size_t>(compressed_size) + 1] );
+        return std::unique_ptr<char[]>( new (
+            std::nothrow ) char[static_cast<size_t>( compressed_size ) + 1] );
     }
 };
 
@@ -1130,8 +1131,9 @@ TEST( ELFIOTest, test_free_data )
 
             sec->free_data();
 
-            EXPECT_TRUE( 0 == std::memcmp( data.data(), sec->get_data(),
-                                           static_cast<size_t>(sec->get_size()) ) );
+            EXPECT_TRUE(
+                0 == std::memcmp( data.data(), sec->get_data(),
+                                  static_cast<size_t>( sec->get_size() ) ) );
         }
 
         for ( const auto& seg : reader.segments ) {
@@ -1145,7 +1147,8 @@ TEST( ELFIOTest, test_free_data )
             seg->free_data();
 
             EXPECT_TRUE( 0 == std::memcmp( data.data(), seg->get_data(),
-                                           static_cast<size_t>(seg->get_file_size()) ) );
+                                           static_cast<size_t>(
+                                               seg->get_file_size() ) ) );
         }
     } while ( is_lazy );
 }
@@ -1198,19 +1201,29 @@ TEST( ELFIOTest, test_segment_resize_bug )
      *   09     .tdata .init_array .fini_array .data.rel.ro .got 
     */
 
-auto checkElf = [](auto &reader) {
-        const auto &segments = reader.segments;
+    auto checkElf = []( auto& reader ) {
+        const auto& segments = reader.segments;
         ASSERT_EQ( segments.size(), 10 );
-        checkSegment(segments[0], PT_LOAD, 0x400000, 0x400000, 0x518, 0x518, PF_R, 0x1000);
-        checkSegment(segments[1], PT_LOAD, 0x401000, 0x401000, 0x936bd, 0x936bd, PF_R | PF_X, 0x1000);
-        checkSegment(segments[2], PT_LOAD, 0x495000, 0x495000, 0x2664d, 0x2664d, PF_R, 0x1000);
-        checkSegment(segments[3], PT_LOAD, 0x4bd0c0, 0x4bd0c0, 0x5170, 0x68c0, PF_R | PF_W, 0x1000);
-        checkSegment(segments[4], PT_NOTE, 0x400270, 0x400270, 0x20, 0x20, PF_R, 0x8);
-        checkSegment(segments[5], PT_NOTE, 0x400290, 0x400290, 0x44, 0x44, PF_R, 0x4);
-        checkSegment(segments[6], PT_TLS, 0x4bd0c0, 0x4bd0c0, 0x20, 0x60, PF_R, 0x8);
-        checkSegment(segments[7], PT_GNU_PROPERTY, 0x400270, 0x400270, 0x20, 0x20, PF_R, 0x8);
-        checkSegment(segments[8], PT_GNU_STACK, 0, 0, 0, 0, PF_R | PF_W, 0x10);
-        checkSegment(segments[9], PT_GNU_RELRO, 0x4bd0c0, 0x4bd0c0, 0x2f40, 0x2f40, PF_R, 0x1);
+        checkSegment( segments[0], PT_LOAD, 0x400000, 0x400000, 0x518, 0x518,
+                      PF_R, 0x1000 );
+        checkSegment( segments[1], PT_LOAD, 0x401000, 0x401000, 0x936bd,
+                      0x936bd, PF_R | PF_X, 0x1000 );
+        checkSegment( segments[2], PT_LOAD, 0x495000, 0x495000, 0x2664d,
+                      0x2664d, PF_R, 0x1000 );
+        checkSegment( segments[3], PT_LOAD, 0x4bd0c0, 0x4bd0c0, 0x5170, 0x68c0,
+                      PF_R | PF_W, 0x1000 );
+        checkSegment( segments[4], PT_NOTE, 0x400270, 0x400270, 0x20, 0x20,
+                      PF_R, 0x8 );
+        checkSegment( segments[5], PT_NOTE, 0x400290, 0x400290, 0x44, 0x44,
+                      PF_R, 0x4 );
+        checkSegment( segments[6], PT_TLS, 0x4bd0c0, 0x4bd0c0, 0x20, 0x60, PF_R,
+                      0x8 );
+        checkSegment( segments[7], PT_GNU_PROPERTY, 0x400270, 0x400270, 0x20,
+                      0x20, PF_R, 0x8 );
+        checkSegment( segments[8], PT_GNU_STACK, 0, 0, 0, 0, PF_R | PF_W,
+                      0x10 );
+        checkSegment( segments[9], PT_GNU_RELRO, 0x4bd0c0, 0x4bd0c0, 0x2f40,
+                      0x2f40, PF_R, 0x1 );
     };
 
     checkElf( reader );

@@ -181,7 +181,7 @@ template <class S> class symbol_section_accessor_template
                      unsigned char&    other ) const
     {
 
-        const endianness_convertor& convertor = elf_file.get_convertor();
+        const std::shared_ptr<endianness_convertor>& convertor = elf_file.get_convertor();
 
         Elf_Xword  idx   = 0;
         bool       match = false;
@@ -190,14 +190,14 @@ template <class S> class symbol_section_accessor_template
         if ( elf_file.get_class() == ELFCLASS32 ) {
             match = generic_search_symbols<Elf32_Sym>(
                 [&]( const Elf32_Sym* sym ) {
-                    return convertor( sym->st_value ) == value;
+                    return (*convertor)( sym->st_value ) == value;
                 },
                 idx );
         }
         else {
             match = generic_search_symbols<Elf64_Sym>(
                 [&]( const Elf64_Sym* sym ) {
-                    return convertor( sym->st_value ) == value;
+                    return (*convertor)( sym->st_value ) == value;
                 },
                 idx );
         }
@@ -398,24 +398,24 @@ template <class S> class symbol_section_accessor_template
                       unsigned char&     other ) const
     {
         bool                        ret       = false;
-        const endianness_convertor& convertor = elf_file.get_convertor();
+        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
 
         Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
-        nbucket          = convertor( nbucket );
+        nbucket          = ( *convertor )( nbucket );
         Elf_Word nchain =
             *(const Elf_Word*)( hash_section->get_data() + sizeof( Elf_Word ) );
-        nchain       = convertor( nchain );
+        nchain       = ( *convertor )( nchain );
         Elf_Word val = elf_hash( (const unsigned char*)name.c_str() );
         Elf_Word y =
             *(const Elf_Word*)( hash_section->get_data() +
                                 ( 2 + val % nbucket ) * sizeof( Elf_Word ) );
-        y = convertor( y );
+        y = ( *convertor )( y );
         std::string str;
         get_symbol( y, str, value, size, bind, type, section_index, other );
         while ( str != name && STN_UNDEF != y && y < nchain ) {
             y = *(const Elf_Word*)( hash_section->get_data() +
                                     ( 2 + nbucket + y ) * sizeof( Elf_Word ) );
-            y = convertor( y );
+            y = ( *convertor )( y );
             get_symbol( y, str, value, size, bind, type, section_index, other );
         }
 
@@ -447,7 +447,7 @@ template <class S> class symbol_section_accessor_template
                           unsigned char&     other ) const
     {
         bool                        ret       = false;
-        const endianness_convertor& convertor = elf_file.get_convertor();
+        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
 
         std::uint32_t nbuckets =
             *( (std::uint32_t*)hash_section->get_data() + 0 );
@@ -457,10 +457,10 @@ template <class S> class symbol_section_accessor_template
             *( (std::uint32_t*)hash_section->get_data() + 2 );
         std::uint32_t bloom_shift =
             *( (std::uint32_t*)hash_section->get_data() + 3 );
-        nbuckets    = convertor( nbuckets );
-        symoffset   = convertor( symoffset );
-        bloom_size  = convertor( bloom_size );
-        bloom_shift = convertor( bloom_shift );
+        nbuckets    = ( *convertor )( nbuckets );
+        symoffset   = ( *convertor )( symoffset );
+        bloom_size  = ( *convertor )( bloom_size );
+        bloom_shift = ( *convertor )( bloom_shift );
 
         auto* bloom_filter =
             (T*)( hash_section->get_data() + 4 * sizeof( std::uint32_t ) );
@@ -471,7 +471,7 @@ template <class S> class symbol_section_accessor_template
             ( (T)1 << ( hash % ( 8 * sizeof( T ) ) ) ) |
             ( (T)1 << ( ( hash >> bloom_shift ) % ( 8 * sizeof( T ) ) ) );
 
-        if ( ( convertor( bloom_filter[bloom_index] ) & bloom_bits ) !=
+        if ( ( ( *convertor )( bloom_filter[bloom_index] ) & bloom_bits ) !=
              bloom_bits )
             return ret;
 
@@ -484,10 +484,10 @@ template <class S> class symbol_section_accessor_template
                                          bloom_size * sizeof( T ) +
                                          nbuckets * sizeof( std::uint32_t ) );
 
-        if ( convertor( buckets[bucket] ) >= symoffset ) {
+        if ( ( *convertor )( buckets[bucket] ) >= symoffset ) {
             std::uint32_t chain_index =
-                convertor( buckets[bucket] ) - symoffset;
-            std::uint32_t chain_hash = convertor( chains[chain_index] );
+                ( *convertor )( buckets[bucket] ) - symoffset;
+            std::uint32_t chain_hash = ( *convertor )( chains[chain_index] );
             std::string   symname;
 
             while ( true ) {
@@ -502,7 +502,7 @@ template <class S> class symbol_section_accessor_template
                 if ( chain_hash & 1 )
                     break;
 
-                chain_hash = convertor( chains[++chain_index] );
+                chain_hash = ( *convertor )( chains[++chain_index] );
             }
         }
 
@@ -585,21 +585,21 @@ template <class S> class symbol_section_accessor_template
                 symbol_section->get_data() +
                 index * symbol_section->get_entry_size() );
 
-            const endianness_convertor& convertor = elf_file.get_convertor();
+            std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
 
             section* string_section =
                 elf_file.sections[get_string_table_index()];
             string_section_accessor str_reader( string_section );
             const char*             pStr =
-                str_reader.get_string( convertor( pSym->st_name ) );
+                str_reader.get_string( ( *convertor )( pSym->st_name ) );
             if ( nullptr != pStr ) {
                 name = pStr;
             }
-            value         = convertor( pSym->st_value );
-            size          = convertor( pSym->st_size );
+            value         = ( *convertor )( pSym->st_value );
+            size          = ( *convertor )( pSym->st_size );
             bind          = ELF_ST_BIND( pSym->st_info );
             type          = ELF_ST_TYPE( pSym->st_info );
-            section_index = convertor( pSym->st_shndx );
+            section_index = ( *convertor )( pSym->st_shndx );
             other         = pSym->st_other;
 
             ret = true;
@@ -626,17 +626,17 @@ template <class S> class symbol_section_accessor_template
                                  unsigned char other,
                                  Elf_Half      shndx )
     {
-        const endianness_convertor& convertor = elf_file.get_convertor();
+        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
 
         T entry;
-        entry.st_name  = convertor( name );
+        entry.st_name  = ( *convertor )( name );
         entry.st_value = decltype( entry.st_value )( value );
-        entry.st_value = convertor( entry.st_value );
+        entry.st_value = ( *convertor )( entry.st_value );
         entry.st_size  = decltype( entry.st_size )( size );
-        entry.st_size  = convertor( entry.st_size );
-        entry.st_info  = convertor( info );
-        entry.st_other = convertor( other );
-        entry.st_shndx = convertor( shndx );
+        entry.st_size  = ( *convertor )( entry.st_size );
+        entry.st_info  = ( *convertor )( info );
+        entry.st_other = ( *convertor )( other );
+        entry.st_shndx = ( *convertor )( shndx );
 
         symbol_section->append_data( reinterpret_cast<char*>( &entry ),
                                      sizeof( entry ) );
@@ -656,7 +656,7 @@ template <class S> class symbol_section_accessor_template
     Elf_Xword generic_arrange_local_symbols(
         std::function<void( Elf_Xword first, Elf_Xword second )> func )
     {
-        const endianness_convertor& convertor = elf_file.get_convertor();
+        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
 
         Elf_Word first_not_local =
             1; // Skip the first entry. It is always NOTYPE
@@ -670,7 +670,7 @@ template <class S> class symbol_section_accessor_template
             while ( first_not_local < count ) {
                 p1 = const_cast<T*>(
                     generic_get_symbol_ptr<T>( first_not_local ) );
-                if ( ELF_ST_BIND( convertor( p1->st_info ) ) != STB_LOCAL )
+                if ( ELF_ST_BIND( ( *convertor )( p1->st_info ) ) != STB_LOCAL )
                     break;
                 ++first_not_local;
             }
@@ -678,7 +678,7 @@ template <class S> class symbol_section_accessor_template
             current = first_not_local + 1;
             while ( current < count ) {
                 p2 = const_cast<T*>( generic_get_symbol_ptr<T>( current ) );
-                if ( ELF_ST_BIND( convertor( p2->st_info ) ) == STB_LOCAL )
+                if ( ELF_ST_BIND( ( *convertor )( p2->st_info ) ) == STB_LOCAL )
                     break;
                 ++current;
             }

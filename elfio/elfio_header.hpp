@@ -106,9 +106,9 @@ template <class T> class elf_header_impl : public elf_header
      * @param encoding Encoding type.
      * @param translator Address translator.
      */
-    elf_header_impl( endianness_convertor*     convertor,
-                     unsigned char             encoding,
-                     const address_translator* translator )
+    elf_header_impl( std::shared_ptr<endianness_convertor> convertor,
+                     unsigned char                         encoding,
+                     std::shared_ptr<address_translator>   translator )
         : convertor( convertor ), translator( translator )
     {
         header.e_ident[EI_MAG0]    = ELFMAG0;
@@ -182,9 +182,9 @@ template <class T> class elf_header_impl : public elf_header
     ELFIO_GET_SET_ACCESS( Elf64_Off, segments_offset, header.e_phoff );
 
   private:
-    T                         header     = {};
-    endianness_convertor*     convertor  = nullptr;
-    const address_translator* translator = nullptr;
+    T                                     header     = {};
+    std::shared_ptr<endianness_convertor> convertor  = nullptr;
+    std::shared_ptr<address_translator>   translator = nullptr;
 };
 
 } // namespace ELFIO

@@ -349,10 +349,10 @@ class compression_interface
     //! \param uncompressed_size Reference to a variable to store the decompressed buffer size
     //! \return A smart pointer to the decompressed data
     virtual std::unique_ptr<char[]>
-    inflate( const char*                 data,
-             const endianness_convertor* convertor,
-             Elf_Xword                   compressed_size,
-             Elf_Xword&                  uncompressed_size ) const = 0;
+    inflate( const char*                                 data,
+             std::shared_ptr<const endianness_convertor> convertor,
+             Elf_Xword                                   compressed_size,
+             Elf_Xword& uncompressed_size ) const = 0;
 
     //------------------------------------------------------------------------------
     //! \brief Compress a section
@@ -362,10 +362,10 @@ class compression_interface
     //! \param compressed_size Reference to a variable to store the compressed buffer size
     //! \return A smart pointer to the compressed data
     virtual std::unique_ptr<char[]>
-    deflate( const char*                 data,
-             const endianness_convertor* convertor,
-             Elf_Xword                   decompressed_size,
-             Elf_Xword&                  compressed_size ) const = 0;
+    deflate( const char*                                 data,
+             std::shared_ptr<const endianness_convertor> convertor,
+             Elf_Xword                                   decompressed_size,
+             Elf_Xword&                                  compressed_size ) const = 0;
 };
 
 } // namespace ELFIO

@@ -146,7 +146,8 @@ template <class S> class dynamic_section_accessor_template
                                 Elf_Xword& tag,
                                 Elf_Xword& value ) const
     {
-        const endianness_convertor& convertor = elf_file.get_convertor();
+        std::shared_ptr<const endianness_convertor> convertor =
+            elf_file.get_convertor();
 
         // Check unusual case when dynamic section has no data
         if ( dynamic_section->get_data() == nullptr ||
@@ -157,7 +158,9 @@ template <class S> class dynamic_section_accessor_template
         }
 
         // Check for integer overflow in size calculation
-        if (index > (dynamic_section->get_size() / dynamic_section->get_entry_size()) - 1) {
+        if ( index > ( dynamic_section->get_size() /
+                       dynamic_section->get_entry_size() ) -
+                         1 ) {
             tag   = DT_NULL;
             value = 0;
             return;
@@ -165,15 +168,15 @@ template <class S> class dynamic_section_accessor_template
 
         // Check for integer overflow in pointer arithmetic
         Elf_Xword offset = index * dynamic_section->get_entry_size();
-        if (offset > dynamic_section->get_size() - sizeof(T)) {
+        if ( offset > dynamic_section->get_size() - sizeof( T ) ) {
             tag   = DT_NULL;
             value = 0;
             return;
         }
 
-        const T* pEntry = reinterpret_cast<const T*>(
-            dynamic_section->get_data() + offset );
-        tag = convertor( pEntry->d_tag );
+        const T* pEntry =
+            reinterpret_cast<const T*>( dynamic_section->get_data() + offset );
+        tag = ( *convertor )( pEntry->d_tag );
         switch ( tag ) {
         case DT_NULL:
         case DT_SYMBOLIC:
@@ -197,7 +200,7 @@ template <class S> class dynamic_section_accessor_template
         case DT_RUNPATH:
         case DT_FLAGS:
         case DT_PREINIT_ARRAYSZ:
-            value = convertor( pEntry->d_un.d_val );
+            value = ( *convertor )( pEntry->d_un.d_val );
             break;
         case DT_PLTGOT:
         case DT_HASH:
@@ -213,7 +216,7 @@ template <class S> class dynamic_section_accessor_template
         case DT_FINI_ARRAY:
         case DT_PREINIT_ARRAY:
         default:
-            value = convertor( pEntry->d_un.d_ptr );
+            value = ( *convertor )( pEntry->d_un.d_ptr );
             break;
         }
     }
@@ -223,7 +226,8 @@ template <class S> class dynamic_section_accessor_template
     template <class T>
     void generic_add_entry_dyn( Elf_Xword tag, Elf_Xword value )
     {
-        const endianness_convertor& convertor = elf_file.get_convertor();
+        std::shared_ptr<const endianness_convertor> convertor =
+            elf_file.get_convertor();
 
         T entry;
 
@@ -232,7 +236,8 @@ template <class S> class dynamic_section_accessor_template
         case DT_SYMBOLIC:
         case DT_TEXTREL:
         case DT_BIND_NOW:
-            entry.d_un.d_val = convertor( decltype( entry.d_un.d_val )( 0 ) );
+            entry.d_un.d_val =
+                ( *convertor )( decltype( entry.d_un.d_val )( 0 ) );
             break;
         case DT_NEEDED:
         case DT_PLTRELSZ:
@@ -251,7 +256,7 @@ template <class S> class dynamic_section_accessor_template
         case DT_FLAGS:
         case DT_PREINIT_ARRAYSZ:
             entry.d_un.d_val =
-                convertor( decltype( entry.d_un.d_val )( value ) );
+                ( *convertor )( decltype( entry.d_un.d_val )( value ) );
             break;
         case DT_PLTGOT:
         case DT_HASH:
@@ -268,11 +273,11 @@ template <class S> class dynamic_section_accessor_template
         case DT_PREINIT_ARRAY:
         default:
             entry.d_un.d_ptr =
-                convertor( decltype( entry.d_un.d_val )( value ) );
+                ( *convertor )( decltype( entry.d_un.d_val )( value ) );
             break;
         }
 
-        entry.d_tag = convertor( decltype( entry.d_tag )( tag ) );
+        entry.d_tag = ( *convertor )( decltype( entry.d_tag )( tag ) );
 
         dynamic_section->append_data( reinterpret_cast<char*>( &entry ),
                                       sizeof( entry ) );

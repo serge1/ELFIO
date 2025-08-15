@@ -86,11 +86,11 @@ bool array_section_accessor_template<S, T>::get_entry(
         return false;
     }
 
-    const endianness_convertor& convertor = elf_file.get_convertor();
+    std::shared_ptr<endianness_convertor> convertor = elf_file.get_convertor();
 
     const T temp = *reinterpret_cast<const T*>( array_section->get_data() +
                                                 index * sizeof( T ) );
-    address      = convertor( temp );
+    address      = ( *convertor )( temp );
 
     return true;
 }
@@ -100,9 +100,9 @@ bool array_section_accessor_template<S, T>::get_entry(
 template <class S, typename T>
 void array_section_accessor_template<S, T>::add_entry( Elf64_Addr address )
 {
-    const endianness_convertor& convertor = elf_file.get_convertor();
+    std::shared_ptr<endianness_convertor> convertor = elf_file.get_convertor();
 
-    T temp = convertor( (T)address );
+    T temp = ( *convertor )( (T)address );
     array_section->append_data( reinterpret_cast<char*>( &temp ),
                                 sizeof( temp ) );
 }
