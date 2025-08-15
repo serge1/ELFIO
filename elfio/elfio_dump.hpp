@@ -1069,7 +1069,7 @@ class dump
                     out << std::endl << "         ";
                 }
                 out << DUMP_HEX_FORMAT( 2 )
-                    << (uint32_t)( (uint8_t*)( desc ) )[i];
+                    << (std::uint32_t)( (std::uint8_t*)( desc ) )[i];
             }
         }
     }
@@ -1100,7 +1100,9 @@ class dump
 
     //------------------------------------------------------------------------------
     // Dumps the dynamic tags information
-    static void dynamic_tags( std::ostream& out, const elfio& reader, bool name_only = false )
+    static void dynamic_tags( std::ostream& out,
+                              const elfio&  reader,
+                              bool          name_only = false )
     {
         for ( const auto& sec : reader.sections ) { // For all sections
             if ( SHT_DYNAMIC == sec->get_type() ) {
@@ -1119,7 +1121,8 @@ class dump
                     Elf_Xword   value = 0;
                     std::string str;
                     dynamic.get_entry( i, tag, value, str );
-                    dynamic_tag( out, i, tag, value, str, reader.get_class(), name_only );
+                    dynamic_tag( out, i, tag, value, str, reader.get_class(),
+                                 name_only );
                     if ( DT_NULL == tag ) {
                         break;
                     }
@@ -1139,7 +1142,7 @@ class dump
                              Elf_Xword          value,
                              const std::string& str,
                              unsigned int /*elf_class*/,
-                             bool               name_only = false )
+                             bool name_only = false )
     {
         if ( name_only ) {
             if ( str.empty() || tag != DT_NEEDED ) {

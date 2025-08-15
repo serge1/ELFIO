@@ -1416,7 +1416,7 @@ struct Elf64_Rela
 #define ELF64_R_SYM( i )  ( ( i ) >> 32 )
 #define ELF64_R_TYPE( i ) ( ( i ) & 0xffffffffL )
 #define ELF64_R_INFO( s, t ) \
-    ( ( ( (int64_t)( s ) ) << 32 ) + ( ( t ) & 0xffffffffL ) )
+    ( ( ( (std::int64_t)( s ) ) << 32 ) + ( ( t ) & 0xffffffffL ) )
 
 // Dynamic structure
 struct Elf32_Dyn
@@ -1514,22 +1514,22 @@ struct Elfxx_Vernaux
 struct Elf32_auxv
 {
     // Entry type
-    uint32_t a_type; // Entry type
+    std::uint32_t a_type; // Entry type
 
     union {
         // Integer value, usually a pointer
-        uint32_t a_val; // Integer value, usually a pointer
+        std::uint32_t a_val; // Integer value, usually a pointer
     } a_un;
 };
 
 struct Elf64_auxv
 {
     // Entry type
-    uint64_t a_type; // Entry type
+    std::uint64_t a_type; // Entry type
 
     union {
         // Integer value, usually a pointer
-        uint64_t a_val; // Integer value, usually a pointer
+        std::uint64_t a_val; // Integer value, usually a pointer
     } a_un;
 };
 

@@ -137,11 +137,11 @@ template <class S> class symbol_section_accessor_template
             if ( hash_section->get_type() == SHT_GNU_HASH ||
                  hash_section->get_type() == DT_GNU_HASH ) {
                 if ( elf_file.get_class() == ELFCLASS32 ) {
-                    ret = gnu_hash_lookup<uint32_t>(
+                    ret = gnu_hash_lookup<std::uint32_t>(
                         name, value, size, bind, type, section_index, other );
                 }
                 else {
-                    ret = gnu_hash_lookup<uint64_t>(
+                    ret = gnu_hash_lookup<std::uint64_t>(
                         name, value, size, bind, type, section_index, other );
                 }
             }
@@ -449,21 +449,25 @@ template <class S> class symbol_section_accessor_template
         bool                        ret       = false;
         const endianness_convertor& convertor = elf_file.get_convertor();
 
-        uint32_t nbuckets    = *( (uint32_t*)hash_section->get_data() + 0 );
-        uint32_t symoffset   = *( (uint32_t*)hash_section->get_data() + 1 );
-        uint32_t bloom_size  = *( (uint32_t*)hash_section->get_data() + 2 );
-        uint32_t bloom_shift = *( (uint32_t*)hash_section->get_data() + 3 );
-        nbuckets             = convertor( nbuckets );
-        symoffset            = convertor( symoffset );
-        bloom_size           = convertor( bloom_size );
-        bloom_shift          = convertor( bloom_shift );
+        std::uint32_t nbuckets =
+            *( (std::uint32_t*)hash_section->get_data() + 0 );
+        std::uint32_t symoffset =
+            *( (std::uint32_t*)hash_section->get_data() + 1 );
+        std::uint32_t bloom_size =
+            *( (std::uint32_t*)hash_section->get_data() + 2 );
+        std::uint32_t bloom_shift =
+            *( (std::uint32_t*)hash_section->get_data() + 3 );
+        nbuckets    = convertor( nbuckets );
+        symoffset   = convertor( symoffset );
+        bloom_size  = convertor( bloom_size );
+        bloom_shift = convertor( bloom_shift );
 
         auto* bloom_filter =
-            (T*)( hash_section->get_data() + 4 * sizeof( uint32_t ) );
+            (T*)( hash_section->get_data() + 4 * sizeof( std::uint32_t ) );
 
-        uint32_t hash = elf_gnu_hash( (const unsigned char*)name.c_str() );
-        uint32_t bloom_index = ( hash / ( 8 * sizeof( T ) ) ) % bloom_size;
-        T        bloom_bits =
+        std::uint32_t hash = elf_gnu_hash( (const unsigned char*)name.c_str() );
+        std::uint32_t bloom_index = ( hash / ( 8 * sizeof( T ) ) ) % bloom_size;
+        T             bloom_bits =
             ( (T)1 << ( hash % ( 8 * sizeof( T ) ) ) ) |
             ( (T)1 << ( ( hash >> bloom_shift ) % ( 8 * sizeof( T ) ) ) );
 
@@ -471,19 +475,20 @@ template <class S> class symbol_section_accessor_template
              bloom_bits )
             return ret;
 
-        uint32_t bucket = hash % nbuckets;
-        auto*    buckets =
-            (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
-                         bloom_size * sizeof( T ) );
-        auto* chains =
-            (uint32_t*)( hash_section->get_data() + 4 * sizeof( uint32_t ) +
-                         bloom_size * sizeof( T ) +
-                         nbuckets * sizeof( uint32_t ) );
+        std::uint32_t bucket  = hash % nbuckets;
+        auto*         buckets = (std::uint32_t*)( hash_section->get_data() +
+                                          4 * sizeof( std::uint32_t ) +
+                                          bloom_size * sizeof( T ) );
+        auto*         chains  = (std::uint32_t*)( hash_section->get_data() +
+                                         4 * sizeof( std::uint32_t ) +
+                                         bloom_size * sizeof( T ) +
+                                         nbuckets * sizeof( std::uint32_t ) );
 
         if ( convertor( buckets[bucket] ) >= symoffset ) {
-            uint32_t    chain_index = convertor( buckets[bucket] ) - symoffset;
-            uint32_t    chain_hash  = convertor( chains[chain_index] );
-            std::string symname;
+            std::uint32_t chain_index =
+                convertor( buckets[bucket] ) - symoffset;
+            std::uint32_t chain_hash = convertor( chains[chain_index] );
+            std::string   symname;
 
             while ( true ) {
                 if ( ( chain_hash >> 1 ) == ( hash >> 1 ) &&

@@ -6,7 +6,7 @@
 
 using namespace ELFIO;
 
-extern "C" int LLVMFuzzerTestOneInput( const uint8_t* Data, size_t Size )
+extern "C" int LLVMFuzzerTestOneInput( const std::uint8_t* Data, size_t Size )
 {
     std::string        str( (const char*)Data, Size );
     std::istringstream ss( str );

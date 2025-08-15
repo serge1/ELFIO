@@ -73,7 +73,7 @@ class endianness_convertor
     //! \brief Convert a 64-bit unsigned integer
     //! \param value The value to convert
     //! \return The converted value
-    uint64_t operator()( uint64_t value ) const
+    std::uint64_t operator()( std::uint64_t value ) const
     {
         if ( !need_conversion ) {
             return value;
@@ -94,19 +94,19 @@ class endianness_convertor
     //! \brief Convert a 64-bit signed integer
     //! \param value The value to convert
     //! \return The converted value
-    int64_t operator()( int64_t value ) const
+    std::int64_t operator()( std::int64_t value ) const
     {
         if ( !need_conversion ) {
             return value;
         }
-        return (int64_t)( *this )( (uint64_t)value );
+        return (std::int64_t)( *this )( (std::uint64_t)value );
     }
 
     //------------------------------------------------------------------------------
     //! \brief Convert a 32-bit unsigned integer
     //! \param value The value to convert
     //! \return The converted value
-    uint32_t operator()( uint32_t value ) const
+    std::uint32_t operator()( std::uint32_t value ) const
     {
         if ( !need_conversion ) {
             return value;
@@ -122,25 +122,25 @@ class endianness_convertor
     //! \brief Convert a 32-bit signed integer
     //! \param value The value to convert
     //! \return The converted value
-    int32_t operator()( int32_t value ) const
+    std::int32_t operator()( std::int32_t value ) const
     {
         if ( !need_conversion ) {
             return value;
         }
-        return (int32_t)( *this )( (uint32_t)value );
+        return (std::int32_t)( *this )( (std::uint32_t)value );
     }
 
     //------------------------------------------------------------------------------
     //! \brief Convert a 16-bit unsigned integer
     //! \param value The value to convert
     //! \return The converted value
-    uint16_t operator()( uint16_t value ) const
+    std::uint16_t operator()( std::uint16_t value ) const
     {
         if ( !need_conversion ) {
             return value;
         }
-        value =
-            (uint16_t)( ( value & 0x00FF ) << 8 ) | ( ( value & 0xFF00 ) >> 8 );
+        value = (std::uint16_t)( ( value & 0x00FF ) << 8 ) |
+                ( ( value & 0xFF00 ) >> 8 );
 
         return value;
     }
@@ -149,25 +149,25 @@ class endianness_convertor
     //! \brief Convert a 16-bit signed integer
     //! \param value The value to convert
     //! \return The converted value
-    int16_t operator()( int16_t value ) const
+    std::int16_t operator()( std::int16_t value ) const
     {
         if ( !need_conversion ) {
             return value;
         }
-        return (int16_t)( *this )( (uint16_t)value );
+        return (std::int16_t)( *this )( (std::uint16_t)value );
     }
 
     //------------------------------------------------------------------------------
     //! \brief Convert an 8-bit signed integer
     //! \param value The value to convert
     //! \return The converted value
-    int8_t operator()( int8_t value ) const { return value; }
+    std::int8_t operator()( std::int8_t value ) const { return value; }
 
     //------------------------------------------------------------------------------
     //! \brief Convert an 8-bit unsigned integer
     //! \param value The value to convert
     //! \return The converted value
-    uint8_t operator()( uint8_t value ) const { return value; }
+    std::uint8_t operator()( std::uint8_t value ) const { return value; }
 
     //------------------------------------------------------------------------------
   private:
@@ -199,8 +199,10 @@ struct address_translation
     //! \param start The start address
     //! \param size The size of the address range
     //! \param mapped_to The mapped address
-    address_translation( uint64_t start, uint64_t size, uint64_t mapped_to )
-        : start( start ), size( size ), mapped_to( mapped_to ){};
+    address_translation( std::uint64_t start,
+                         std::uint64_t size,
+                         std::uint64_t mapped_to )
+        : start( start ), size( size ), mapped_to( mapped_to ) {};
     std::streampos start;     //!< Start address
     std::streampos size;      //!< Size of the address range
     std::streampos mapped_to; //!< Mapped address
@@ -259,10 +261,10 @@ class address_translator
 //! \brief Calculate the ELF hash of a name
 //! \param name The name to hash
 //! \return The ELF hash
-inline uint32_t elf_hash( const unsigned char* name )
+inline std::uint32_t elf_hash( const unsigned char* name )
 {
-    uint32_t h = 0;
-    uint32_t g = 0;
+    std::uint32_t h = 0;
+    std::uint32_t g = 0;
     while ( *name != '\0' ) {
         h = ( h << 4 ) + *name++;
         g = h & 0xf0000000;
@@ -277,9 +279,9 @@ inline uint32_t elf_hash( const unsigned char* name )
 //! \brief Calculate the GNU hash of a name
 //! \param s The name to hash
 //! \return The GNU hash
-inline uint32_t elf_gnu_hash( const unsigned char* s )
+inline std::uint32_t elf_gnu_hash( const unsigned char* s )
 {
-    uint32_t h = 0x1505;
+    std::uint32_t h = 0x1505;
     for ( unsigned char c = *s; c != '\0'; c = *++s )
         h = ( h << 5 ) + h + c;
     return h;
@@ -289,7 +291,7 @@ inline uint32_t elf_gnu_hash( const unsigned char* s )
 //! \brief Convert a value to a hexadecimal string
 //! \param value The value to convert
 //! \return The hexadecimal string
-inline std::string to_hex_string( uint64_t value )
+inline std::string to_hex_string( std::uint64_t value )
 {
     std::string str;
 

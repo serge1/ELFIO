@@ -70,7 +70,7 @@ int main( void )
         '\xCD', '\x80'                          // int 0x80
     };
     // Adjust data address for 'msg'
-    *(uint32_t*)( text + 11 ) = DATA_ADDR;
+    *(std::uint32_t*)( text + 11 ) = DATA_ADDR;
 
     text_sec->set_data( text, sizeof( text ) );
 

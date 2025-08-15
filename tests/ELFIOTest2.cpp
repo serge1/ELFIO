@@ -56,7 +56,7 @@ TEST( ELFIOTest, modinfo_read )
                        { "name", "zavl" },
                        { "vermagic", "5.4.0-42-generic SMP mod_unload " } };
 
-    for ( uint32_t i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
+    for ( auto i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
           i++ ) {
         std::string field;
         std::string value;
@@ -66,7 +66,7 @@ TEST( ELFIOTest, modinfo_read )
         EXPECT_EQ( value, attributes[i].value );
     }
 
-    for ( uint32_t i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
+    for ( auto i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
           i++ ) {
         std::string field = attributes[i].field;
         std::string value;
@@ -120,7 +120,7 @@ TEST( ELFIOTest, modinfo_write )
                        { "test1", "value1" },
                        { "test2", "value2" } };
 
-    for ( uint32_t i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
+    for ( auto i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
           i++ ) {
         std::string field;
         std::string value;
@@ -130,7 +130,7 @@ TEST( ELFIOTest, modinfo_write )
         EXPECT_EQ( value, attributes[i].value );
     }
 
-    for ( uint32_t i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
+    for ( auto i = 0; i < sizeof( attributes ) / sizeof( attributes[0] );
           i++ ) {
         std::string field = attributes[i].field;
         std::string value;

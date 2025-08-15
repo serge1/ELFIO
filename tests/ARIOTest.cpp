@@ -203,7 +203,7 @@ TEST( ARIOTest, get_symbols_for_ELF_files_in_archive )
         elfio elf_reader;
         ASSERT_EQ( elf_reader.load( iss ), true );
 
-        uint32_t counter = 0;
+        std::uint32_t counter = 0;
 
         // Iterate over all sections in the ELF file
         for ( const auto& sec : elf_reader.sections ) {

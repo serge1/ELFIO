@@ -38,6 +38,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <memory>
+#include <cstdint>
 
 //------------------------------------------------------------------------------
 namespace ARIO {
@@ -561,7 +562,7 @@ class ario
                 members_.begin(), members_.end(),
                 [&]( const Member& m ) { return m.filepos == symbol.second; } );
             if ( it != members_.end() ) {
-                index = (uint32_t)std::distance( members_.begin(), it );
+                index = (std::uint32_t)std::distance( members_.begin(), it );
             }
             symbol.second = index;
         }
@@ -593,14 +594,14 @@ class ario
     //! @note The symbol table is saved after the archive header and before the long name directory
     std::streamoff calculate_symbol_table_size() const
     {
-        auto num_of_symbols = static_cast<uint32_t>( symbol_table.size() );
+        auto num_of_symbols = static_cast<std::uint32_t>( symbol_table.size() );
 
         // Calculate the symbol table size
         auto symbol_table_size =
             HEADER_SIZE +
             sizeof( num_of_symbols ) + // Size of the number of symbols
             num_of_symbols *
-                ( sizeof( uint32_t ) ); // Size of each symbol location
+                ( sizeof( std::uint32_t ) ); // Size of each symbol location
         for ( const auto& symbol : symbol_table ) {
             // Size of each symbol name + null terminator
             symbol_table_size += symbol.first.size() + 1;
@@ -616,16 +617,16 @@ class ario
     //! @brief Calculate the relative offsets of members in the archive
     //! @return A vector of relative offsets for each member
     //! The offsets are calculated from the start of the archive
-    std::vector<uint32_t> calculate_member_relative_offsets()
+    std::vector<std::uint32_t> calculate_member_relative_offsets()
     {
-        std::vector<uint32_t> member_relative_offset;
+        std::vector<std::uint32_t> member_relative_offset;
         size_t                position = 0;
 
         member_relative_offset.reserve( members_.size() );
         for ( const auto& member : members_ ) {
             // Store the relative offset of the member in the archive
             member_relative_offset.push_back(
-                static_cast<uint32_t>( position ) );
+                static_cast<std::uint32_t>( position ) );
             position += HEADER_SIZE + member.size +
                         member.size % 2; // Add padding if needed
         }
@@ -653,7 +654,7 @@ class ario
             return { "Output stream is null" };
         }
 
-        auto num_of_symbols = static_cast<uint32_t>( symbol_table.size() );
+        auto num_of_symbols = static_cast<std::uint32_t>( symbol_table.size() );
         if ( num_of_symbols == 0 ) {
             return {};
         }
@@ -678,10 +679,10 @@ class ario
 
         // Write symbol locations (location of the member in the archive)
         auto members_start_from = std::string( ARCH_MAGIC ).size() +
-                                  static_cast<uint32_t>( symbol_table_size ) +
-                                  static_cast<uint32_t>( long_names_dir_size );
+                                  static_cast<std::uint32_t>( symbol_table_size ) +
+                                  static_cast<std::uint32_t>( long_names_dir_size );
         for ( const auto& symbol : symbol_table ) {
-            auto index    = static_cast<uint32_t>( symbol.second );
+            auto index    = static_cast<std::uint32_t>( symbol.second );
             auto location = members_start_from + member_relative_offset[index];
             buf[0]        = static_cast<char>( ( location >> 24 ) & 0xFF );
             buf[1]        = static_cast<char>( ( location >> 16 ) & 0xFF );
@@ -788,29 +789,29 @@ class ario
             return { "Failed to read symbol table" };
         }
 
-        uint32_t num_of_symbols = ( static_cast<uint8_t>( buf[0] ) << 24 ) |
-                                  ( static_cast<uint8_t>( buf[1] ) << 16 ) |
-                                  ( static_cast<uint8_t>( buf[2] ) << 8 ) |
-                                  ( static_cast<uint8_t>( buf[3] ) << 0 );
+        std::uint32_t num_of_symbols = ( static_cast<std::uint8_t>( buf[0] ) << 24 ) |
+                                  ( static_cast<std::uint8_t>( buf[1] ) << 16 ) |
+                                  ( static_cast<std::uint8_t>( buf[2] ) << 8 ) |
+                                  ( static_cast<std::uint8_t>( buf[3] ) << 0 );
 
-        std::vector<std::pair<uint32_t, std::string>> v( num_of_symbols );
+        std::vector<std::pair<std::uint32_t, std::string>> v( num_of_symbols );
 
         // Read symbol locations
-        for ( uint32_t i = 0; i < num_of_symbols; ++i ) {
+        for ( std::uint32_t i = 0; i < num_of_symbols; ++i ) {
             pstream->read( buf, sizeof( buf ) );
             if ( pstream->gcount() < sizeof( buf ) ) {
                 return { "Failed to read symbol table" };
             }
-            uint32_t member_location =
-                ( static_cast<uint8_t>( buf[0] ) << 24 ) |
-                ( static_cast<uint8_t>( buf[1] ) << 16 ) |
-                ( static_cast<uint8_t>( buf[2] ) << 8 ) |
-                ( static_cast<uint8_t>( buf[3] ) << 0 );
+            std::uint32_t member_location =
+                ( static_cast<std::uint8_t>( buf[0] ) << 24 ) |
+                ( static_cast<std::uint8_t>( buf[1] ) << 16 ) |
+                ( static_cast<std::uint8_t>( buf[2] ) << 8 ) |
+                ( static_cast<std::uint8_t>( buf[3] ) << 0 );
             v[i].first = member_location;
         }
 
         // Read symbol names
-        for ( uint32_t i = 0; i < num_of_symbols; ++i ) {
+        for ( std::uint32_t i = 0; i < num_of_symbols; ++i ) {
             std::string sym_name;
             std::getline( *pstream, sym_name, '\0' );
             v[i].second = sym_name;
@@ -872,12 +873,12 @@ class ario
         "\x60\x0A"; ///< End of header magic
     static constexpr std::streamsize HEADER_SIZE =
         60; ///< Size of archive header
-    static constexpr int FIELD_NAME_SIZE = 16;
-    static constexpr int FIELD_DATE_SIZE = 12;
-    static constexpr int FIELD_UID_SIZE  = 6;
-    static constexpr int FIELD_GID_SIZE  = 6;
-    static constexpr int FIELD_MODE_SIZE = 8;
-    static constexpr int FIELD_SIZE_SIZE = 10;
+    static constexpr unsigned int FIELD_NAME_SIZE = 16;
+    static constexpr unsigned int FIELD_DATE_SIZE = 12;
+    static constexpr unsigned int FIELD_UID_SIZE  = 6;
+    static constexpr unsigned int FIELD_GID_SIZE  = 6;
+    static constexpr unsigned int FIELD_MODE_SIZE = 8;
+    static constexpr unsigned int FIELD_SIZE_SIZE = 10;
 
     //!< Pointer to the input stream
     //! It is used to read the archive members
