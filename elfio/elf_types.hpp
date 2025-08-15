@@ -23,22 +23,22 @@ THE SOFTWARE.
 #ifndef ELFTYPES_H
 #define ELFTYPES_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef __cplusplus
 namespace ELFIO {
 #endif
 
-using Elf_Half   = uint16_t;
-using Elf_Word   = uint32_t;
-using Elf_Sword  = int32_t;
-using Elf_Xword  = uint64_t;
-using Elf_Sxword = int64_t;
+using Elf_Half   = std::uint16_t;
+using Elf_Word   = std::uint32_t;
+using Elf_Sword  = std::int32_t;
+using Elf_Xword  = std::uint64_t;
+using Elf_Sxword = std::int64_t;
 
-using Elf32_Addr = uint32_t;
-using Elf32_Off  = uint32_t;
-using Elf64_Addr = uint64_t;
-using Elf64_Off  = uint64_t;
+using Elf32_Addr = std::uint32_t;
+using Elf32_Off  = std::uint32_t;
+using Elf64_Addr = std::uint64_t;
+using Elf64_Off  = std::uint64_t;
 
 using Elf32_Half  = Elf_Half;
 using Elf64_Half  = Elf_Half;
