@@ -70,8 +70,6 @@ class ario
     //! @brief Represents a single member (file) in the archive
     class Member
     {
-        friend class ario;
-
       public:
         std::string name = {}; ///< Name of the member
         int         date = {}; ///< Date of the member
@@ -115,7 +113,7 @@ class ario
         }
 
       protected:
-        void set_input_stream( std::istream* pstream )
+        void set_input_stream( std::shared_ptr<std::istream>& pstream )
         {
             this->pstream = pstream;
         }
@@ -123,10 +121,13 @@ class ario
         void set_new_data( const std::string& data ) { this->new_data = data; }
 
       protected:
-        std::string    short_name = {};      ///< Short name of the member
-        std::istream*  pstream    = nullptr; ///< Pointer to the input stream
-        std::streamoff filepos    = {};      ///< File position in the archive
+        std::string short_name = {}; ///< Short name of the member
+        std::shared_ptr<std::istream> pstream =
+            nullptr;                 ///< Pointer to the input stream
+        std::streamoff filepos = {}; ///< File position in the archive
         std::optional<std::string> new_data = {};
+
+        friend class ario;
     };
 
     //------------------------------------------------------------------------------
@@ -393,7 +394,7 @@ class ario
         // Check if the member with such name already exists
         for ( const auto& mem : members_ ) {
             if ( mem.name == member.name ) {
-                return {"Member '" + member.name + "' already exists"};
+                return { "Member '" + member.name + "' already exists" };
             }
         }
 
@@ -468,7 +469,7 @@ class ario
     {
         while ( true ) {
             Member m;
-            m.set_input_stream( pstream.get() );
+            m.set_input_stream( pstream );
 
             char header[HEADER_SIZE];
             auto filepos = pstream->tellg();
@@ -620,7 +621,7 @@ class ario
     std::vector<std::uint32_t> calculate_member_relative_offsets()
     {
         std::vector<std::uint32_t> member_relative_offset;
-        size_t                position = 0;
+        size_t                     position = 0;
 
         member_relative_offset.reserve( members_.size() );
         for ( const auto& member : members_ ) {
@@ -678,9 +679,10 @@ class ario
         os.write( buf, sizeof( buf ) );
 
         // Write symbol locations (location of the member in the archive)
-        auto members_start_from = std::string( ARCH_MAGIC ).size() +
-                                  static_cast<std::uint32_t>( symbol_table_size ) +
-                                  static_cast<std::uint32_t>( long_names_dir_size );
+        auto members_start_from =
+            std::string( ARCH_MAGIC ).size() +
+            static_cast<std::uint32_t>( symbol_table_size ) +
+            static_cast<std::uint32_t>( long_names_dir_size );
         for ( const auto& symbol : symbol_table ) {
             auto index    = static_cast<std::uint32_t>( symbol.second );
             auto location = members_start_from + member_relative_offset[index];
@@ -789,10 +791,11 @@ class ario
             return { "Failed to read symbol table" };
         }
 
-        std::uint32_t num_of_symbols = ( static_cast<std::uint8_t>( buf[0] ) << 24 ) |
-                                  ( static_cast<std::uint8_t>( buf[1] ) << 16 ) |
-                                  ( static_cast<std::uint8_t>( buf[2] ) << 8 ) |
-                                  ( static_cast<std::uint8_t>( buf[3] ) << 0 );
+        std::uint32_t num_of_symbols =
+            ( static_cast<std::uint8_t>( buf[0] ) << 24 ) |
+            ( static_cast<std::uint8_t>( buf[1] ) << 16 ) |
+            ( static_cast<std::uint8_t>( buf[2] ) << 8 ) |
+            ( static_cast<std::uint8_t>( buf[3] ) << 0 );
 
         std::vector<std::pair<std::uint32_t, std::string>> v( num_of_symbols );
 
@@ -883,7 +886,7 @@ class ario
     //!< Pointer to the input stream
     //! It is used to read the archive members
     //! data even after the archive is loaded
-    std::unique_ptr<std::istream> pstream = nullptr;
+    std::shared_ptr<std::istream> pstream = nullptr;
     std::vector<Member>           members_; //!< Vector of archive members
     //!< Symbol table
     //!< This is a map from symbol names to member indexes
