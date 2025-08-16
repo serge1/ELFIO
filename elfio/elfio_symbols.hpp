@@ -181,7 +181,7 @@ template <class S> class symbol_section_accessor_template
                      unsigned char&    other ) const
     {
 
-        const std::shared_ptr<endianness_convertor>& convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         Elf_Xword  idx   = 0;
         bool       match = false;
@@ -190,14 +190,14 @@ template <class S> class symbol_section_accessor_template
         if ( elf_file.get_class() == ELFCLASS32 ) {
             match = generic_search_symbols<Elf32_Sym>(
                 [&]( const Elf32_Sym* sym ) {
-                    return (*convertor)( sym->st_value ) == value;
+                    return ( *convertor )( sym->st_value ) == value;
                 },
                 idx );
         }
         else {
             match = generic_search_symbols<Elf64_Sym>(
                 [&]( const Elf64_Sym* sym ) {
-                    return (*convertor)( sym->st_value ) == value;
+                    return ( *convertor )( sym->st_value ) == value;
                 },
                 idx );
         }
@@ -397,8 +397,8 @@ template <class S> class symbol_section_accessor_template
                       Elf_Half&          section_index,
                       unsigned char&     other ) const
     {
-        bool                        ret       = false;
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        bool        ret       = false;
+        const auto& convertor = elf_file.get_convertor();
 
         Elf_Word nbucket = *(const Elf_Word*)hash_section->get_data();
         nbucket          = ( *convertor )( nbucket );
@@ -446,8 +446,8 @@ template <class S> class symbol_section_accessor_template
                           Elf_Half&          section_index,
                           unsigned char&     other ) const
     {
-        bool                        ret       = false;
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        bool        ret       = false;
+        const auto& convertor = elf_file.get_convertor();
 
         std::uint32_t nbuckets =
             *( (std::uint32_t*)hash_section->get_data() + 0 );
@@ -585,7 +585,7 @@ template <class S> class symbol_section_accessor_template
                 symbol_section->get_data() +
                 index * symbol_section->get_entry_size() );
 
-            std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+            const auto& convertor = elf_file.get_convertor();
 
             section* string_section =
                 elf_file.sections[get_string_table_index()];
@@ -626,7 +626,7 @@ template <class S> class symbol_section_accessor_template
                                  unsigned char other,
                                  Elf_Half      shndx )
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         T entry;
         entry.st_name  = ( *convertor )( name );
@@ -656,7 +656,7 @@ template <class S> class symbol_section_accessor_template
     Elf_Xword generic_arrange_local_symbols(
         std::function<void( Elf_Xword first, Elf_Xword second )> func )
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         Elf_Word first_not_local =
             1; // Skip the first entry. It is always NOTYPE

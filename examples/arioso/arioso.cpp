@@ -309,7 +309,7 @@ int main( int argc, char** argv )
     auto opts = parse_args( argc, argv );
 
     // Open existing library or create a new one. In the last case, the library will be empty.
-    ario archive;
+    ario       archive;
     const auto result = archive.load( opts.archive_name );
     if ( !result.ok() ) {
         std::cerr << "Error loading archive: " << result.what() << std::endl;

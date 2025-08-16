@@ -83,8 +83,7 @@ class note_section_accessor_template
         const char* pData = notes->get_data() + note_start_positions[index];
         int         align = sizeof( Elf_Word );
 
-        std::shared_ptr<endianness_convertor> convertor =
-            elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
         type =
             ( *convertor )( *(const Elf_Word*)( pData + 2 * (size_t)align ) );
         Elf_Word namesz = ( *convertor )( *(const Elf_Word*)( pData ) );
@@ -121,8 +120,7 @@ class note_section_accessor_template
                    const char*        desc,
                    Elf_Word           descSize )
     {
-        std::shared_ptr<endianness_convertor> convertor =
-            elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         int         align       = sizeof( Elf_Word );
         Elf_Word    nameLen     = (Elf_Word)name.size() + 1;
@@ -155,10 +153,10 @@ class note_section_accessor_template
     //! \brief Process the section to extract note start positions
     void process_section()
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
-        const char*                 data      = notes->get_data();
-        Elf_Xword                   size      = ( notes->*F_get_size )();
-        Elf_Xword                   current   = 0;
+        const auto& convertor = elf_file.get_convertor();
+        const char* data      = notes->get_data();
+        Elf_Xword   size      = ( notes->*F_get_size )();
+        Elf_Xword   current   = 0;
 
         note_start_positions.clear();
 
@@ -169,7 +167,8 @@ class note_section_accessor_template
 
         Elf_Word align = sizeof( Elf_Word );
         while ( current + (Elf_Xword)3 * align <= size ) {
-            Elf_Word namesz = ( *convertor )( *(const Elf_Word*)( data + current ) );
+            Elf_Word namesz =
+                ( *convertor )( *(const Elf_Word*)( data + current ) );
             Elf_Word descsz = ( *convertor )(
                 *(const Elf_Word*)( data + current + sizeof( namesz ) ) );
             Elf_Word advance =

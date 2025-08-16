@@ -208,7 +208,7 @@ class ario
 
     //------------------------------------------------------------------------------
     //! @brief Constructor
-    explicit ario() : members( this ) {};
+    explicit ario() : members( this ){};
     ario( const ario& )            = delete;
     ario& operator=( const ario& ) = delete;
     ario( ario&& )                 = delete;

@@ -426,7 +426,7 @@ template <class S> class relocation_section_accessor_template
                                 unsigned&   type,
                                 Elf_Sxword& addend ) const
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         if ( relocation_section->get_entry_size() < sizeof( T ) ) {
             return false;
@@ -457,7 +457,7 @@ template <class S> class relocation_section_accessor_template
                                  unsigned&   type,
                                  Elf_Sxword& addend ) const
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         if ( relocation_section->get_entry_size() < sizeof( T ) ) {
             return false;
@@ -488,7 +488,7 @@ template <class S> class relocation_section_accessor_template
                                 unsigned   type,
                                 Elf_Sxword )
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         T* pEntry = const_cast<T*>( reinterpret_cast<const T*>(
             relocation_section->get_data() +
@@ -519,7 +519,7 @@ template <class S> class relocation_section_accessor_template
                                  unsigned   type,
                                  Elf_Sxword addend )
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         T* pEntry = const_cast<T*>( reinterpret_cast<const T*>(
             relocation_section->get_data() +
@@ -545,7 +545,7 @@ template <class S> class relocation_section_accessor_template
     template <class T>
     void generic_add_entry( Elf64_Addr offset, Elf_Xword info )
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         T entry;
         entry.r_offset = decltype( entry.r_offset )( offset );
@@ -566,7 +566,7 @@ template <class S> class relocation_section_accessor_template
     void
     generic_add_entry( Elf64_Addr offset, Elf_Xword info, Elf_Sxword addend )
     {
-        std::shared_ptr<const endianness_convertor> convertor = elf_file.get_convertor();
+        const auto& convertor = elf_file.get_convertor();
 
         T entry;
         entry.r_offset = offset;

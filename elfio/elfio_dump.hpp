@@ -1069,7 +1069,7 @@ class dump
                     out << std::endl << "         ";
                 }
                 out << DUMP_HEX_FORMAT( 2 )
-                    << (std::uint32_t)( (std::uint8_t*)( desc ) )[i];
+                    << ( std::uint32_t )( (std::uint8_t*)( desc ) )[i];
             }
         }
     }

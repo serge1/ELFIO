@@ -99,7 +99,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return (std::int64_t)( *this )( (std::uint64_t)value );
+        return ( std::int64_t )( *this )( (std::uint64_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return (std::int32_t)( *this )( (std::uint32_t)value );
+        return ( std::int32_t )( *this )( (std::uint32_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        value = (std::uint16_t)( ( value & 0x00FF ) << 8 ) |
+        value = ( std::uint16_t )( ( value & 0x00FF ) << 8 ) |
                 ( ( value & 0xFF00 ) >> 8 );
 
         return value;
@@ -154,7 +154,7 @@ class endianness_convertor
         if ( !need_conversion ) {
             return value;
         }
-        return (std::int16_t)( *this )( (std::uint16_t)value );
+        return ( std::int16_t )( *this )( (std::uint16_t)value );
     }
 
     //------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ struct address_translation
     address_translation( std::uint64_t start,
                          std::uint64_t size,
                          std::uint64_t mapped_to )
-        : start( start ), size( size ), mapped_to( mapped_to ) {};
+        : start( start ), size( size ), mapped_to( mapped_to ){};
     std::streampos start;     //!< Start address
     std::streampos size;      //!< Size of the address range
     std::streampos mapped_to; //!< Mapped address
@@ -365,7 +365,7 @@ class compression_interface
     deflate( const char*                                 data,
              std::shared_ptr<const endianness_convertor> convertor,
              Elf_Xword                                   decompressed_size,
-             Elf_Xword&                                  compressed_size ) const = 0;
+             Elf_Xword& compressed_size ) const = 0;
 };
 
 } // namespace ELFIO
