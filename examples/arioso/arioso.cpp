@@ -164,11 +164,8 @@ static int copy_members( const CommandLineOptions& opts,
             continue; // Skip this member
         }
 
-        std::optional<std::reference_wrapper<const ario::Member>> added_member =
-            std::nullopt;
-        auto result =
-            target_archive.add_member( member, member.data(), added_member );
-        if ( !result.ok() || added_member == std::nullopt ) {
+        auto result = target_archive.add_member( member, member.data() );
+        if ( !result.ok() ) {
             std::cerr << "Error adding member '" << member.name
                       << "': " << result.what() << std::endl;
             return 3;
@@ -177,7 +174,8 @@ static int copy_members( const CommandLineOptions& opts,
         // Copy member symbols
         std::vector<std::string> symbols;
         archive.get_symbols_for_member( member, symbols );
-        target_archive.add_symbols_for_member( added_member->get(), symbols );
+        target_archive.add_symbols_for_member( target_archive.members.back(),
+                                               symbols );
     }
 
     return 0;
@@ -241,9 +239,7 @@ static ario::Result add_new_member( ario&                   archive,
     const std::string data( ( std::istreambuf_iterator<char>( input ) ),
                             std::istreambuf_iterator<char>() );
 
-    std::optional<std::reference_wrapper<const ario::Member>> added_member =
-        std::nullopt;
-    const auto result = archive.add_member( new_member, data, added_member );
+    const auto result = archive.add_member( new_member, data );
     if ( !result.ok() ) {
         return result;
     }
@@ -252,7 +248,8 @@ static ario::Result add_new_member( ario&                   archive,
     if ( elf.load( full_file_path.string() ) ) {
         std::vector<std::string> gathered_symbols;
         collect_elf_global_symbols( elf, gathered_symbols );
-        archive.add_symbols_for_member( added_member->get(), gathered_symbols );
+        archive.add_symbols_for_member( archive.members.back(),
+                                        gathered_symbols );
     }
 
     return {}; // Return success

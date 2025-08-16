@@ -202,6 +202,28 @@ class ario
             return parent->members_.cend();
         }
 
+        //------------------------------------------------------------------------------
+        //! @brief Get a const reference to the first member
+        //! @return Const reference to the first member
+        const Member& front() const
+        {
+            if ( parent->members_.empty() ) {
+                throw std::out_of_range( "No members in archive" );
+            }
+            return parent->members_.front();
+        }
+
+        //------------------------------------------------------------------------------
+        //! @brief Get a const reference to the last member
+        //! @return Const reference to the last member
+        const Member& back() const
+        {
+            if ( parent->members_.empty() ) {
+                throw std::out_of_range( "No members in archive" );
+            }
+            return parent->members_.back();
+        }
+
       private:
         ario* parent; //!< Pointer to the parent ario object
     };
@@ -383,14 +405,14 @@ class ario
     //! @brief Add a member to the archive
     //! @param member The member to add
     //! @param data The data associated with the member
-    //! @param added_member Reference to store the added member
     //! @return Error object indicating success or failure
-    Result
-    add_member( const Member&      member,
-                const std::string& data,
-                std::optional<std::reference_wrapper<const ario::Member>>&
-                    added_member )
+    Result add_member( const Member& member, const std::string& data )
     {
+        // Don't allow empty member names
+        if ( member.name.empty() ) {
+            return { "Member name cannot be empty" };
+        }
+
         // Check if the member with such name already exists
         for ( const auto& mem : members_ ) {
             if ( mem.name == member.name ) {
@@ -412,7 +434,6 @@ class ario
             new_member.short_name = "/" + std::to_string( location );
         }
 
-        added_member = new_member;
         return {};
     }
 
@@ -476,7 +497,10 @@ class ario
 
             pstream->read( header, HEADER_SIZE );
             if ( pstream->gcount() < HEADER_SIZE ) {
-                break; // End of file or error
+                if ( pstream->gcount() > 0 ) {
+                    return { "Corrupted archive" }; // End of file or error
+                }
+                break; // End of file reached
             }
             std::streamoff current_pos = pstream->tellg();
             m.short_name               = std::string( header, FIELD_NAME_SIZE );

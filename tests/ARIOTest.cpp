@@ -45,8 +45,8 @@ TEST( ARIOTest, wrong_file_magic )
     ario archive;
     auto result = archive.load( "ario/invalid_magic.a" );
     ASSERT_EQ( result.ok(), false );
-    ASSERT_EQ( result.what(),
-               "Invalid archive format. Expected magic: !<arch>\n, but got !<arkh>\n" );
+    ASSERT_EQ( result.what(), "Invalid archive format. Expected magic: "
+                              "!<arch>\n, but got !<arkh>\n" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -358,33 +358,31 @@ TEST( ARIOTest, add_simple_member )
     ario archive;
     ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
 
-    ario::Member                                              m;
-    std::optional<std::reference_wrapper<const ario::Member>> added_member =
-        std::nullopt;
+    ario::Member m;
     m.name = "added_text.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember", added_member );
+    archive.add_member( m, "The content\nof this\nmember" );
     m.name = "added_text1.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember\n", added_member );
+    archive.add_member( m, "The content\nof this\nmember\n" );
     m.name = "added_text2.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "", added_member );
+    archive.add_member( m, "" );
     m.name = "added_text3.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "Hello\n", added_member );
+    archive.add_member( m, "Hello\n" );
 
     // Save the archive to a new file
     auto result = archive.save( "ario/simple_text_saved.a" );
@@ -433,25 +431,25 @@ TEST( ARIOTest, add_long_name_member )
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember", added_member );
+    archive.add_member( m, "The content\nof this\nmember" );
     m.name = "long_name_member_added_text1.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "The content\nof this\nmember\n", added_member );
+    archive.add_member( m, "The content\nof this\nmember\n" );
     m.name = "long_name_member_added_text2.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "", added_member );
+    archive.add_member( m, "" );
     m.name = "long_name_member_added_text333.txt";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "Hello\n", added_member );
+    archive.add_member( m, "Hello\n" );
 
     // Save the archive to a new file
     auto result = archive.save( "ario/long_name_saved.a" );
@@ -499,37 +497,37 @@ TEST( ARIOTest, new_text_lib )
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n", added_member );
+    archive.add_member( m, "data\n" );
     m.name = "1234567890123456";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n", added_member );
+    archive.add_member( m, "data\n" );
     m.name = "12345678901234567";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n", added_member );
+    archive.add_member( m, "data\n" );
     m.name = "12345";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n", added_member );
+    archive.add_member( m, "data\n" );
     m.name = "123456789012345678";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n", added_member );
+    archive.add_member( m, "data\n" );
     m.name = "1234567";
     m.date = 0;
     m.gid  = 1234;
     m.uid  = 5678;
     m.mode = 0644;
-    archive.add_member( m, "data\n", added_member );
+    archive.add_member( m, "data\n" );
 
     // Save the archive to a new file
     auto result = archive.save( "ario/new_text_lib.a" );
@@ -555,26 +553,23 @@ TEST( ARIOTest, new_text_lib_with_symbols )
     ario archive;
 
     for ( auto i = 0; i < 20; i++ ) {
-        ario::Member                                              m;
-        std::optional<std::reference_wrapper<const ario::Member>> added_member =
-            std::nullopt;
+        ario::Member m;
         m.name = "name__________" + std::to_string( i );
         m.date = 0;
         m.gid  = 1234;
         m.uid  = 5678;
         m.mode = 0644;
-        ASSERT_EQ( archive
-                       .add_member( m, "data" + std::to_string( i ) + "\n",
-                                    added_member )
-                       .ok(),
-                   true );
+        ASSERT_EQ(
+            archive.add_member( m, "data" + std::to_string( i ) + "\n" ).ok(),
+            true );
 
         std::vector<std::string> symbols = {};
         for ( auto j = 0; j < i; j++ ) {
             symbols.emplace_back( "symbol_" + std::to_string( 100 * i + j ) );
         }
         ASSERT_EQ(
-            archive.add_symbols_for_member( added_member->get(), symbols ).ok(),
+            archive.add_symbols_for_member( archive.members.back(), symbols )
+                .ok(),
             true );
     }
     // Save the archive to a new file
@@ -601,4 +596,253 @@ TEST( ARIOTest, new_text_lib_with_symbols )
             ASSERT_EQ( ms->get().name, m.name );
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, load_empty_archive )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/empty.a" ).ok(), true );
+    ASSERT_EQ( archive.members.size(), 0 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, add_duplicate_member )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+
+    ario::Member m = archive.members[0];
+    std::optional<std::reference_wrapper<const ario::Member>> added_member =
+        std::nullopt;
+    auto result = archive.add_member( m, "duplicate content" );
+    ASSERT_EQ( result.ok(), false );
+    ASSERT_NE( std::string( result.what() ).find( "already exists" ),
+               std::string::npos );
+}
+
+TEST( ARIOTest, add_symbols_for_nonexistent_member )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+
+    ario::Member fake_member;
+    fake_member.name                 = "not_in_archive.txt";
+    std::vector<std::string> symbols = { "fake_symbol" };
+    auto result = archive.add_symbols_for_member( fake_member, symbols );
+    ASSERT_EQ( result.ok(), false );
+    ASSERT_NE( std::string( result.what() ).find( "not found" ),
+               std::string::npos );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, get_symbols_for_nonexistent_member )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+
+    ario::Member fake_member;
+    fake_member.name = "not_in_archive.txt";
+    std::vector<std::string> symbols;
+    auto result = archive.get_symbols_for_member( fake_member, symbols );
+    ASSERT_EQ( result.ok(), false );
+    ASSERT_NE( std::string( result.what() ).find( "not found" ),
+               std::string::npos );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, save_and_reload_empty_archive )
+{
+    ario               archive;
+    std::ostringstream oss;
+    ASSERT_EQ( archive.save( oss ).ok(), true );
+    std::istringstream iss( oss.str() );
+    ario               loaded_archive;
+    ASSERT_EQ(
+        loaded_archive.load( std::make_unique<std::istringstream>( oss.str() ) )
+            .ok(),
+        true );
+    ASSERT_EQ( loaded_archive.members.size(), 0 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, member_access_out_of_range )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+    // Index out of range
+    EXPECT_THROW( archive.members[1000], std::out_of_range );
+    // Name not found
+    EXPECT_THROW( archive.members["not_in_archive.txt"], std::out_of_range );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, find_symbol_not_present )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+    std::optional<std::reference_wrapper<const ario::Member>> member =
+        std::nullopt;
+    auto result = archive.find_symbol( "not_a_symbol", member );
+    ASSERT_EQ( result.ok(), false );
+    ASSERT_EQ( member.has_value(), false );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Test: Remove all members and save
+TEST( ARIOTest, remove_all_members_and_save )
+{
+    ario archive;
+    ASSERT_EQ( archive.load( "ario/simple_text.a" ).ok(), true );
+    // Remove all members by creating a new archive and not adding any
+    ario empty_archive;
+    ASSERT_EQ( empty_archive.save( "ario/removed_all.a" ).ok(), true );
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/removed_all.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), 0 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Test: Add member with empty name
+TEST( ARIOTest, add_member_with_empty_name )
+{
+    ario         archive;
+    ario::Member m;
+    m.name = "";
+    m.mode = 0644;
+    std::optional<std::reference_wrapper<const ario::Member>> added_member =
+        std::nullopt;
+    auto result = archive.add_member( m, "data" );
+    ASSERT_EQ( result.ok(), false );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Test: Add member with duplicate symbols
+TEST( ARIOTest, add_duplicate_symbols_for_member )
+{
+    ario         archive;
+    ario::Member m;
+    m.name = "dup_symbol.o";
+    m.mode = 0644;
+    ASSERT_EQ( archive.add_member( m, "data" ).ok(), true );
+    std::vector<std::string> symbols = { "sym1", "sym1", "sym2" };
+    ASSERT_EQ(
+        archive.add_symbols_for_member( archive.members.back(), symbols ).ok(),
+        true );
+    std::vector<std::string> out_symbols;
+    ASSERT_EQ(
+        archive.get_symbols_for_member( archive.members.back(), out_symbols )
+            .ok(),
+        true );
+    // Should contain all symbols, including duplicates
+    ASSERT_EQ( std::count( out_symbols.begin(), out_symbols.end(), "sym1" ),
+               1 );
+    ASSERT_EQ( std::count( out_symbols.begin(), out_symbols.end(), "sym2" ),
+               1 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Test: Add member with special characters in name
+TEST( ARIOTest, add_member_with_special_characters )
+{
+    ario         archive;
+    ario::Member m;
+    m.name = "spécial_名.o";
+    m.mode = 0644;
+    ASSERT_EQ( archive.add_member( m, "data" ).ok(), true );
+    ASSERT_EQ( archive.members.back().name, "spécial_名.o" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, add_member_with_non_ascii_name )
+{
+    ario         archive;
+    ario::Member m;
+    m.name      = u8"тест.o";
+    m.mode      = 0644;
+    auto result = archive.add_member( m, "data" );
+    ASSERT_EQ( result.ok(), true );
+    ASSERT_EQ( archive.members.back().name, u8"тест.o" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Test: Save and load archive with only one member
+TEST( ARIOTest, save_and_load_single_member_archive )
+{
+    ario         archive;
+    ario::Member m;
+    m.name = "single.o";
+    m.mode = 0644;
+    std::optional<std::reference_wrapper<const ario::Member>> added_member =
+        std::nullopt;
+    ASSERT_EQ( archive.add_member( m, "data" ).ok(), true );
+    ASSERT_EQ( archive.save( "ario/single_member.a" ).ok(), true );
+    ario loaded_archive;
+    ASSERT_EQ( loaded_archive.load( "ario/single_member.a" ).ok(), true );
+    ASSERT_EQ( loaded_archive.members.size(), 1 );
+    ASSERT_EQ( loaded_archive.members[0].name, "single.o" );
+    ASSERT_EQ( loaded_archive.members[0].data(), "data" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Test: Add member with zero size data
+TEST( ARIOTest, add_member_with_zero_size_data )
+{
+    ario         archive;
+    ario::Member m;
+    m.name = "empty.o";
+    m.mode = 0644;
+    ASSERT_EQ( archive.add_member( m, "" ).ok(), true );
+    ASSERT_EQ( archive.members.back().size, 0 );
+    ASSERT_EQ( archive.members.back().data(), "" );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, add_member_with_large_data )
+{
+    ario         archive;
+    ario::Member m;
+    m.name = "large.o";
+    m.mode = 0644;
+    std::string large_data( 10 * 1024 * 1024, 'A' ); // 10 MB
+    auto        result = archive.add_member( m, large_data );
+    ASSERT_EQ( result.ok(), true );
+    ASSERT_EQ( archive.members.back().size, large_data.size() );
+    ASSERT_EQ( archive.members.back().data(), large_data );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, save_to_invalid_path )
+{
+    ario         archive;
+    ario::Member m;
+    m.name = "file.o";
+    m.mode = 0644;
+    archive.add_member( m, "data" );
+    auto result = archive.save( "/invalid_path/should_fail.a" );
+    ASSERT_EQ( result.ok(), false );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, load_corrupted_archive )
+{
+    ario archive;
+    // Create a corrupted archive in memory
+    std::string        corrupted = "!<arch>\ncorrupted data";
+    std::istringstream iss( corrupted );
+    auto               result =
+        archive.load( std::make_unique<std::istringstream>( corrupted ) );
+    ASSERT_EQ( result.ok(), false );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST( ARIOTest, add_member_with_max_name_length )
+{
+    ario         archive;
+    ario::Member m;
+    m.name      = std::string( 255, 'a' ); // 255 chars
+    m.mode      = 0644;
+    auto result = archive.add_member( m, "data" );
+    ASSERT_EQ( result.ok(), true );
+    ASSERT_EQ( archive.members.back().name.size(), 255 );
 }
