@@ -112,7 +112,7 @@ class ario
         operator std::string() const { return name; }
         operator std::string_view() const { return name; }
         operator const char*() const { return name.c_str(); }
-        bool operator==( const std::string& name ) const
+        bool operator==( std::string_view name ) const
         {
             return this->name == name;
         }
@@ -123,7 +123,7 @@ class ario
             this->pstream = pstream;
         }
 
-        void set_new_data( const std::string& data ) { this->new_data = data; }
+        void set_new_data( std::string_view data ) { this->new_data = data; }
 
       protected:
         std::string short_name = {}; ///< Short name of the member
@@ -235,7 +235,7 @@ class ario
 
     //------------------------------------------------------------------------------
     //! @brief Constructor
-    explicit ario() : members( this ){};
+    explicit ario() : members( this ) {};
     ario( const ario& )            = delete;
     ario& operator=( const ario& ) = delete;
     ario( ario&& )                 = delete;
@@ -411,7 +411,7 @@ class ario
     //! @param member The member to add
     //! @param data The data associated with the member
     //! @return Error object indicating success or failure
-    Result add_member( const Member& member, const std::string& data )
+    Result add_member( const Member& member, std::string_view data )
     {
         // Don't allow empty member names
         if ( member.name.empty() ) {
