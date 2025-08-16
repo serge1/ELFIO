@@ -94,12 +94,17 @@ class ario
             std::string    data( size, '\0' );
             std::streamoff current_pos = pstream->tellg();
             pstream->seekg( filepos + HEADER_SIZE, std::ios::beg );
+            if ( pstream->fail() ) {
+                return { "Failed to seek to member data position" };
+            }
             pstream->read( &data[0], size );
+            if ( pstream->fail() || (size_t)pstream->gcount() < size ) {
+                return { "Failed to read member data" };
+            }
+
+            // Reset the stream position
             pstream->clear();
             pstream->seekg( current_pos, std::ios::beg );
-            if ( (size_t)pstream->gcount() < size ) {
-                return { "Member data read error" };
-            }
 
             return data;
         }
