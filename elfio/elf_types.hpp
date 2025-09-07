@@ -26,7 +26,10 @@ THE SOFTWARE.
 #include <cstdint>
 
 #ifdef __cplusplus
+#include <cstdint>
 namespace ELFIO {
+#else
+#include <stdint.h>
 #endif
 
 using Elf_Half   = std::uint16_t;
