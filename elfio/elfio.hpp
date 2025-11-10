@@ -508,12 +508,12 @@ class elfio
         if ( auto file_class = header->get_class(); file_class == ELFCLASS64 ) {
             segments_.emplace_back(
                 new ( std::nothrow )
-                    segment_impl<Elf64_Phdr>( convertor, addr_translator ) );
+                segment_impl<Elf64_Phdr>( convertor, addr_translator, sections_ ) );
         }
         else if ( file_class == ELFCLASS32 ) {
             segments_.emplace_back(
                 new ( std::nothrow )
-                    segment_impl<Elf32_Phdr>( convertor, addr_translator ) );
+                segment_impl<Elf32_Phdr>( convertor, addr_translator, sections_ ) );
         }
         else {
             segments_.pop_back();
@@ -636,12 +636,12 @@ class elfio
             if ( file_class == ELFCLASS64 ) {
                 segments_.emplace_back( new ( std::nothrow )
                                             segment_impl<Elf64_Phdr>(
-                                                convertor, addr_translator ) );
+                                            convertor, addr_translator, sections_ ) );
             }
             else if ( file_class == ELFCLASS32 ) {
                 segments_.emplace_back( new ( std::nothrow )
                                             segment_impl<Elf32_Phdr>(
-                                                convertor, addr_translator ) );
+                                            convertor, addr_translator, sections_ ) );
             }
             else {
                 segments_.pop_back();
@@ -649,16 +649,6 @@ class elfio
             }
 
             segment* seg = segments_.back().get();
-
-            if ( !seg->load( stream,
-                             static_cast<std::streamoff>( offset ) +
-                                 static_cast<std::streampos>( i ) * entry_size,
-                             is_lazy ) ||
-                 stream.fail() ) {
-                segments_.pop_back();
-                return false;
-            }
-
             seg->set_index( i );
 
             // Add sections to the segments (similar to readelfs algorithm)
@@ -687,6 +677,22 @@ class elfio
                     // It will be re-calculated on saving.
                     seg->add_section_index( psec->get_index(), 0 );
                 }
+            }
+
+            // Sonal: If data is already stored in the sections we do not need to
+            // re-read and make a copy in the segment
+            if ( seg->get_sections_num() )
+                return true;
+
+            // Sonal: If the segment does not point to any section (when can this happen?)
+            // then follow the classic approach to read in the data
+            if ( !seg->load( stream,
+                             static_cast<std::streamoff>( offset ) +
+                             static_cast<std::streampos>( i ) * entry_size,
+                             is_lazy ) ||
+                 stream.fail() ) {
+                segments_.pop_back();
+                return false;
             }
         }
 

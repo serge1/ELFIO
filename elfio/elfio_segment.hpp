@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 namespace ELFIO {
 
+class elfio;
 //------------------------------------------------------------------------------
 //! \class segment
 //! \brief Class for accessing segment data
@@ -157,8 +158,9 @@ template <class T> class segment_impl : public segment
     //! \param convertor Pointer to the endianness convertor
     //! \param translator Pointer to the address translator
     segment_impl( std::shared_ptr<endianness_convertor> convertor,
-                  std::shared_ptr<address_translator>   translator )
-        : convertor( convertor ), translator( translator )
+                  std::shared_ptr<address_translator>   translator,
+                  const std::vector<std::unique_ptr<section>> &all_sections)
+        : convertor( convertor ), translator( translator ), all_sections( all_sections )
     {
     }
 
@@ -185,6 +187,11 @@ template <class T> class segment_impl : public segment
     {
         if ( !is_loaded ) {
             load_data();
+        }
+        // Sonal: If data is in sections create a contiguous representation of data
+        // by copying over from sections.
+        if ( get_sections_num() ) {
+            load_section_data();
         }
         return data.get();
     }
@@ -340,22 +347,38 @@ template <class T> class segment_impl : public segment
             return false;
         }
 
-        data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
-
-        pstream->seekg( p_offset );
-        if ( nullptr != data.get() && pstream->read( data.get(), size ) ) {
-            data.get()[size] = 0;
+        // Sonal: data is already stored in the sections. Only load data if
+        // there is no section for this segment
+        if (!get_sections_num()) {
+            data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
+            pstream->seekg( p_offset );
+            if ( nullptr != data.get() && pstream->read( data.get(), size ) ) {
+                data.get()[size] = 0;
+            }
+            else {
+                data = nullptr;
+                return false;
+            }
+            is_loaded = true;
         }
-        else {
-            data = nullptr;
-            return false;
-        }
-
-        is_loaded = true;
 
         return true;
     }
 
+    bool load_section_data() const
+    {
+        Elf_Xword size     = get_file_size();
+        data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
+        char *curr = data.get();
+        for ( auto sec_idx : sections ) {
+            const auto &sec = all_sections[sec_idx];
+            // Sonal: Add code for alignment of curr
+            std::memcpy(curr, sec->get_data(), sec->get_size());
+            curr += sec->get_size();
+        }
+        is_loaded = true;
+        return true;
+    }
     //------------------------------------------------------------------------------
     //! \brief Save the segment to a stream
     //! \param stream Output stream
@@ -398,6 +421,8 @@ template <class T> class segment_impl : public segment
         false; //!< Flag indicating if the segment is loaded lazily
     mutable bool is_loaded =
         false; //!< Flag indicating if the segment is loaded
+    const std::vector<std::unique_ptr<section>>
+        &all_sections; //!< Vector of all sections present in this ELF
 };
 
 } // namespace ELFIO
