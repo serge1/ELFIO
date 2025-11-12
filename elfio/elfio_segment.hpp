@@ -194,11 +194,11 @@ template <class T> class segment_impl : public segment
     {
         if ( !is_loaded ) {
             load_data();
-        }
-        // If data is in the matched sections, create a contiguous representation
-        // of data by copying over from sections.
-        if ( get_sections_num() ) {
-            load_section_data();
+            // If data is in the matched sections, create a contiguous
+            // representation of data by copying over from sections.
+            if ( get_sections_num() ) {
+                load_section_data();
+            }
         }
         return data.get();
     }
