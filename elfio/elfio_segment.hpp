@@ -385,7 +385,7 @@ template <class T> class segment_impl : public segment
     void set_stream_size( size_t value ) { stream_size = value; }
     //------------------------------------------------------------------------------
     //! \brief Sort sections in a segment according to offset
-    virtual void sort_sections( std::vector<Elf64_Addr> &offsets )
+    virtual void sort_sections( std::vector<Elf64_Addr> &offsets ) override
     {
         std::sort( sections.begin(), sections.end(), [&]( Elf_Half& a, Elf_Half& b) {
             return offsets[a] < offsets[b];
