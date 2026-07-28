@@ -268,8 +268,10 @@ class elfio
 
         calc_segment_alignment();
 
-        bool is_still_good = layout_segments_and_their_sections();
-        is_still_good = is_still_good && layout_sections_without_segments();
+        std::vector<bool> section_generated( sections_.size(), false );
+
+        bool is_still_good = layout_segments_and_their_sections( section_generated );
+        is_still_good = is_still_good && layout_sections_without_segments( section_generated );
         is_still_good = is_still_good && layout_section_table();
 
         is_still_good = is_still_good && save_header( stream );
@@ -745,24 +747,6 @@ class elfio
     }
 
     //------------------------------------------------------------------------------
-    //! \brief Check if a section is without a segment
-    //! \param section_index The index of the section
-    //! \return True if the section is without a segment, false otherwise
-    bool is_section_without_segment( unsigned int section_index ) const
-    {
-        bool found = false;
-
-        for ( unsigned int j = 0; !found && ( j < segments.size() ); ++j ) {
-            for ( Elf_Half k = 0;
-                  !found && ( k < segments[j]->get_sections_num() ); ++k ) {
-                found = segments[j]->get_section_index_at( k ) == section_index;
-            }
-        }
-
-        return !found;
-    }
-
-    //------------------------------------------------------------------------------
     //! \brief Check if a segment is a subsequence of another segment
     //! \param seg1 Pointer to the first segment
     //! \param seg2 Pointer to the second segment
@@ -833,10 +817,10 @@ class elfio
     //------------------------------------------------------------------------------
     //! \brief Layout sections without segments
     //! \return True if successful, false otherwise
-    bool layout_sections_without_segments()
+    bool layout_sections_without_segments( const std::vector<bool>& section_generated )
     {
         for ( unsigned int i = 0; i < sections_.size(); ++i ) {
-            if ( is_section_without_segment( i ) ) {
+            if ( !section_generated[i] ) {
                 const auto& sec = sections_[i];
 
                 if ( Elf_Xword section_align = sec->get_addr_align();
@@ -877,10 +861,9 @@ class elfio
     //------------------------------------------------------------------------------
     //! \brief Layout segments and their sections
     //! \return True if successful, false otherwise
-    bool layout_segments_and_their_sections()
+    bool layout_segments_and_their_sections( std::vector<bool>& section_generated )
     {
         std::vector<segment*> worklist;
-        std::vector<bool>     section_generated( sections.size(), false );
 
         // Get segments in a order in where segments which contain a
         // sub sequence of other segments are located at the end
