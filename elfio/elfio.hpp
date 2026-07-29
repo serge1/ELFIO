@@ -791,8 +791,19 @@ class elfio
         std::deque<segment*>  worklist;
 
         res.reserve( segments.size() );
+        size_t maxSectionCount = 0;
         for ( const auto& seg : segments ) {
-            worklist.emplace_back( seg.get() );
+            segment* segPtr = seg.get();
+            worklist.emplace_back( segPtr );
+            maxSectionCount = std::max(
+                maxSectionCount,
+                static_cast<size_t>( segPtr->get_sections_num() )
+            );
+        }
+
+        std::vector<size_t> sectionCountFrequency( maxSectionCount + 1, 0 );
+        for ( const segment* seg : worklist ) {
+            ++sectionCountFrequency[seg->get_sections_num()];
         }
 
         // Bring the segments which start at address 0 to the front
@@ -812,15 +823,28 @@ class elfio
             segment* seg = worklist.front();
             worklist.pop_front();
 
-            size_t i = 0;
-            for ( ; i < worklist.size(); ++i ) {
-                if ( is_subsequence_of( seg, worklist[i] ) ) {
-                    break;
+            const size_t sectionCount = seg->get_sections_num();
+            --sectionCountFrequency[sectionCount];
+
+            // Find the next maxSectionCount
+            while ( maxSectionCount != 0 &&
+                    sectionCountFrequency[maxSectionCount] == 0 ) {
+                --maxSectionCount;
+            }
+
+            size_t i = worklist.size();
+            if ( sectionCount < maxSectionCount ) {
+                for ( i = 0; i < worklist.size(); ++i ) {
+                    if ( is_subsequence_of( seg, worklist[i] ) ) {
+                        break;
+                    }
                 }
             }
 
             if ( i < worklist.size() ) {
                 worklist.emplace_back( seg );
+                ++sectionCountFrequency[sectionCount];
+                maxSectionCount = std::max( maxSectionCount, sectionCount );
             }
             else {
                 res.emplace_back( seg );
