@@ -510,12 +510,12 @@ class elfio
         if ( auto file_class = header->get_class(); file_class == ELFCLASS64 ) {
             segments_.emplace_back(
                 new ( std::nothrow )
-                    segment_impl<Elf64_Phdr>( convertor, addr_translator ) );
+                segment_impl<Elf64_Phdr>( convertor, addr_translator, sections_ ) );
         }
         else if ( file_class == ELFCLASS32 ) {
             segments_.emplace_back(
                 new ( std::nothrow )
-                    segment_impl<Elf32_Phdr>( convertor, addr_translator ) );
+                segment_impl<Elf32_Phdr>( convertor, addr_translator, sections_ ) );
         }
         else {
             segments_.pop_back();
@@ -615,6 +615,40 @@ class elfio
         //           sect_begin=12, sect_size=0  -> shall return false!
     }
 
+
+    //------------------------------------------------------------------------------
+    //! \brief Add sections to the segment (similar to readelfs algorithm)
+    void match_sections_to_segment(segment* seg) const
+    {
+        Elf64_Off segBaseOffset = seg->get_offset();
+        Elf64_Off segEndOffset  = segBaseOffset + seg->get_file_size();
+        Elf64_Off segVBaseAddr  = seg->get_virtual_address();
+        Elf64_Off segVEndAddr   = segVBaseAddr + seg->get_memory_size();
+        for ( const auto& psec : sections ) {
+            // SHF_ALLOC sections are matched based on the virtual address
+            // otherwise the file offset is matched
+            if ( ( ( psec->get_flags() & SHF_ALLOC ) == SHF_ALLOC )
+                 ? is_sect_in_seg( psec->get_address(),
+                                   psec->get_size(), segVBaseAddr,
+                                   segVEndAddr )
+                 : is_sect_in_seg( psec->get_offset(), psec->get_size(),
+                                   segBaseOffset, segEndOffset ) ) {
+
+                // If it is a TLS segment, add TLS sections only and vice versa
+                if ( ( ( seg->get_type() == PT_TLS ) &&
+                       ( ( psec->get_flags() & SHF_TLS ) != SHF_TLS ) ) ||
+                     ( ( ( psec->get_flags() & SHF_TLS ) == SHF_TLS ) &&
+                       ( seg->get_type() != PT_TLS ) ) )
+                    continue;
+
+                // Alignment of segment shall not be updated, to preserve original value
+                // It will be re-calculated on saving.
+                seg->add_section_index( psec->get_index(), 0 );
+            }
+        }
+    }
+
+
     //------------------------------------------------------------------------------
     //! \brief Load segments from a stream
     //! \param stream The input stream to load from
@@ -643,12 +677,12 @@ class elfio
             if ( file_class == ELFCLASS64 ) {
                 segments_.emplace_back( new ( std::nothrow )
                                             segment_impl<Elf64_Phdr>(
-                                                convertor, addr_translator ) );
+                                            convertor, addr_translator, sections_ ) );
             }
             else if ( file_class == ELFCLASS32 ) {
                 segments_.emplace_back( new ( std::nothrow )
                                             segment_impl<Elf32_Phdr>(
-                                                convertor, addr_translator ) );
+                                            convertor, addr_translator, sections_ ) );
             }
             else {
                 segments_.pop_back();
@@ -657,10 +691,11 @@ class elfio
 
             segment* seg = segments_.back().get();
 
-            if ( !seg->load( stream,
-                             static_cast<std::streamoff>( offset ) +
-                                 static_cast<std::streampos>( i ) * entry_size,
-                             is_lazy ) ||
+            // Load the segment header
+            if ( !seg->load_header( stream,
+                                    static_cast<std::streamoff>( offset ) +
+                                    static_cast<std::streampos>( i ) * entry_size,
+                                    is_lazy ) ||
                  stream.fail() ) {
                 segments_.pop_back();
                 return false;
@@ -668,32 +703,15 @@ class elfio
 
             seg->set_index( i );
 
-            // Add sections to the segments (similar to readelfs algorithm)
-            Elf64_Off segBaseOffset = seg->get_offset();
-            Elf64_Off segEndOffset  = segBaseOffset + seg->get_file_size();
-            Elf64_Off segVBaseAddr  = seg->get_virtual_address();
-            Elf64_Off segVEndAddr   = segVBaseAddr + seg->get_memory_size();
-            for ( const auto& psec : sections ) {
-                // SHF_ALLOC sections are matched based on the virtual address
-                // otherwise the file offset is matched
-                if ( ( ( psec->get_flags() & SHF_ALLOC ) == SHF_ALLOC )
-                         ? is_sect_in_seg( psec->get_address(),
-                                           psec->get_size(), segVBaseAddr,
-                                           segVEndAddr )
-                         : is_sect_in_seg( psec->get_offset(), psec->get_size(),
-                                           segBaseOffset, segEndOffset ) ) {
+            // Map the sections to the segments
+            match_sections_to_segment(seg);
 
-                    // If it is a TLS segment, add TLS sections only and vice versa
-                    if ( ( ( seg->get_type() == PT_TLS ) &&
-                           ( ( psec->get_flags() & SHF_TLS ) != SHF_TLS ) ) ||
-                         ( ( ( psec->get_flags() & SHF_TLS ) == SHF_TLS ) &&
-                           ( seg->get_type() != PT_TLS ) ) )
-                        continue;
-
-                    // Alignment of segment shall not be updated, to preserve original value
-                    // It will be re-calculated on saving.
-                    seg->add_section_index( psec->get_index(), 0 );
-                }
+            // Now that the sections for this segment have been identified, load the
+            // segment data without duplication
+            if ( !seg->load_rest(is_lazy ) ||
+                 stream.fail() ) {
+                segments_.pop_back();
+                return false;
             }
             seg->sort_sections( offsets );
         }

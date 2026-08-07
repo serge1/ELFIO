@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 namespace ELFIO {
 
+class elfio;
 //------------------------------------------------------------------------------
 //! \class segment
 //! \brief Class for accessing segment data
@@ -131,14 +132,21 @@ class segment
     virtual const std::vector<Elf_Half>& get_sections() const = 0;
 
     //------------------------------------------------------------------------------
-    //! \brief Load the segment from a stream
+    //! \brief Load the segment header from a stream
     //! \param stream Input stream
     //! \param header_offset Offset of the segment header
     //! \param is_lazy Whether to load the segment lazily
     //! \return True if successful, false otherwise
-    virtual bool load( std::istream&  stream,
-                       std::streampos header_offset,
-                       bool           is_lazy ) = 0;
+    virtual bool load_header( std::istream&  stream,
+                              std::streampos header_offset,
+                              bool           is_lazy ) = 0;
+
+    //------------------------------------------------------------------------------
+    //! \brief Load the segment data only if necessary
+    //! \param is_lazy Whether to load the segment lazily
+    //! \return True if successful, false otherwise
+    virtual bool load_rest( bool is_lazy ) = 0;
+
     //------------------------------------------------------------------------------
     //! \brief Save the segment to a stream
     //! \param stream Output stream
@@ -160,8 +168,9 @@ template <class T> class segment_impl : public segment
     //! \param convertor Pointer to the endianness convertor
     //! \param translator Pointer to the address translator
     segment_impl( std::shared_ptr<endianness_convertor> convertor,
-                  std::shared_ptr<address_translator>   translator )
-        : convertor( convertor ), translator( translator )
+                  std::shared_ptr<address_translator>   translator,
+                  const std::vector<std::unique_ptr<section>> &all_sections)
+        : convertor( convertor ), translator( translator ), all_sections( all_sections )
     {
     }
 
@@ -188,6 +197,11 @@ template <class T> class segment_impl : public segment
     {
         if ( !is_loaded ) {
             load_data();
+            // If data is in the matched sections, create a contiguous
+            // representation of data by copying over from sections.
+            if ( get_sections_num() ) {
+                load_section_data();
+            }
         }
         return data.get();
     }
@@ -280,14 +294,14 @@ template <class T> class segment_impl : public segment
     void set_index( const Elf_Half& value ) override { index = value; }
 
     //------------------------------------------------------------------------------
-    //! \brief Load the segment from a stream
+    //! \brief Load the segment header from a stream
     //! \param stream Input stream
     //! \param header_offset Offset of the segment header
     //! \param is_lazy_ Whether to load the segment lazily
     //! \return True if successful, false otherwise
-    bool load( std::istream&  stream,
-               std::streampos header_offset,
-               bool           is_lazy_ ) override
+    bool load_header( std::istream&  stream,
+                      std::streampos header_offset,
+                      bool           is_lazy_ ) override
     {
         pstream = &stream;
         is_lazy = is_lazy_;
@@ -305,15 +319,23 @@ template <class T> class segment_impl : public segment
 
         is_offset_set = true;
 
-        if ( !( is_lazy || is_loaded ) ) {
-            return load_data();
-        }
-
         return true;
     }
 
     //------------------------------------------------------------------------------
-    //! \brief Load the data of the segment
+    //! \brief Load the segment data only if necessary
+    //! \param is_lazy Whether to load the segment lazily
+    //! \return True if successful, false otherwise
+    bool load_rest( bool is_lazy ) override
+    {
+        if ( !( is_lazy || is_loaded ) ) {
+            return load_data();
+        }
+        return true;
+    }
+
+    //------------------------------------------------------------------------------
+    //! \brief Load the data of the segment only if necessary
     //! \return True if successful, false otherwise
     bool load_data() const
     {
@@ -343,22 +365,55 @@ template <class T> class segment_impl : public segment
             return false;
         }
 
-        data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
-
-        pstream->seekg( p_offset );
-        if ( nullptr != data.get() && pstream->read( data.get(), size ) ) {
-            data.get()[size] = 0;
+        // If this segment points to sections then the data is already stored in
+        // the sections. Load data only if there is no section for this segment
+        if (!get_sections_num()) {
+            data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
+            pstream->seekg( p_offset );
+            if ( nullptr != data.get() && pstream->read( data.get(), size ) ) {
+                data.get()[size] = 0;
+            }
+            else {
+                data = nullptr;
+                return false;
+            }
+            is_loaded = true;
         }
-        else {
-            data = nullptr;
-            return false;
-        }
-
-        is_loaded = true;
 
         return true;
     }
 
+
+    //------------------------------------------------------------------------------
+    //! \brief Load the segment data by assembling it from the matched sections
+    //! \return True if successful, false otherwise
+    bool load_section_data() const
+    {
+        Elf_Xword size     = get_file_size();
+        Elf_Xword offset   = 0;
+
+        data.reset( new ( std::nothrow ) char[(size_t)size + 1] );
+
+        for ( auto sec_idx : sections ) {
+            const auto& sec = all_sections[sec_idx];
+            if ( SHT_NOBITS == sec->get_type() ) {
+                // Needs no storage like .bss
+                continue;
+            }
+
+            Elf_Xword section_align = sec->get_addr_align();
+            if ( section_align > 1 && offset % section_align != 0 ) {
+                // Add any holes to meet the alignment requirement
+                offset += section_align - offset % section_align;
+            }
+            char* curr = data.get();
+            curr += offset;
+            std::memcpy(curr, sec->get_data(), sec->get_size());
+            offset += sec->get_size();
+        }
+        is_loaded = true;
+        return true;
+    }
     //------------------------------------------------------------------------------
     //! \brief Save the segment to a stream
     //! \param stream Output stream
@@ -409,6 +464,8 @@ template <class T> class segment_impl : public segment
         false; //!< Flag indicating if the segment is loaded lazily
     mutable bool is_loaded =
         false; //!< Flag indicating if the segment is loaded
+    const std::vector<std::unique_ptr<section>>
+    &all_sections; //!< Reference to the vector of all sections in this ELF
 };
 
 } // namespace ELFIO
