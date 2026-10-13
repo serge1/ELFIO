@@ -119,7 +119,8 @@ template <class S> class symbol_section_accessor_template
     // @param type Type of the symbol
     // @param section_index Section index of the symbol
     // @param other Other attributes of the symbol
-    // @return True if the symbol is found, false otherwise
+    // @return True if the symbol is found, false otherwise. The output
+    //         parameters are only modified when the symbol is found.
     //------------------------------------------------------------------------------
     bool get_symbol( const std::string& name,
                      Elf64_Addr&        value,
@@ -129,38 +130,70 @@ template <class S> class symbol_section_accessor_template
                      Elf_Half&          section_index,
                      unsigned char&     other ) const
     {
-        bool ret = false;
+        Elf64_Addr    found_value         = 0;
+        Elf_Xword     found_size          = 0;
+        unsigned char found_bind          = 0;
+        unsigned char found_type          = 0;
+        Elf_Half      found_section_index = 0;
+        unsigned char found_other         = 0;
 
-        if ( 0 != get_hash_table_index() ) {
+        const Elf_Xword symbol_count = get_symbols_num();
+        hash_result     result       = hash_result::invalid;
+        // Symbols in [covered_begin, covered_end) are ruled out by a miss
+        Elf_Xword covered_begin = 0;
+        Elf_Xword covered_end   = 0;
+        // Unnamed symbols are never reachable through a hash table
+        if ( 0 != get_hash_table_index() && !name.empty() ) {
             if ( hash_section->get_type() == SHT_HASH ) {
-                ret = hash_lookup( name, value, size, bind, type, section_index,
-                                   other );
+                result =
+                    hash_lookup( name, found_value, found_size, found_bind,
+                                 found_type, found_section_index, found_other );
+                covered_end = symbol_count;
             }
             if ( hash_section->get_type() == SHT_GNU_HASH ||
                  hash_section->get_type() == DT_GNU_HASH ) {
                 if ( elf_file.get_class() == ELFCLASS32 ) {
-                    ret = gnu_hash_lookup<std::uint32_t>(
-                        name, value, size, bind, type, section_index, other );
+                    result = gnu_hash_lookup<std::uint32_t>(
+                        name, found_value, found_size, found_bind, found_type,
+                        found_section_index, found_other, covered_begin,
+                        covered_end );
                 }
                 else {
-                    ret = gnu_hash_lookup<std::uint64_t>(
-                        name, value, size, bind, type, section_index, other );
+                    result = gnu_hash_lookup<std::uint64_t>(
+                        name, found_value, found_size, found_bind, found_type,
+                        found_section_index, found_other, covered_begin,
+                        covered_end );
                 }
             }
         }
 
-        if ( !ret ) {
-            for ( Elf_Xword i = 0; !ret && i < get_symbols_num(); i++ ) {
-                std::string symbol_name;
-                if ( get_symbol( i, symbol_name, value, size, bind, type,
-                                 section_index, other ) &&
-                     ( symbol_name == name ) ) {
-                    ret = true;
-                }
+        bool found = result == hash_result::found;
+        if ( result == hash_result::invalid ) {
+            covered_begin = 0;
+            covered_end   = 0;
+        }
+        for ( Elf_Xword i = 0; !found && i < symbol_count; i++ ) {
+            if ( i >= covered_begin && i < covered_end ) {
+                i = covered_end - 1;
+                continue;
             }
+            std::string symbol_name;
+            found =
+                get_symbol( i, symbol_name, found_value, found_size, found_bind,
+                            found_type, found_section_index, found_other ) &&
+                symbol_name == name;
+        }
+        if ( !found ) {
+            return false;
         }
 
-        return ret;
+        value         = found_value;
+        size          = found_size;
+        bind          = found_bind;
+        type          = found_type;
+        section_index = found_section_index;
+        other         = found_other;
+        return true;
     }
 
     //------------------------------------------------------------------------------
@@ -369,9 +402,9 @@ template <class S> class symbol_section_accessor_template
     // @brief Get the index of the string table
     // @return Index of the string table
     //------------------------------------------------------------------------------
-    Elf_Half get_string_table_index() const
+    Elf_Word get_string_table_index() const
     {
-        return (Elf_Half)symbol_section->get_link();
+        return symbol_section->get_link();
     }
 
     //------------------------------------------------------------------------------
@@ -379,6 +412,17 @@ template <class S> class symbol_section_accessor_template
     // @return Index of the hash table
     //------------------------------------------------------------------------------
     Elf_Half get_hash_table_index() const { return hash_section_index; }
+
+    //------------------------------------------------------------------------------
+    // Result of a hash table lookup. A miss in a well-formed table rules out
+    // the symbols the table covers; an unusable table rules out none.
+    //------------------------------------------------------------------------------
+    enum class hash_result
+    {
+        found,
+        not_found,
+        invalid
+    };
 
     //------------------------------------------------------------------------------
     // @brief Read and convert a value from the hash section
@@ -406,7 +450,7 @@ template <class S> class symbol_section_accessor_template
     }
 
     //------------------------------------------------------------------------------
-    // @brief Lookup a symbol in the hash table
+    // @brief Lookup a symbol in the SysV hash table
     // @param name Name of the symbol
     // @param value Value of the symbol
     // @param size Size of the symbol
@@ -414,28 +458,31 @@ template <class S> class symbol_section_accessor_template
     // @param type Type of the symbol
     // @param section_index Section index of the symbol
     // @param other Other attributes of the symbol
-    // @return True if the symbol is found, false otherwise
+    // @return Whether the symbol was found, is absent, or the table is unusable
     //------------------------------------------------------------------------------
-    bool hash_lookup( const std::string& name,
-                      Elf64_Addr&        value,
-                      Elf_Xword&         size,
-                      unsigned char&     bind,
-                      unsigned char&     type,
-                      Elf_Half&          section_index,
-                      unsigned char&     other ) const
+    hash_result hash_lookup( const std::string& name,
+                             Elf64_Addr&        value,
+                             Elf_Xword&         size,
+                             unsigned char&     bind,
+                             unsigned char&     type,
+                             Elf_Half&          section_index,
+                             unsigned char&     other ) const
     {
         Elf_Word nbucket = 0;
         Elf_Word nchain  = 0;
         if ( !read_hash_value( 0, nbucket ) ||
              !read_hash_value( sizeof( Elf_Word ), nchain ) || nbucket == 0 ) {
-            return false;
+            return hash_result::invalid;
         }
 
+        // The table has one chain entry per symbol, so a miss only rules
+        // symbols out when it covers the whole symbol table
         const Elf_Xword word_count =
             hash_section->get_size() / sizeof( Elf_Word );
         if ( word_count < 2 || nbucket > word_count - 2 ||
-             nchain > word_count - 2 - nbucket || nchain > get_symbols_num() ) {
-            return false;
+             nchain > word_count - 2 - nbucket ||
+             nchain != get_symbols_num() ) {
+            return hash_result::invalid;
         }
 
         const Elf_Word hash =
@@ -445,33 +492,37 @@ template <class S> class symbol_section_accessor_template
                  ( 2 + static_cast<Elf_Xword>( hash % nbucket ) ) *
                      sizeof( Elf_Word ),
                  symbol ) ) {
-            return false;
+            return hash_result::invalid;
         }
 
-        for ( Elf_Word steps = 0; symbol != STN_UNDEF && steps < nchain;
-              ++steps ) {
+        // A well-formed chain ends at STN_UNDEF within nchain steps
+        for ( Elf_Word steps = 0; steps < nchain; ++steps ) {
+            if ( symbol == STN_UNDEF ) {
+                return hash_result::not_found;
+            }
             if ( symbol >= nchain ) {
-                return false;
+                return hash_result::invalid;
             }
 
             std::string symbol_name;
             if ( !get_symbol( symbol, symbol_name, value, size, bind, type,
                               section_index, other ) ) {
-                return false;
+                return hash_result::invalid;
             }
             if ( symbol_name == name ) {
-                return true;
+                return hash_result::found;
             }
 
             if ( !read_hash_value(
                      ( 2 + static_cast<Elf_Xword>( nbucket ) + symbol ) *
                          sizeof( Elf_Word ),
                      symbol ) ) {
-                return false;
+                return hash_result::invalid;
             }
         }
 
-        return false;
+        return symbol == STN_UNDEF ? hash_result::not_found
+                                   : hash_result::invalid;
     }
 
     //------------------------------------------------------------------------------
@@ -483,16 +534,21 @@ template <class S> class symbol_section_accessor_template
     // @param type Type of the symbol
     // @param section_index Section index of the symbol
     // @param other Other attributes of the symbol
-    // @return True if the symbol is found, false otherwise
+    // @param covered_begin First symbol index the hash chains cover
+    // @param covered_end One past the last symbol index the hash chains cover
+    // @return Whether the symbol was found, is absent from the covered
+    //         symbols, or the table is unusable
     //------------------------------------------------------------------------------
     template <class T>
-    bool gnu_hash_lookup( const std::string& name,
-                          Elf64_Addr&        value,
-                          Elf_Xword&         size,
-                          unsigned char&     bind,
-                          unsigned char&     type,
-                          Elf_Half&          section_index,
-                          unsigned char&     other ) const
+    hash_result gnu_hash_lookup( const std::string& name,
+                                 Elf64_Addr&        value,
+                                 Elf_Xword&         size,
+                                 unsigned char&     bind,
+                                 unsigned char&     type,
+                                 Elf_Half&          section_index,
+                                 unsigned char&     other,
+                                 Elf_Xword&         covered_begin,
+                                 Elf_Xword&         covered_end ) const
     {
         std::uint32_t nbuckets    = 0;
         std::uint32_t symoffset   = 0;
@@ -504,21 +560,21 @@ template <class S> class symbol_section_accessor_template
              !read_hash_value( 3 * sizeof( std::uint32_t ), bloom_shift ) ||
              nbuckets == 0 || bloom_size == 0 ||
              bloom_shift >= 8 * sizeof( std::uint32_t ) ) {
-            return false;
+            return hash_result::invalid;
         }
 
         const Elf_Xword     hash_size   = hash_section->get_size();
         constexpr Elf_Xword header_size = 4 * sizeof( std::uint32_t );
         if ( hash_size < header_size ||
              bloom_size > ( hash_size - header_size ) / sizeof( T ) ) {
-            return false;
+            return hash_result::invalid;
         }
 
         const Elf_Xword buckets_offset =
             header_size + static_cast<Elf_Xword>( bloom_size ) * sizeof( T );
         if ( nbuckets >
              ( hash_size - buckets_offset ) / sizeof( std::uint32_t ) ) {
-            return false;
+            return hash_result::invalid;
         }
 
         const Elf_Xword chains_offset =
@@ -528,8 +584,13 @@ template <class S> class symbol_section_accessor_template
             ( hash_size - chains_offset ) / sizeof( std::uint32_t );
         const Elf_Xword symbol_count = get_symbols_num();
         if ( symoffset > symbol_count ) {
-            return false;
+            return hash_result::invalid;
         }
+        // Symbols below symoffset are not hashed, and a table may have fewer
+        // chain entries than the remaining symbols
+        covered_begin = symoffset;
+        covered_end =
+            symoffset + std::min( chain_count, symbol_count - symoffset );
 
         const std::uint32_t hash = elf_gnu_hash(
             reinterpret_cast<const unsigned char*>( name.c_str() ) );
@@ -543,9 +604,11 @@ template <class S> class symbol_section_accessor_template
         if ( !read_hash_value( header_size +
                                    static_cast<Elf_Xword>( bloom_index ) *
                                        sizeof( T ),
-                               bloom_value ) ||
-             ( bloom_value & bloom_bits ) != bloom_bits ) {
-            return false;
+                               bloom_value ) ) {
+            return hash_result::invalid;
+        }
+        if ( ( bloom_value & bloom_bits ) != bloom_bits ) {
+            return hash_result::not_found;
         }
 
         const std::uint32_t bucket = hash % nbuckets;
@@ -553,22 +616,28 @@ template <class S> class symbol_section_accessor_template
         if ( !read_hash_value( buckets_offset +
                                    static_cast<Elf_Xword>( bucket ) *
                                        sizeof( std::uint32_t ),
-                               symbol ) ||
-             symbol < symoffset ) {
-            return false;
+                               symbol ) ) {
+            return hash_result::invalid;
+        }
+        // Bucket value 0 marks an empty bucket
+        if ( symbol == 0 ) {
+            return hash_result::not_found;
+        }
+        if ( symbol < symoffset ) {
+            return hash_result::invalid;
         }
 
         Elf_Xword chain_index = symbol - symoffset;
         while ( chain_index < chain_count ) {
             if ( chain_index >= symbol_count - symoffset ) {
-                return false;
+                return hash_result::invalid;
             }
 
             std::uint32_t chain_hash = 0;
             if ( !read_hash_value( chains_offset +
                                        chain_index * sizeof( std::uint32_t ),
                                    chain_hash ) ) {
-                return false;
+                return hash_result::invalid;
             }
 
             std::string symbol_name;
@@ -577,16 +646,16 @@ template <class S> class symbol_section_accessor_template
                              symbol_name, value, size, bind, type,
                              section_index, other ) &&
                  name == symbol_name ) {
-                return true;
+                return hash_result::found;
             }
 
             if ( chain_hash & 1 ) {
-                return false;
+                return hash_result::not_found;
             }
             ++chain_index;
         }
 
-        return false;
+        return hash_result::invalid;
     }
 
     //------------------------------------------------------------------------------
@@ -626,7 +695,10 @@ template <class S> class symbol_section_accessor_template
             if ( symPtr == nullptr )
                 return false;
 
-            if ( match( symPtr ) ) {
+            // Symbol records may be unaligned in the section data
+            T symbol;
+            std::memcpy( &symbol, symPtr, sizeof( symbol ) );
+            if ( match( &symbol ) ) {
                 idx = i;
                 return true;
             }
@@ -661,26 +733,33 @@ template <class S> class symbol_section_accessor_template
 
         if ( nullptr != symbol_section->get_data() &&
              index < get_symbols_num() ) {
-            const auto* pSym = reinterpret_cast<const T*>(
-                symbol_section->get_data() +
-                index * symbol_section->get_entry_size() );
+            // Symbol records may be unaligned in the section data
+            T symbol;
+            std::memcpy( &symbol,
+                         symbol_section->get_data() +
+                             index * symbol_section->get_entry_size(),
+                         sizeof( symbol ) );
 
             const auto& convertor = elf_file.get_convertor();
 
-            section* string_section =
+            // An unresolvable name yields an empty string rather than
+            // leaving the caller's previous value in place
+            const section* string_section =
                 elf_file.sections[get_string_table_index()];
-            string_section_accessor str_reader( string_section );
-            const char*             pStr =
-                str_reader.get_string( ( *convertor )( pSym->st_name ) );
-            if ( nullptr != pStr ) {
-                name = pStr;
+            const char* pStr = nullptr;
+            if ( string_section != nullptr &&
+                 string_section->get_type() == SHT_STRTAB ) {
+                const_string_section_accessor str_reader( string_section );
+                pStr =
+                    str_reader.get_string( ( *convertor )( symbol.st_name ) );
             }
-            value         = ( *convertor )( pSym->st_value );
-            size          = ( *convertor )( pSym->st_size );
-            bind          = ELF_ST_BIND( pSym->st_info );
-            type          = ELF_ST_TYPE( pSym->st_info );
-            section_index = ( *convertor )( pSym->st_shndx );
-            other         = pSym->st_other;
+            name          = pStr != nullptr ? pStr : "";
+            value         = ( *convertor )( symbol.st_value );
+            size          = ( *convertor )( symbol.st_size );
+            bind          = ELF_ST_BIND( symbol.st_info );
+            type          = ELF_ST_TYPE( symbol.st_info );
+            section_index = ( *convertor )( symbol.st_shndx );
+            other         = symbol.st_other;
 
             ret = true;
         }
