@@ -23,6 +23,8 @@ THE SOFTWARE.
 #ifndef ELFIO_NOTE_HPP
 #define ELFIO_NOTE_HPP
 
+#include <cstring>
+
 namespace ELFIO {
 
 //------------------------------------------------------------------------------
@@ -76,36 +78,23 @@ class note_section_accessor_template
                    char*&       desc,
                    Elf_Word&    descSize ) const
     {
-        if ( index >= ( notes->*F_get_size )() ) {
+        if ( index >= note_start_positions.size() ) {
             return false;
         }
 
-        const char* pData = notes->get_data() + note_start_positions[index];
-        int         align = sizeof( Elf_Word );
-
-        const auto& convertor = elf_file.get_convertor();
-        type =
-            ( *convertor )( *(const Elf_Word*)( pData + 2 * (size_t)align ) );
-        Elf_Word namesz = ( *convertor )( *(const Elf_Word*)( pData ) );
-        descSize =
-            ( *convertor )( *(const Elf_Word*)( pData + sizeof( namesz ) ) );
-
-        Elf_Xword max_name_size =
-            ( notes->*F_get_size )() - note_start_positions[index];
-        if ( namesz < 1 || namesz > max_name_size ||
-             (Elf_Xword)namesz + descSize > max_name_size ) {
+        const char*     data      = notes->get_data();
+        const Elf_Xword data_size = ( notes->*F_get_size )();
+        note_record     record;
+        // The section may have changed since its note offsets were collected.
+        if ( !read_note( data, data_size, note_start_positions[index],
+                         record ) ) {
             return false;
         }
-        name.assign( pData + 3 * (size_t)align, namesz - 1 );
-        if ( 0 == descSize ) {
-            desc = nullptr;
-        }
-        else {
-            desc = const_cast<char*>( pData + 3 * (size_t)align +
-                                      ( ( namesz + align - 1 ) / align ) *
-                                          (size_t)align );
-        }
 
+        name.assign( record.name, record.name_size );
+        type     = record.type;
+        descSize = record.descriptor_size;
+        desc     = const_cast<char*>( record.descriptor );
         return true;
     }
 
@@ -121,6 +110,11 @@ class note_section_accessor_template
                    Elf_Word           descSize )
     {
         const auto& convertor = elf_file.get_convertor();
+
+        // A record without descriptor data must not claim a descriptor
+        if ( desc == nullptr ) {
+            descSize = 0;
+        }
 
         int         align       = sizeof( Elf_Word );
         Elf_Word    nameLen     = (Elf_Word)name.size() + 1;
@@ -144,46 +138,100 @@ class note_section_accessor_template
             }
         }
 
-        note_start_positions.emplace_back( ( notes->*F_get_size )() );
-        notes->append_data( buffer );
+        // Records start on a 4-byte boundary, even when the existing data
+        // does not end on one
+        constexpr Elf_Xword word_size    = sizeof( Elf_Word );
+        const Elf_Xword     current_size = ( notes->*F_get_size )();
+        const Elf_Xword     padding =
+            ( word_size - current_size % word_size ) % word_size;
+        notes->append_data(
+            std::string( static_cast<size_t>( padding ), '\0' ) + buffer );
+        if ( current_size == scanned_size ) {
+            // The existing data decoded completely, so the new record simply
+            // follows it
+            note_start_positions.emplace_back( current_size );
+            scanned_size = current_size + buffer.size();
+        }
+        else {
+            // The appended bytes may complete a record the scan stopped at, so
+            // rescan to keep indices consistent with a fresh accessor
+            process_section();
+        }
     }
 
   private:
+    struct note_record
+    {
+        Elf_Word    type;
+        const char* name;
+        Elf_Word    name_size;
+        const char* descriptor;
+        Elf_Word    descriptor_size;
+        Elf_Xword   total_size;
+    };
+
+    static Elf_Xword padded_size( Elf_Word size )
+    {
+        constexpr Elf_Xword alignment = sizeof( Elf_Word );
+        return ( static_cast<Elf_Xword>( size ) + alignment - 1 ) / alignment *
+               alignment;
+    }
+
+    // Decode one complete record. Scanning and lookup share these checks.
+    bool read_note( const char*  data,
+                    Elf_Xword    data_size,
+                    Elf_Xword    position,
+                    note_record& record ) const
+    {
+        constexpr Elf_Xword header_size = 3 * sizeof( Elf_Word );
+        if ( data == nullptr || position > data_size ||
+             header_size > data_size - position ) {
+            return false;
+        }
+
+        Elf_Word header[3];
+        std::memcpy( header, data + position, sizeof( header ) );
+        const auto&     convertor   = elf_file.get_convertor();
+        const Elf_Word  namesz      = ( *convertor )( header[0] );
+        const Elf_Word  descsz      = ( *convertor )( header[1] );
+        const Elf_Xword padded_name = padded_size( namesz );
+        const Elf_Xword padded_desc = padded_size( descsz );
+        const Elf_Xword remaining   = data_size - position - header_size;
+        if ( padded_name > remaining ||
+             padded_desc > remaining - padded_name ) {
+            return false;
+        }
+
+        const char* name = data + position + header_size;
+        // Some producers omit the owner's terminator; keep the full name then
+        const bool terminated  = namesz != 0 && name[namesz - 1] == '\0';
+        record.type            = ( *convertor )( header[2] );
+        record.name            = name;
+        record.name_size       = terminated ? namesz - 1 : namesz;
+        record.descriptor      = descsz == 0 ? nullptr : name + padded_name;
+        record.descriptor_size = descsz;
+        record.total_size      = header_size + padded_name + padded_desc;
+        return true;
+    }
+
     //------------------------------------------------------------------------------
     //! \brief Process the section to extract note start positions
     void process_section()
     {
-        const auto& convertor = elf_file.get_convertor();
-        const char* data      = notes->get_data();
-        Elf_Xword   size      = ( notes->*F_get_size )();
-        Elf_Xword   current   = 0;
-
         note_start_positions.clear();
-
-        // Is it empty?
-        if ( nullptr == data || 0 == size ) {
+        scanned_size = 0;
+        if ( notes == nullptr ) {
             return;
         }
-
-        Elf_Word align = sizeof( Elf_Word );
-        while ( current + (Elf_Xword)3 * align <= size ) {
-            Elf_Word namesz =
-                ( *convertor )( *(const Elf_Word*)( data + current ) );
-            Elf_Word descsz = ( *convertor )(
-                *(const Elf_Word*)( data + current + sizeof( namesz ) ) );
-            Elf_Word advance =
-                (Elf_Xword)3 * sizeof( Elf_Word ) +
-                ( ( namesz + align - 1 ) / align ) * (Elf_Xword)align +
-                ( ( descsz + align - 1 ) / align ) * (Elf_Xword)align;
-            if ( namesz < size && descsz < size && current + advance <= size ) {
-                note_start_positions.emplace_back( current );
-            }
-            else {
-                break;
-            }
-
-            current += advance;
+        const char*     data      = notes->get_data();
+        const Elf_Xword data_size = ( notes->*F_get_size )();
+        Elf_Xword       current   = 0;
+        note_record     record;
+        while ( read_note( data, data_size, current, record ) ) {
+            note_start_positions.emplace_back( current );
+            current += record.total_size;
         }
+        scanned_size = current;
     }
 
     //------------------------------------------------------------------------------
@@ -192,6 +240,7 @@ class note_section_accessor_template
     S*           notes;    //!< Pointer to the section or segment
     std::vector<Elf_Xword>
         note_start_positions; //!< Vector of note start positions
+    Elf_Xword scanned_size = 0; //!< End of the records decoded by the last scan
 };
 
 using note_section_accessor =

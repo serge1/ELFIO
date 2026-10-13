@@ -62,6 +62,7 @@ configure_file(runELFtests ${CMAKE_CURRENT_BINARY_DIR}/runELFtests COPYONLY)
 
 add_executable(
     ELFIOTest
+    ELFIONoteBoundsTest.cpp
     ELFIOTest.cpp
     ELFIOTest1.cpp
     ELFIOTest2.cpp
