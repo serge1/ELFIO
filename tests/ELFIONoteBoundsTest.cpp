@@ -187,16 +187,18 @@ TEST_P( ELFIONoteBoundsTest, RevalidatesCachedOffsetsWithoutChangingOutputs )
     expect_note( reader, 1, 2, "", "abc" );
 }
 
-TEST_P( ELFIONoteBoundsTest, RejectsUnterminatedOwnerName )
+TEST_P( ELFIONoteBoundsTest, KeepsUnterminatedOwnerName )
 {
-    auto data = make_note( file, 7, std::string( "GNU\0", 4 ) );
+    // Some producers omit the owner's terminator; the full name is returned.
+    auto data = make_note( file, 7, std::string( "GNU\0", 4 ), "abc" );
     notes->set_data( data );
     note_section_accessor cached( file, notes );
-    data.back() = 'x';
+    data[3 * sizeof( Elf_Word ) + 3] = 'x';
     notes->set_data( data );
-    expect_rejected( cached, 0 );
+    expect_note( cached, 0, 7, "GNUx", "abc" );
     note_section_accessor fresh( file, notes );
-    EXPECT_EQ( fresh.get_notes_num(), 0U );
+    ASSERT_EQ( fresh.get_notes_num(), 1U );
+    expect_note( fresh, 0, 7, "GNUx", "abc" );
 }
 
 TEST_P( ELFIONoteBoundsTest, ReadsSectionAndSegmentNotes )
