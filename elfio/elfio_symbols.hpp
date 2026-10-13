@@ -150,8 +150,7 @@ template <class S> class symbol_section_accessor_template
                                  found_type, found_section_index, found_other );
                 covered_end = symbol_count;
             }
-            if ( hash_section->get_type() == SHT_GNU_HASH ||
-                 hash_section->get_type() == DT_GNU_HASH ) {
+            if ( hash_section->get_type() == SHT_GNU_HASH ) {
                 if ( elf_file.get_class() == ELFCLASS32 ) {
                     result = gnu_hash_lookup<std::uint32_t>(
                         name, found_value, found_size, found_bind, found_type,
@@ -389,8 +388,7 @@ template <class S> class symbol_section_accessor_template
             const section* sec = elf_file.sections[i];
             if ( sec->get_link() == symbol_section->get_index() &&
                  ( sec->get_type() == SHT_HASH ||
-                   sec->get_type() == SHT_GNU_HASH ||
-                   sec->get_type() == DT_GNU_HASH ) ) {
+                   sec->get_type() == SHT_GNU_HASH ) ) {
                 hash_section       = sec;
                 hash_section_index = i;
                 break;
@@ -817,28 +815,32 @@ template <class S> class symbol_section_accessor_template
     {
         const auto& convertor = elf_file.get_convertor();
 
-        Elf_Word first_not_local =
+        Elf_Xword first_not_local =
             1; // Skip the first entry. It is always NOTYPE
         Elf_Xword current = 0;
-        Elf_Xword count   = get_symbols_num();
+        // Without data there are no records to rearrange
+        Elf_Xword count =
+            symbol_section->get_data() != nullptr ? get_symbols_num() : 0;
+
+        // Symbol records may be unaligned in the section data, so they are
+        // copied in and out instead of being accessed in place
+        auto record = [this]( Elf_Xword index ) {
+            return const_cast<char*>( reinterpret_cast<const char*>(
+                generic_get_symbol_ptr<T>( index ) ) );
+        };
+        auto is_local = [&]( Elf_Xword index ) {
+            T symbol;
+            std::memcpy( &symbol, record( index ), sizeof( symbol ) );
+            return ELF_ST_BIND( ( *convertor )( symbol.st_info ) ) == STB_LOCAL;
+        };
 
         while ( true ) {
-            T* p1 = nullptr;
-            T* p2 = nullptr;
-
-            while ( first_not_local < count ) {
-                p1 = const_cast<T*>(
-                    generic_get_symbol_ptr<T>( first_not_local ) );
-                if ( ELF_ST_BIND( ( *convertor )( p1->st_info ) ) != STB_LOCAL )
-                    break;
+            while ( first_not_local < count && is_local( first_not_local ) ) {
                 ++first_not_local;
             }
 
             current = first_not_local + 1;
-            while ( current < count ) {
-                p2 = const_cast<T*>( generic_get_symbol_ptr<T>( current ) );
-                if ( ELF_ST_BIND( ( *convertor )( p2->st_info ) ) == STB_LOCAL )
-                    break;
+            while ( current < count && !is_local( current ) ) {
                 ++current;
             }
 
@@ -846,7 +848,14 @@ template <class S> class symbol_section_accessor_template
                 if ( func )
                     func( first_not_local, current );
 
-                std::swap( *p1, *p2 );
+                T first;
+                T second;
+                std::memcpy( &first, record( first_not_local ),
+                             sizeof( first ) );
+                std::memcpy( &second, record( current ), sizeof( second ) );
+                std::memcpy( record( first_not_local ), &second,
+                             sizeof( second ) );
+                std::memcpy( record( current ), &first, sizeof( first ) );
             }
             else {
                 // Update 'info' field of the section
