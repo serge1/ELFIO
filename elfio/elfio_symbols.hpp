@@ -139,7 +139,8 @@ template <class S> class symbol_section_accessor_template
 
         const Elf_Xword symbol_count = get_symbols_num();
         hash_result     result       = hash_result::invalid;
-        // Symbols in [covered_begin, covered_end) are ruled out by a miss
+        // Non-local symbols in [covered_begin, covered_end) are ruled out by
+        // a miss
         Elf_Xword covered_begin = 0;
         Elf_Xword covered_end   = 0;
         // Unnamed symbols are never reachable through a hash table
@@ -172,8 +173,10 @@ template <class S> class symbol_section_accessor_template
             covered_end   = 0;
         }
         for ( Elf_Xword i = 0; !found && i < symbol_count; i++ ) {
-            if ( i >= covered_begin && i < covered_end ) {
-                i = covered_end - 1;
+            // Linkers may place local symbols in a hashed symbol table without
+            // adding them to a chain, so a miss does not rule them out
+            if ( i >= covered_begin && i < covered_end &&
+                 !is_local_symbol( i ) ) {
                 continue;
             }
             std::string symbol_name;
@@ -557,6 +560,9 @@ template <class S> class symbol_section_accessor_template
              !read_hash_value( 2 * sizeof( std::uint32_t ), bloom_size ) ||
              !read_hash_value( 3 * sizeof( std::uint32_t ), bloom_shift ) ||
              nbuckets == 0 || bloom_size == 0 ||
+             // glibc indexes the bloom filter with a mask, so its size must be
+             // a power of two
+             ( bloom_size & ( bloom_size - 1 ) ) != 0 ||
              bloom_shift >= 8 * sizeof( std::uint32_t ) ) {
             return hash_result::invalid;
         }
@@ -654,6 +660,31 @@ template <class S> class symbol_section_accessor_template
         }
 
         return hash_result::invalid;
+    }
+
+    //------------------------------------------------------------------------------
+    // @brief Check whether the symbol at the specified index is local
+    // @param index Index of the symbol
+    // @return True if the symbol exists and has STB_LOCAL binding
+    //------------------------------------------------------------------------------
+    bool is_local_symbol( Elf_Xword index ) const
+    {
+        if ( elf_file.get_class() == ELFCLASS32 ) {
+            return generic_is_local_symbol<Elf32_Sym>( index );
+        }
+        return generic_is_local_symbol<Elf64_Sym>( index );
+    }
+
+    //------------------------------------------------------------------------------
+    template <class T> bool generic_is_local_symbol( Elf_Xword index ) const
+    {
+        const T* record = generic_get_symbol_ptr<T>( index );
+        if ( record == nullptr ) {
+            return false;
+        }
+        T symbol;
+        std::memcpy( &symbol, record, sizeof( symbol ) );
+        return ELF_ST_BIND( symbol.st_info ) == STB_LOCAL;
     }
 
     //------------------------------------------------------------------------------
@@ -859,7 +890,8 @@ template <class S> class symbol_section_accessor_template
             }
             else {
                 // Update 'info' field of the section
-                symbol_section->set_info( first_not_local );
+                symbol_section->set_info(
+                    static_cast<Elf_Word>( first_not_local ) );
                 break;
             }
         }
