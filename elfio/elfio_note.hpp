@@ -111,6 +111,11 @@ class note_section_accessor_template
     {
         const auto& convertor = elf_file.get_convertor();
 
+        // A record without descriptor data must not claim a descriptor
+        if ( desc == nullptr ) {
+            descSize = 0;
+        }
+
         int         align       = sizeof( Elf_Word );
         Elf_Word    nameLen     = (Elf_Word)name.size() + 1;
         Elf_Word    nameLenConv = ( *convertor )( nameLen );
