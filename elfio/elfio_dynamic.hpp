@@ -279,6 +279,7 @@ template <class S> class dynamic_section_accessor_template
 
         dynamic_section->append_data( reinterpret_cast<char*>( &entry ),
                                       sizeof( entry ) );
+        entries_num = 0;
     }
 
   private:
