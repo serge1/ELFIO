@@ -1111,6 +1111,38 @@ TEST( ELFIOTest, test_dynamic_64_3 )
     }
 }
 
+TEST( ELFIOTest, dynamic_entries_after_append )
+{
+    for ( unsigned char file_class : { ELFCLASS32, ELFCLASS64 } ) {
+        for ( unsigned char encoding : { ELFDATA2LSB, ELFDATA2MSB } ) {
+            elfio writer;
+            writer.create( file_class, encoding );
+            section* dynamic = writer.sections.add( ".dynamic" );
+            dynamic->set_type( SHT_DYNAMIC );
+            dynamic->set_entry_size(
+                writer.get_default_entry_size( SHT_DYNAMIC ) );
+            dynamic_section_accessor entries( writer, dynamic );
+
+            entries.add_entry( DT_DEBUG, 0x1234 );
+            EXPECT_EQ( entries.get_entries_num(), 1 );
+            entries.add_entry( DT_FINI, 0x5678 );
+            EXPECT_EQ( entries.get_entries_num(), 2 );
+
+            Elf_Xword   tag   = 0;
+            Elf_Xword   value = 0;
+            std::string str;
+            ASSERT_TRUE( entries.get_entry( 1, tag, value, str ) );
+            EXPECT_EQ( tag, DT_FINI );
+            EXPECT_EQ( value, 0x5678 );
+
+            entries.add_entry( DT_NULL, 0 );
+            EXPECT_EQ( entries.get_entries_num(), 3 );
+            entries.add_entry( DT_DEBUG, 0 );
+            EXPECT_EQ( entries.get_entries_num(), 3 );
+        }
+    }
+}
+
 TEST( ELFIOTest, test_free_data )
 {
     bool is_lazy = false;
